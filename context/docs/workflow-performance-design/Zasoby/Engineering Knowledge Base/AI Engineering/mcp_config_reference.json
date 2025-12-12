@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "figma": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-figma",
+        "--repository",
+        "https://github.com/figma/mcp-server-figma.git"
+      ],
+      "env": {
+        "FIGMA_ACCESS_TOKEN": "<YOUR_FIGMA_TOKEN_HERE>",
+        "FIGMA_TEAM_ID": "<YOUR_TEAM_ID>"
+      }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/kamil/Desktop/workflow-performance-design"
+      ]
+    },
+    "git": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "/Users/kamil/Desktop/workflow-performance-design"
+      ]
+    }
+  }
+}

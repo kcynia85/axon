@@ -1,0 +1,1 @@
+# Dostosowanie skali

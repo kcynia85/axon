@@ -1,0 +1,48 @@
+# Analityka — Źródła pozyskiwania danych
+
+- Dane transakcyjne
+    - systemy kasowe w sklepach detalicznych
+    - platformy e-commerce tj. Amazon i Allegro
+    - systemy płatności tj. PayPal czy Stripe
+    - bankowość internetowa i wyciągi z kont
+- Interakcje na stronie internetowej
+    - Google Analytics
+    - Heatmpay np. Hotjar
+    - narzędzia do testów A/B tj. Optimizely
+    - CMSy, interakcje z treściami
+    - logi z serwera
+- Media społecznościowe
+    - Facebook insights
+    - Twitter Analytics
+    - LinkedIn Analytics
+    - Instagram Insights
+    - Social Listening Tools tj. Brandwatch
+- Dane demograficzne
+    - badania rynku tj. Nielsen
+    - publiczne rejestry tj. GUS
+    - bazy danych zakupów kart kredytowych i programów lojalnościowych
+- Ankiety i badania
+    - SurveyMonkey
+    - Google Forms
+    - platformy di badania doświadczeń klienta tj. Qualtrics
+    - CATI, IDI, F2F
+- Dane z aplikacji mobilnych
+    - SDK analityczne tj. Firebase
+    - aplikacje do śledzenia aktywności fizycznej np. Strava
+- Rejestracja do newsletterów i inne subskrypcje
+- Karty lojalnościowe i programy nagród
+    - Loyalty lub Antavo
+    - systemy POS tj. Square czy Lightspeed
+- Historia komunikacji
+    - CRM (Salesforce, Pipedrive)
+    - narzędzia do zarządzania komunikacją z klientami (Zendesk, Intercom)
+- Dane z call center
+    - systemy telekomunikacyjne (RingCentral, Nextiva)
+    - analizatory rozmów (CallMiner, Talkdesk)
+- Opinie i recenzje klientów
+    - serwisy agregujące opinie klientów (Trustpilot, Feefo)
+    - wtyczki (Yotpo, Reviews.io)
+- Dane geolokalizacyjne
+    - internet rzeczy (IoT)
+    - dane z sensorów i biometryczne (Google Maps API, Foursquare)
+    - platformy IoT (ThingSpeak, AWS IoT Core)

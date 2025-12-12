@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" fill="none">
+  <!-- Główny kolor (#1E293B) -->
+  <g color="#1E293B">
+
+    <!-- SYGNET: Wersja "x-height" - ODCHUDZONA -->
+    <!-- Pozycja utrzymana, aby pasować do linii bazowej i x-height -->
+    <g transform="translate(165, 68)">
+      <!-- Centralny rdzeń (zmniejszony do r=8 dla lepszych proporcji) -->
+      <circle cx="60" cy="60" r="8" fill="currentColor"/>
+      
+      <!-- Orbitujący akson -->
+      <!-- Promień wewnętrzny (radius) zwiększony do 36, aby skompensować cieńszy obrys. -->
+      <!-- Grubość (stroke-width) ZMNIEJSZONA do 16px. -->
+      <!-- Matematyka nadal daje ~88px wysokości całkowitej: (Promień 36 + połowa stroka 8) * 2 = 88. -->
+      <path d="M 31,82 A 36,36 0 1,1 89,82" stroke="currentColor" stroke-width="16" stroke-linecap="" fill="none" />
+    </g>
+
+    <!-- TYPOGRAFIA (Bez zmian) -->
+    <text x="285" y="155" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="700" font-size="120" letter-spacing="1" fill="currentColor">
+      axon
+    </text>
+
+  </g>
+</svg>
