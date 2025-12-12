@@ -26,7 +26,7 @@ Zanim wykonasz serię edycji plików lub komend shell, przedstaw w terminalu zwi
 
 ### 📂 Folder Structure Policy
 - **Docs Root:** Wszystkie dokumenty procesowe znajdują się w folderze **`Docs/`**.
-- **Inputs:** `GEMINI.md`, `tech-prd-template.md`, `adr-template.md`, `prp-template.md`.
+- **Inputs:** `GEMINI.md`, `tech-prd-[project-name].md`, `adr-[project-name].md`, `prp-template.md`.
 - **Outputs:** Generowane pliki `PRP.md` i `IMPLEMENTATION.md` muszą trafić do **`Docs/`**.
 - **Cel:** Single Source of Truth.
 - **Default Architecture:** Modular Monolith (`src/modules/`).
@@ -34,7 +34,7 @@ Zanim wykonasz serię edycji plików lub komend shell, przedstaw w terminalu zwi
 ### 🔗 The "DRY" Workflow
 1.  **Tech PRD:** Źródło wymagań biznesowych i kontekstu.
 2.  **ADR (Architecture Decision Record):** Zewnętrzny rejestr decyzji (Stack, DB, Patterns).
-3.  **Create PRP Package:** Generuje `PRP.md` (z `prp-template.md`) oraz `IMPLEMENTATION.md` (z `implementation-template.md`).
+3.  **Create PRP Package:** Generuje `PRP.md` (z `prp-template.md`, na podstawie `tech-prd-[project-name].md` i `adr-[project-name].md`) oraz `IMPLEMENTATION.md` (z `implementation-template.md`).
     *   **Serena** analizuje repozytorium pod kątem wzorców.
     *   **Chain of Thought:** Analiza edge-cases przed kodowaniem.
 4.  **SSOT:** `PRP.md` jest święty.

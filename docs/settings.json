@@ -10,16 +10,6 @@
         "start-mcp-server"
       ]
     },
-    "figma": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@tothienbao6a0/figma-mcp-server"
-      ],
-      "env": {
-        "FIGMA_API_KEY": "#"
-      }
-    },
     "sequential-thinking": {
       "command": "npx",
       "args": [
