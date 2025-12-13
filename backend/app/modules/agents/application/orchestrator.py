@@ -1,8 +1,10 @@
+import json
 from typing import Dict
 from uuid import UUID
 from backend.app.modules.agents.domain.models import AgentConfig, ChatSession, Message
 from backend.app.modules.agents.domain.enums import AgentRole, ModelTier
 from backend.app.shared.utils.time import now_utc
+from backend.app.shared.infrastructure.adk import GoogleADK
 
 class AgentOrchestrator:
     def __init__(self):
@@ -55,13 +57,37 @@ class AgentOrchestrator:
 
         # 2. TODO: Retrieve context (RAG)
         
-        # 3. TODO: Call LLM (Google GenAI)
+        # 3. Call LLM (Google GenAI)
+        response_content = await GoogleADK.generate_content(user_input)
         
-        # 4. Mock response for now
-        response_content = f"Mock response from {session.agent_role} to: {user_input}"
-        
-        # 5. Append model message
+        # 4. Append model message
         model_msg = Message(role="model", content=response_content, timestamp=now_utc())
         session.history.append(model_msg)
         
         return response_content
+
+    async def run_turn_stream(self, session: ChatSession, user_input: str):
+        """
+        Executes a turn with streaming response.
+        Yields JSON strings: {"type": "token", "content": "..."}
+        """
+        # 1. User Message
+        user_msg = Message(role="user", content=user_input, timestamp=now_utc())
+        session.history.append(user_msg)
+        session.updated_at = now_utc()
+        
+        full_response = ""
+        
+        try:
+            async for chunk in GoogleADK.generate_content_stream(user_input):
+                full_response += chunk
+                yield json.dumps({"type": "token", "content": chunk})
+        except Exception as e:
+            # Fallback for dev/test if API fails
+            err_msg = f" [Error: {str(e)}]"
+            full_response += err_msg
+            yield json.dumps({"type": "error", "content": err_msg})
+
+        # 2. Model Message
+        model_msg = Message(role="model", content=full_response, timestamp=now_utc())
+        session.history.append(model_msg)

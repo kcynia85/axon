@@ -19,10 +19,23 @@ Znajdują się tam wysokopoziomowe instrukcje (Standardy, Wzorce, Anti-Patterns)
 
 ### 🚨 CRITICAL TESTING PROTOCOL
 **Testy muszą być uruchamiane po KAŻDEJ ważnej zmianie.**
-*   **Zasada:** Nie ma "szybkiego fixu" bez weryfikacji. Każda zmiana w logice biznesowej lub infrastrukturze wymaga uruchomienia odpowiedniego zestawu testów (`pytest` lub `vitest`).
+*   **Zasada:** Nie ma "szybkiego fixu" bez weryfikacji. Każda zmiana w logice biznesowej lub infrastrukturze wymaga uruchomienia odpowiedniego zestawu testów:
+    1.  **Jednostkowe (Unit):** Izolowana logika (Jest/Vitest/Pytest).
+    2.  **Integracyjne:** Współpraca modułów/DB.
+    3.  **E2E:** Krytyczne ścieżki użytkownika (Playwright).
 *   **Regression Check:** Przed zatwierdzeniem zadania upewnij się, że nie zepsułeś istniejących funkcjonalności.
 
+### 🚨 CRITICAL TRACKING PROTOCOL (DONE IS DONE)
+**Status Tracking:**
+*   **Dual Checklist System:** Both `Docs/PRP.md` (Requirements) and `Docs/IMPLEMENTATION.md` (Tasks) act as the Source of Truth for progress.
+*   **Completion Rule:** When a task is completed AND verified (tests passed):
+    1.  Mark it as `[x]` in `Docs/IMPLEMENTATION.md` (for the Human).
+    2.  Mark the corresponding requirement/invariant as `[x]` in `Docs/PRP.md` (for the AI/Future Context).
+*   **Commitment:** Do not leave open checkboxes if the code works.
+
+### 🚨 OTHER CRITICAL PROTOCOL
 - **Code Quality:** Kod musi być prosty, modularny, czytelny i łatwy w utrzymaniu (Clean Code).
+- **DDD Naming:** Kod ma się czytać jak książkę. Używaj opisowych nazw funkcji i zmiennych (Ubiquitous Language).
 - **Paradigm:** Stosuj SOLID, Functional Programming (arrow functions), async/await, immutable structures. Unikaj klas tam, gdzie to możliwe.
 - **Dependencies:** Minimalizuj zależności. Zawsze sprawdzaj, czy problem można rozwiązać istniejącym stackiem.
 - **Performance First:** Optymalizacja jest priorytetem. Minimalizuj TTFI (Time to First Interaction) i maksymalną responsywność interfejsu.
@@ -48,10 +61,11 @@ Zanim wykonasz serię edycji plików lub komend shell, przedstaw w terminalu zwi
 1.  **Tech PRD:** Źródło wymagań biznesowych i kontekstu.
 2.  **ADR (Architecture Decision Record):** Zewnętrzny rejestr decyzji (Stack, DB, Patterns).
 3.  **Create PRP Package:** Generuje `PRP.md` (z `prp-template.md`, na podstawie `tech-prd-[project-name].md` i `adr-[project-name].md`) oraz `IMPLEMENTATION.md` (z `implementation-template.md`).
+    *   **CRITICAL:** Skopiuj wszystkie sekcje "Critical Protocols" (Knowledge, Testing, Other) z `GEMINI.md` bezpośrednio do `PRP.md` jako sekcję nadrzędną (zanim przejdziesz do Feature Metadata).
     *   **Serena** analizuje repozytorium pod kątem wzorców.
     *   **Chain of Thought:** Analiza edge-cases przed kodowaniem.
 4.  **SSOT:** `PRP.md` jest święty.
-5.  **Implementation Plan:** `IMPLEMENTATION.md` zawiera zarówno architekturę jak i checklistę zadań.
+5.  **Implementation Plan:** `IMPLEMENTATION.md` to dokument (Non-Tech/High-Level), który śledzi postęp realizacji założeń z `PRP.md`. Służy do weryfikacji "co zostało zrobione" vs "co było w planie".
 6.  **HIL (Human-in-the-Loop):** Każdy artefakt wymaga zatwierdzenia.
 
 ### 🛠 Priority Tools (MCP)

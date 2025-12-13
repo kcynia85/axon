@@ -34,3 +34,18 @@ class GoogleADK:
         model = genai.GenerativeModel(model_name)
         response = await model.generate_content_async(prompt)
         return response.text
+
+    @staticmethod
+    async def generate_content_stream(prompt: str, model_name: str = "gemini-1.5-flash"):
+        """
+        Generates content streaming (yields chunks).
+        """
+        try:
+            model = genai.GenerativeModel(model_name)
+            response = await model.generate_content_async(prompt, stream=True)
+            async for chunk in response:
+                if chunk.text:
+                    yield chunk.text
+        except Exception as e:
+            print(f"Error generating stream: {e}")
+            yield f"Error: {str(e)}"

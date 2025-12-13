@@ -22,3 +22,11 @@ src/
 1.  **Warstwa `interface/`**: Odbiera request, waliduje (DTO), woła `application`. Nie zawiera logiki biznesowej.
 2.  **Use Cases (`application/`)**: Odpowiednik "Server Actions". Funkcje `async` nieświadome HTTP (brak `req`, `res`).
 3.  **Zasada Izolacji Frameworka**: Logika w `domain/` jest **agnostyczna**. Migracja z Next.js na Express wymaga tylko wymiany warstwy wejścia (`app` -> `interface`), a domena pozostaje nienaruszona.
+
+### 🟦 TypeScript / JavaScript
+- **TypeScript:** Obowiązkowy dla nowych projektów (Strict Mode).
+- **Immutability:** Obiekty i tablice traktuj jako niezmienne.
+- **Składnia:** Arrow functions, optional chaining, destrukturyzacja.
+- **Nazewnictwo:** PascalCase (Komponenty), camelCase (funkcje/zmienne).
+- **Async:** `async/await` zamiast `.then()`.
+- **Paradygmat:** Nie używaj klas (`class`), stosuj wyłącznie funkcje.

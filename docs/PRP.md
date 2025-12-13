@@ -1,5 +1,44 @@
 # PRP: RAGAS — AI Command Center (MVP)
 
+# 🎯 Persona and Main Instructions for AI
+**Działaj jako Mentor i Senior AI-Native Architect.**
+
+### 🚨 CRITICAL FRONTEND PROTOCOLS (Mandatory)
+> **Ref:** `docs/knowledge/tech/stack-react-ts.md` & `docs/knowledge/structure/modular-monolith-nextjs.md`
+
+1.  **Modular Structure:**
+    *   **Root:** `src/modules/[module_name]/` (No logic in `src/app`).
+    *   **Layers:** `domain` (Types/Zod), `infrastructure` (API/Fetch), `application` (Actions), `components` (UI).
+    *   **Public API:** Cross-module imports MUST use `index.ts` barrel files.
+2.  **React Patterns:**
+    *   **No Classes:** Use Functional Components and Hooks only.
+    *   **Data Fetching:** Use `TanStack Query` (Client) or `Server Actions` (RSC). **NEVER use `useEffect` for fetching.**
+    *   **State:** Local state via `useState/useReducer`. Global state via `Zustand`.
+    *   **Perf:** Default to Server Components. Use `"use client"` only for interactive leaves.
+3.  **Code Quality:**
+    *   **DDD Naming:** Use descriptive names (Ubiquitous Language). Code must read like a book.
+    *   **Immutability:** Never mutate data. Use `const`.
+    *   **Validation:** All inputs/forms must be validated with **Zod**.
+    *   **Naming:** PascalCase for Components, camelCase for functions/variables.
+    *   **Limits:** Max 500 lines per file. Split if larger.
+4.  **Testing Strategy:**
+    *   **Unit:** Jest/Vitest for pure logic and components.
+    *   **Integration:** Test module interactions.
+    *   **E2E:** Critical flows (Playwright/Cypress).
+    *   **Rule:** No PR merge without passing tests.
+
+## 9. Implementation Notes for AI
+### 🚨 CRITICAL PROTOCOLS
+*   **Knowledge First:** All implementation must strictly follow patterns in `docs/knowledge/tech/*` and `docs/knowledge/structure/*`. **Modern & Efficient Code Only.**
+*   **Documentation First:** Update Tech Docs (code) and Non-Tech Docs (user guides) alongside the implementation.
+*   **Test-Driven:** Run tests after EVERY significant change. Do not assume it works.
+*   **Priority Tools:**
+    *   **Serena MCP:** Must be used for all codebase analysis, file reading, and semantic understanding before taking action.
+    *   **Sequential Thinking MCP:** Must be used for planning complex tasks, breaking down logic, and verifying architectural alignment before coding.
+
+
+# Project Requirements Package (PRP) for RAGAS — AI Command Center (MVP)
+
 ## 1. Feature Metadata
 *   **Feature Name:** RAGAS Core System (MVP)
 *   **Context Module:** Kernel / Meta Hub (spanning Product, Discovery, Delivery, Growth)
@@ -28,7 +67,9 @@
 *   **Fallback:** Switching from the primary LLM (Gemini) to a backup (GPT-4/Claude) upon failure.
 *   **Asset Retrieval:** The specific act of fetching a full template/SOP by slug (`get_asset`) vs searching for chunks.
 
-## 3. Invariants (System Rules)
+## 3. System Rules (Invariants)
+> **Note:** These are immutable system rules that must be adhered to throughout the implementation.
+
 1.  **Trustworthy Attribution:** Every answer derived from RAG MUST include inline citations (`[1]`, `[Source]`) pointing to specific `Memory` or `Artifact` chunks.
 2.  **Project Isolation:** Users can ONLY access Projects and Artifacts where they are the owner (enforced via Supabase RLS).
 3.  **Idempotent Execution:** Agent actions (especially side-effects like sending emails or writing files) MUST be idempotent to support durable execution (retries).
@@ -37,6 +78,16 @@
 6.  **Asset Integrity:** Templates and SOPs (Assets) must be retrieved in their entirety (not chunked) to preserve their structure for Agent use.
 7.  **Continuous Documentation:** Every new feature MUST be accompanied by Technical Documentation (JSDoc/Docstring) and User Documentation updates (README/Guides) before completion.
 8.  **Regression Testing:** Unit/Integration tests MUST be executed and pass after every significant change to ensure no regressions.
+
+### 3.1 Invariants Checklist (Tracking)
+- [ ] **Trustworthy Attribution** implemented.
+- [ ] **Project Isolation** enforced.
+- [ ] **Idempotent Execution** verified.
+- [ ] **Contract-First UI** validated.
+- [ ] **Fallback Resilience** implemented.
+- [ ] **Asset Integrity** preserved.
+- [ ] **Continuous Documentation** updated.
+- [ ] **Regression Testing** passed.
 
 ## 4. System Architecture & Constraints
 *   **Architecture Pattern:** Modular Monolith with Vertical Slice Architecture (Backend).
@@ -52,24 +103,24 @@
 
 ## 5. Data Tier / DB Requirements
 ### SQL Tables (Relational)
-*   `projects`: `{ id: uuid, name: text, status: enum, owner_id: uuid, domain: text, created_at: timestamp }`
-*   `artifacts`: `{ id: uuid, project_id: uuid, type: enum, content: text, metadata: jsonb, version: int }`
-*   `chat_sessions`: `{ id: uuid, project_id: uuid, agent_role: enum, history: jsonb }`
-*   `assets`: `{ id: uuid, slug: text (unique), title: text, content: text, type: text, domain: text, metadata: jsonb, description_embedding: vector(768) }`
+- [x] `projects`: `{ id: uuid, name: text, status: enum, owner_id: uuid, domain: text, created_at: timestamp }`
+- [x] `artifacts`: `{ id: uuid, project_id: uuid, type: enum, content: text, metadata: jsonb, version: int }`
+- [x] `chat_sessions`: `{ id: uuid, project_id: uuid, agent_role: enum, history: jsonb }`
+- [x] `assets`: `{ id: uuid, slug: text (unique), title: text, content: text, type: text, domain: text, metadata: jsonb, description_embedding: vector(768) }`
 
 ### Vector Collections (pgvector via `vecs`)
-*   `knowledge_base`: Chunks of documents (Wisdom/Articles) with embeddings.
-*   `memories`: Extracted facts with embeddings.
+- [x] `knowledge_base`: Chunks of documents (Wisdom/Articles) with embeddings.
+- [x] `memories`: Extracted facts with embeddings.
 
 ### JSONB Usage (NoSQL Hybrid)
-*   **Artifact Metadata:** Flexible tags, source info, and layout configs.
-*   **Agent Logs:** Detailed execution traces (telemetry) stored in a `logs` column/table for audit, indexed via GIN.
-*   **Asset Metadata:** Source path, versioning info.
+- [x] **Artifact Metadata:** Flexible tags, source info, and layout configs.
+- [ ] **Agent Logs:** Detailed execution traces (telemetry) stored in a `logs` column/table for audit, indexed via GIN.
+- [x] **Asset Metadata:** Source path, versioning info.
 
 ### Performance Constraints
-*   Use GIN indexes on JSONB columns for efficient filtering by tags/metadata.
-*   Vector search must use HNSW index for sub-second retrieval.
-*   Asset retrieval by slug must be sub-50ms (Indexed).
+- [ ] Use GIN indexes on JSONB columns for efficient filtering by tags/metadata.
+- [ ] Vector search must use HNSW index for sub-second retrieval.
+- [x] Asset retrieval by slug must be sub-50ms (Indexed).
 
 ## 6. Sync vs Async Operations
 ### Synchronous (Direct Response)
@@ -111,20 +162,28 @@
 }
 ```
 
-## 9. Implementation Notes for AI
-### 🚨 CRITICAL PROTOCOLS
-*   **Knowledge First:** All implementation must strictly follow patterns in `docs/knowledge/tech/*` and `docs/knowledge/structure/*`. **Modern & Efficient Code Only.**
-*   **Documentation First:** Update Tech Docs (code) and Non-Tech Docs (user guides) alongside the implementation.
-*   **Test-Driven:** Run tests after EVERY significant change. Do not assume it works.
-*   **Priority Tools:**
-    *   **Serena MCP:** Must be used for all codebase analysis, file reading, and semantic understanding before taking action.
-    *   **Sequential Thinking MCP:** Must be used for planning complex tasks, breaking down logic, and verifying architectural alignment before coding.
 
-### Technical Details
-*   **Dependency Management:** Strictly use `uv` for Python backend management.
-*   **ETL Script:** Implement `backend/app/infrastructure/etl/ingest_knowledge.py` to parse the `docs/axon-context` structure. Use `Router Pattern` to classify files into Assets vs. Wisdom.
-*   **Tools Implementation:**
-    *   `find_asset`: Search `assets` table via `description_embedding`.
-    *   `get_asset`: Select `content` from `assets` table via `slug`.
-*   **Streaming Protocol:** Ensure the SSE implementation sends structured events.
-*   **Skeleton UI:** When implementing the Chat Interface, ensure the "Thinking" state is visualized with a Skeleton Loader.
+### 9.1 Technical Implementation Checklist
+- [x] **Dependency Management:** Strictly use `uv` for Python backend management.
+- [x] **ETL Script:** Implement `backend/app/modules/knowledge/etl/ingest.py` to parse the `docs/axon-context` structure. Use `Router Pattern` to classify files into Assets vs. Wisdom.
+- [x] **Tools Implementation:**
+    - [x] `find_asset`: Search `assets` table via `description_embedding`.
+    - [x] `get_asset`: Select `content` from `assets` table via `slug`.
+- [x] **Streaming Protocol:** Ensure the SSE implementation sends structured events.
+- [ ] **Skeleton UI:** When implementing the Chat Interface, ensure the "Thinking" state is visualized with a Skeleton Loader.
+
+### 9.2 Frontend Views (MVP Checklist)
+> **Source:** `docs/tech-prd-axon.md` (Section 3.7 & 6.2)
+
+- [x] **`/dashboard`:** Command center with recent activity (Implemented).
+- [x] **`/chat`:** AI Chat Interface with Streaming (Implemented).
+- [ ] **`/prompts`:** Prompt Library management (CRUD).
+- [ ] **`/agents`:** Agent configuration and tool assignment.
+- [ ] **`/common-uses`:** Ready-made scenarios/tasks library.
+- [ ] **`/workflows`:** Chain of Thought process creator.
+- [ ] **`/llms`:** API Keys and Model configuration.
+- [ ] **`/knowledge`:** Knowledge Base browser (Vectors/Assets).
+- [ ] **`/tools`:** Tools and MCP catalog.
+- [ ] **`/profile`:** User settings.
+- [ ] **`/inbox`:** Artifact review inbox.
+- [ ] **`/docs`:** Documentation viewer (Auto-generated).

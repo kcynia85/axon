@@ -97,20 +97,35 @@ frontend/src/
     - [x] **Test:** Verify RAG search results.
 - [ ] **Agent Runtime:**
     - [x] Integrate Google ADK (Gemini) in `shared/infrastructure/adk.py`.
-    - [ ] Implement Streaming Response (SSE).
-    - [ ] **Test:** E2E Chat Test (Mocked LLM).
+    - [x] Implement Streaming Response (SSE).
+    - [x] **Test:** E2E Chat Test (Mocked LLM).
 
 ### Phase 4: Frontend Implementation
-- [ ] **Refactor:** Create `src/modules` structure.
+- [x] **Refactor:** Create `src/modules` structure.
 - [ ] **Implement Features:**
-    - [ ] Project Dashboard.
-    - [ ] Chat Interface (Streaming).
-    - [ ] Knowledge Browser.
-    - [ ] **Test:** Component Tests (Vitest).
+    - [x] Project Dashboard.
+    - [x] Chat Interface (Streaming).
+    - [ ] **Knowledge Browser (`/knowledge`):** View indexed chunks and assets.
+    - [ ] **Prompt Library (`/prompts`):** CRUD for system instructions.
+    - [ ] **Agent Config (`/agents`):** Manage roles and tools.
+    - [ ] **LLM Settings (`/llms`):** API Key management.
+    - [ ] **Inbox (`/inbox`):** Artifact review interface.
+    - [ ] **Tools Catalog (`/tools`):** View available tools.
+    - [ ] **Docs Viewer (`/docs`):** Markdown renderer for project docs.
+    - [x] **Test:** Component Tests (Vitest).
 
 ### Phase 5: Verification & Cleanup
 - [ ] **Testing:** Run Full Regression Suite.
 - [ ] **Documentation:** Complete API Docs & README.
+
+---
+
+## ⚠️ Gap Analysis (Missing vs Tech PRD/ARD)
+*   **Knowledge Browser:** Not implemented yet.
+*   **Inbox UI:** Mentioned in Tech PRD but missing in PRP Plan.
+*   **Soft Delete:** Required by ARD, missing in Backend Models.
+*   **Prompts Management:** Hardcoded in Orchestrator, missing UI/DB.
+*   **Knowledge Ingestion:** `ingest.py` is a draft; missing recursive parsing & "Wisdom" path.
 
 ---
 
