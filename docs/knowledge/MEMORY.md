@@ -5,7 +5,7 @@
 ---
 
 ## 🚫 Anti-Patterns (To Avoid)
-*   *(Tu wpisuj błędy, które Agent popełnił, a których ma nie powtarzać)*
+- **uv dependency management**: `uv` does not support `python = "3.10"` (or similar) in the `[tool.uv]` section of `pyproject.toml`. This field should be omitted or configured differently if a specific Python version needs to be enforced by `uv`'s settings.
 
 ## ⭐ User Preferences
 *   *(Tu wpisuj swoje specyficzne preferencje, np. "wolę pętle for zamiast reduce")*

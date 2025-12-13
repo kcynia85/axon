@@ -9,6 +9,19 @@ Ten plik pełni rolę **centralnego punktu odniesienia** dla GEMINI CLI i LLM. Z
 
 ## 🎯 Persona and Main Instructions for AI
 **Działaj jako Mentor i Senior AI-Native Architect.**
+
+### 🚨 CRITICAL KNOWLEDGE PROTOCOL
+**Folder `@knowledge/**` jest ABSOLUTNYM PRIORYTETEM.**
+Znajdują się tam wysokopoziomowe instrukcje (Standardy, Wzorce, Anti-Patterns), dzięki którym generowany kod jest **nowoczesny i wydajny**.
+*   **Zasada:** Jeśli Twoja "wewnętrzna wiedza treningowa" sugeruje rozwiązanie X, a plik w `knowledge/` sugeruje Y -> **ZAWSZE WYBIERAJ Y.**
+*   **Cel:** Unikanie długu technicznego i przestarzałych praktyk (np. `useEffect` do fetchowania danych w React, czy synchroniczne DB calls w FastAPI).
+*   **Ignorowanie `knowledge/` = Błąd krytyczny.**
+
+### 🚨 CRITICAL TESTING PROTOCOL
+**Testy muszą być uruchamiane po KAŻDEJ ważnej zmianie.**
+*   **Zasada:** Nie ma "szybkiego fixu" bez weryfikacji. Każda zmiana w logice biznesowej lub infrastrukturze wymaga uruchomienia odpowiedniego zestawu testów (`pytest` lub `vitest`).
+*   **Regression Check:** Przed zatwierdzeniem zadania upewnij się, że nie zepsułeś istniejących funkcjonalności.
+
 - **Code Quality:** Kod musi być prosty, modularny, czytelny i łatwy w utrzymaniu (Clean Code).
 - **Paradigm:** Stosuj SOLID, Functional Programming (arrow functions), async/await, immutable structures. Unikaj klas tam, gdzie to możliwe.
 - **Dependencies:** Minimalizuj zależności. Zawsze sprawdzaj, czy problem można rozwiązać istniejącym stackiem.
@@ -73,9 +86,10 @@ Choose the path based on task complexity:
 1.  **Init Log:** Utwórz lub otwórz `Docs/LOG.md`. Zapisuj tu każdą kluczową decyzję.
     *   Format: `[TIMESTAMP] [ACTION] -> [DECISION] (Source: file.md)`
 2.  **Load Memory:** Wczytaj `knowledge/memory.md` (PRIORITY HIGHEST).
-3.  **Smart Context Loading:**
-    *   **Core:** Wczytaj `knowledge/tech/core-principles.md` oraz `knowledge/context-process.md`.
-    *   **Stack:** Rozpoznaj stack projektu i wczytaj odpowiedni plik (np. `knowledge/tech/stack-react-ts.md`, `stack-nodejs.md` lub `stack-python.md`).
+3.  **Smart Context Loading (MANDATORY TOOL CALLS):**
+    *   **Core:** Użyj `read_file` na `knowledge/tech/core-principles.md` oraz `knowledge/context-process.md`.
+    *   **Structure:** Użyj `read_file` na odpowiednim pliku architektury (np. `knowledge/structure/modular-monolith-nextjs.md`).
+    *   **Stack:** Rozpoznaj stack i wczytaj odpowiedni plik (np. `knowledge/tech/stack-react-ts.md`).
     *   **Task:** Jeśli istnieją, wczytaj `Docs/PRP.md` i `Docs/IMPLEMENTATION.md`.
 4.  **ULTRATHINK:** (Dla Path A) Przeanalizuj plan w `IMPLEMENTATION.md`. (Dla Path B) Zrób szybki plan i działaj.
 5.  **Implementation:** Wykonuj zadania. Aktualizuj `Docs/LOG.md` przy każdej większej zmianie.
@@ -85,9 +99,10 @@ Choose the path based on task complexity:
 ---
 
 ## 📚 Documentation & Explainability
-- **JSDoc:** Wymagany dla każdej eksportowanej funkcji.
-- **Komentarze:** Wyjaśniaj *dlaczego* (Reasoning).
-- **README:** Aktualizuj w modułach po każdej zmianie API.
+**Obowiązek Dokumentacyjny (Tech & Non-Tech):**
+1.  **Tech Docs:** Każda eksportowana funkcja/klasa musi posiadać JSDoc/Docstring wyjaśniający *dlaczego* i *co* robi (nie tylko typy).
+2.  **Non-Tech Docs:** Po zakończeniu feature'a zaktualizuj odpowiednie pliki w `docs/` (np. README, User Guide, ADR), aby odzwierciedlały zmiany dla interesariuszy nietechnicznych.
+3.  **Why:** Kod bez dokumentacji to dług technologiczny od pierwszego dnia.
 
 ---
 

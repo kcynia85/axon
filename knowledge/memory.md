@@ -1,0 +1,1 @@
+- **uv dependency management**: `uv` does not support `python = "3.10"` (or similar) in the `[tool.uv]` section of `pyproject.toml`. This field should be omitted or configured differently if a specific Python version needs to be enforced by `uv`'s settings.

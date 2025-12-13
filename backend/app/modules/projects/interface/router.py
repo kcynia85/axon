@@ -1,0 +1,21 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from uuid import UUID
+from backend.app.shared.infrastructure.database import get_db
+from backend.app.modules.projects.infrastructure.repo import ProjectRepository
+from backend.app.modules.projects.domain.models import Project
+
+router = APIRouter(prefix="/projects", tags=["projects"])
+
+@router.post("/", response_model=Project)
+async def create_project(project: Project, db: AsyncSession = Depends(get_db)):
+    repo = ProjectRepository(db)
+    return await repo.create(project)
+
+@router.get("/{project_id}", response_model=Project)
+async def get_project(project_id: UUID, db: AsyncSession = Depends(get_db)):
+    repo = ProjectRepository(db)
+    project = await repo.get(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    return project
