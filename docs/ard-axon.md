@@ -208,31 +208,48 @@ Architektura fizyczna projektu podzielona jest na backend (Python/ADK) oraz fron
 
 ### 6.2. Frontend (Next.js / TypeScript)
 ```text
-/frontend
-  /app                   # Next.js App Router
-    /dashboard           # Główny panel
-    /prompts             # Zarządzanie promptami
-    /agents              # Konfiguracja Agentów
-    /common-uses         # Gotowe scenariusze
-    /workflows           # Kreator procesów
-    /llms                # Config modeli i kluczy API
-    /knowledge           # Przeglądarka bazy wiedzy
-    /tools               # Narzędzia i MCP
-    /profile             # Profil użytkownika
-    /chat                # Chat z AI (SSE Client)
-    /inbox               # AI Inbox
-    /docs                # Dokumentacja
-    layout.tsx
-    page.tsx
-  /components            # Komponenty React (Generative UI ready)
-    /ai-inbox
-    /gamification
-    /forms
-    /ui
-  /lib                   # Logika
-    /api-client
-    /hooks
-    /types
+/
+├── app/                         # Next.js App Router (framework layer)
+│   ├── dashboard/page.tsx
+│   ├── workspace/page.tsx
+│   ├── projects/page.tsx
+│   ├── brain/page.tsx           # Knowledge Base
+│   ├── workflows/page.tsx
+│   ├── inbox/page.tsx
+│   ├── settings/page.tsx
+│   ├── docs/page.tsx
+│   └── api/                     # Route Handlers (BFF)
+│
+├── src/
+│   ├── shared/                  # SHARED KERNEL (cross-domain)
+│   │   ├── domain/              # Shared Types, Value Objects, Errors
+│   │   ├── ui/                  # Design System (Shadcn), Layouts, Primitives
+│   │   └── lib/                 # Utils, API Client, Env
+│   │
+│   ├── modules/                 # BOUNDED CONTEXTS (DDD)
+│   │   ├── agents/              # Core AI Logic (Manager, Researcher, Builder)
+│   │   │   ├── domain/          # AgentConfig, ChatSession
+│   │   │   ├── application/     # Commands (RunSession), Queries (GetHistory)
+│   │   │   ├── infrastructure/  # Google ADK Adapter, Stream API
+│   │   │   └── ui/              # ChatInterface, MessageBubble, ArtifactView
+│   │   │
+│   │   ├── projects/            # Project Management
+│   │   │   ├── domain/          # Project Entity, Status
+│   │   │   ├── application/     # useCreateProject, useProjectList
+│   │   │   ├── infrastructure/  # Supabase Client
+│   │   │   └── ui/              # ProjectCard, ProjectList
+│   │   │
+│   │   ├── knowledge/           # RAG & Assets (Brain)
+│   │   │   └── ...              # (domain, infra, app, ui)
+│   │   │
+│   │   ├── workflows/           # Automation & Chain of Thought
+│   │   └── inbox/               # Artifact Review & Approvals
+│   │
+│   └── lib/                     # App-level wiring (QueryClient, Store)
+│
+├── tests/                       # E2E & Integration Tests
+├── public/
+└── next.config.js
 ```
 
 ### 6.3. Frontend UX Patterns & Performance Strategy

@@ -46,17 +46,19 @@ System eliminuje chaos, centralizując pracę w dashboardzie wspieranym przez 16
 *   **Backlog:** Lista planowanych funkcji.
 
 ### 3.7. Moduły Aplikacji (Frontend UI)
-Aplikacja udostępnia następujące dedykowane widoki (zakładki):
+Aplikacja udostępnia następujące dedykowane widoki (zakładki, zgodne z Sitemap):
 1.  **Dashboard:** Centrum dowodzenia, statusy, gamifikacja.
-2.  **Prompts:** Zarządzanie biblioteką promptów (CRUD, wersjonowanie).
-3.  **Agents:** Konfiguracja agentów, edycja System Instructions, przypisywanie narzędzi.
-4.  **Common Uses:** Biblioteka gotowych "One-click tasks" (np. "Wygeneruj raport SEO").
-5.  **Workflows:** Kreator wielokrokowych procesów (Chain of Thought), łączących różne modele i artefakty.
-6.  **LLMs:** Panel administracyjny do zarządzania kluczami API i wyborem modeli (Gemini, GPT-4, Claude).
-7.  **Knowledge:** Przeglądarka bazy wiedzy (wgląd w zindeksowane chunki i kolekcje wektorowe).
-8.  **Tools:** Katalog dostępnych narzędzi (Functions, MCPs, Search).
-9.  **Profile:** Ustawienia użytkownika.
-10. **Inbox:** Skrzynka odbiorcza na wygenerowane artefakty.
+2.  **Workspace:** Główne centrum operacyjne (Chat Interface + Artifact Split-View). Wybór roli Agenta.
+3.  **Projects:** Konteksty pracy, listy zadań i pliki projektowe.
+4.  **Inbox:** Skrzynka odbiorcza na wygenerowane artefakty (Review/Approve).
+5.  **Brain (Knowledge):** Przeglądarka bazy wiedzy (wgląd w zindeksowane chunki i kolekcje wektorowe).
+6.  **Settings:** Panel ustawień obejmujący:
+    *   **Agents:** Konfiguracja agentów, edycja System Instructions.
+    *   **Prompts:** Zarządzanie biblioteką promptów.
+    *   **LLMs:** Konfiguracja kluczy API i modeli.
+    *   **Tools:** Katalog narzędzi.
+    *   **Profile:** Ustawienia użytkownika.
+7.  **Docs:** Dokumentacja systemu i Changelog.
 
 ### 3.8. Generative UI Framework
 Strategia renderowania interaktywnych komponentów zamiast czystego tekstu.
@@ -122,7 +124,7 @@ Architektura fizyczna projektu podzielona jest na backend (Python/ADK) oraz fron
   pyproject.toml         # Konfiguracja projektu
   /app
     /api                 # Kontrolery FastAPI (Endpoints)
-      /routes            # Routing (chat, projects, docs)
+      /routes            # Routing (workspace, projects, brain, inbox)
       deps.py            # Dependency Injection
     /core
        config.py         # Zmienne środowiskowe, API Keys
@@ -149,31 +151,48 @@ Architektura fizyczna projektu podzielona jest na backend (Python/ADK) oraz fron
 
 ### 6.2. Frontend (Next.js / TypeScript)
 ```text
-/frontend
-  /app                   # Next.js App Router
-    /dashboard           # Główny panel
-    /prompts             # Zarządzanie promptami
-    /agents              # Konfiguracja Agentów
-    /common-uses         # Gotowe scenariusze
-    /workflows           # Kreator procesów
-    /llms                # Config modeli i kluczy API
-    /knowledge           # Przeglądarka bazy wiedzy
-    /tools               # Narzędzia i MCP
-    /profile             # Profil użytkownika
-    /chat                # Chat z AI (SSE Client)
-    /inbox               # AI Inbox
-    /docs                # Dokumentacja
-    layout.tsx
-    page.tsx
-  /components            # Komponenty React (Generative UI ready)
-    /ai-inbox
-    /gamification
-    /forms
-    /ui
-  /lib                   # Logika
-    /api-client
-    /hooks
-    /types
+/
+├── app/                         # Next.js App Router (framework layer)
+│   ├── dashboard/page.tsx
+│   ├── workspace/page.tsx
+│   ├── projects/page.tsx
+│   ├── brain/page.tsx           # Knowledge Base
+│   ├── workflows/page.tsx
+│   ├── inbox/page.tsx
+│   ├── settings/page.tsx
+│   ├── docs/page.tsx
+│   └── api/                     # Route Handlers (BFF)
+│
+├── src/
+│   ├── shared/                  # SHARED KERNEL (cross-domain)
+│   │   ├── domain/              # Shared Types, Value Objects, Errors
+│   │   ├── ui/                  # Design System (Shadcn), Layouts, Primitives
+│   │   └── lib/                 # Utils, API Client, Env
+│   │
+│   ├── modules/                 # BOUNDED CONTEXTS (DDD)
+│   │   ├── agents/              # Core AI Logic (Manager, Researcher, Builder)
+│   │   │   ├── domain/          # AgentConfig, ChatSession
+│   │   │   ├── application/     # Commands (RunSession), Queries (GetHistory)
+│   │   │   ├── infrastructure/  # Google ADK Adapter, Stream API
+│   │   │   └── ui/              # ChatInterface, MessageBubble, ArtifactView
+│   │   │
+│   │   ├── projects/            # Project Management
+│   │   │   ├── domain/          # Project Entity, Status
+│   │   │   ├── application/     # useCreateProject, useProjectList
+│   │   │   ├── infrastructure/  # Supabase Client
+│   │   │   └── ui/              # ProjectCard, ProjectList
+│   │   │
+│   │   ├── knowledge/           # RAG & Assets (Brain)
+│   │   │   └── ...              # (domain, infra, app, ui)
+│   │   │
+│   │   ├── workflows/           # Automation & Chain of Thought
+│   │   └── inbox/               # Artifact Review & Approvals
+│   │
+│   └── lib/                     # App-level wiring (QueryClient, Store)
+│
+├── tests/                       # E2E & Integration Tests
+├── public/
+└── next.config.js
 ```
 
 ### 6.3. Frontend UX Patterns & Performance Strategy
@@ -231,6 +250,11 @@ Struktura zoptymalizowana pod kątem minimalizacji kliknięć ("3-Click Rule").
     *   **`/brain` (Knowledge Graph - dawne Huby):**
         *   *Memories:* Asocjacyjna pamięć faktów.
         *   *Sources:* Zindeksowane dokumenty (PDF, MD).
+    *   **`/workflows` (Procesy):**
+        *   Lista: *Active Workflows*.
+        *   Akcje: *Create New Workflow* (Chain of Thought Builder).
+    *   **`/common-uses` (Szablony):**
+        *   Katalog: *One-click Tasks* (np. SEO Report, Code Audit).
     *   **`/settings`:**
         *   *LLM Config:* Klucze API.
         *   *Agent Config:* Prompty systemowe.

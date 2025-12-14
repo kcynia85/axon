@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
-import { getProjects } from "@/modules/projects/api";
-import { ProjectList } from "@/modules/projects/components/project-list";
+import { getProjects, ProjectList } from "@/modules/projects";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function DashboardPage() {

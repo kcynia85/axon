@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" fill="none">
+  <!-- Główny kolor (#1E293B) -->
+  <g color="#1D1D1F">
+
+    <!-- SYGNET (Bez zmian) -->
+    <g transform="translate(165, 68)">
+      <circle cx="60" cy="60" r="8" fill="currentColor"/>
+      <path d="M 31,82 A 36,36 0 1,1 89,82" stroke="currentColor" stroke-width="16" stroke-linecap="" fill="none" />
+    </g>
+
+    <!-- TYPOGRAFIA GŁÓWNA ("axon") -->
+    <text x="285" y="155" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-weight="700" font-size="120" letter-spacing="1" fill="currentColor">
+      axon
+    </text>
+
+    <!-- NOWY ELEMENT: TAG "alpha" -->
+    <!-- 
+      Cała grupa jest przesunięta:
+      x=585 (na prawo od napisu axon)
+      y=108 (wycentrowane optycznie w pionie względem "środka" małych liter)
+    -->
+    <g transform="translate(565, 90)" color="#878787">
+      <!-- TŁO TAGU: Zaokrąglony prostokąt -->
+      <!-- Używamy currentColor z niską przezroczystością (0.1) dla subtelnego tła -->
+      <rect x="0" y="0" width="74" height="34" rx="17" fill="currentColor" opacity="0.1" />
+      
+      <!-- TEKST NA TAGU -->
+      <!-- Wyśrodkowany wewnątrz prostokąta -->
+      <text x="37" y="23" text-anchor="middle" font-family="'Inter', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif" font-weight="500" font-size="17" fill="currentColor">
+        alpha
+      </text>
+    </g>
+
+  </g>
+</svg>

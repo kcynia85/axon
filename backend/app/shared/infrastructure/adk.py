@@ -30,18 +30,18 @@ class GoogleADK:
             return [0.0] * 768 # Mock 768 dim vector
 
     @staticmethod
-    async def generate_content(prompt: str, model_name: str = "gemini-1.5-flash") -> str:
-        model = genai.GenerativeModel(model_name)
+    async def generate_content(prompt: str, model_name: str = "gemini-1.5-flash", tools: List[any] = None) -> str:
+        model = genai.GenerativeModel(model_name, tools=tools)
         response = await model.generate_content_async(prompt)
         return response.text
 
     @staticmethod
-    async def generate_content_stream(prompt: str, model_name: str = "gemini-1.5-flash"):
+    async def generate_content_stream(prompt: str, model_name: str = "gemini-1.5-flash", tools: List[any] = None):
         """
         Generates content streaming (yields chunks).
         """
         try:
-            model = genai.GenerativeModel(model_name)
+            model = genai.GenerativeModel(model_name, tools=tools)
             response = await model.generate_content_async(prompt, stream=True)
             async for chunk in response:
                 if chunk.text:

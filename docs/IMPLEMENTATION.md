@@ -102,16 +102,25 @@ frontend/src/
 
 ### Phase 4: Frontend Implementation
 - [x] **Refactor:** Create `src/modules` structure.
+- [ ] **Refactor: Vertical Slices (Clean Arch):**
+    - [ ] **Shared Kernel:** Setup `src/shared/{domain,ui,lib}`.
+    - [ ] **Module: Projects:**
+        - [ ] Extract `domain` (Project Entity).
+        - [ ] Feature: `list-projects` (UI, App, Infra).
+        - [ ] Feature: `create-project` (UI, App, Infra).
+        - [ ] Feature: `project-details` (UI, App, Infra).
+    - [ ] **Module: Dashboard:** Refactor to `features/view-dashboard`.
+    - [ ] **Module: Brain (Knowledge):** Refactor to `features/browse-knowledge`.
+    - [ ] **Routing:** Update `app/*` to import containers from `features/*/ui`.
 - [ ] **Implement Features:**
-    - [x] Project Dashboard.
-    - [x] Chat Interface (Streaming).
-    - [ ] **Knowledge Browser (`/knowledge`):** View indexed chunks and assets.
-    - [ ] **Prompt Library (`/prompts`):** CRUD for system instructions.
-    - [ ] **Agent Config (`/agents`):** Manage roles and tools.
-    - [ ] **LLM Settings (`/llms`):** API Key management.
+    - [x] **Dashboard:** Project overview and status.
+    - [x] **Workspace (`/workspace`):** Chat Interface (Streaming) & Split View.
+    - [x] **Brain (`/brain`):** Knowledge browser (formerly `/knowledge`).
     - [ ] **Inbox (`/inbox`):** Artifact review interface.
-    - [ ] **Tools Catalog (`/tools`):** View available tools.
-    - [ ] **Docs Viewer (`/docs`):** Markdown renderer for project docs.
+    - [ ] **Settings (`/settings`):**
+        - [x] Prompts Management.
+        - [ ] Agent Config, LLMs, Tools, Profile.
+    - [x] **Docs Viewer (`/docs`):** Markdown renderer.
     - [x] **Test:** Component Tests (Vitest).
 
 ### Phase 5: Verification & Cleanup
@@ -121,10 +130,8 @@ frontend/src/
 ---
 
 ## ⚠️ Gap Analysis (Missing vs Tech PRD/ARD)
-*   **Knowledge Browser:** Not implemented yet.
 *   **Inbox UI:** Mentioned in Tech PRD but missing in PRP Plan.
 *   **Soft Delete:** Required by ARD, missing in Backend Models.
-*   **Prompts Management:** Hardcoded in Orchestrator, missing UI/DB.
 *   **Knowledge Ingestion:** `ingest.py` is a draft; missing recursive parsing & "Wisdom" path.
 
 ---

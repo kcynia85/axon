@@ -6,9 +6,16 @@
 ### 🚨 CRITICAL FRONTEND PROTOCOLS (Mandatory)
 > **Ref:** `docs/knowledge/tech/stack-react-ts.md` & `docs/knowledge/structure/modular-monolith-nextjs.md`
 
-1.  **Modular Structure:**
-    *   **Root:** `src/modules/[module_name]/` (No logic in `src/app`).
-    *   **Layers:** `domain` (Types/Zod), `infrastructure` (API/Fetch), `application` (Actions), `components` (UI).
+1.  **Modular Structure (Standard):**
+    *   **Root:** `src/modules/[module_name]/`.
+    *   **Shared Kernel:** `src/shared/{domain,ui,lib}`.
+    *   **Module Layers (Vertical Slice Architecture):**
+        *   `domain/` (Shared Domain: Entities, Errors, Types - No React).
+        *   `shared/` (Module-internal shared DTOs/mappers).
+        *   `features/[feature-name]/` (The Vertical Slice):
+            *   `ui/` (Components, Views - imports `application`).
+            *   `application/` (Hooks, Use Cases, State - imports `domain` & `infrastructure`).
+            *   `infrastructure/` (API calls, server actions).
     *   **Public API:** Cross-module imports MUST use `index.ts` barrel files.
 2.  **React Patterns:**
     *   **No Classes:** Use Functional Components and Hooks only.
@@ -93,6 +100,7 @@
 *   **Architecture Pattern:** Modular Monolith with Vertical Slice Architecture (Backend).
 *   **Backend Stack:** Python 3.10+, FastAPI, Google GenAI SDK (ADK).
 *   **Frontend Stack:** Next.js 14/15 (App Router), Tailwind CSS, Shadcn/UI, Vercel AI SDK (streamUI).
+    *   **Architecture:** **Modular Monolith + Vertical Slice Architecture**.
 *   **Database:** Supabase (PostgreSQL for relational, pgvector for semantic).
 *   **Knowledge Pipeline (ETL):** Router-based ingestion splitting content into "Wisdom" (Chunks) and "Assets" (Full Text).
 *   **State Management:**
