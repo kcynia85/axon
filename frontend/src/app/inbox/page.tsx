@@ -1,6 +1,9 @@
-import { InboxList } from "@/modules/inbox/components/inbox-list";
+import { InboxList } from "@/modules/inbox/features/review-inbox/ui/inbox-list";
+import { getInboxItems } from "@/modules/inbox/features/review-inbox/infrastructure/api";
 
-const InboxPage = () => {
+const InboxPage = async () => {
+    const items = await getInboxItems();
+
     return (
         <div className="container mx-auto py-10 px-4">
             <header className="mb-8">
@@ -11,7 +14,7 @@ const InboxPage = () => {
             </header>
 
             <main>
-                <InboxList />
+                <InboxList items={items} />
             </main>
         </div>
     );

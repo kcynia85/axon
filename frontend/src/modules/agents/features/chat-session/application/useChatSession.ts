@@ -1,13 +1,13 @@
 import { useState, useCallback } from "react";
-import { Message, AgentRole } from "../domain/types";
-import { streamChat } from "../infrastructure/agent-api";
+import { Message, AgentRole } from "../../../domain";
+import { streamChat } from "../infrastructure/api";
 
 interface UseAgentSessionProps {
     projectId: string;
     agentRole: AgentRole;
 }
 
-export const useAgentSession = ({ projectId, agentRole }: UseAgentSessionProps) => {
+export const useChatSession = ({ projectId, agentRole }: UseAgentSessionProps) => {
     const [sessionHistory, setSessionHistory] = useState<Message[]>([]);
     const [isAgentThinking, setIsAgentThinking] = useState(false);
 

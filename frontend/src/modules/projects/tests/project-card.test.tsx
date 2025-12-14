@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import { ProjectCard } from '../components/project-card'
-import { Project, ProjectStatus, HubType } from '../types'
+import { ProjectCard } from '../features/browse-projects/ui/project-card'
+import { Project, ProjectStatus, HubType } from '../domain'
 
 const mockProject: Project = {
     id: '1',

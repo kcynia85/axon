@@ -34,6 +34,14 @@
     *   **E2E:** Critical flows (Playwright/Cypress).
     *   **Rule:** No PR merge without passing tests.
 
+### 5. Offline Mock Protocol (Resilience)
+*   **Principle:** Frontend development must not be blocked by Backend availability.
+*   **Implementation:** All feature `infrastructure` layers must implement a `USE_MOCK` toggle.
+*   **Standard:**
+    *   Create `mock-api.ts` alongside real `api.ts`.
+    *   Use `shared/lib/mock-delay` to simulate network latency (300-800ms).
+    *   Mock data must respect the Domain Entity types (Zod/TS).
+
 ## 9. Implementation Notes for AI
 ### 🚨 CRITICAL PROTOCOLS
 *   **Knowledge First:** All implementation must strictly follow patterns in `docs/knowledge/tech/*` and `docs/knowledge/structure/*`. **Modern & Efficient Code Only.**
@@ -90,11 +98,11 @@
 - [ ] **Trustworthy Attribution** implemented.
 - [ ] **Project Isolation** enforced.
 - [ ] **Idempotent Execution** verified.
-- [ ] **Contract-First UI** validated.
+- [x] **Contract-First UI** validated.
 - [ ] **Fallback Resilience** implemented.
-- [ ] **Asset Integrity** preserved.
+- [x] **Asset Integrity** preserved.
 - [ ] **Continuous Documentation** updated.
-- [ ] **Regression Testing** passed.
+- [x] **Regression Testing** passed.
 
 ## 4. System Architecture & Constraints
 *   **Architecture Pattern:** Modular Monolith with Vertical Slice Architecture (Backend).
@@ -177,8 +185,6 @@
 - [x] **Tools Implementation:**
     - [x] `find_asset`: Search `assets` table via `description_embedding`.
     - [x] `get_asset`: Select `content` from `assets` table via `slug`.
-    - [ ] `integration_figma`: Extract structure/content from Figma files (MVP).
-    - [ ] `integration_notion`: Sync docs/notes from Notion (MVP).
 - [x] **Streaming Protocol:** Ensure the SSE implementation sends structured events.
 - [ ] **Generative UI:** Implement `streamUI` via Vercel AI SDK (Contract-First).
 - [x] **Skeleton UI:** When implementing the Chat Interface, ensure the "Thinking" state is visualized with a Skeleton Loader.
@@ -188,10 +194,10 @@
 
 - [x] **`/dashboard`:** Command center with recent activity (Implemented).
 - [x] **`/workspace`:** Main Operation Center (Chat Interface + Artifact Split-View).
-- [ ] **`/projects`:** Context management and file lists.
-- [ ] **`/inbox`:** Artifact review inbox (Review/Approve).
+- [x] **`/projects`:** Context management and file lists.
+- [x] **`/inbox`:** Artifact review inbox (Review/Approve).
 - [x] **`/brain`:** Knowledge Base browser (Vectors/Assets) - *formerly `/knowledge`*.
-- [ ] **`/workflows`:** Active Workflows & Chain of Thought Builder.
-- [ ] **`/common-uses`:** One-click Tasks & Template Catalog.
+- [x] **`/workflows`:** Active Workflows & Chain of Thought Builder.
+- [x] **`/common-uses`:** One-click Tasks & Template Catalog.
 - [ ] **`/settings`:** Configuration Hub (Agents, Prompts, LLMs, Tools, Profile).
 - [x] **`/docs`:** Documentation viewer (Auto-generated).

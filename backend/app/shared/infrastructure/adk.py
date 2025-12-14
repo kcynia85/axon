@@ -1,15 +1,31 @@
 import google.generativeai as genai
-from typing import List
+from google.api_core.exceptions import ResourceExhausted, ServiceUnavailable, InternalServerError
+from typing import List, AsyncGenerator
 from backend.app.config import settings
 
 # Initialize GenAI
 if settings.GOOGLE_API_KEY:
     genai.configure(api_key=settings.GOOGLE_API_KEY)
 
+class FallbackProvider:
+    """
+    Mock adapter for a secondary LLM (e.g. GPT-4).
+    In a real app, this would use openai/anthropic SDKs.
+    """
+    @staticmethod
+    async def generate(prompt: str) -> str:
+        return f"[FALLBACK GPT-4] Processed prompt: {prompt[:50]}..."
+
+    @staticmethod
+    async def generate_stream(prompt: str) -> AsyncGenerator[str, None]:
+        yield "[FALLBACK GPT-4] "
+        yield "Processed "
+        yield "prompt..."
+
 class GoogleADK:
     """
     Wrapper for Google GenAI SDK (ADK - AI Development Kit).
-    Handles Embeddings and Chat Generation.
+    Handles Embeddings and Chat Generation with Fallback Resilience.
     """
     
     @staticmethod
@@ -31,9 +47,16 @@ class GoogleADK:
 
     @staticmethod
     async def generate_content(prompt: str, model_name: str = "gemini-1.5-flash", tools: List[any] = None) -> str:
-        model = genai.GenerativeModel(model_name, tools=tools)
-        response = await model.generate_content_async(prompt)
-        return response.text
+        try:
+            model = genai.GenerativeModel(model_name, tools=tools)
+            response = await model.generate_content_async(prompt)
+            return response.text
+        except (ResourceExhausted, ServiceUnavailable, InternalServerError) as e:
+            print(f"Gemini API Error: {e}. Switching to Fallback Provider.")
+            return await FallbackProvider.generate(prompt)
+        except Exception as e:
+            print(f"Unexpected Error in ADK: {e}")
+            raise e
 
     @staticmethod
     async def generate_content_stream(prompt: str, model_name: str = "gemini-1.5-flash", tools: List[any] = None):
@@ -46,6 +69,10 @@ class GoogleADK:
             async for chunk in response:
                 if chunk.text:
                     yield chunk.text
+        except (ResourceExhausted, ServiceUnavailable, InternalServerError) as e:
+            print(f"Gemini API Stream Error: {e}. Switching to Fallback Provider.")
+            async for chunk in FallbackProvider.generate_stream(prompt):
+                yield chunk
         except Exception as e:
             print(f"Error generating stream: {e}")
             yield f"Error: {str(e)}"

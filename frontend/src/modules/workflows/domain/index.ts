@@ -1,6 +1,8 @@
 export interface Workflow {
     id: string;
-    name: string;
-    steps: any[];
-    status: "IDLE" | "RUNNING" | "COMPLETED";
+    title: string;
+    description: string;
+    status: 'ACTIVE' | 'DRAFT' | 'ARCHIVED';
+    stepsCount: number;
+    lastRun?: string;
 }

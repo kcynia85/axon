@@ -1,4 +1,4 @@
-import { AssetList } from "@/modules/knowledge/components/asset-list";
+import { AssetList } from "@/modules/knowledge";
 
 const KnowledgePage = () => {
     return (

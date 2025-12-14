@@ -1,38 +1,8 @@
-import { InboxItem } from "../types";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { InboxItem } from "../../../domain";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Code, Image as ImageIcon, CheckCircle, XCircle, Clock } from "lucide-react";
-
-const MOCK_INBOX: InboxItem[] = [
-    {
-        id: "1",
-        title: "Q3 Marketing Strategy Draft",
-        type: "DOCUMENT",
-        status: "REVIEW",
-        projectName: "Brand Awareness Q3",
-        createdAt: "2024-05-20T10:30:00Z",
-        preview: "Here is the proposed strategy for Q3 based on competitor analysis..."
-    },
-    {
-        id: "2",
-        title: "Landing Page Hero Section",
-        type: "CODE",
-        status: "DRAFT",
-        projectName: "Website Redesign",
-        createdAt: "2024-05-19T15:45:00Z",
-        preview: "export const Hero = () => { return <section className='h-screen'>...</section> }"
-    },
-    {
-        id: "3",
-        title: "Social Media Assets",
-        type: "IMAGE",
-        status: "REVIEW",
-        projectName: "Product Launch",
-        createdAt: "2024-05-18T09:00:00Z",
-        preview: "[Image Placeholder]"
-    }
-];
+import { FileText, Code, Image as ImageIcon, CheckCircle, XCircle } from "lucide-react";
 
 const getIcon = (type: string) => {
     switch(type) {
@@ -43,10 +13,22 @@ const getIcon = (type: string) => {
     }
 };
 
-export const InboxList = () => {
+interface InboxListProps {
+    items: InboxItem[];
+}
+
+export const InboxList = ({ items }: InboxListProps) => {
+    if (items.length === 0) {
+        return (
+            <div className="text-center py-10 text-muted-foreground">
+                No items to review.
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-4">
-            {MOCK_INBOX.map((item) => {
+            {items.map((item) => {
                 const Icon = getIcon(item.type);
                 return (
                     <Card key={item.id} className="flex flex-col md:flex-row items-start md:items-center p-4 gap-4">
@@ -65,7 +47,7 @@ export const InboxList = () => {
                                 {item.projectName} • {new Date(item.createdAt).toLocaleDateString()}
                             </p>
                             <p className="text-sm text-foreground/80 line-clamp-1 italic border-l-2 pl-2 border-primary/20">
-                                "{item.preview}"
+                                &quot;{item.preview}&quot;
                             </p>
                         </div>
 

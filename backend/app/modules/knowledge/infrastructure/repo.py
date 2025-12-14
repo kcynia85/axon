@@ -1,6 +1,6 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 from typing import Optional, List
 from backend.app.modules.knowledge.domain.models import Asset
 from backend.app.modules.knowledge.infrastructure.tables import AssetTable
@@ -21,21 +21,25 @@ class AssetRepository:
         return Asset.model_validate(db_asset, from_attributes=True)
 
     async def get(self, asset_id: UUID) -> Optional[Asset]:
-        result = await self.session.execute(select(AssetTable).where(AssetTable.id == asset_id))
+        result = await self.session.execute(
+            select(AssetTable).where(AssetTable.id == asset_id, AssetTable.is_deleted == False)
+        )
         db_asset = result.scalar_one_or_none()
         if db_asset:
             return Asset.model_validate(db_asset, from_attributes=True)
         return None
 
     async def get_by_slug(self, slug: str) -> Optional[Asset]:
-        result = await self.session.execute(select(AssetTable).where(AssetTable.slug == slug))
+        result = await self.session.execute(
+            select(AssetTable).where(AssetTable.slug == slug, AssetTable.is_deleted == False)
+        )
         db_asset = result.scalar_one_or_none()
         if db_asset:
             return Asset.model_validate(db_asset, from_attributes=True)
         return None
 
     async def list_assets(self, limit: int = 100, offset: int = 0, asset_type: Optional[str] = None) -> List[Asset]:
-        query = select(AssetTable).limit(limit).offset(offset).order_by(AssetTable.created_at.desc())
+        query = select(AssetTable).where(AssetTable.is_deleted == False).limit(limit).offset(offset).order_by(AssetTable.created_at.desc())
         
         if asset_type:
             query = query.where(AssetTable.type == asset_type)
@@ -52,7 +56,7 @@ class AssetRepository:
 
         query = (
             update(AssetTable)
-            .where(AssetTable.id == asset_id)
+            .where(AssetTable.id == asset_id, AssetTable.is_deleted == False)
             .values(**valid_fields)
             .execution_options(synchronize_session="fetch")
         )
@@ -61,7 +65,13 @@ class AssetRepository:
         return await self.get(asset_id)
 
     async def delete(self, asset_id: UUID) -> bool:
-        query = delete(AssetTable).where(AssetTable.id == asset_id)
+        # Soft delete
+        query = (
+            update(AssetTable)
+            .where(AssetTable.id == asset_id)
+            .values(is_deleted=True)
+            .execution_options(synchronize_session="fetch")
+        )
         result = await self.session.execute(query)
         await self.session.commit()
         return result.rowcount > 0

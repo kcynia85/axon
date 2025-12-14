@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
-import { ChatSessionView } from "@/modules/agents/components/chat-session-view";
-import { AgentRole } from "@/modules/agents/types";
+import { useState } from "react";
+import { ChatSessionView, AgentRole } from "@/modules/agents";
 
 export default function WorkspacePage() {
     // For MVP, we mock the project ID. In real app, this comes from params/context.

@@ -38,6 +38,9 @@ async def test_run_turn_stream_simple_agent():
         for chunk in mock_chunks:
             yield chunk
 
+    # Mock ContextComposer to avoid DB call
+    orchestrator._context_composer.build_context = AsyncMock(return_value="Mocked Project Context")
+
     with patch('backend.app.shared.infrastructure.adk.GoogleADK.generate_content_stream', side_effect=mock_stream_generator):
         
         received_chunks = []
@@ -62,6 +65,9 @@ async def test_run_turn_loop_agent():
     orchestrator = AgentOrchestrator()
     project_id = uuid4()
     session = await orchestrator.create_session(project_id, AgentRole.WRITER)
+    
+    # Mock ContextComposer to avoid DB call
+    orchestrator._context_composer.build_context = AsyncMock(return_value="Mocked Project Context")
     
     # Mock GoogleADK.generate_content for non-streaming calls inside the loop
     # We mock it to return a string so the loop runs.

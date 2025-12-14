@@ -1,4 +1,4 @@
-import { Scenario } from "../types";
+import { Scenario } from "../../../domain";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,56 +7,10 @@ import {
     Code2, 
     Megaphone, 
     Mail, 
-    Presentation, 
-    Bug,
     PenTool,
+    Bug,
     Search
 } from "lucide-react";
-
-const MOCK_SCENARIOS: Omit<Scenario, 'icon'>[] = [
-    {
-        id: "seo-report",
-        title: "SEO Audit Report",
-        description: "Generate a comprehensive SEO audit for a given URL, analyzing meta tags, performance, and keywords.",
-        category: "Marketing",
-        promptTemplate: "Analyze the SEO performance of {url}..."
-    },
-    {
-        id: "code-review",
-        title: "Code Review",
-        description: "Review a code snippet for potential bugs, security issues, and style violations.",
-        category: "Development",
-        promptTemplate: "Review the following code for bugs..."
-    },
-    {
-        id: "social-post",
-        title: "Social Media Post",
-        description: "Create engaging social media content for LinkedIn, Twitter, or Instagram based on a topic.",
-        category: "Marketing",
-        promptTemplate: "Write a LinkedIn post about {topic}..."
-    },
-    {
-        id: "cold-email",
-        title: "Cold Email Sequence",
-        description: "Draft a 3-step cold email sequence for outreach to potential clients.",
-        category: "Sales",
-        promptTemplate: "Write a cold email sequence for..."
-    },
-    {
-        id: "product-desc",
-        title: "Product Description",
-        description: "Generate persuasive product descriptions for e-commerce listings.",
-        category: "Product",
-        promptTemplate: "Describe a product with features..."
-    },
-    {
-        id: "bug-report",
-        title: "Bug Report Formatter",
-        description: "Turn unstructured user feedback into a structured Jira bug report.",
-        category: "Product",
-        promptTemplate: "Format this feedback into a bug report..."
-    }
-];
 
 // Helper to map icons since we can't store components in JSON easily
 const getIcon = (id: string) => {
@@ -71,10 +25,14 @@ const getIcon = (id: string) => {
     }
 };
 
-export const ScenarioList = () => {
+interface ScenarioListProps {
+    items: Scenario[];
+}
+
+export const ScenarioList = ({ items }: ScenarioListProps) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {MOCK_SCENARIOS.map((scenario) => {
+            {items.map((scenario) => {
                 const Icon = getIcon(scenario.id);
                 return (
                     <Card key={scenario.id} className="flex flex-col hover:border-primary/50 transition-colors cursor-pointer group">

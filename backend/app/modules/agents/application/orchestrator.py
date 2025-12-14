@@ -3,6 +3,9 @@ from uuid import UUID
 from typing import Dict
 from backend.app.modules.agents.domain.models import ChatSession, Message
 from backend.app.modules.agents.domain.enums import AgentRole
+from backend.app.modules.agents.application.context_composer import ContextComposer
+from backend.app.modules.knowledge.application.rag import RAGService
+from backend.app.shared.infrastructure.database import AsyncSessionLocal
 from backend.app.shared.utils.time import now_utc
 from backend.app.shared.infrastructure.adk_agents import (
     agent, sequential, loop, ToolContext, AgentRunner
@@ -21,11 +24,38 @@ def exit_loop(tool_context: ToolContext):
     tool_context.actions.escalate = True
     return {}
 
+async def search_knowledge_base(tool_context: ToolContext, query: str):
+    """
+    Searches the internal Knowledge Base for documents and facts.
+    Use this to find information about the project, technology, or best practices.
+    """
+    print(f"[Tool Call] search_knowledge_base: {query}")
+    try:
+        async with AsyncSessionLocal() as session:
+            service = RAGService(session)
+            results = await service.search_knowledge(query)
+            
+        if not results:
+            return "No relevant information found in the Knowledge Base."
+
+        formatted = f"Search Results for '{query}':\n"
+        for i, res in enumerate(results):
+            # Adapt to vecs result structure (usually dict with 'metadata')
+            meta = res.get('metadata', {}) if isinstance(res, dict) else getattr(res, 'metadata', {})
+            source = meta.get('source', 'Unknown File')
+            content = meta.get('content', '')
+            formatted += f"SOURCE [{i+1}] (File: {source}):\n{content}\n---\n"
+        
+        return formatted
+    except Exception as e:
+        return f"Error searching knowledge base: {str(e)}"
+
 # --- Orchestrator ---
 
 class AgentOrchestrator:
     def __init__(self):
         self._agents = self._build_agents()
+        self._context_composer = ContextComposer()
 
     def _build_agents(self) -> Dict[str, AgentRunner]:
         """
@@ -40,9 +70,19 @@ class AgentOrchestrator:
             instruction="""
             You are an expert Researcher in the RAGAS system.
             Your goal is to find relevant information to answer the user's request.
-            Current Context: {user_input}
+            
+            GLOBAL PROJECT CONTEXT:
+            {global_context}
+            
+            INSTRUCTIONS:
+            1. Use `search_knowledge_base` to find facts.
+            2. When answering, YOU MUST CITATE YOUR SOURCES inline using [Source ID]. 
+               Example: "The project uses Python [Source 1]."
+            3. If no information is found, state that clearly.
+            
+            Current Request: {user_input}
             """,
-            tools=[], 
+            tools=[search_knowledge_base], 
             output_key="research_output"
         )
 
@@ -53,7 +93,12 @@ class AgentOrchestrator:
             description="Generates code and artifacts.",
             instruction="""
             You are an expert Builder/Developer.
-            Generate clean, production-ready code or content based on:
+            Generate clean, production-ready code or content based on the research.
+            
+            GLOBAL PROJECT CONTEXT:
+            {global_context}
+            
+            Research Output:
             {research_output}
             """,
             tools=[],
@@ -105,6 +150,9 @@ class AgentOrchestrator:
             description="Project Manager.",
             instruction="""
             You are the Project Manager. Coordinate tasks.
+            
+            GLOBAL PROJECT CONTEXT:
+            {global_context}
             """,
             output_key="manager_output"
         )
@@ -128,7 +176,10 @@ class AgentOrchestrator:
         session.history.append(user_msg)
         session.updated_at = now_utc()
         
-        # 2. Select Agent
+        # 2. Context Injection
+        global_context = await self._context_composer.build_context(session.project_id)
+        
+        # 3. Select Agent
         active_agent = self._agents.get(session.agent_role, self._agents[AgentRole.MANAGER])
         
         full_response = ""
@@ -136,6 +187,7 @@ class AgentOrchestrator:
         # Context Setup
         context_data = {
             "user_input": user_input,
+            "global_context": global_context,
             "current_document": user_input,
             "research_output": "(No research yet)",
             "criticism": "(No criticism yet)"
@@ -143,7 +195,7 @@ class AgentOrchestrator:
         tool_ctx = ToolContext(data=context_data, agent_name=str(session.agent_role))
 
         try:
-            # 3. Run Agent
+            # 4. Run Agent
             # Check if the function object has a 'stream' attribute (attached by 'agent' factory)
             if hasattr(active_agent, 'stream'):
                 async for chunk in active_agent.stream(tool_ctx):
@@ -170,6 +222,6 @@ class AgentOrchestrator:
             full_response += err_msg
             yield json.dumps({"type": "error", "content": err_msg})
 
-        # 4. Save Response
+        # 5. Save Response
         model_msg = Message(role="model", content=full_response, timestamp=now_utc())
         session.history.append(model_msg)

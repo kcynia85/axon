@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { ChatSessionView } from '../components/chat-session-view'
-import { AgentRole } from '../types'
-import * as useAgentSessionHook from '../hooks/use-agent-session'
+import { ChatSessionView } from '../features/chat-session/ui/chat-session-view'
+import { AgentRole } from '../domain'
+import * as useChatSessionHook from '../features/chat-session/application/useChatSession'
 
 // Mock the hook
 vi.mock('../hooks/use-agent-session', () => ({
@@ -16,7 +16,7 @@ describe('ChatSessionView', () => {
     })
 
     it('renders input and header', () => {
-        (useAgentSessionHook.useAgentSession as any).mockReturnValue({
+        (useChatSessionHook.useChatSession as any).mockReturnValue({
             sessionHistory: [],
             submitUserQuery: vi.fn(),
             isAgentThinking: false

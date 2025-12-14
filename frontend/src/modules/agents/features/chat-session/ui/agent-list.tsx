@@ -1,5 +1,5 @@
-import { AgentRole, AgentConfig } from "../types";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { AgentRole, AgentConfig } from "../../../domain";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Settings2, Bot } from "lucide-react";

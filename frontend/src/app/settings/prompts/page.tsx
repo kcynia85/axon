@@ -1,4 +1,4 @@
-import { PromptList } from "@/modules/prompts/components/prompt-list";
+import { PromptList } from "@/modules/prompts";
 
 const PromptsPage = () => {
     return (

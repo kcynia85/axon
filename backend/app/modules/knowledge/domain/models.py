@@ -13,6 +13,7 @@ class Asset(BaseModel):
     domain: str # design, discovery, etc.
     metadata: Dict[str, Any] = Field(default_factory=dict)
     # description_embedding is handled by DB/Vector store, not usually in full Pydantic model unless needed
+    is_deleted: bool = False
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
 

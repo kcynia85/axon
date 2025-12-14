@@ -132,6 +132,7 @@ Pierwsza linia obrony (Defense in Depth).
 ### 5.5. Context Composer (Middleware)
 - **Funkcja:** Implementacja "Context Sandwich" (Instrukcja -> Dane -> Przypomnienie).
 - **Kompresja:** Skracanie historii czatu przed wysłaniem do modelu (Token Efficiency).
+Mechanizm doboru i wstrzykiwania odpowiednich fragmentów kontekstu (Pamięć, RAG, Projekt) w zależności od limitu tokenów modelu (truncation strategy).
 
 ### 5.6. Workflow Engine
 - Obsługa interakcji Chat (SSE Streaming).
@@ -152,13 +153,6 @@ Strategia testowania systemów niedeterministycznych ("Testing Trophy").
 
 *   **Backend Validation:** Walidacja strukturalna (Zod) dla wszystkich odpowiedzi JSON. W przypadku błędu walidacji, system uruchamia procedurę "Self-Correction" (ponowne zapytanie do modelu z informacją o błędzie).
 
-
-
-### 5.9. Data Integrity & Cost Management
-
-*   **Data Lineage (Citations):** Każdy wygenerowany fakt musi posiadać metadane źródłowe (`source_url`, `chunk_index`). Backend przechowuje te metadane w odpowiedzi API, a frontend wyświetla je jako przypisy.
-
-*   **Token Bucket Rate Limiting:** Ochrona przed nadmiernym zużyciem kosztów API. Limitowanie na poziomie tokenów (TPM - Tokens Per Minute), a nie tylko requestów (RPM). Estymacja kosztu zapytania (`tiktoken`) przed wysłaniem do LLM.
 
 ### 5.9. Data Integrity & Cost Management
 *   **Data Lineage (Citations):** Każdy wygenerowany fakt musi posiadać metadane źródłowe (`source_url`, `chunk_index`). Backend przechowuje te metadane w odpowiedzi API, a frontend wyświetla je jako przypisy.

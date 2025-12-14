@@ -1,7 +1,13 @@
 import { API_BASE_URL, endpoints } from "@/lib/api-client/config";
 import { Project } from "../../../domain";
+import { isMockMode } from "@/shared/infrastructure/mock-adapter";
+import { getProjectsMock, createProjectMock } from "./mock-api";
 
 export const getProjects = async (): Promise<Project[]> => {
+    if (isMockMode()) {
+        return getProjectsMock();
+    }
+
     try {
         const res = await fetch(`${API_BASE_URL}${endpoints.projects.list}`, {
             cache: "no-store",
@@ -20,6 +26,10 @@ export const getProjects = async (): Promise<Project[]> => {
 };
 
 export const createProject = async (data: Partial<Project>): Promise<Project> => {
+    if (isMockMode()) {
+        return createProjectMock(data);
+    }
+
     const res = await fetch(`${API_BASE_URL}${endpoints.projects.list}`, {
         method: "POST",
         headers: {

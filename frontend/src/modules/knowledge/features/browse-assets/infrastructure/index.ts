@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client/config";
-import { Asset } from "../domain";
+import { Asset } from "../../../domain";
 
 export const getAssets = async (limit = 100, offset = 0, type?: string): Promise<Asset[]> => {
     let url = `/knowledge/assets?limit=${limit}&offset=${offset}`;

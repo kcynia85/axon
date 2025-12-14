@@ -1,6 +1,8 @@
 import React from "react";
-import { cn } from "@/lib/utils";
-import { Message } from "../types";
+import { cn } from "@/shared/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Message } from "../../../domain";
+import { User, Bot } from "lucide-react";
 
 interface SessionMessageBubbleProps {
     message: Message;

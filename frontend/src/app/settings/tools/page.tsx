@@ -1,4 +1,4 @@
-import { ToolCatalog } from "@/modules/tools/components/tool-catalog";
+import { ToolCatalog } from "@/modules/tools";
 
 const ToolsPage = () => {
     return (

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import { ProjectList } from '../components/project-list'
-import { Project, ProjectStatus, HubType } from '../types'
+import { ProjectList } from '../features/browse-projects/ui/project-list'
+import { Project, ProjectStatus, HubType } from '../domain'
 
 describe('ProjectList', () => {
     it('renders empty state when no projects', () => {

@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
-import { SessionMessageBubble } from '../components/session-message-bubble'
-import { Message } from '../types'
+import { SessionMessageBubble } from '../features/chat-session/ui/session-message-bubble'
+import { Message } from '../domain'
+import { AgentRole } from '../domain'
 
 describe('SessionMessageBubble', () => {
     it('renders user message correctly', () => {
