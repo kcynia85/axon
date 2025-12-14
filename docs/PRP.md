@@ -92,7 +92,7 @@
 ## 4. System Architecture & Constraints
 *   **Architecture Pattern:** Modular Monolith with Vertical Slice Architecture (Backend).
 *   **Backend Stack:** Python 3.10+, FastAPI, Google GenAI SDK (ADK).
-*   **Frontend Stack:** Next.js 14/15 (App Router), Tailwind CSS, Shadcn/UI.
+*   **Frontend Stack:** Next.js 14/15 (App Router), Tailwind CSS, Shadcn/UI, Vercel AI SDK (streamUI).
 *   **Database:** Supabase (PostgreSQL for relational, pgvector for semantic).
 *   **Knowledge Pipeline (ETL):** Router-based ingestion splitting content into "Wisdom" (Chunks) and "Assets" (Full Text).
 *   **State Management:**
@@ -169,21 +169,21 @@
 - [x] **Tools Implementation:**
     - [x] `find_asset`: Search `assets` table via `description_embedding`.
     - [x] `get_asset`: Select `content` from `assets` table via `slug`.
+    - [ ] `integration_figma`: Extract structure/content from Figma files (MVP).
+    - [ ] `integration_notion`: Sync docs/notes from Notion (MVP).
 - [x] **Streaming Protocol:** Ensure the SSE implementation sends structured events.
-- [ ] **Skeleton UI:** When implementing the Chat Interface, ensure the "Thinking" state is visualized with a Skeleton Loader.
+- [ ] **Generative UI:** Implement `streamUI` via Vercel AI SDK (Contract-First).
+- [x] **Skeleton UI:** When implementing the Chat Interface, ensure the "Thinking" state is visualized with a Skeleton Loader.
 
 ### 9.2 Frontend Views (MVP Checklist)
 > **Source:** `docs/tech-prd-axon.md` (Section 3.7 & 6.2)
 
 - [x] **`/dashboard`:** Command center with recent activity (Implemented).
-- [x] **`/chat`:** AI Chat Interface with Streaming (Implemented).
-- [ ] **`/prompts`:** Prompt Library management (CRUD).
-- [ ] **`/agents`:** Agent configuration and tool assignment.
-- [ ] **`/common-uses`:** Ready-made scenarios/tasks library.
-- [ ] **`/workflows`:** Chain of Thought process creator.
-- [ ] **`/llms`:** API Keys and Model configuration.
-- [ ] **`/knowledge`:** Knowledge Base browser (Vectors/Assets).
-- [ ] **`/tools`:** Tools and MCP catalog.
-- [ ] **`/profile`:** User settings.
-- [ ] **`/inbox`:** Artifact review inbox.
-- [ ] **`/docs`:** Documentation viewer (Auto-generated).
+- [x] **`/workspace`:** Main Operation Center (Chat Interface + Artifact Split-View).
+- [ ] **`/projects`:** Context management and file lists.
+- [ ] **`/inbox`:** Artifact review inbox (Review/Approve).
+- [x] **`/brain`:** Knowledge Base browser (Vectors/Assets) - *formerly `/knowledge`*.
+- [ ] **`/workflows`:** Active Workflows & Chain of Thought Builder.
+- [ ] **`/common-uses`:** One-click Tasks & Template Catalog.
+- [ ] **`/settings`:** Configuration Hub (Agents, Prompts, LLMs, Tools, Profile).
+- [x] **`/docs`:** Documentation viewer (Auto-generated).
