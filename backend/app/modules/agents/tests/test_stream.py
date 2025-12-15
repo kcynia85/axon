@@ -3,8 +3,7 @@ import json
 from uuid import uuid4
 from fastapi.testclient import TestClient
 from backend.main import app
-from unittest.mock import AsyncMock, patch
-from backend.app.modules.agents.domain.enums import AgentRole
+from unittest.mock import patch
 
 client = TestClient(app)
 

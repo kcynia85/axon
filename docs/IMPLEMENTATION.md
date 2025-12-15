@@ -90,7 +90,7 @@ frontend/src/
     - [x] `domain/models.py`: `AgentConfig`, `ChatSession`.
     - [x] `application/orchestrator.py`: Router Logic & Fallback.
     - [x] **Test:** Mock Agent Orchestration.
-    - [ ] **Doc:** Document Agent Strategy in `docs/agents.md`.
+    - [x] **Doc:** Document Agent Strategy in `docs/agents.md`.
 
 ### Phase 3: Application Logic & RAG
 - [ ] **RAG Implementation:**
@@ -133,7 +133,7 @@ frontend/src/
     - [x] **Context Injection:** Middleware to inject Project/Memory context into System Prompt.
     - [x] **Citations:** Implement citation logic in `ChatSession` (Trustworthy Attribution).
 - [ ] **Infrastructure:**
-    - [ ] **Workflow Engine:** Setup Inngest (or mock for local development) for durable execution.
+    - [x] **Workflow Engine:** Setup Inngest (or mock for local development) for durable execution.
     - [ ] **Semantic Cache:** Implement Redis/Vector caching layer for cost optimization.
 - [x] **Generative UI:**
     - [x] **StreamUI:** Implement Vercel AI SDK `streamUI` for dynamic React components.
@@ -145,8 +145,8 @@ frontend/src/
 
 
 ### Phase X: Verification & Cleanup
-- [ ] **Testing:** Run Full Regression Suite.
-- [ ] **Documentation:** Complete API Docs & README.
+- [x] **Testing:** Run Full Regression Suite.
+- [x] **Documentation:** Complete API Docs & README.
 
 ---
 

@@ -9,7 +9,7 @@ from backend.app.modules.knowledge.application.rag import RAGService
 from backend.app.shared.infrastructure.database import AsyncSessionLocal
 from backend.app.shared.utils.time import now_utc
 from backend.app.shared.infrastructure.adk_agents import (
-    agent, sequential, loop, ToolContext, AgentRunner
+    agent, loop, ToolContext, AgentRunner
 )
 
 # Configuration Constants

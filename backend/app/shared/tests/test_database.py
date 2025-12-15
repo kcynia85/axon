@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 from backend.app.shared.infrastructure.database import get_db
 
 @pytest.mark.asyncio

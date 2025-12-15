@@ -8,7 +8,7 @@ async def test_get_asset():
     mock_session = AsyncMock()
     
     # Patch get_vecs_client to avoid real DB connection in KnowledgeVectorStore init
-    with patch('backend.app.modules.knowledge.infrastructure.repo.get_vecs_client') as mock_vecs:
+    with patch('backend.app.modules.knowledge.infrastructure.repo.get_vecs_client') as _mock_vecs:
         service = RAGService(mock_session)
         
         # Mock Repo response

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from backend.app.modules.agents.domain.enums import AgentRole, ModelTier
 from backend.app.shared.utils.time import now_utc
 

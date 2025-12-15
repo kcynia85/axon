@@ -1,6 +1,6 @@
 import pytest
 import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 from backend.app.modules.agents.application.orchestrator import AgentOrchestrator
 from backend.app.modules.agents.domain.enums import AgentRole
@@ -73,7 +73,7 @@ async def test_run_turn_loop_agent():
     # We mock it to return a string so the loop runs.
     # We won't simulate the full exit_loop logic here, just that it runs and returns.
     
-    with patch('backend.app.shared.infrastructure.adk.GoogleADK.generate_content', return_value="Refined Content") as mock_gen:
+    with patch('backend.app.shared.infrastructure.adk.GoogleADK.generate_content', return_value="Refined Content") as _mock_gen:
         
         received_chunks = []
         async for chunk_json in orchestrator.run_turn_stream(session, "Write something"):

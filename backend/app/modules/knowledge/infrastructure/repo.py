@@ -1,6 +1,6 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete, update
+from sqlalchemy import select, update
 from typing import Optional, List
 from backend.app.modules.knowledge.domain.models import Asset
 from backend.app.modules.knowledge.infrastructure.tables import AssetTable
@@ -22,7 +22,7 @@ class AssetRepository:
 
     async def get(self, asset_id: UUID) -> Optional[Asset]:
         result = await self.session.execute(
-            select(AssetTable).where(AssetTable.id == asset_id, AssetTable.is_deleted == False)
+            select(AssetTable).where(AssetTable.id == asset_id, AssetTable.is_deleted.is_(False))
         )
         db_asset = result.scalar_one_or_none()
         if db_asset:
@@ -31,7 +31,7 @@ class AssetRepository:
 
     async def get_by_slug(self, slug: str) -> Optional[Asset]:
         result = await self.session.execute(
-            select(AssetTable).where(AssetTable.slug == slug, AssetTable.is_deleted == False)
+            select(AssetTable).where(AssetTable.slug == slug, AssetTable.is_deleted.is_(False))
         )
         db_asset = result.scalar_one_or_none()
         if db_asset:
@@ -39,7 +39,7 @@ class AssetRepository:
         return None
 
     async def list_assets(self, limit: int = 100, offset: int = 0, asset_type: Optional[str] = None) -> List[Asset]:
-        query = select(AssetTable).where(AssetTable.is_deleted == False).limit(limit).offset(offset).order_by(AssetTable.created_at.desc())
+        query = select(AssetTable).where(AssetTable.is_deleted.is_(False)).limit(limit).offset(offset).order_by(AssetTable.created_at.desc())
         
         if asset_type:
             query = query.where(AssetTable.type == asset_type)
@@ -56,7 +56,7 @@ class AssetRepository:
 
         query = (
             update(AssetTable)
-            .where(AssetTable.id == asset_id, AssetTable.is_deleted == False)
+            .where(AssetTable.id == asset_id, AssetTable.is_deleted.is_(False))
             .values(**valid_fields)
             .execution_options(synchronize_session="fetch")
         )

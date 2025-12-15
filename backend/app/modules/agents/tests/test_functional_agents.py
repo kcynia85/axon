@@ -104,7 +104,7 @@ async def test_loop_agent_exit():
         
         # Run
         initial_ctx = ToolContext(data={"doc": "Draft v1"})
-        result = await flow(initial_ctx)
+        _result = await flow(initial_ctx)
         
         # Verify
         # Iteration 1: Critic "Bad", Refiner "Better"

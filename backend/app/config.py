@@ -1,4 +1,5 @@
 # backend/app/config.py
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -12,6 +13,10 @@ class Settings(BaseSettings):
 
     # AI
     GOOGLE_API_KEY: str
+
+    # Inngest (Workflows)
+    INNGEST_SIGNING_KEY: Optional[str] = None
+    INNGEST_EVENT_KEY: Optional[str] = None
     
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
 

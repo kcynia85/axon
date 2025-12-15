@@ -115,7 +115,7 @@ def sequential(
 
         for agent_func in sub_agents:
             # Execute sub-agent
-            result = await agent_func(ctx)
+            _result = await agent_func(ctx)
             
             # Context is updated in place by the agent if it uses ToolContext
             # If plain dict was returned/used (legacy), we might need to update
