@@ -1,7 +1,9 @@
 import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted, ServiceUnavailable, InternalServerError
-from typing import List, AsyncGenerator
+from typing import List, AsyncGenerator, Optional
 from backend.app.config import settings
+import asyncio
+from backend.app.shared.infrastructure.semantic_cache import SemanticCache
 
 # Initialize GenAI
 if settings.GOOGLE_API_KEY:
@@ -71,24 +73,54 @@ class GoogleADK:
             return [0.0] * 768 # Mock 768 dim vector
 
     @staticmethod
-    async def generate_content(prompt: str, model_name: str = "gemini-1.5-flash", tools: List[any] = None) -> str:
+    async def generate_content(prompt: str, model_name: str = "gemini-1.5-flash", tools: List[any] = None, use_cache: bool = True) -> str:
         """
         Generates content using the specified Gemini model.
         
         Handles common API errors (Rate Limit, Server Error) by switching to the FallbackProvider.
+        Includes Semantic Caching to reduce costs.
         
         Args:
             prompt (str): The input prompt.
             model_name (str): The model version to use. Defaults to "gemini-1.5-flash".
             tools (List[any], optional): A list of tools available to the model.
+            use_cache (bool): Whether to check/update the semantic cache.
             
         Returns:
             str: The generated response text.
         """
+        # 1. Semantic Cache Check
+        embedding = None
+        cache = None
+        if use_cache:
+            try:
+                cache = SemanticCache.get_instance()
+                # Embed the prompt
+                embedding = await GoogleADK.get_embeddings(prompt)
+                
+                # Check Cache (run sync vecs in thread)
+                cached_response = await asyncio.to_thread(cache.search, embedding)
+                if cached_response:
+                    print(f"[ADK] Cache Hit for prompt: {prompt[:30]}...")
+                    return cached_response
+            except Exception as e:
+                print(f"[ADK] Cache Check Failed: {e}")
+
+        # 2. LLM Generation
         try:
             model = genai.GenerativeModel(model_name, tools=tools)
             response = await model.generate_content_async(prompt)
-            return response.text
+            response_text = response.text
+            
+            # 3. Cache Update
+            if use_cache and cache and embedding and response_text:
+                try:
+                    await asyncio.to_thread(cache.store, embedding, prompt, response_text)
+                except Exception as e:
+                    print(f"[ADK] Cache Store Failed: {e}")
+            
+            return response_text
+            
         except (ResourceExhausted, ServiceUnavailable, InternalServerError) as e:
             print(f"Gemini API Error: {e}. Switching to Fallback Provider.")
             return await FallbackProvider.generate(prompt)

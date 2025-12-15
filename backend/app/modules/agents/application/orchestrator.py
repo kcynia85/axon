@@ -191,6 +191,39 @@ class AgentOrchestrator:
         # 3. Sanitize
         clean_input = self._security_guard.preprocess_input(user_input)
         
+        # --- DURABLE EXECUTION MIGRATION ---
+        # If the role is WRITER (Long-running process), offload to Inngest.
+        if session.agent_role == AgentRole.WRITER:
+            try:
+                import inngest
+                from backend.app.shared.infrastructure.inngest_client import inngest_client
+                
+                await inngest_client.send(
+                    inngest.Event(
+                        name="agent/turn.requested",
+                        data={
+                            "user_input": clean_input,
+                            "project_id": str(session.project_id),
+                            "agent_role": str(session.agent_role)
+                        }
+                    )
+                )
+                
+                msg = "Writer Agent has started a durable background workflow. You will be notified upon completion."
+                yield json.dumps({"type": "token", "content": msg})
+                
+                # Save system message
+                model_msg = Message(role="model", content=msg, timestamp=now_utc())
+                session.history.append(model_msg)
+                return
+                
+            except Exception as e:
+                err_msg = f"Failed to start workflow: {e}"
+                yield json.dumps({"type": "error", "content": err_msg})
+                return
+
+        # --- STANDARD EXECUTION (Chat) ---
+        
         # 4. Context Injection
         global_context = await self._context_composer.build_context(session.project_id)
         

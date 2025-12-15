@@ -188,6 +188,10 @@
 - [x] **Streaming Protocol:** Ensure the SSE implementation sends structured events.
 - [ ] **Generative UI:** Implement `streamUI` via Vercel AI SDK (Contract-First).
 - [x] **Skeleton UI:** When implementing the Chat Interface, ensure the "Thinking" state is visualized with a Skeleton Loader.
+- [x] **Semantic Cache (Infrastructure):** Setup `vecs` collection and `store` logic.
+- [ ] **Semantic Cache (Retrieval):** Implement precise cosine distance filtering (> 0.95 similarity) using raw SQL/pgvector.
+- [ ] **Durable Execution:** Migrate in-memory agent loops to Inngest workflows.
+- [ ] **Quality Evals:** Implement `LLM-as-a-Judge` for response verification.
 
 ### 9.2 Frontend Views (MVP Checklist)
 > **Source:** `docs/tech-prd-axon.md` (Section 3.7 & 6.2)

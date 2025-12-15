@@ -60,20 +60,14 @@ async def test_run_turn_stream_simple_agent():
         assert session.history[1].content == "Hello world!"
 
 @pytest.mark.asyncio
-async def test_run_turn_loop_agent():
-    """Test interaction with a loop agent (e.g. WRITER). loops don't stream token-by-token usually."""
+async def test_run_turn_loop_agent_inngest_offload():
+    """Test that WRITER role is offloaded to Inngest."""
     orchestrator = AgentOrchestrator()
     project_id = uuid4()
     session = await orchestrator.create_session(project_id, AgentRole.WRITER)
     
-    # Mock ContextComposer to avoid DB call
-    orchestrator._context_composer.build_context = AsyncMock(return_value="Mocked Project Context")
-    
-    # Mock GoogleADK.generate_content for non-streaming calls inside the loop
-    # We mock it to return a string so the loop runs.
-    # We won't simulate the full exit_loop logic here, just that it runs and returns.
-    
-    with patch('backend.app.shared.infrastructure.adk.GoogleADK.generate_content', return_value="Refined Content") as _mock_gen:
+    # Mock Inngest Client
+    with patch('backend.app.shared.infrastructure.inngest_client.inngest_client.send', new_callable=AsyncMock) as mock_send:
         
         received_chunks = []
         async for chunk_json in orchestrator.run_turn_stream(session, "Write something"):
@@ -81,10 +75,16 @@ async def test_run_turn_loop_agent():
              if data["type"] == "token":
                 received_chunks.append(data["content"])
 
-        # run_turn_stream for loop agents yields "Processing complex workflow...\n" then the result
+        # Should yield specific message
         full_output = "".join(received_chunks)
-        assert "Processing complex workflow..." in full_output
-        assert "Refined Content" in full_output
+        assert "Writer Agent has started a durable background workflow" in full_output
+        
+        # Should call Inngest send
+        mock_send.assert_called_once()
+        event = mock_send.call_args[0][0]
+        assert event.name == "agent/turn.requested"
+        assert event.data["agent_role"] == "AgentRole.WRITER"
+        assert event.data["user_input"] == "Write something"
 
 @pytest.mark.asyncio
 async def test_security_block():

@@ -132,17 +132,21 @@ frontend/src/
     - [x] **Fallback Resilience:** Implement adapter pattern for LLM switching (Gemini -> GPT-4).
     - [x] **Context Injection:** Middleware to inject Project/Memory context into System Prompt.
     - [x] **Citations:** Implement citation logic in `ChatSession` (Trustworthy Attribution).
-- [ ] **Infrastructure:**
+- [x] **Infrastructure:**
     - [x] **Workflow Engine:** Setup Inngest (or mock for local development) for durable execution.
-    - [ ] **Semantic Cache:** Implement Redis/Vector caching layer for cost optimization.
-- [x] **Generative UI:**
+    - [x] **Semantic Cache:** Implement Redis/Vector caching layer for cost optimization.
+- [x] **Generative UI:
     - [x] **StreamUI:** Implement Vercel AI SDK `streamUI` for dynamic React components.
-- [x] **Security & QA:**
+- [x] **Security & QA:
     - [x] **Guard Layer:** Implement input sanitization/filtering (Prompt Injection defense).
     - [ ] **Evals:** Setup basic LLM-as-a-Judge evaluation script.
-- [x] **Settings Deep-Dive:**
+- [x] **Settings Deep-Dive:
     - [x] Implement full configuration logic for Agents, LLMs, and Tools (currently Shells).
 
+### Phase 7: Optimization & Resilience
+- [x] **Semantic Cache Retrieval:** Implement precise cosine distance filtering (> 0.95) using raw SQL via SQLAlchemy.
+- [x] **Durable Execution:** Migrate `AgentOrchestrator` loops to use Inngest workflows for long-running tasks.
+- [x] **Quality Evals:** Implement automated `LLM-as-a-Judge` scoring for RAG relevance and Faithfulness.
 
 ### Phase X: Verification & Cleanup
 - [x] **Testing:** Run Full Regression Suite.
