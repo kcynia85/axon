@@ -7,6 +7,7 @@ from backend.app.modules.agents.interface.config_router import router as agents_
 from backend.app.modules.knowledge.interface.router import router as knowledge_router
 from backend.app.shared.infrastructure.inngest_client import inngest_client
 from backend.app.modules.workflows.infrastructure.inngest_functions import hello_world
+from backend.app.modules.agents.application.workflows import writer_workflow, generic_agent_workflow
 
 app = FastAPI(title="RAGAS Axon API")
 
@@ -20,7 +21,7 @@ app.include_router(knowledge_router)
 inngest_handler = serve(
     app,
     inngest_client,
-    [hello_world],
+    [hello_world, writer_workflow, generic_agent_workflow],
 )
 
 @app.get("/")

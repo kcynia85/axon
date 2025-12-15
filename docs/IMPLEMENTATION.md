@@ -145,7 +145,7 @@ frontend/src/
 
 ### Phase 7: Optimization & Resilience
 - [x] **Semantic Cache Retrieval:** Implement precise cosine distance filtering (> 0.95) using raw SQL via SQLAlchemy.
-- [x] **Durable Execution:** Migrate `AgentOrchestrator` loops to use Inngest workflows for long-running tasks.
+- [x] **Durable Execution:** Migrate `AgentOrchestrator` to offload **ALL** agent roles (Manager, Researcher, Builder, Writer) to Inngest workflows.
 - [x] **Quality Evals:** Implement automated `LLM-as-a-Judge` scoring for RAG relevance and Faithfulness.
 
 ### Phase X: Verification & Cleanup
