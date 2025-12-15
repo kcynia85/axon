@@ -1,6 +1,8 @@
-import { AgentList } from "@/modules/agents";
+import { AgentList, getAgents } from "@/modules/agents";
 
-const AgentsPage = () => {
+const AgentsPage = async () => {
+    const agents = await getAgents();
+
     return (
         <div className="container mx-auto py-10 px-4">
             <header className="mb-8">
@@ -11,7 +13,7 @@ const AgentsPage = () => {
             </header>
 
             <main>
-                <AgentList />
+                <AgentList agents={agents} />
             </main>
         </div>
     );

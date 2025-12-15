@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 from uuid import UUID
 from pydantic import BaseModel
 
-from backend.app.shared.infrastructure.database import get_db_session
+from backend.app.shared.infrastructure.database import get_db
 from backend.app.modules.knowledge.domain.models import Asset
 from backend.app.modules.knowledge.infrastructure.repo import AssetRepository
 
@@ -17,7 +17,7 @@ class AssetUpdate(BaseModel):
     domain: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
-async def get_asset_repo(session: AsyncSession = Depends(get_db_session)) -> AssetRepository:
+async def get_asset_repo(session: AsyncSession = Depends(get_db)) -> AssetRepository:
     return AssetRepository(session)
 
 @router.get("/assets", response_model=List[Asset])

@@ -18,8 +18,12 @@ export interface ChatSession {
 }
 
 export interface AgentConfig {
+    id: string;
     role: AgentRole;
     description: string;
+    model_tier: string;
     tools: string[];
-    model: string;
+    system_instruction: string;
+    created_at?: string;
+    updated_at?: string;
 }

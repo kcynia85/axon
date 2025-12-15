@@ -3,13 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from uuid import UUID
 
-from backend.app.shared.infrastructure.database import get_db_session
+from backend.app.shared.infrastructure.database import get_db
 from backend.app.modules.projects.infrastructure.repo import ArtifactRepository
 from backend.app.modules.projects.domain.models import Artifact
 
 router = APIRouter(prefix="/artifacts", tags=["artifacts"])
 
-async def get_artifact_repo(session: AsyncSession = Depends(get_db_session)) -> ArtifactRepository:
+async def get_artifact_repo(session: AsyncSession = Depends(get_db)) -> ArtifactRepository:
     return ArtifactRepository(session)
 
 @router.get("/inbox", response_model=List[Artifact])

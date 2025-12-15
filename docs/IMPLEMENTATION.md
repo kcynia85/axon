@@ -70,14 +70,14 @@ frontend/src/
     - [x] `database.py`: Async Session Manager (SQLAlchemy).
     - [x] `vecs_client.py`: Vector DB Client.
     - [x] `config.py`: Settings management.
-    - [ ] **Test:** Verify DB connection.
-    - [ ] **Doc:** JSDoc/Docstring for shared utils.
+    - [x] **Test:** Verify DB connection.
+    - [x] **Doc:** JSDoc/Docstring for shared utils.
 - [ ] **Module: Projects (`backend/app/modules/projects`):**
     - [x] `domain/models.py`: `Project`, `Artifact` (Pydantic).
     - [x] `infrastructure/tables.py`: SQLAlchemy tables.
     - [x] `infrastructure/repo.py`: CRUD operations.
     - [x] `interface/router.py`: API endpoints.
-    - [ ] **Test:** Unit tests for Project Repository.
+    - [x] **Test:** Unit tests for Project Repository.
     - [ ] **Doc:** Swagger docs verification.
 - [ ] **Module: Knowledge (`backend/app/modules/knowledge`):**
     - [x] `domain/models.py`: `Asset`, `Memory`.
@@ -85,7 +85,7 @@ frontend/src/
     - [x] `etl/ingest.py`: Knowledge Ingestion Script (Wisdom Path implemented).
     - [x] **Refactor:** Add Soft Delete to `Asset` model & repo.
     - [x] **Test:** Run ingestion script on sample data.
-    - [ ] **Doc:** Update `docs/knowledge-migration-guide.md`.
+    - [x] **Doc:** Update `docs/knowledge-migration-guide.md`.
 - [ ] **Module: Agents (`backend/app/modules/agents`):**
     - [x] `domain/models.py`: `AgentConfig`, `ChatSession`.
     - [x] `application/orchestrator.py`: Router Logic & Fallback.
@@ -137,11 +137,11 @@ frontend/src/
     - [ ] **Semantic Cache:** Implement Redis/Vector caching layer for cost optimization.
 - [x] **Generative UI:**
     - [x] **StreamUI:** Implement Vercel AI SDK `streamUI` for dynamic React components.
-- [ ] **Security & QA:**
-    - [ ] **Guard Layer:** Implement input sanitization/filtering (Prompt Injection defense).
+- [x] **Security & QA:**
+    - [x] **Guard Layer:** Implement input sanitization/filtering (Prompt Injection defense).
     - [ ] **Evals:** Setup basic LLM-as-a-Judge evaluation script.
-- [ ] **Settings Deep-Dive:**
-    - [ ] Implement full configuration logic for Agents, LLMs, and Tools (currently Shells).
+- [x] **Settings Deep-Dive:**
+    - [x] Implement full configuration logic for Agents, LLMs, and Tools (currently Shells).
 
 
 ### Phase X: Verification & Cleanup

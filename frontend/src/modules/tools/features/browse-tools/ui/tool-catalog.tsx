@@ -1,8 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Tool } from "../../../domain";
-import { getTools } from "../infrastructure/api";
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,13 +13,11 @@ const getIcon = (type: string) => {
     }
 };
 
-export const ToolCatalog = () => {
-    const [tools, setTools] = useState<Tool[]>([]);
+interface ToolCatalogProps {
+    tools: Tool[];
+}
 
-    useEffect(() => {
-        getTools().then(setTools);
-    }, []);
-
+export const ToolCatalog = ({ tools }: ToolCatalogProps) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tools.map((tool) => {
@@ -42,7 +36,8 @@ export const ToolCatalog = () => {
                         </CardHeader>
                         <CardFooter className="mt-auto pt-0">
                             <div className="flex items-center gap-2 w-full">
-                                <div className={`h-2 w-2 rounded-full ${tool.status === 'ACTIVE' ? 'bg-green-500' : 'bg-gray-300'}`} />
+                                <div className={`h-2 w-2 rounded-full ${tool.status === 'ACTIVE' ? 'bg-green-500' : 'bg-gray-300'}`} 
+/>
                                 <span className="text-xs text-muted-foreground">{tool.status}</span>
                                 <Button size="sm" variant="ghost" className="ml-auto">Details</Button>
                             </div>
@@ -53,3 +48,4 @@ export const ToolCatalog = () => {
         </div>
     );
 };
+

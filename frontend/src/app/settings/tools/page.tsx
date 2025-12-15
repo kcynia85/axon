@@ -1,6 +1,8 @@
-import { ToolCatalog } from "@/modules/tools";
+import { ToolCatalog, getTools } from "@/modules/tools";
 
-const ToolsPage = () => {
+const ToolsPage = async () => {
+    const tools = await getTools();
+
     return (
         <div className="container mx-auto py-10 px-4">
             <header className="mb-8">
@@ -11,7 +13,7 @@ const ToolsPage = () => {
             </header>
 
             <main>
-                <ToolCatalog />
+                <ToolCatalog tools={tools} />
             </main>
         </div>
     );

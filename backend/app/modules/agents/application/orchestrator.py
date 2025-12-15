@@ -4,6 +4,7 @@ from typing import Dict
 from backend.app.modules.agents.domain.models import ChatSession, Message
 from backend.app.modules.agents.domain.enums import AgentRole
 from backend.app.modules.agents.application.context_composer import ContextComposer
+from backend.app.shared.security.guardrails import SecurityGuard
 from backend.app.modules.knowledge.application.rag import RAGService
 from backend.app.shared.infrastructure.database import AsyncSessionLocal
 from backend.app.shared.utils.time import now_utc
@@ -56,6 +57,7 @@ class AgentOrchestrator:
     def __init__(self):
         self._agents = self._build_agents()
         self._context_composer = ContextComposer()
+        self._security_guard = SecurityGuard()
 
     def _build_agents(self) -> Dict[str, AgentRunner]:
         """
@@ -176,26 +178,39 @@ class AgentOrchestrator:
         session.history.append(user_msg)
         session.updated_at = now_utc()
         
-        # 2. Context Injection
+        # 2. Security Check
+        safety_check = self._security_guard.check_input_safety(user_input)
+        if not safety_check["is_safe"]:
+            error_msg = f"Security Alert: Request blocked. {safety_check['reasons']}"
+            yield json.dumps({"type": "error", "content": error_msg})
+            
+            # Record blockage in history (optional, or just ignore)
+            session.history.append(Message(role="system", content=error_msg, timestamp=now_utc()))
+            return
+
+        # 3. Sanitize
+        clean_input = self._security_guard.preprocess_input(user_input)
+        
+        # 4. Context Injection
         global_context = await self._context_composer.build_context(session.project_id)
         
-        # 3. Select Agent
+        # 5. Select Agent
         active_agent = self._agents.get(session.agent_role, self._agents[AgentRole.MANAGER])
         
         full_response = ""
         
         # Context Setup
         context_data = {
-            "user_input": user_input,
+            "user_input": clean_input,
             "global_context": global_context,
-            "current_document": user_input,
+            "current_document": clean_input,
             "research_output": "(No research yet)",
             "criticism": "(No criticism yet)"
         }
         tool_ctx = ToolContext(data=context_data, agent_name=str(session.agent_role))
 
         try:
-            # 4. Run Agent
+            # 6. Run Agent
             # Check if the function object has a 'stream' attribute (attached by 'agent' factory)
             if hasattr(active_agent, 'stream'):
                 async for chunk in active_agent.stream(tool_ctx):
@@ -222,6 +237,6 @@ class AgentOrchestrator:
             full_response += err_msg
             yield json.dumps({"type": "error", "content": err_msg})
 
-        # 5. Save Response
+        # 7. Save Response
         model_msg = Message(role="model", content=full_response, timestamp=now_utc())
         session.history.append(model_msg)
