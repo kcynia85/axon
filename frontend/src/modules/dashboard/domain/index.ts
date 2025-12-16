@@ -1,4 +1,4 @@
-export interface DashboardStats {
-    activeProjects: number;
-    completedProjects: number;
+export type DashboardStats = {
+    readonly activeProjects: number;
+    readonly completedProjects: number;
 }

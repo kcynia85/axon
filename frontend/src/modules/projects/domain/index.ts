@@ -14,13 +14,13 @@ export enum HubType {
     MARKETING = "MARKETING"
 }
 
-export interface Project {
-    id: string;
-    name: string;
-    description?: string;
-    domain: HubType;
-    status: ProjectStatus;
-    owner_id: string;
-    created_at: string;
-    updated_at: string;
+export type Project = {
+    readonly id: string;
+    readonly name: string;
+    readonly description?: string;
+    readonly domain: HubType;
+    readonly status: ProjectStatus;
+    readonly owner_id: string;
+    readonly created_at: string;
+    readonly updated_at: string;
 }

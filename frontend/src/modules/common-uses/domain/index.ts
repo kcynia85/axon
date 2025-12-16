@@ -1,8 +1,8 @@
-export interface Scenario {
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    promptTemplate: string;
-    icon?: string; // Optional icon name
+export type Scenario = {
+    readonly id: string;
+    readonly title: string;
+    readonly description: string;
+    readonly category: string;
+    readonly promptTemplate: string;
+    readonly icon?: string; // Optional icon name
 }

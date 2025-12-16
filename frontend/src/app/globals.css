@@ -118,7 +118,14 @@
 }
 
 @layer base {
-  * {
+  html {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  *, ::after, ::before {
+    box-sizing: inherit;
     @apply border-border outline-ring/50;
   }
   body {

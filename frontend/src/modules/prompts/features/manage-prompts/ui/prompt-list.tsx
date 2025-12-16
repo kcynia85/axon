@@ -1,46 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getPrompts, deletePrompt } from "../infrastructure/api";
-import { Prompt } from "../../../domain";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { PromptEditorDialog } from "./prompt-editor-dialog";
 import { Trash2, Edit } from "lucide-react";
 
 export const PromptList = () => {
-    const [prompts, setPrompts] = useState<Prompt[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    const fetchPrompts = async () => {
-        setLoading(true);
-        try {
-            const data = await getPrompts();
-            setPrompts(data);
-        } catch (error) {
-            console.error("Failed to fetch prompts", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchPrompts();
-    }, []);
+    const { data: prompts = [], isLoading, refetch } = useQuery({
+        queryKey: ["prompts"],
+        queryFn: getPrompts,
+    });
 
     const handleDelete = async (id: string) => {
         if (confirm("Are you sure you want to delete this prompt?")) {
             await deletePrompt(id);
-            fetchPrompts();
+            refetch();
         }
     };
 
-    if (loading) return <div>Loading prompts...</div>;
+    if (isLoading) return <div>Loading prompts...</div>;
 
     return (
         <div className="space-y-4">
              <div className="flex justify-end">
-                <PromptEditorDialog onSaved={fetchPrompts} />
+                <PromptEditorDialog onSaved={() => refetch()} />
             </div>
             {prompts.length === 0 ? (
                 <div className="text-center py-10 text-muted-foreground">No prompts found. Create your first one!</div>
@@ -59,7 +44,7 @@ export const PromptList = () => {
                             <CardFooter className="flex justify-end space-x-2">
                                 <PromptEditorDialog 
                                     prompt={prompt} 
-                                    onSaved={fetchPrompts} 
+                                    onSaved={() => refetch()} 
                                     trigger={<Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>} 
                                 />
                                 <Button variant="ghost" size="icon" onClick={() => handleDelete(prompt.id)}>

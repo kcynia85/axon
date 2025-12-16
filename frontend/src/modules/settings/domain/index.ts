@@ -1,10 +1,10 @@
 export type LLMProvider = "google" | "openai" | "anthropic" | "ollama";
 
-export interface LLMConfig {
-    id: string;
-    provider: LLMProvider;
-    model: string;
-    apiKey?: string; // Masked
-    isDefault?: boolean;
-    status: "ACTIVE" | "INACTIVE";
+export type LLMConfig = {
+    readonly id: string;
+    readonly provider: LLMProvider;
+    readonly model: string;
+    readonly apiKey?: string; // Masked
+    readonly isDefault?: boolean;
+    readonly status: "ACTIVE" | "INACTIVE";
 };

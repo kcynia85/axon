@@ -51,9 +51,11 @@ export const useChatSession = ({ projectId, agentRole }: UseAgentSessionProps) =
                                 // Update the active response in history
                                 setSessionHistory((prev) => {
                                     const historyCopy = [...prev];
-                                    const lastMessage = historyCopy[historyCopy.length - 1];
+                                    const lastMessageIndex = historyCopy.length - 1;
+                                    const lastMessage = historyCopy[lastMessageIndex];
                                     if (lastMessage.role === "model") {
-                                        lastMessage.content = accumulatedAgentResponse;
+                                        // Create a new message object with the updated content
+                                        historyCopy[lastMessageIndex] = { ...lastMessage, content: accumulatedAgentResponse };
                                     }
                                     return historyCopy;
                                 });

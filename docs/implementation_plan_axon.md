@@ -94,6 +94,21 @@ Before starting, I have reviewed `knowledge/memory.md` and applied the following
     - [ ] Run full E2E test suite with new indexes/policies.
 
 
+### Phase 9: Frontend Refactoring & Standards Compliance [COMPLETED]
+> **Focus:** Aligning frontend codebase with `stack_react_nextjs.md` standards.
+
+- [x] **Dependencies:**
+    - [x] Install `@tanstack/react-query` (Server State) & `zustand` (Global State).
+- [x] **Styling:**
+    - [x] Add mandatory Global CSS Reset to `globals.css`.
+- [x] **Architecture:**
+    - [x] Setup `QueryClientProvider` in App Layout.
+- [x] **Refactoring (Fetch Strategy):**
+    - [x] Refactor `PromptList` to use `useQuery`.
+    - [x] Refactor `AssetList` to use `useQuery`.
+- [x] **Refactoring (Forms):**
+    - [x] Refactor `LoginPage` to use `react-hook-form` + `zod`.
+
 ---
 
 ## ⚠️ Gap Analysis (Remaining)

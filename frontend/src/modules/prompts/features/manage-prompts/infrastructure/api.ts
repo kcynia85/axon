@@ -6,7 +6,7 @@ export const getPrompts = async (): Promise<Prompt[]> => {
     return getAssets(100, 0, "prompt");
 };
 
-export const createPrompt = async (data: Omit<Prompt, 'id' | 'created_at' | 'updated_at'>): Promise<Prompt> => {
+export const createPrompt = async (data: Omit<Prompt, 'id' | 'created_at' | 'updated_at' | 'type' | 'domain' | 'metadata'>): Promise<Prompt> => {
     return createAsset({ ...data, type: "prompt", domain: "general", metadata: {} });
 };
 

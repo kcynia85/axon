@@ -5,25 +5,25 @@ export enum AgentRole {
     WRITER = "WRITER"
 }
 
-export interface Message {
-    role: "user" | "model" | "system";
-    content: string;
-    timestamp?: string;
+export type Message = {
+    readonly role: "user" | "model" | "system";
+    readonly content: string;
+    readonly timestamp?: string;
 }
 
-export interface ChatSession {
-    id: string;
-    messages: Message[];
-    agentRole: AgentRole;
+export type ChatSession = {
+    readonly id: string;
+    readonly messages: readonly Message[];
+    readonly agentRole: AgentRole;
 }
 
-export interface AgentConfig {
-    id: string;
-    role: AgentRole;
-    description: string;
-    model_tier: string;
-    tools: string[];
-    system_instruction: string;
-    created_at?: string;
-    updated_at?: string;
+export type AgentConfig = {
+    readonly id: string;
+    readonly role: AgentRole;
+    readonly description: string;
+    readonly model_tier: string;
+    readonly tools: readonly string[];
+    readonly system_instruction: string;
+    readonly created_at?: string;
+    readonly updated_at?: string;
 }

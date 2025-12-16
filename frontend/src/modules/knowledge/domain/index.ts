@@ -1,17 +1,17 @@
-export interface Asset {
-    id: string;
-    slug: string;
-    title: string;
-    type: string;
-    content: string;
-    domain: string;
-    metadata: Record<string, unknown>;
-    created_at: string;
-    updated_at: string;
+export type Asset = {
+    readonly id: string;
+    readonly slug: string;
+    readonly title: string;
+    readonly type: string;
+    readonly content: string;
+    readonly domain: string;
+    readonly metadata: Record<string, unknown>;
+    readonly created_at: string;
+    readonly updated_at: string;
 }
 
-export interface Memory {
-    id: string;
-    fact: string;
-    created_at: string;
+export type Memory = {
+    readonly id: string;
+    readonly fact: string;
+    readonly created_at: string;
 }

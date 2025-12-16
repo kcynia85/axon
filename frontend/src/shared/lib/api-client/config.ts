@@ -10,15 +10,9 @@ export const endpoints = {
     }
 };
 
-class ApiClient {
-    private baseUrl: string;
-
-    constructor(baseUrl: string) {
-        this.baseUrl = baseUrl;
-    }
-
-    async get(path: string, options?: RequestInit) {
-        const res = await fetch(`${this.baseUrl}${path}`, {
+const createApiClient = (baseUrl: string) => {
+    const get = async (path: string, options?: RequestInit) => {
+        const res = await fetch(`${baseUrl}${path}`, {
             ...options,
             method: "GET",
             headers: {
@@ -32,10 +26,10 @@ class ApiClient {
         }
         
         return res;
-    }
+    };
 
-    async post(path: string, body: unknown, options?: RequestInit) {
-        const res = await fetch(`${this.baseUrl}${path}`, {
+    const post = async (path: string, body: unknown, options?: RequestInit) => {
+        const res = await fetch(`${baseUrl}${path}`, {
             ...options,
             method: "POST",
             headers: {
@@ -50,10 +44,10 @@ class ApiClient {
         }
 
         return res;
-    }
+    };
 
-    async put(path: string, body: unknown, options?: RequestInit) {
-        const res = await fetch(`${this.baseUrl}${path}`, {
+    const put = async (path: string, body: unknown, options?: RequestInit) => {
+        const res = await fetch(`${baseUrl}${path}`, {
             ...options,
             method: "PUT",
             headers: {
@@ -68,10 +62,10 @@ class ApiClient {
         }
 
         return res;
-    }
+    };
 
-    async delete(path: string, options?: RequestInit) {
-        const res = await fetch(`${this.baseUrl}${path}`, {
+    const del = async (path: string, options?: RequestInit) => {
+        const res = await fetch(`${baseUrl}${path}`, {
             ...options,
             method: "DELETE",
             headers: {
@@ -85,7 +79,14 @@ class ApiClient {
         }
 
         return res;
-    }
-}
+    };
 
-export const apiClient = new ApiClient(API_BASE_URL);
+    return {
+        get,
+        post,
+        put,
+        delete: del,
+    };
+};
+
+export const apiClient = createApiClient(API_BASE_URL);
