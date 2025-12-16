@@ -17,23 +17,6 @@ Check file existence first:
 
 ---
 
-# 🏗️ Architecture
-
-## 1. Modular Monolith (Standard)
-**Layers:**
-- `interface/` (Routers)
-- `application/` (Services)
-- `domain/` (Pydantic Models)
-- `infrastructure/` (SQLAlchemy)
-
-## 2. Hexagonal Architecture (AI Requirement)
-**Rule:** Isolate LLM SDKs (OpenAI/Anthropic) using **Ports & Adapters**.
-- **Port:** `domain/ports/ai_provider.py` (Protocol)
-- **Adapter:** `infrastructure/adapters/openai_adapter.py`
-- **Injection:** Inject adapter into Service via `FastAPI.Depends`.
-
----
-
 # 🧠 Standards
 - **Pydantic V2:** For everything (DTOs, Config). No raw dicts.
 - **SQLAlchemy 2.0:** Async only (`select`, `execute`).
