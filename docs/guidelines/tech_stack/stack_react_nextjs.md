@@ -11,16 +11,13 @@
 
 ---
 
-# 🟦 TypeScript / JavaScript
-- **TypeScript:** Obowiązkowy dla nowych projektów (Strict Mode).
-- **Immutability:** Obiekty i tablice traktuj jako niezmienne.
-- **Składnia:** Arrow functions, optional chaining, destrukturyzacja.
-- **Nazewnictwo:** PascalCase (Komponenty), camelCase (funkcje/zmienne).
-- **Async:** `async/await` zamiast `.then()`.
-- **Paradygmat:** Nie używaj klas (`class`), stosuj wyłącznie funkcje.
+# 🧠 Standards (Libraries)
+- **Fetch:** `useQuery` (Client) or direct DB call (RSC). No `useEffect` fetch.
+- **Forms:** React Hook Form + Zod.
+- **Perf:** Server Components by default. `"use client"` at leaves.
 
 
-# 🎨 CSS / Styling
+# 🎨 Styling
 - **Stack 2025:** Tailwind CSS (domyślnie) lub CSS Modules / Vanilla Extract.
 - **Unikaj:** Styled-components (chyba że wymuszone przez legacy), metodologii BEM w JS.
 - **Layout:** CSS Grid & Flexbox.
@@ -42,11 +39,3 @@
 
 ---
 
-# 🧠 Standards (Libraries)
-- **Fetch:** `useQuery` (Client) or direct DB call (RSC). No `useEffect` fetch.
-- **Forms:** React Hook Form + Zod.
-- **Perf:** Server Components by default. `"use client"` at leaves.
-
-# 🧪 Testing
-- **Runner:** Vitest.
-- **Focus:** User Interaction (Testing Library).
