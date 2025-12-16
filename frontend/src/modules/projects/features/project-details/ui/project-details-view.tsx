@@ -1,8 +1,14 @@
+"use client";
+
 import { Project } from "../../../domain";
 import { Artifact } from "../infrastructure/mock-api";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Code, Image as ImageIcon } from "lucide-react";
+import { FileText, Code, Image as ImageIcon, Trash2, Edit } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { deleteProject } from "../infrastructure/api";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface ProjectDetailsViewProps {
     project: Project;
@@ -10,13 +16,39 @@ interface ProjectDetailsViewProps {
 }
 
 export const ProjectDetailsView = ({ project, artifacts }: ProjectDetailsViewProps) => {
+    const router = useRouter();
+
+    const handleDelete = async () => {
+        if (!confirm("Are you sure you want to delete this project? This action cannot be undone.")) return;
+
+        try {
+            await deleteProject(project.id);
+            toast.success("Project deleted");
+            router.push("/dashboard");
+            router.refresh();
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to delete project");
+        }
+    };
+
     return (
         <div className="space-y-8">
             <div className="border-b pb-4">
-                <div className="flex items-center gap-4 mb-2">
-                    <h2 className="text-3xl font-bold">{project.name}</h2>
-                    <Badge>{project.status}</Badge>
-                    <Badge variant="outline">{project.domain}</Badge>
+                <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-4">
+                        <h2 className="text-3xl font-bold">{project.name}</h2>
+                        <Badge>{project.status}</Badge>
+                        <Badge variant="outline">{project.domain}</Badge>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4 mr-2" /> Edit
+                        </Button>
+                        <Button variant="destructive" size="sm" onClick={handleDelete}>
+                            <Trash2 className="h-4 w-4 mr-2" /> Delete
+                        </Button>
+                    </div>
                 </div>
                 <p className="text-muted-foreground text-lg">{project.description}</p>
             </div>

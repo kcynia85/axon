@@ -101,6 +101,11 @@ Strategia renderowania interaktywnych komponentów zamiast czystego tekstu.
     *   Backend: **Google Cloud Run** (Docker). Wymagane dla długotrwałych procesów agentowych i stabilnego streamingu SSE (omijając limity czasu Vercel).
     *   *   **Shadow Mode:** Testowanie nowych promptów na produkcji (dla admina) równolegle ze starymi.
 
+### 4.5. Bezpieczeństwo API (Integration Standards)
+*   **Zero Trust:** Wszystkie endpointy backendu (poza jawnymi publicznymi/webhookami) muszą wymagać nagłówka `Authorization: Bearer <token>`.
+*   **Frontend Client:** Klient API musi automatycznie wstrzykiwać token sesji Supabase do każdego zapytania.
+*   **Data Context:** Żadne krytyczne ID (Project ID, User ID) nie mogą być "hardcoded" w kodzie produkcyjnym. Muszą pochodzić z kontekstu aplikacji (URL/State).
+
 ### 5.8. Resilience & Durable Execution (Post-MVP)
 Planowane mechanizmy dla długotrwałych procesów agentowych (powyżej 60s).
 *   **Durable Workflow Engine:** Wdrożenie silnika (np. Inngest/Temporal) do zarządzania stanem agenta w sposób odporny na restarty serwera.

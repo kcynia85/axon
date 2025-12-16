@@ -18,7 +18,8 @@ class ProjectTable(Base):
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
-    artifacts = relationship("ArtifactTable", back_populates="project", cascade="all, delete-orphan")
+    # Async compatibility: lazy="selectin"
+    artifacts = relationship("ArtifactTable", back_populates="project", cascade="all, delete-orphan", lazy="selectin")
 
 class ArtifactTable(Base):
     __tablename__ = "artifacts"
@@ -38,3 +39,16 @@ class ArtifactTable(Base):
     __table_args__ = (
         Index("idx_artifacts_metadata", "metadata", postgresql_using="gin"),
     )
+
+class ScenarioTable(Base):
+    __tablename__ = "scenarios"
+
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=True)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    category = Column(String, nullable=False)
+    prompt_template = Column(String, nullable=False)
+    icon = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=now_utc)
+    updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)

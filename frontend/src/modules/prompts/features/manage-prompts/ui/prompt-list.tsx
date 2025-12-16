@@ -2,10 +2,11 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getPrompts, deletePrompt } from "../infrastructure/api";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/shared/ui/ui/button";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/shared/ui/ui/card";
 import { PromptEditorDialog } from "./prompt-editor-dialog";
 import { Trash2, Edit } from "lucide-react";
+import { toast } from "sonner";
 
 export const PromptList = () => {
     const { data: prompts = [], isLoading, refetch } = useQuery({
@@ -15,8 +16,13 @@ export const PromptList = () => {
 
     const handleDelete = async (id: string) => {
         if (confirm("Are you sure you want to delete this prompt?")) {
-            await deletePrompt(id);
-            refetch();
+            try {
+                await deletePrompt(id);
+                toast.success("Prompt deleted");
+                refetch();
+            } catch (e) {
+                toast.error("Failed to delete prompt");
+            }
         }
     };
 
@@ -28,7 +34,7 @@ export const PromptList = () => {
                 <PromptEditorDialog onSaved={() => refetch()} />
             </div>
             {prompts.length === 0 ? (
-                <div className="text-center py-10 text-muted-foreground">No prompts found. Create your first one!</div>
+                <div className="text-center py-10 text-muted-foreground border-2 border-dashed rounded-lg">No prompts found. Create your first one!</div>
             ) : (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {prompts.map((prompt) => (

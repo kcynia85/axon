@@ -1,9 +1,16 @@
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Literal
 from backend.app.modules.agents.domain.enums import AgentRole, ModelTier
 from backend.app.shared.utils.time import now_utc
+
+class Tool(BaseModel):
+    id: str
+    name: str
+    description: str
+    type: Literal["NATIVE", "MCP", "FUNCTION"]
+    status: Literal["ACTIVE", "INACTIVE"]
 
 class Message(BaseModel):
     role: str # user, model, system

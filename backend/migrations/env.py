@@ -20,6 +20,7 @@ from backend.app.shared.infrastructure.base import Base
 from backend.app.modules.projects.infrastructure.tables import *
 from backend.app.modules.agents.infrastructure.tables import *
 from backend.app.modules.knowledge.infrastructure.tables import *
+from backend.app.modules.workflows.infrastructure.tables import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

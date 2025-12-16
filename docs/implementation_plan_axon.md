@@ -88,10 +88,14 @@ Before starting, I have reviewed `knowledge/memory.md` and applied the following
 - [x] **Database Schema:**
     - [x] **Migration Setup:** Configure Alembic for Async SQLAlchemy.
     - [x] **Migration Generation & Apply:** Run `alembic revision` & `upgrade head` (Schema Applied).
-- [ ] **Security:**
-    - [ ] **RLS:** Implement Row Level Security policies (Project Isolation).
-- [ ] **Verification:**
-    - [ ] Run full E2E test suite with new indexes/policies.
+- [x] **Security:**
+    - [x] **RLS:** Implement Row Level Security policies (Project Isolation).
+    - [x] **API Security:** Secure `Knowledge` and `Agents` routers (Add `Depends(get_current_user)`).
+- [x] **Integration Fixes:**
+    - [x] **Frontend:** Implement Auth Token injection in `apiClient` (Knowledge Module).
+    - [x] **Frontend:** Fix `Agents` UI to use real `project_id` and send Auth token.
+- [x] **Verification:**
+    - [x] Run full E2E test suite with new indexes/policies.
 
 
 ### Phase 9: Frontend Refactoring & Standards Compliance [COMPLETED]
@@ -108,6 +112,24 @@ Before starting, I have reviewed `knowledge/memory.md` and applied the following
     - [x] Refactor `AssetList` to use `useQuery`.
 - [x] **Refactoring (Forms):**
     - [x] Refactor `LoginPage` to use `react-hook-form` + `zod`.
+
+### Phase 10: Backend Refactoring & DDD Compliance [COMPLETED]
+> **Focus:** Aligning backend with `stack_python_fastapi.md` and DDD/Modular Monolith standards.
+
+- [x] **Security & Auth:**
+    - [x] **Refactor:** `app/api/deps.py`: Remove mock user, restore JWT verification.
+    - [x] **Type Safety:** Replace `Dict` return type in `get_current_user` with Pydantic model (`UserPayload`).
+- [x] **Module: Projects (DDD):**
+    - [x] **Application Layer:** Create `ProjectService` (Functional) in `app/modules/projects/application/`.
+    - [x] **Interface Layer:** Refactor `router.py` to use `ProjectService` instead of `ProjectRepository`.
+    - [x] **Domain Layer:** Remove raw `dict` usage in `Artifact` model (use strict types or `Json`).
+- [x] **Module: Knowledge (DDD):**
+    - [x] **Application Layer:** Create `AssetService` in `app/modules/knowledge/application/service.py`.
+    - [x] **Interface Layer:** Refactor `router.py` to delegate to `AssetService`.
+    - [x] **DTOs:** Move `AssetUpdate` to `app/modules/knowledge/application/schemas.py`.
+- [x] **Module: Agents (DDD):**
+    - [x] **Application Layer:** Ensure `orchestrator.py` uses dependency injection patterns.
+    - [x] **Interface Layer:** Refactor `router.py` to use `Depends` for service injection.
 
 ---
 

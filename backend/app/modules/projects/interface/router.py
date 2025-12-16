@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID
+from fastapi import APIRouter, Depends
 from typing import List
-from backend.app.shared.infrastructure.database import get_db
-from backend.app.modules.projects.infrastructure.repo import ProjectRepository
-from backend.app.modules.projects.domain.models import Project
+from uuid import UUID
+
+from backend.app.modules.projects.domain.models import Project, Scenario
+from backend.app.modules.projects.application import service
 from backend.app.api.deps import get_current_user
+from backend.app.shared.security.schemas import UserPayload
 
 router = APIRouter(
     prefix="/projects", 
@@ -15,28 +15,55 @@ router = APIRouter(
 
 @router.get("/", response_model=List[Project])
 async def list_projects(
-    db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    user: UserPayload = Depends(get_current_user),
+    projects: List[Project] = Depends(service.list_projects_use_case)
 ):
-    repo = ProjectRepository(db)
-    # Ensure sub is a valid UUID
-    try:
-        user_id = UUID(current_user["sub"])
-    except ValueError:
-        # Fallback for dev/mock if ID is not UUID
-        user_id = UUID("00000000-0000-0000-0000-000000000000")
-        
-    return await repo.list_by_user(user_id)
+    """
+    List all projects for the authenticated user.
+    """
+    return projects
 
 @router.post("/", response_model=Project)
-async def create_project(project: Project, db: AsyncSession = Depends(get_db)):
-    repo = ProjectRepository(db)
-    return await repo.create(project)
+async def create_project(
+    project: Project = Depends(service.create_project_use_case)
+):
+    return project
+
+@router.delete("/{project_id}", status_code=204)
+async def delete_project(
+    project_id: UUID,
+    # Depends needs to be called to execute logic
+    _ = Depends(service.delete_project_use_case)
+):
+    """
+    Delete a project by ID.
+    """
+    return
+
+@router.get("/templates", response_model=List[Scenario])
+async def list_templates(
+    templates: List[Scenario] = Depends(service.list_templates_use_case)
+):
+    """
+    List global scenario templates.
+    """
+    return templates
 
 @router.get("/{project_id}", response_model=Project)
-async def get_project(project_id: UUID, db: AsyncSession = Depends(get_db)):
-    repo = ProjectRepository(db)
-    project = await repo.get(project_id)
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+async def get_project(
+    project: Project = Depends(service.get_project_use_case)
+):
     return project
+
+@router.get("/{project_id}/scenarios", response_model=List[Scenario])
+async def list_scenarios(
+    project_id: UUID,
+    scenarios: List[Scenario] = Depends(service.list_scenarios_use_case)
+):
+    return scenarios
+
+@router.post("/scenarios", response_model=Scenario)
+async def create_scenario(
+    scenario: Scenario = Depends(service.create_scenario_use_case)
+):
+    return scenario

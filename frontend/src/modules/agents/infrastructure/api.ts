@@ -1,26 +1,31 @@
 import { AgentConfig } from "../domain";
-import { isMockMode } from "@/shared/infrastructure/mock-adapter";
-import { getAgentsMock } from "./mock-api";
+import { API_BASE_URL } from "@/shared/lib/api-client/config";
+import { createClient } from "@/shared/infrastructure/supabase/client";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const getAuthHeaders = async () => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json"
+    };
+    if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+    }
+    return headers;
+};
 
 export const getAgents = async (): Promise<AgentConfig[]> => {
-    if (isMockMode()) {
-        return getAgentsMock();
-    }
-    const res = await fetch(`${API_URL}/agents/configs`);
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE_URL}/agents/configs`, { headers });
     if (!res.ok) throw new Error("Failed to fetch agents");
     return res.json();
 };
 
 export const updateAgentConfig = async (config: AgentConfig): Promise<AgentConfig> => {
-     if (isMockMode()) {
-        console.log("Mock update agent config", config);
-        return config;
-    }
-    const res = await fetch(`${API_URL}/agents/configs/${config.role}`, {
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE_URL}/agents/configs/${config.role}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(config)
     });
     if (!res.ok) throw new Error("Failed to update agent config");

@@ -4,6 +4,7 @@ import "./globals.css";
 import { AI } from "@/modules/agents/infrastructure/ai-provider";
 import { ThemeProvider } from "@/shared/infrastructure/theme-provider";
 import { Providers } from "./providers";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
             <AI>
               {children}
             </AI>
+            <Toaster />
           </Providers>
         </ThemeProvider>
       </body>

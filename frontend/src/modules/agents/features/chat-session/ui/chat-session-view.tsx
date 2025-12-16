@@ -54,7 +54,7 @@ export const ChatSessionView: React.FC<ChatSessionViewProps> = ({ projectId, age
 
         try {
             // 2. Server Action (StreamUI)
-            const responseMessage = await submitUserMessage(value);
+            const responseMessage = await submitUserMessage(value, projectId);
             
             // 3. Append Server Response (which is already a React Node)
             setMessages((current) => [...current, responseMessage]);

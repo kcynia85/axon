@@ -1,39 +1,29 @@
 import { Tool } from "../../../domain";
+import { API_BASE_URL } from "@/shared/lib/api-client/config";
+import { createClient } from "@/shared/infrastructure/supabase/client";
 
-export const MOCK_TOOLS: Tool[] = [
-    {
-        id: "search_knowledge",
-        name: "Knowledge Search",
-        description: "Semantically search the project's vector database for relevant memories and assets.",
-        type: "NATIVE",
-        status: "ACTIVE"
-    },
-    {
-        id: "google_search",
-        name: "Google Web Search",
-        description: "Search the live internet for up-to-date information via Google API.",
-        type: "FUNCTION",
-        status: "ACTIVE"
-    },
-    {
-        id: "github_mcp",
-        name: "GitHub MCP",
-        description: "Model Context Protocol server for interacting with GitHub repositories.",
-        type: "MCP",
-        status: "ACTIVE"
-    },
-    {
-        id: "filesystem_mcp",
-        name: "Filesystem MCP",
-        description: "Safe access to the local filesystem for reading and writing files.",
-        type: "MCP",
-        status: "ACTIVE"
+const getAuthHeaders = async () => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json"
+    };
+    if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
     }
-];
+    return headers;
+};
 
 export const getTools = async (): Promise<Tool[]> => {
-    // Simulate API call
-    return new Promise((resolve) => {
-        setTimeout(() => resolve(MOCK_TOOLS), 500);
+    const headers = await getAuthHeaders();
+    const res = await fetch(`${API_BASE_URL}/agents/tools`, {
+        headers,
+        cache: "no-store"
     });
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch tools");
+    }
+
+    return await res.json();
 };

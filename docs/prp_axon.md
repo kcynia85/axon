@@ -106,6 +106,8 @@
 
 ## 4. System Architecture & Constraints
 *   **Architecture Pattern:** Modular Monolith with Vertical Slice Architecture (Backend).
+    *   **DDD Principles:** Strict strict Domain/Application/Infrastructure/Interface separation.
+    *   **Code Style:** Function-First approach for Application Services (pure functions + dependency injection).
 *   **Backend Stack:** Python 3.10+, FastAPI, Google GenAI SDK (ADK).
 *   **Frontend Stack:** Next.js 14/15 (App Router), Tailwind CSS, Shadcn/UI, Vercel AI SDK (streamUI).
     *   **Architecture:** **Modular Monolith + Vertical Slice Architecture**.
