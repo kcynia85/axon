@@ -10,6 +10,16 @@
 3. **Public API:** Cross-module communication MUST go through the `index.ts` barrel file. Never import deeply from another module (e.g. `../sales/domain/logic`).
 4. **UI:** `src/app` should contain "Dumb Components" only. Logic is imported from `modules`.
 
+## 🧩 Component Architecture (Strict)
+1. **Pure Presentation:** Components must be pure functions of props. Move ALL state, effects, and data fetching to Custom Hooks (`useFeatureLogic.ts`).
+2. **Primitive Abstraction:** Separate "Structure" from "Semantics". Do not mix complex logic with long Tailwind class strings.
+   - ❌ **Bad:** Deeply nested `div` soup with inline styles.
+   - ✅ **Good:** Extract styled primitives (e.g., `<SidebarHeader>`, `<CardWrapper>`) to separate local components or files.
+3. **Logic Separation (VSA):**
+   - **Page (`page.tsx`):** Composition Root (Orchestration only).
+   - **View (`ui/view.tsx`):** Pure UI (receives props, emits events).
+   - **Logic (`application/use-logic.ts`):** State, Effects, API calls.
+
 ## 📁 Project Structure
 
 ```text
