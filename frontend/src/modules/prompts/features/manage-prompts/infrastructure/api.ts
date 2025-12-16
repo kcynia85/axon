@@ -6,11 +6,11 @@ export const getPrompts = async (): Promise<Prompt[]> => {
     return getAssets(100, 0, "prompt");
 };
 
-export const createPrompt = async (data: any): Promise<Prompt> => {
+export const createPrompt = async (data: Omit<Prompt, 'id' | 'created_at' | 'updated_at'>): Promise<Prompt> => {
     return createAsset({ ...data, type: "prompt", domain: "general", metadata: {} });
 };
 
-export const updatePrompt = async (id: string, data: any): Promise<Prompt> => {
+export const updatePrompt = async (id: string, data: Partial<Prompt>): Promise<Prompt> => {
     return updateAsset(id, { ...data, type: "prompt" });
 };
 

@@ -1,6 +1,6 @@
 import google.generativeai as genai
 from google.api_core.exceptions import ResourceExhausted, ServiceUnavailable, InternalServerError
-from typing import List, AsyncGenerator, Optional
+from typing import List, AsyncGenerator
 from backend.app.config import settings
 import asyncio
 from backend.app.shared.infrastructure.semantic_cache import SemanticCache

@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: axon-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./data/minio:/data
+    networks:
+      - axon-network
+
+  minio-create-bucket:
+    image: minio/mc
+    container_name: axon-minio-setup
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc alias set axon http://minio:9000 minioadmin minioadmin) do echo '...waiting...' && sleep 1; done;
+      /usr/bin/mc mb axon/axon-bucket --ignore-existing;
+      /usr/bin/mc policy set public axon/axon-bucket;
+      exit 0;
+      "
+    networks:
+      - axon-network
+
+networks:
+  axon-network:
+    driver: bridge

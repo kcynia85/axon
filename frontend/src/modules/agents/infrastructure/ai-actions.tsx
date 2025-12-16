@@ -2,6 +2,8 @@
 
 import { createStreamableUI } from 'ai/rsc';
 import { ReactNode } from 'react';
+import { isMockMode } from '@/shared/infrastructure/mock-adapter';
+import { API_BASE_URL } from '@/lib/api-client/config';
 
 // Mock Component for Generative UI
 const WeatherCard = ({ location, temp }: { location: string; temp: string }) => (
@@ -15,34 +17,123 @@ const WeatherCard = ({ location, temp }: { location: string; temp: string }) => 
 export async function submitUserMessage(input: string): Promise<{ id: number; display: ReactNode }> {
   const ui = createStreamableUI();
 
-  // Simulate Backend Latency and Streaming
-  (async () => {
-    ui.update(
-      <div className="flex items-center gap-2 text-muted-foreground text-sm my-2">
-        <span className="animate-pulse">Thinking...</span>
-      </div>
-    );
-
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    // Simple Router logic to demonstrate Generative UI
-    if (input.toLowerCase().includes('weather')) {
-      ui.done(<WeatherCard location="Warsaw" temp="22" />);
-    } else if (input.toLowerCase().includes('chart')) {
-        ui.done(
-            <div className="border p-4 rounded bg-gray-50 my-2">
-                <p className="font-mono text-xs text-green-600">Generating Chart...</p>
-                <div className="h-32 bg-gray-200 mt-2 rounded flex items-center justify-center text-gray-400">
-                    [Chart Visualization]
-                </div>
-            </div>
-        )
-    } else {
-      ui.done(
-        <div className="bg-muted/20 p-3 rounded-lg text-sm my-2">
-          {input} (Echo from Generative UI)
+  // --- MOCK MODE ---
+  if (isMockMode()) {
+    (async () => {
+        ui.update(
+        <div className="flex items-center gap-2 text-muted-foreground text-sm my-2">
+            <span className="animate-pulse">Thinking (Mock)...</span>
         </div>
-      );
+        );
+
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        if (input.toLowerCase().includes('weather')) {
+        ui.done(<WeatherCard location="Warsaw" temp="22" />);
+        } else if (input.toLowerCase().includes('chart')) {
+            ui.done(
+                <div className="border p-4 rounded bg-gray-50 my-2">
+                    <p className="font-mono text-xs text-green-600">Generating Chart...</p>
+                    <div className="h-32 bg-gray-200 mt-2 rounded flex items-center justify-center text-gray-400">
+                        [Chart Visualization]
+                    </div>
+                </div>
+            )
+        } else {
+        ui.done(
+            <div className="bg-muted/20 p-3 rounded-lg text-sm my-2">
+            {input} (Echo from Mock)
+            </div>
+        );
+        }
+    })();
+
+    return {
+        id: Date.now(),
+        display: ui.value,
+    };
+  }
+
+  // --- REAL MODE ---
+  (async () => {
+    try {
+        ui.update(
+            <div className="flex items-center gap-2 text-muted-foreground text-sm my-2">
+                <span className="animate-pulse">Contacting Axon Brain...</span>
+            </div>
+        );
+
+        // TODO: Pass project_id and role dynamically
+        const response = await fetch(`${API_BASE_URL}/agents/chat/stream`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                project_id: "00000000-0000-0000-0000-000000000000", // Placeholder, need real ID
+                agent_role: "MANAGER",
+                message: input
+            }),
+            cache: 'no-store'
+        });
+
+        if (!response.ok) {
+            throw new Error(`Backend Error: ${response.status}`);
+        }
+
+        if (!response.body) throw new Error("No response body");
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let currentText = "";
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunk = decoder.decode(value, { stream: true });
+            buffer += chunk;
+            
+            // Process SSE lines
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || ""; // Keep incomplete line
+
+            for (const line of lines) {
+                if (line.startsWith("data: ")) {
+                    const dataStr = line.slice(6).trim();
+                    if (dataStr === "[DONE]") continue;
+                    
+                    try {
+                        const data = JSON.parse(dataStr);
+                        if (data.type === "token") {
+                            currentText += data.content;
+                            ui.update(
+                                <div className="bg-muted/20 p-3 rounded-lg text-sm my-2 whitespace-pre-wrap">
+                                    {currentText}
+                                </div>
+                            );
+                        } else if (data.type === "error") {
+                             ui.update(
+                                <div className="text-red-500 text-sm my-2">
+                                    Error: {data.content}
+                                </div>
+                            );
+                        }
+                    } catch (e) {
+                        // Ignore parse errors for keepalives
+                    }
+                }
+            }
+        }
+        
+        ui.done();
+
+    } catch (error) {
+        console.error("Agent Stream Error:", error);
+        ui.done(
+            <div className="text-red-500 p-3 rounded-lg text-sm my-2">
+                Connection Failed. Is the Backend running?
+            </div>
+        );
     }
   })();
 

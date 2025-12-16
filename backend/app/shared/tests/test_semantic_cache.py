@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
+from unittest.mock import MagicMock, patch
 from backend.app.shared.infrastructure.semantic_cache import SemanticCache
 
 @pytest.mark.asyncio
@@ -43,7 +43,7 @@ async def test_store_cache():
 
 @pytest.mark.asyncio
 async def test_search_cache_miss():
-    with patch('backend.app.shared.infrastructure.semantic_cache.get_vecs_client') as mock_vecs, \
+    with patch('backend.app.shared.infrastructure.semantic_cache.get_vecs_client'), \
          patch('backend.app.shared.infrastructure.semantic_cache.create_engine') as mock_engine:
         SemanticCache._instance = None
         
@@ -64,7 +64,7 @@ async def test_search_cache_miss():
 
 @pytest.mark.asyncio
 async def test_search_cache_hit():
-    with patch('backend.app.shared.infrastructure.semantic_cache.get_vecs_client') as mock_vecs, \
+    with patch('backend.app.shared.infrastructure.semantic_cache.get_vecs_client'), \
          patch('backend.app.shared.infrastructure.semantic_cache.create_engine') as mock_engine:
         SemanticCache._instance = None
         

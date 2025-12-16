@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from inngest.fast_api import serve
 from backend.app.modules.projects.interface.router import router as projects_router
 from backend.app.modules.projects.interface.artifacts_router import router as artifacts_router
@@ -10,6 +11,20 @@ from backend.app.modules.workflows.infrastructure.inngest_functions import hello
 from backend.app.modules.agents.application.workflows import writer_workflow, generic_agent_workflow
 
 app = FastAPI(title="RAGAS Axon API")
+
+# Configure CORS
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(projects_router)
 app.include_router(artifacts_router)

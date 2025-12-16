@@ -1,10 +1,9 @@
-from sqlalchemy import Column, String, ForeignKey, DateTime, Enum as SAEnum
+from sqlalchemy import Column, String, ForeignKey, DateTime, Enum as SAEnum, Index
 from sqlalchemy.dialects.postgresql import UUID, JSONB
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
 from backend.app.modules.projects.domain.enums import HubType, Status, FileType, ReviewState
 from backend.app.shared.utils.time import now_utc
-
-Base = declarative_base()
+from backend.app.shared.infrastructure.base import Base
 
 class ProjectTable(Base):
     __tablename__ = "projects"
@@ -15,6 +14,7 @@ class ProjectTable(Base):
     domain = Column(SAEnum(HubType), nullable=False)
     status = Column(SAEnum(Status), default=Status.IDEA, nullable=False)
     owner_id = Column(UUID(as_uuid=True), nullable=False)
+    deleted_at = Column(DateTime(timezone=True), nullable=True) # Soft Delete
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
@@ -34,3 +34,7 @@ class ArtifactTable(Base):
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
     project = relationship("ProjectTable", back_populates="artifacts")
+
+    __table_args__ = (
+        Index("idx_artifacts_metadata", "metadata", postgresql_using="gin"),
+    )

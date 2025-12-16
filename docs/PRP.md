@@ -95,11 +95,11 @@
 8.  **Regression Testing:** Unit/Integration tests MUST be executed and pass after every significant change to ensure no regressions.
 
 ### 3.1 Invariants Checklist (Tracking)
-- [ ] **Trustworthy Attribution** implemented.
-- [ ] **Project Isolation** enforced.
+- [x] **Trustworthy Attribution** implemented.
+- [ ] **Project Isolation** enforced (RLS Pending).
 - [ ] **Idempotent Execution** verified.
 - [x] **Contract-First UI** validated.
-- [ ] **Fallback Resilience** implemented.
+- [x] **Fallback Resilience** implemented.
 - [x] **Asset Integrity** preserved.
 - [ ] **Continuous Documentation** updated.
 - [x] **Regression Testing** passed.
@@ -116,6 +116,33 @@
     *   *Frontend:* React Server Components + Streaming (Suspense).
 *   **Validation:** Pydantic (Backend), Zod (Frontend).
 *   **Memory Check:** `knowledge/memory.md` reviewed? Yes.
+
+### 4.1 Current Project Structure
+
+#### Backend (`/backend`)
+*   **Core:** `app/main.py` (Entrypoint), `app/config.py`.
+*   **Shared Kernel:** `app/shared/` (Domain, Infrastructure, Security, Utils).
+*   **Modules:**
+    *   `app/modules/agents/`: Agent logic and orchestration.
+    *   `app/modules/knowledge/`: Vector store, ETL, Asset management.
+    *   `app/modules/projects/`: Project management domain.
+    *   `app/modules/workflows/`: Durable execution workflows.
+*   **Migrations:** `migrations/` (Alembic).
+
+#### Frontend (`/frontend`)
+*   **App Router:** `src/app/(main)/` (Routes: projects, workspace, brain, etc.).
+*   **Shared Kernel:** `src/shared/` (UI components, layouts, lib).
+*   **Modules:**
+    *   `src/modules/agents/`: Workspace & Chat Logic.
+    *   `src/modules/common-uses/`: Quick tasks & templates.
+    *   `src/modules/dashboard/`: Main dashboard view.
+    *   `src/modules/inbox/`: Artifact review system.
+    *   `src/modules/knowledge/`: Brain & Asset browser.
+    *   `src/modules/projects/`: Project management.
+    *   `src/modules/prompts/`: Prompt engineering tools.
+    *   `src/modules/settings/`: Configuration management.
+    *   `src/modules/tools/`: Tool & MCP catalog.
+    *   `src/modules/workflows/`: Workflow builder.
 
 ## 5. Data Tier / DB Requirements
 ### SQL Tables (Relational)
@@ -185,23 +212,25 @@
 - [x] **Tools Implementation:**
     - [x] `find_asset`: Search `assets` table via `description_embedding`.
     - [x] `get_asset`: Select `content` from `assets` table via `slug`.
+    - [ ] **Integrations:** Implement `fetch_figma_structure` and `sync_notion_doc` tools.
 - [x] **Streaming Protocol:** Ensure the SSE implementation sends structured events.
-- [ ] **Generative UI:** Implement `streamUI` via Vercel AI SDK (Contract-First).
+- [x] **Generative UI:** Implement `streamUI` via Vercel AI SDK (Contract-First).
 - [x] **Skeleton UI:** When implementing the Chat Interface, ensure the "Thinking" state is visualized with a Skeleton Loader.
 - [x] **Semantic Cache (Infrastructure):** Setup `vecs` collection and `store` logic.
-- [ ] **Semantic Cache (Retrieval):** Implement precise cosine distance filtering (> 0.95 similarity) using raw SQL/pgvector.
-- [ ] **Durable Execution:** Migrate in-memory agent loops to Inngest workflows.
-- [ ] **Quality Evals:** Implement `LLM-as-a-Judge` for response verification.
+- [x] **Semantic Cache (Retrieval):** Implement precise cosine distance filtering (> 0.95 similarity) using raw SQL/pgvector.
+- [x] **Durable Execution:** Migrate in-memory agent loops to Inngest workflows.
+- [x] **Quality Evals:** Implement `LLM-as-a-Judge` for response verification.
+- [ ] **Gamification:** Implement XP/Streak logic in Dashboard.
 
 ### 9.2 Frontend Views (MVP Checklist)
 > **Source:** `docs/tech-prd-axon.md` (Section 3.7 & 6.2)
 
-- [x] **`/dashboard`:** Command center with recent activity (Implemented).
+- [x] **`/dashboard`:** Command center with recent activity (Implemented) + Gamification Widgets.
 - [x] **`/workspace`:** Main Operation Center (Chat Interface + Artifact Split-View).
 - [x] **`/projects`:** Context management and file lists.
 - [x] **`/inbox`:** Artifact review inbox (Review/Approve).
 - [x] **`/brain`:** Knowledge Base browser (Vectors/Assets) - *formerly `/knowledge`*.
 - [x] **`/workflows`:** Active Workflows & Chain of Thought Builder.
 - [x] **`/common-uses`:** One-click Tasks & Template Catalog.
-- [ ] **`/settings`:** Configuration Hub (Agents, Prompts, LLMs, Tools, Profile).
+- [x] **`/settings`:** Configuration Hub (Agents, Prompts, LLMs, Tools, Profile).
 - [x] **`/docs`:** Documentation viewer (Auto-generated).

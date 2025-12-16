@@ -1,5 +1,4 @@
 from typing import Optional, List
-import vecs
 from sqlalchemy import create_engine, text
 from backend.app.config import settings
 from backend.app.shared.infrastructure.vecs_client import get_vecs_client

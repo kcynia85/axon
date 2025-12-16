@@ -34,7 +34,7 @@ class ApiClient {
         return res;
     }
 
-    async post(path: string, body: any, options?: RequestInit) {
+    async post(path: string, body: unknown, options?: RequestInit) {
         const res = await fetch(`${this.baseUrl}${path}`, {
             ...options,
             method: "POST",
@@ -52,7 +52,7 @@ class ApiClient {
         return res;
     }
 
-    async put(path: string, body: any, options?: RequestInit) {
+    async put(path: string, body: unknown, options?: RequestInit) {
         const res = await fetch(`${this.baseUrl}${path}`, {
             ...options,
             method: "PUT",

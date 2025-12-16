@@ -122,77 +122,66 @@ Architektura fizyczna projektu podzielona jest na backend (Python/ADK) oraz fron
   Dockerfile             # Konfiguracja obrazu Docker (uv + python)
   uv.lock                # Zależności (uv)
   pyproject.toml         # Konfiguracja projektu
+  alembic.ini            # Konfiguracja migracji DB
+  main.py                # Entry point (FastAPI app)
+  start.sh               # Skrypt startowy
+  verify_storage.py      # Skrypt weryfikacji połączenia z bazą
   /app
+    config.py            # Zmienne środowiskowe, API Keys
     /api                 # Kontrolery FastAPI (Endpoints)
-      /routes            # Routing (workspace, projects, brain, inbox)
+      /routes            # Routing
       deps.py            # Dependency Injection
-    /core
-       config.py         # Zmienne środowiskowe, API Keys
-       adk_client.py     # Klient google.generativeai (Singleton)
-    /domain              # Czysta logika DDD (Hexagonal Core)
-       /models           # Pydantic/SQLAlchemy models
-       /ports            # Interfejsy (AIProvider, Repository)
-       /services         # Czyste serwisy domenowe
-    /infrastructure
-       /supabase         # Klient Supabase (SQL + Vector)
-       /adapters         # Implementacje portów (GeminiAdapter)
-       /tools            # NATIVE ADK TOOLS
-          rag_tools.py   # Wyszukiwanie w Supabase
-    /agents              # Konfiguracja Agentów
-       registry.py       # Fabryka agentów (Manager, Researcher, Builder)
-       /prompts          # Pliki z System Instructions
-    /services            # Warstwa Aplikacji
-       session_manager.py
-       router.py
-       context_composer.py
-       evals.py
-  main.py                # Entry point
+    /modules             # MODULAR MONOLITH (Bounded Contexts)
+       /agents           # Logika Agentów (Manager, Researcher, Builder)
+       /knowledge        # RAG, ETL, Assets, Vector Store
+       /projects         # Zarządzanie projektami
+       /workflows        # Silnik workflowów (Inngest)
+    /shared              # SHARED KERNEL
+       /domain           # Współdzielone modele i typy
+       /infrastructure   # Klient Supabase, Google ADK, Vector DB
+       /security         # Auth & Permissions
+       /utils            # Helpery
+  /migrations            # Pliki migracyjne Alembic
 ```
 
 ### 6.2. Frontend (Next.js / TypeScript)
 ```text
-/
-├── app/                         # Next.js App Router (framework layer)
-│   ├── dashboard/page.tsx
-│   ├── workspace/page.tsx
-│   ├── projects/page.tsx
-│   ├── brain/page.tsx           # Knowledge Base
-│   ├── workflows/page.tsx
-│   ├── inbox/page.tsx
-│   ├── settings/page.tsx
-│   ├── docs/page.tsx
-│   └── api/                     # Route Handlers (BFF)
-│
-├── src/
-│   ├── shared/                  # SHARED KERNEL (cross-domain)
-│   │   ├── domain/              # Shared Types, Value Objects, Errors
-│   │   ├── ui/                  # Design System (Shadcn), Layouts, Primitives
-│   │   └── lib/                 # Utils, API Client, Env
-│   │
-│   ├── modules/                 # BOUNDED CONTEXTS (DDD)
-│   │   ├── agents/              # Core AI Logic (Manager, Researcher, Builder)
-│   │   │   ├── domain/          # AgentConfig, ChatSession
-│   │   │   ├── application/     # Commands (RunSession), Queries (GetHistory)
-│   │   │   ├── infrastructure/  # Google ADK Adapter, Stream API
-│   │   │   └── ui/              # ChatInterface, MessageBubble, ArtifactView
-│   │   │
-│   │   ├── projects/            # Project Management
-│   │   │   ├── domain/          # Project Entity, Status
-│   │   │   ├── application/     # useCreateProject, useProjectList
-│   │   │   ├── infrastructure/  # Supabase Client
-│   │   │   └── ui/              # ProjectCard, ProjectList
-│   │   │
-│   │   ├── knowledge/           # RAG & Assets (Brain)
-│   │   │   └── ...              # (domain, infra, app, ui)
-│   │   │
-│   │   ├── workflows/           # Automation & Chain of Thought
-│   │   └── inbox/               # Artifact Review & Approvals
-│   │
-│   └── lib/                     # App-level wiring (QueryClient, Store)
-│
-├── tests/                       # E2E & Integration Tests
-├── public/
-└── next.config.js
+/frontend
+  next.config.ts         # Konfiguracja Next.js
+  package.json           # Zależności (npm)
+  tsconfig.json          # Konfiguracja TypeScript
+  /src
+    /app                 # NEXT.JS APP ROUTER
+       /(main)           # Layout główny aplikacji (Sidebar + Header)
+          /brain         # Knowledge Base
+          /common-uses   # Szablony zadań
+          /dashboard     # Dashboard główny
+          /docs          # Dokumentacja
+          /inbox         # Artifact Review Inbox
+          /profile       # Profil użytkownika
+          /projects      # Zarządzanie projektami
+          /settings      # Ustawienia (Agents, Tools, Prompts)
+          /workflows     # Builder procesów
+          /workspace     # Chat & Artifact Split-View
+          layout.tsx     # Główny layout
+          page.tsx       # Redirect do dashboard
+       /(auth)           # Strony logowania/rejestracji
+    /modules             # MODULAR MONOLITH (Features)
+       /agents           # Chat logic, Workspace UI
+       /common-uses      # Logika szablonów
+       /dashboard        # Widgety dashboardu
+       /inbox            # Review flow logic
+       /knowledge        # RAG logic, Assets browser, Docs viewer
+       /projects         # Project CRUD
+       /prompts          # Prompt management
+       /settings         # Settings logic
+       /tools            # Tool catalog & MCP integration
+       /workflows        # Workflow builder logic
+    /shared              # SHARED KERNEL
+       /domain           # Shared types
+       /lib              # Utils, API Client (Axios/Fetch), Hooks
+       /ui               # Design System (Shadcn), Layout components
+  /public                # Zasoby statyczne (SVG, obrazy)
 ```
 
 ### 6.3. Frontend UX Patterns & Performance Strategy

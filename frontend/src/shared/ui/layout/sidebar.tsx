@@ -15,6 +15,8 @@ import {
   Workflow,
   Zap
 } from "lucide-react";
+import { ModeToggle } from "@/shared/ui/ui/mode-toggle";
+import { UserNav } from "@/shared/ui/layout/user-nav";
 
 const mainNavigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -54,16 +56,19 @@ export const Sidebar = () => {
 
   return (
     <div className="flex flex-col h-screen w-64 border-r bg-background">
-      <div className="p-6 border-b flex justify-center items-center h-[80px]">
-        <Image 
-          src="/logo.svg" 
-          alt="Axon Logo" 
-          width={120} 
-          height={38} 
-          priority
-          className="dark:invert"
-        />
+      <div className="flex h-16 shrink-0 items-center px-6 border-b">
+        <div className="flex items-center gap-2 font-semibold">
+          <Image 
+            src="/logo-symbol-axon.svg" 
+            alt="Axon" 
+            width={32} 
+            height={32} 
+            className="h-8 w-8 dark:invert"
+          />
+          <span className="text-lg tracking-tight">Axon</span>
+        </div>
       </div>
+      
       <nav className="flex-1 overflow-y-auto p-4 space-y-1">
         {mainNavigation.map((item) => (
           <NavItem key={item.name} item={item} />
@@ -81,10 +86,15 @@ export const Sidebar = () => {
         </div>
       </div>
 
-      <div className="px-4 pb-4">
-        <div className="text-xs text-muted-foreground text-center">
+      <div className="p-4 border-t">
+        <UserNav />
+      </div>
+
+      <div className="px-4 pb-4 flex items-center justify-between">
+        <div className="text-xs text-muted-foreground">
           v0.1.0 MVP
         </div>
+        <ModeToggle />
       </div>
     </div>
   );

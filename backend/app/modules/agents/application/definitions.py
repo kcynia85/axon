@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Callable, Any
+from typing import List, Callable
 from backend.app.modules.agents.domain.enums import AgentRole
 from backend.app.modules.agents.application.tools import search_knowledge_base, exit_loop
 

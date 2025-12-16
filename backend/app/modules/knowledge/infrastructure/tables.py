@@ -1,10 +1,8 @@
-from sqlalchemy import Column, String, DateTime, Boolean
+from sqlalchemy import Column, String, DateTime, Boolean, Index
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from pgvector.sqlalchemy import Vector
-from sqlalchemy.orm import declarative_base
 from backend.app.shared.utils.time import now_utc
-
-Base = declarative_base()
+from backend.app.shared.infrastructure.base import Base
 
 class AssetTable(Base):
     __tablename__ = "assets"
@@ -20,3 +18,8 @@ class AssetTable(Base):
     is_deleted = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+
+    __table_args__ = (
+        Index("idx_assets_metadata", "metadata", postgresql_using="gin"),
+        Index("idx_assets_embedding", "description_embedding", postgresql_using="hnsw", postgresql_ops={"description_embedding": "vector_cosine_ops"}),
+    )

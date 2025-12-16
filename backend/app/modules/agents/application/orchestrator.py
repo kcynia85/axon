@@ -1,6 +1,5 @@
 import json
 from uuid import UUID
-from typing import Dict
 from backend.app.modules.agents.domain.models import ChatSession, Message
 from backend.app.modules.agents.domain.enums import AgentRole
 from backend.app.shared.security.guardrails import SecurityGuard

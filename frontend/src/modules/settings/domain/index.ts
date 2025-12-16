@@ -7,4 +7,4 @@ export interface LLMConfig {
     apiKey?: string; // Masked
     isDefault?: boolean;
     status: "ACTIVE" | "INACTIVE";
-}
+};

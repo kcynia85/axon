@@ -86,7 +86,7 @@ export const ChatSessionView: React.FC<ChatSessionViewProps> = ({ projectId, age
                     {messages.length === 0 && (
                         <div className="text-center text-muted-foreground py-10 opacity-50">
                             Start a conversation with your {agentRole} Agent.
-                            <br/>Try asking for "weather" or "chart".
+                            <br/>Try asking for &quot;weather&quot; or &quot;chart&quot;.
                         </div>
                     )}
                     

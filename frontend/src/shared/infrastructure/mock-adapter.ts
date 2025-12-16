@@ -8,7 +8,5 @@ export const mockError = (message = "Mock API Error"): Promise<never> => {
 };
 
 export const isMockMode = (): boolean => {
-    // In real app, check process.env.NEXT_PUBLIC_USE_MOCK === 'true'
-    // For now, default to true since backend isn't ready/connected
-    return true; 
+    return process.env.NEXT_PUBLIC_USE_MOCK === 'true';
 };
