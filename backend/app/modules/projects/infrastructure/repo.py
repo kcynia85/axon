@@ -59,13 +59,28 @@ class ArtifactRepository:
         return [Artifact.model_validate(a, from_attributes=True) for a in result.scalars().all()]
 
     async def get(self, artifact_id: UUID) -> Optional[Artifact]:
-# ... (rest of file)
-
         result = await self.session.execute(select(ArtifactTable).where(ArtifactTable.id == artifact_id))
         db_artifact = result.scalar_one_or_none()
         if db_artifact:
             return Artifact.model_validate(db_artifact, from_attributes=True)
         return None
+
+    async def create(self, artifact: Artifact) -> Artifact:
+        db_obj = ArtifactTable(
+            id=artifact.id,
+            project_id=artifact.project_id,
+            title=artifact.title,
+            type=artifact.type,
+            content=artifact.content,
+            status=artifact.status,
+            metadata_=artifact.metadata,
+            created_at=artifact.created_at,
+            updated_at=artifact.updated_at
+        )
+        self.session.add(db_obj)
+        await self.session.commit()
+        await self.session.refresh(db_obj)
+        return Artifact.model_validate(db_obj, from_attributes=True)
 
 class ScenarioRepository:
     def __init__(self, session: AsyncSession):

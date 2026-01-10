@@ -1,36 +1,43 @@
-# Axon Frontend — User Guide (Non-Technical)
+# Axon Frontend — Przewodnik Użytkownika (Nietechniczny)
 
-> **Role:** Feature Overview & User Flows
+> **Rola:** Przegląd Funkcji i Widoków
+
+Witaj w interfejsie Axona! To Twoje centrum dowodzenia. Oto co już działa i jak z tego korzystać.
 
 ## 📊 Dashboard (Pulpit Projektów)
 
-The Dashboard is the entry point of the application.
+To pierwsze miejsce, które widzisz po zalogowaniu.
 
-### Features
-1.  **Project List:**
-    *   View all your active and planned projects.
-    *   Cards display: Name, Domain (e.g., CODING, DESIGN), Status, and Description.
-    *   **Loading State:** Skeleton screens appear while data is fetching.
-    *   **Empty State:** Friendly message if no projects exist.
-
-2.  **Domains (Hubs):**
-    *   Projects are categorized by their "Hub" (Context), allowing for focused work.
+### Co tu znajdziesz? (Zaimplementowane funkcje)
+1.  **Lista Twoich Projektów:**
+    *   Każdy projekt to osobna karta. Widzisz od razu jego nazwę, status (np. "W trakcie") i krótki opis.
+    *   Jeśli coś się ładuje, zobaczysz pulsujące szare paski (tzw. Skeletons) – to znak, że system pobiera dane.
+    *   Jeśli nie masz projektów, zobaczysz przyjazny komunikat i przycisk, żeby dodać pierwszy.
+2.  **Kategorie (Huby):**
+    *   Projekty są poukładane tematycznie (np. "CODING", "DESIGN"). Dzięki temu nie masz bałaganu.
 
 ---
 
-## 💬 Agent Chat (Sesja z Agentem)
+## 💬 Czat z Agentem (Twoje Biuro)
 
-Allows you to interact with specialized AI Agents (Manager, Researcher, etc.).
+To tutaj dzieje się magia. Wchodząc w projekt, możesz otworzyć czat z zespołem AI.
 
-### Features
-1.  **Real-time Thinking:**
-    *   Responses are streamed character-by-character, allowing you to read while the Agent thinks.
-    *   Visual indicator ("Agent is thinking...") shows activity.
-2.  **Context Aware:**
-    *   Agents know which Project you are working on (via `projectId`).
-    *   They act according to their Role (e.g., Manager focuses on tasks).
+### Co potrafi ten widok?
+1.  **Myślenie na żywo:**
+    *   Gdy Agent odpisuje, tekst pojawia się litera po literze. Widzisz też wskaźnik "Agent is thinking...", więc wiesz, że system pracuje, a nie się zaciął.
+2.  **Kontekst Projektu:**
+    *   Nie musisz w każdym zdaniu przypominać Agentowi: "Mówimy o projekcie X". On to wie, bo czat jest "przyklejony" do konkretnego projektu.
 
 ---
 
-## 🚀 Next Steps
-*   **Knowledge Browser:** Viewing documents and assets.
+## 🚧 Czego jeszcze brakuje? (Funkcje planowane)
+
+Aplikacja jest w fazie Alpha, więc pewnych przycisków jeszcze nie ma:
+
+1.  **Przeglądarka Wiedzy (Knowledge Browser):**
+    *   *Obecnie:* Agent ma dostęp do dokumentów, ale Ty nie masz wygodnego widoku, żeby je przeglądać jak pliki w folderze.
+    *   *Plan:* Panel, gdzie zobaczysz wszystkie PDFy i notatki, które "przeczytał" Agent.
+2.  **Ustawienia Użytkownika:**
+    *   Nie ma jeszcze panelu zmiany hasła, awatara czy trybu ciemnego/jasnego (Dark Mode).
+3.  **Historia Czatów:**
+    *   Obecnie widzisz bieżącą sesję. Przeglądanie starych rozmów z przeszłości jest jeszcze w budowie.

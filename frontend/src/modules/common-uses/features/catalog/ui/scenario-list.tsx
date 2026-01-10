@@ -1,6 +1,7 @@
 'use client';
 
 import { Scenario } from "../../../domain";
+import { ProjectStatus } from "@/modules/projects/domain";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/ui/ui/card";
 import { Button } from "@/shared/ui/ui/button";
 import { Badge } from "@/shared/ui/ui/badge";
@@ -61,8 +62,9 @@ export const ScenarioList = ({ items }: ScenarioListProps) => {
                 name: `${scenario.title} Project`,
                 description: `Created from template: ${scenario.title}`,
                 domain: domain as any, 
-                status: "idea"
+                status: ProjectStatus.IDEA
             });
+
             
             toast.success("Project created!");
             router.push(`/projects/${project.id}`);

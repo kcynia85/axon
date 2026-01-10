@@ -10,15 +10,30 @@ class AssetRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    def _to_domain(self, row: AssetTable) -> Asset:
+        return Asset(
+            id=row.id,
+            slug=row.slug,
+            title=row.title,
+            content=row.content,
+            type=row.type,
+            domain=row.domain,
+            metadata=row.metadata_,
+            is_deleted=row.is_deleted,
+            created_at=row.created_at,
+            updated_at=row.updated_at
+        )
+
     async def create(self, asset: Asset, embedding: List[float] = None) -> Asset:
         db_asset = AssetTable(
-            **asset.model_dump(exclude={"created_at", "updated_at"}),
+            **asset.model_dump(exclude={"created_at", "updated_at", "metadata"}),
+            metadata_=asset.metadata,
             description_embedding=embedding
         )
         self.session.add(db_asset)
         await self.session.commit()
         await self.session.refresh(db_asset)
-        return Asset.model_validate(db_asset, from_attributes=True)
+        return self._to_domain(db_asset)
 
     async def get(self, asset_id: UUID) -> Optional[Asset]:
         result = await self.session.execute(
@@ -26,7 +41,7 @@ class AssetRepository:
         )
         db_asset = result.scalar_one_or_none()
         if db_asset:
-            return Asset.model_validate(db_asset, from_attributes=True)
+            return self._to_domain(db_asset)
         return None
 
     async def get_by_slug(self, slug: str) -> Optional[Asset]:
@@ -35,7 +50,7 @@ class AssetRepository:
         )
         db_asset = result.scalar_one_or_none()
         if db_asset:
-            return Asset.model_validate(db_asset, from_attributes=True)
+            return self._to_domain(db_asset)
         return None
 
     async def list_assets(self, limit: int = 100, offset: int = 0, asset_type: Optional[str] = None) -> List[Asset]:
@@ -45,11 +60,16 @@ class AssetRepository:
             query = query.where(AssetTable.type == asset_type)
 
         result = await self.session.execute(query)
-        return [Asset.model_validate(row, from_attributes=True) for row in result.scalars().all()]
+        return [self._to_domain(row) for row in result.scalars().all()]
 
     async def update(self, asset_id: UUID, asset_update: dict) -> Optional[Asset]:
         # Filter out fields that shouldn't be updated directly or are not in the model
-        valid_fields = {k: v for k, v in asset_update.items() if hasattr(AssetTable, k) and k not in ['id', 'created_at', 'updated_at']}
+        valid_fields = {}
+        for k, v in asset_update.items():
+            if k == "metadata":
+                 valid_fields["metadata_"] = v
+            elif hasattr(AssetTable, k) and k not in ['id', 'created_at', 'updated_at']:
+                 valid_fields[k] = v
         
         if not valid_fields:
             return await self.get(asset_id)
@@ -75,6 +95,19 @@ class AssetRepository:
         result = await self.session.execute(query)
         await self.session.commit()
         return result.rowcount > 0
+
+    async def search_by_vector(self, embedding: List[float], limit: int = 5) -> List[Asset]:
+        """
+        Search for assets by semantic similarity using pgvector.
+        """
+        stmt = (
+            select(AssetTable)
+            .where(AssetTable.is_deleted.is_(False))
+            .order_by(AssetTable.description_embedding.cosine_distance(embedding))
+            .limit(limit)
+        )
+        result = await self.session.execute(stmt)
+        return [self._to_domain(row) for row in result.scalars().all()]
 
 class KnowledgeVectorStore:
     def __init__(self):

@@ -1,81 +1,78 @@
-# Axon Backend — Technical Documentation
+# Axon Backend — Dokumentacja Techniczna
 
-> **Role:** Developer Guide & Architecture Reference
+> **Rola:** Przewodnik Developera & Architektura
 > **Stack:** Python 3.10+, FastAPI, SQLAlchemy (Async), Google GenAI
 
-## 🏗 System Architecture (Modular Monolith)
-
-The backend follows a **Domain-Driven Design (DDD)** approach with a "Modular Monolith" structure.
-Everything resides in `backend/app/modules/`.
-
-### Core Modules
-1.  **`agents`** (`backend/app/modules/agents`)
-    *   **Responsibility:** Orchestrating AI chat sessions, managing Agent Roles, and handling the "Thinking" loop.
-    *   **Key Components:** `AgentOrchestrator`, `ChatSession` model, `GoogleADK` integration.
-    *   **API:** Exposes SSE endpoints (`/chat/stream`) for real-time streaming.
-
-2.  **`knowledge`** (`backend/app/modules/knowledge`)
-    *   **Responsibility:** RAG (Retrieval-Augmented Generation). Storing and retrieving "Assets" (full docs) and "Memories" (chunks).
-    *   **Key Components:** `RAGService`, `KnowledgeVectorStore`, `Ingestion` scripts.
-    *   **Storage:** Uses `pgvector` (via `vecs` library) for vector search.
-
-3.  **`projects`** (`backend/app/modules/projects`)
-    *   **Responsibility:** CRUD for Projects and Artifacts. The "file system" of the user's workspace.
-
-4.  **`shared`** (`backend/app/shared`)
-    *   **Responsibility:** Infrastructure kernel. DB connections (`database.py`), Config, Utils.
+Hej! 👋 Jeśli zaczynasz pracę z backendem Axona, ten dokument jest dla Ciebie. Pomyśl o nim jak o mapie do "kuchni" naszej restauracji. Nie musisz wiedzieć wszystkiego od razu, ale warto wiedzieć, gdzie leżą noże, a gdzie trzymamy zapasy.
 
 ---
 
-## 🚀 Developer Setup
+## 🏗 Architektura: Modularny Monolit
 
-### Prerequisites
-- **Python 3.10+**
-- **uv** (Package Manager) -> `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- **Docker** (optional, for local Supabase/Postgres)
+Wyobraź sobie, że budujemy dom. Zamiast wrzucać wszystkie meble, rury i kable do jednego wielkiego wora (co nazywamy "Spaghetti Code"), dzielimy dom na **pokoje**.
 
-### Installation
-1.  Navigate to backend: `cd backend`
-2.  Install dependencies: `uv sync`
+W naszym systemie te pokoje to **Moduły** (`backend/app/modules/`). Każdy moduł odpowiada za jedną konkretną rzecz i ma swoje własne "ściany".
 
-### Environment Variables
-Create `.env` in `backend/`:
-```ini
-DATABASE_URL=postgresql+asyncpg://postgres:pass@db.supabase.co:5432/postgres
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-anon-key
-GOOGLE_API_KEY=AIzaSy...
-```
+### Główne Pokoje (Moduły):
 
-### 🏃‍♂️ Running the System
+1.  **`agents`** (`/modules/agents`)
+    *   **Co robi:** To "Mózg". Tutaj żyją nasi Agenci AI. Decydują, co odpowiedzieć użytkownikowi.
+    *   **Metofora:** Szef kuchni, który przyjmuje zamówienie i zarządza przygotowaniem dania.
+2.  **`knowledge`** (`/modules/knowledge`)
+    *   **Co robi:** To "Biblioteka". Tutaj system szuka informacji (RAG). Przechowuje dokumenty i wspomnienia.
+    *   **Metofora:** Bibliotekarz, który na hasło "przepis na pizzę" biegnie do regału i przynosi odpowiednią książkę.
+3.  **`projects`** (`/modules/projects`)
+    *   **Co robi:** To "Kartoteka". Zarządza Twoimi projektami, plikami i ustawieniami.
+4.  **`shared`** (`/app/shared`)
+    *   **Co robi:** To "Fundamenty". Rzeczy wspólne dla wszystkich: połączenie z bazą danych, konfiguracja, narzędzia.
 
-**Development Server:**
-```bash
-uv run uvicorn main:app --reload
-```
-- API: `http://localhost:8000`
-- Docs: `http://localhost:8000/docs`
+### Dlaczego tak? (DDD - Domain Driven Design)
+Staramy się, aby nasz kod mówił językiem biznesu. Jeśli w rozmowie z klientem pada hasło "Sesja Czatu", to w kodzie szukamy klasy `ChatSession`, a nie `TableX123`.
 
-**Running Tests:**
-```bash
-# All tests
-uv run pytest
+---
 
-# Specific module
-uv run pytest app/modules/agents/tests/
+## 🛠 Nasz Stack Technologiczny (Narzędzia)
+
+*   **Język: Python 3.10+** – Nasz język urzędowy. Czytelny i potężny.
+*   **Kelner: FastAPI** – To on przyjmuje zamówienia (requesty HTTP) od klienta (Frontend) i zanosi je do kuchni. Jest niesamowicie szybki.
+*   **Magazynier: SQLAlchemy (Async)** – Odpowiada za układanie danych na półkach (w bazie danych Postgres/Supabase). Wersja "Async" oznacza, że nie czeka bezczynnie, aż baza odpisze, tylko w międzyczasie robi inne rzeczy.
+*   **Geniusz: Google GenAI** – Nasz model językowy (LLM), który generuje odpowiedzi.
+
+### Przykład Kodu (Jak to wygląda w praktyce?)
+
+Oto jak wygląda prosty "endpoint" (okienko do składania zamówień) w FastAPI:
+
+```python
+# app/modules/projects/routes/project_routes.py
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.shared.infrastructure.database import get_db
+
+router = APIRouter()
+
+# 1. Dekorator mówi: "To jest adres /projects"
+@router.get("/")
+# 2. Funkcja asynchroniczna (nie blokuje kolejki)
+async def list_projects(
+    db: AsyncSession = Depends(get_db) # 3. Wstrzykiwanie zależności (daj mi dostęp do bazy)
+):
+    # Tutaj dzieje się magia (logika biznesowa)
+    projects = await service.get_all_projects(db)
+    return projects
 ```
 
 ---
 
-## 🔑 Key Technical Implementation Details
+## 🚧 Co jeszcze przed nami? (Backlog Techniczny)
 
-### Streaming Response (SSE)
-We utilize **Server-Sent Events** to stream tokens from the LLM.
-- **Library:** `sse-starlette`
-- **Flow:** `Router` -> `Orchestrator.run_turn_stream()` -> `GoogleADK.generate_content_stream()` -> `yield JSON`
-- **Event Format:** `{"type": "token", "content": "..."}`
+Aplikacja działa, ale to dopiero fundamenty. Oto co musimy jeszcze dobudować:
 
-### RAG Pipeline
-- **Embedding Model:** Google `text-embedding-004` (768 dimensions).
-- **Vector DB:** Supabase `vecs` client.
-- **Logic:** `RAGService` handles the "hybrid search" logic (Vector Search + Metadata filtering).
+1.  **Durable Execution (Inngest):**
+    *   *Problem:* Teraz, jeśli Agent myśli bardzo długo (np. pisze książkę), a serwer się zrestartuje, praca przepada.
+    *   *Plan:* Chcemy użyć narzędzia Inngest, które działa jak "zapis gry". Nawet jak wyłączysz prąd, Agent wznowi pracę tam, gdzie skończył.
+2.  **Integracja z GitHubem:**
+    *   *Cel:* Żeby Agent mógł sam robić `git commit` i poprawiać Twój kod w repozytorium.
+3.  **Testy E2E (End-to-End):**
+    *   *Cel:* Automatyczne roboty, które przeklikują całą aplikację przed każdym wydaniem, żeby upewnić się, że nic nie zepsuliśmy.
+

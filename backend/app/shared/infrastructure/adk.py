@@ -1,4 +1,5 @@
 import google.generativeai as genai
+from google.generativeai import protos
 from google.api_core.exceptions import ResourceExhausted, ServiceUnavailable, InternalServerError
 from typing import List, AsyncGenerator
 from backend.app.config import settings
@@ -73,7 +74,7 @@ class GoogleADK:
             return [0.0] * 768 # Mock 768 dim vector
 
     @staticmethod
-    async def generate_content(prompt: str, model_name: str = "gemini-1.5-flash", tools: List[any] = None, use_cache: bool = True) -> str:
+    async def generate_content(prompt: str, model_name: str = "gemini-2.0-flash", tools: List[any] = None, use_cache: bool = True) -> str:
         """
         Generates content using the specified Gemini model.
         
@@ -82,7 +83,7 @@ class GoogleADK:
         
         Args:
             prompt (str): The input prompt.
-            model_name (str): The model version to use. Defaults to "gemini-1.5-flash".
+            model_name (str): The model version to use. Defaults to "gemini-2.0-flash".
             tools (List[any], optional): A list of tools available to the model.
             use_cache (bool): Whether to check/update the semantic cache.
             
@@ -104,12 +105,63 @@ class GoogleADK:
                     print(f"[ADK] Cache Hit for prompt: {prompt[:30]}...")
                     return cached_response
             except Exception as e:
-                print(f"[ADK] Cache Check Failed: {e}")
+                # print(f"[ADK] Cache Check Failed: {e}") # Reduce noise
+                pass
 
         # 2. LLM Generation
         try:
             model = genai.GenerativeModel(model_name, tools=tools)
-            response = await model.generate_content_async(prompt)
+            chat = model.start_chat()
+            
+            # Helper to execute tools
+            async def execute_tool(func_call):
+                name = func_call.name
+                args = dict(func_call.args)
+                
+                # Find the matching tool function
+                tool_func = next((t for t in tools if t.__name__ == name), None)
+                if not tool_func:
+                    return f"Error: Tool '{name}' not found."
+                
+                try:
+                    # Check if async
+                    if asyncio.iscoroutinefunction(tool_func):
+                        return await tool_func(**args)
+                    else:
+                        return tool_func(**args)
+                except Exception as e:
+                    return f"Error executing tool '{name}': {str(e)}"
+
+            # Send initial message
+            response = await chat.send_message_async(prompt)
+            
+            # Loop for function calls (limit iterations to avoid infinite loops)
+            max_turns = 5
+            for _ in range(max_turns):
+                # Check if the model wants to call a function
+                # Note: response.parts might contain function_call
+                # We assume the first part is the function call if present
+                if not response.parts:
+                     break
+                
+                part = response.parts[0]
+                if part.function_call:
+                    print(f"[ADK] Tool Triggered: {part.function_call.name}")
+                    result = await execute_tool(part.function_call)
+                    
+                    # Send result back
+                    response = await chat.send_message_async(
+                        protos.Part(
+                            function_response=protos.FunctionResponse(
+                                name=part.function_call.name,
+                                response={"result": result}
+                            )
+                        )
+                    )
+                else:
+                    # Text response - done
+                    break
+            
             response_text = response.text
             
             # 3. Cache Update
@@ -129,7 +181,7 @@ class GoogleADK:
             raise e
 
     @staticmethod
-    async def generate_content_stream(prompt: str, model_name: str = "gemini-1.5-flash", tools: List[any] = None):
+    async def generate_content_stream(prompt: str, model_name: str = "gemini-2.0-flash", tools: List[any] = None):
         """
         Generates content streaming (yields chunks).
         
@@ -145,10 +197,30 @@ class GoogleADK:
         """
         try:
             model = genai.GenerativeModel(model_name, tools=tools)
-            response = await model.generate_content_async(prompt, stream=True)
+            
+            # Streaming with manual tool loop is complex.
+            # Simplified: Use automatic calling if SDK supports async properly in future.
+            # For now, we fall back to automatic and hope for the best, OR disable tools for stream.
+            # BUT RAG usually happens in "generate_content" (Think/Plan), not in the final stream.
+            # The Agent logic in workflows.py uses generate_content for reasoning!
+            # It uses generate_content_stream ONLY for final output?
+            
+            # Check workflows.py:
+            # - agent_generation uses generate_content (NOT stream)
+            # So tools are mostly used in generate_content.
+            
+            if tools:
+                 # Automatic function calling with streaming - giving it a try
+                 # If this fails with coroutine error, we know why.
+                 chat = model.start_chat(enable_automatic_function_calling=True)
+                 response = await chat.send_message_async(prompt, stream=True)
+            else:
+                 response = await model.generate_content_async(prompt, stream=True)
+                 
             async for chunk in response:
                 if chunk.text:
                     yield chunk.text
+                    
         except (ResourceExhausted, ServiceUnavailable, InternalServerError) as e:
             print(f"Gemini API Stream Error: {e}. Switching to Fallback Provider.")
             async for chunk in FallbackProvider.generate_stream(prompt):

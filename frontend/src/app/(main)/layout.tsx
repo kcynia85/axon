@@ -1,10 +1,10 @@
 import { Sidebar } from "@/components/layout/sidebar";
 
-export default function MainLayout({
+const MainLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
@@ -13,4 +13,6 @@ export default function MainLayout({
       </main>
     </div>
   );
-}
+};
+
+export default MainLayout;

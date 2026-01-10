@@ -10,7 +10,7 @@ class AgentDefinition:
     instruction: str
     tools: List[Callable] = field(default_factory=list)
     output_key: str = "output"
-    model: str = "gemini-1.5-flash"
+    model: str = "gemini-2.0-flash"
     is_loop: bool = False
 
 # --- Prompts ---

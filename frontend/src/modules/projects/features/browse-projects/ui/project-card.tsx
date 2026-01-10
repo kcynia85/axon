@@ -15,7 +15,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <CardTitle>{project.name}</CardTitle>
-                        <Badge variant={project.status === ProjectStatus.ACTIVE ? "default" : "secondary"}>
+                        <Badge variant={project.status === ProjectStatus.IN_PROGRESS ? "default" : "secondary"}>
                             {project.status}
                         </Badge>
                     </div>
@@ -28,7 +28,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                 </CardContent>
                 <CardFooter>
                     <div className="text-xs text-muted-foreground">
-                        Created: {new Date(project.created_at).toLocaleDateString()}
+                        Created: {project.created_at ? new Date(project.created_at).toLocaleDateString() : 'Unknown'}
                     </div>
                 </CardFooter>
             </Card>

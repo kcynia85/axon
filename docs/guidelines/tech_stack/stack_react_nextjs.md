@@ -4,7 +4,7 @@
 ---
 
 # 🚀 Defaults
-1.  **Framework:** Next.js (App Router) or Vite.
+1.  **Framework:** Next.js (v16) or Vite.
 2.  **Lang:** TypeScript (Strict).
 3.  **Styling:** Tailwind CSS.
 4.  **State:** Zustand (Global), TanStack Query (Server).
@@ -12,9 +12,27 @@
 ---
 
 # 🧠 Standards (Libraries)
-- **Fetch:** `useQuery` (Client) or direct DB call (RSC). No `useEffect` fetch.
+- **Fetch & Data fetching:** Prefer Next.js v16 server data fetching (RSC/server fetch) for initial loads; use `TanStack Query` in client components for interactivity and cache/mutations.
 - **Forms:** React Hook Form + Zod.
-- **Perf:** Server Components by default. `"use client"` at leaves.
+ 
+---
+
+# 🧩 TanStack Ecosystem (Recommended)
+TanStack provides a set of well-designed, type-safe utilities that świetnie uzupełniają React + TypeScript stacks. Dodajemy następujące narzędzia jako rekomendowane:
+
+- **TanStack Query** – zarządzanie fetchowaniem i cache’em danych asynchronicznych (`react-query` w nowej odsłonie). Używamy go jako warstwy cache/loop dla zapytań sieciowych i RSC.
+- **TanStack Router** – router z pełnym wsparciem typów oraz mechanizmami ładowania danych na poziomie routingu; działa z React i Solid.
+- **TanStack Pacer** – narzędzie pomocnicze do debouncingu, throttlingu i batchingu operacji (przydatne przy eventach wysokiej częstotliwości i przy coordynacji wielu requestów).
+- **TanStack DB / Store / AI / Devtools / Table / Form / Virtual** – pozostałe elementy ekosystemu:
+  - `DB` – lekka lokalna warstwa persistencji (client-side DB abstractions).
+  - `Store` – dodatkowe, wydajne primitywy stanu kompatybilne z podejściem TanStack.
+  - `AI` – eksperymentalne helpery do integracji z LLM (monitorować stabilność i wersje).
+  - `Devtools` – narzędzia do debugowania Query/Store/Router podczas developmentu.
+  - `Table` – headless, wydajna biblioteka tabel z rozbudowanymi opcjami (sort, filter, virtualization).
+  - `Form` – ukierunkowane narzędzia do budowy formularzy (kompatybilność z RHF/Zod).
+  - `Virtual` – utilities do virtualizacji list (wydajność przy dużych listach/siatkach).
+
+Wdrożenie: traktuj te narzędzia jako rekomendowane dependency w `package.json`, stosując je tam, gdzie zmniejszają złożoność i poprawiają typowanie/wykonanie.
 
 
 # 🎨 Styling

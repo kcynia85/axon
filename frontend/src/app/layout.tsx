@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AI } from "@/modules/agents/infrastructure/ai-provider";
 import { ThemeProvider } from "@/shared/infrastructure/theme-provider";
-import { Providers } from "./providers";
+import Providers  from "./providers";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RAGAS Axon",
+  title: "Axon",
   description: "AI Command Center",
 };
 

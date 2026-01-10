@@ -11,19 +11,23 @@ class RAGService:
 
     async def search_knowledge(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
         """
-        Semantic search over Knowledge Base.
-        1. Convert query to vector.
-        2. Search vector DB.
+        Semantic search over Knowledge Base (Wisdom/Vecs).
         """
         # 1. Get Embeddings
         query_vector = await GoogleADK.get_embeddings(query)
         
         # 2. Search
-        # Note: vecs client query returns specific format. 
-        # We assume KnowledgeVectorStore.search handles the basic call.
         results = self.vector_store.search(query_vector, limit=limit)
         
         return results
+
+    async def search_assets(self, query: str, limit: int = 5) -> List[Asset]:
+        """
+        Semantic search over Assets (SQL/pgvector).
+        """
+        query_vector = await GoogleADK.get_embeddings(query)
+        # Delegate to repository which should handle vector cosine similarity
+        return await self.asset_repo.search_by_vector(query_vector, limit=limit)
 
     async def get_asset(self, slug: str) -> Optional[Asset]:
         """

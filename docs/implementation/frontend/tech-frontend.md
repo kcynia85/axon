@@ -1,83 +1,85 @@
-# Axon Frontend — Technical Documentation
+# Axon Frontend — Dokumentacja Techniczna
 
-> **Role:** Developer Guide & Component Reference
+> **Rola:** Przewodnik Developera & Komponenty
 > **Stack:** Next.js 15 (App Router), TypeScript, Tailwind CSS, Shadcn/UI
 
-## 🏗 System Architecture (Modular Monolith + Vertical Slices)
+Hej Frontendowcu! 🎨 Tutaj dowiesz się, jak nie zgubić się w kodzie naszej aplikacji.
 
-The frontend mirrors the backend's DDD structure in `src/modules/`, utilizing **Vertical Slice Architecture** to organize code by feature rather than technical layer.
+---
 
-### 📂 Directory Structure (Standard)
+## 🏗 Architektura: Vertical Slices (Kawałki Tortu)
+
+Większość starych aplikacji to "Layer Cake" (Tort Warstwowy): osobna warstwa na UI, osobna na logikę, osobna na API. Żeby dodać jeden guzik, musisz przekopać się przez 5 folderów w różnych miejscach projektu. Koszmar.
+
+My używamy **Vertical Slice Architecture**. Wyobraź sobie, że kroisz tort pionowo.
+Jeden "Kawałek" (Slice) to jedna kompletna funkcja, np. "Utwórz Projekt".
+
+W tym jednym folderze masz wszystko, czego potrzebujesz:
+*   Wygląd (UI)
+*   Logikę (Application)
+*   Połączenie z serwerem (Infrastructure)
+
+### Struktura Folderów
 
 ```text
 src/
-├── app/                        # Next.js App Router (Routing & Layouts)
-│   ├── dashboard/page.tsx      # Fetches data -> Renders <ProjectList /> from modules
-│   ├── brain/page.tsx          # Brain / Knowledge Browser
+├── app/                        # Routing (Next.js). Tutaj tylko spinamy klocki.
+│   ├── dashboard/page.tsx      # Strona Dashboardu
 │   └── ...
 │
-├── shared/                     # GLOBAL KERNEL
-│   ├── domain/                 # Global Value Objects (UniqueId, Email)
-│   ├── ui/                     # Shadcn/UI Design System
-│   └── lib/                    # Infrastructure Abstractions (API Client, Utils)
+├── shared/                     # WSPÓLNE ZASOBY (Używaj ostrożnie!)
+│   ├── ui/                     # Klocki LEGO (Shadcn/UI) - Buttony, Inputy
+│   └── lib/                    # Narzędzia (np. klient API)
 │
-└── modules/                    # BOUNDED CONTEXTS
-    ├── projects/               # [MODULE]
-    │   ├── index.ts            # Public API (Barrel file for app/*)
-    │   ├── domain/             # CENTRAL DOMAIN (Entities, Types - Pure TS)
-    │   │   └── index.ts        # export interface Project {...}
+└── modules/                    # GŁÓWNE MODUŁY BIZNESOWE
+    ├── projects/               # [MODUŁ PROJEKTÓW]
+    │   ├── index.ts            # "Recepcja" modułu. Tylko to co tu jest, jest publiczne.
+    │   ├── domain/             # SŁOWNIK. Typy danych (np. interface Project).
     │   │
-    │   └── features/           # VERTICAL SLICES
-    │       ├── browse-projects/# [SLICE: Feature A]
-    │       │   ├── ui/         # Components (<ProjectList>)
-    │       │   ├── application/# Hooks (useProjectList), State
-    │       │   └── infrastructure/ # API calls (getProjects)
+    │   └── features/           # KONKRETNE FUNKCJE (SLICES)
+    │       ├── browse-projects/# [SLICE: Przeglądanie Projektów]
+    │       │   ├── ui/         # Komponent <ProjectList>
+    │       │   ├── application/# Hook useProjectList()
+    │       │   └── infrastructure/ # Pobieranie danych z API
     │       │
-    │       ├── create-project/ # [SLICE: Feature B]
+    │       ├── create-project/ # [SLICE: Tworzenie Projektu]
     │       │   ├── ui/
-    │       │   ├── application/
-    │       │   └── infrastructure/
+    │       │   └── ...
 ```
 
-### 👨‍💻 Developer Guide: Rules of Engagement
+---
 
-#### 1. Import Rules (Clean Architecture)
-*   **Public Module API (`modules/[name]/index.ts`):**
-    *   **Rule:** When inside `app/` or *another* module, import ONLY from here.
-    *   ✅ `import { ProjectList } from "@/modules/projects";`
-    *   ❌ `import { ProjectList } from "@/modules/projects/features/browse/ui/list";` (Strict Encapsulation)
-*   **Inside a Slice (`features/[slice]/`):**
-    *   **Rule:** You have full access to your own `ui`, `application`, `infrastructure`.
-    *   **Rule:** You can import from the **Module Domain** (`../../domain`).
-    *   ✅ `import { Project } from "../../../domain";`
-*   **Domain (`modules/[name]/domain`):**
-    *   **Rule:** The Holy Grail. Pure TypeScript. NO imports from `ui` or `infrastructure`.
+## 👨‍💻 Zasady Gry (Clean Architecture)
 
-#### 2. Where to add code?
-*   **New Feature (e.g., "Archive Project"):**
-    1.  Create `src/modules/projects/features/archive-project/`.
-    2.  Scaffold `ui/`, `application/`, `infrastructure/`.
-    3.  Export public components in `modules/projects/index.ts`.
-*   **Global UI Change:** `src/shared/ui/`.
-*   **Business Logic Change:** `src/modules/[module]/domain/`.
+Żeby nie zrobić bałaganu, mamy kilka żelaznych zasad. Traktuj je poważnie!
 
-### Core Modules
-1.  **`projects`** (`src/modules/projects`)
-    *   **Components:** `ProjectList`, `ProjectCard`.
-    *   **Features:** `browse-projects`, `create-project`.
-    *   **API:** `getProjects` (Fetch).
+#### 1. Zasada "Recepcji" (Public API)
+Jeśli jesteś w folderze `app/` albo w *innym* module, możesz importować rzeczy TYLKO z pliku `index.ts` danego modułu.
+*   ✅ `import { ProjectList } from "@/modules/projects";` (Wchodzisz głównym wejściem)
+*   ❌ `import { ProjectList } from "@/modules/projects/features/browse/ui/list";` (Nie wchodź przez okno!)
 
-2.  **`agents`** (`src/modules/agents`)
-    *   **Components:** `ChatSessionView`, `SessionMessageBubble`.
-    *   **Hook:** `useAgentSession`.
-    *   **Streaming:** Uses native `fetch` + `ReadableStream` (SSE).
+#### 2. Zasada "Samowystarczalności" (Inside a Slice)
+Gdy pracujesz nad funkcją (np. `create-project`), masz pełną swobodę wewnątrz swojego folderu.
+Możesz importować:
+*   Swoje własne pliki (`./ui`, `./application`)
+*   Typy z Domeny (`../../domain`)
+*   Wspólne klocki (`@/shared/ui`)
 
-### 🧪 Testing Strategy
-- **Unit/Integration:** `Vitest` + `React Testing Library`.
-- **E2E:** *Planned (Playwright)*.
-- **Run Tests:** `npm run test` (mapped to `vitest run`).
+#### 3. Zasada "Czystej Domeny" (Domain)
+Folder `domain/` to świętość. Tam jest czysty TypeScript. Żadnego Reacta, żadnych hooków, żadnego HTMLa. Tylko czysta logika i typy.
 
-### 🎨 UI Standards
-- **Components:** Functional Components (Arrow Functions).
-- **Styling:** Tailwind CSS.
-- **State:** Server Components for initial fetch (RSC), Suspense for loading.
+---
+
+## 🧪 Jak to testujemy?
+
+Używamy **Vitest**. To taki szybszy brat Jest'a.
+*   `npm run test` - odpala testy.
+*   Staramy się testować logikę biznesową i hooki, mniej skupiamy się na testowaniu czy guzik ma kolor czerwony (chyba że to kluczowe).
+
+---
+
+## 🚧 Backlog (Czego brakuje?)
+
+1.  **Testy E2E (Playwright):** Jeszcze ich nie ma. Musimy je napisać, żeby automatycznie klikały po stronie.
+2.  **Pełna obsługa błędów:** Czasami jak API padnie, użytkownik widzi biały ekran. Potrzebujemy ładnych "Error Boundaries".
+3.  **Animacje:** Interfejs jest trochę sztywny. Przydałoby się więcej życia (Framer Motion).

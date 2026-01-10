@@ -1,57 +1,75 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/ui/ui/dialog';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Textarea } from '@/shared/ui/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/ui/form';
-import { createProject } from '../infrastructure/api';
-import { Plus } from 'lucide-react';
-import { toast } from 'sonner';
+import { Button } from "@/shared/ui/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shared/ui/ui/dialog"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/shared/ui/ui/form"
+import { Input } from "@/shared/ui/ui/input"
+import { Textarea } from "@/shared/ui/ui/textarea"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Plus } from "lucide-react"
+import { useState } from "react"
+import { createProject } from "../infrastructure/api"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
+import { HubType, ProjectStatus } from "../../../domain"
 
 const formSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters"),
+  name: z.string().min(2, {
+    message: "Project name must be at least 2 characters.",
+  }),
   description: z.string().optional(),
-  // Aligned with Backend HubType
-  domain: z.enum(["product", "discovery", "design", "delivery", "growth", "writing"]),
-});
+  domain: z.enum(["product", "discovery", "delivery", "design", "growth", "writing"]),
+})
 
 export function CreateProjectDialog() {
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       description: "",
-      domain: "discovery"
+      domain: "product",
     },
-  });
+  })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await createProject({
+      const project = await createProject({
         name: values.name,
         description: values.description,
-        domain: values.domain,
-        status: "idea"
+        domain: values.domain as HubType,
+        status: ProjectStatus.IDEA
       });
       
-      toast.success("Project created successfully");
-      setOpen(false);
-      form.reset();
-      router.refresh(); 
+      toast.success("Project created successfully!")
+      setOpen(false)
+      form.reset()
+      router.push(`/projects/${project.id}`)
+      router.refresh()
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to create project");
+      toast.error("Failed to create project")
+      console.error(error)
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
