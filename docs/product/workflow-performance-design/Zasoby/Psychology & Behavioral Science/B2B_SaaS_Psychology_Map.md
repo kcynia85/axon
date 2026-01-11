@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # B2B & SaaS Psychology Map
 
 > **Cel:** Mapa mechanizmów decyzyjnych specyficznych dla klienta biznesowego (B2B) i subskrypcyjnego (SaaS).

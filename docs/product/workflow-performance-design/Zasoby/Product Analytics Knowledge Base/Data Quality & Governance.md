@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Data Quality & Governance
 
 > **Cel:** Zapewnienie wiarygodności danych analitycznych. Dane niskiej jakości prowadzą do błędnych decyzji biznesowych.

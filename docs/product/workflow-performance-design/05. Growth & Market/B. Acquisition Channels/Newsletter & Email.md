@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Newsletter & Email Marketing
 
 > **Powiązane Zasoby (Wiedza):**

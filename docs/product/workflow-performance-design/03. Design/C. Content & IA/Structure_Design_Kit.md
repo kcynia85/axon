@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Design
+---
+
 # Structure Design Kit (Action-First)
 
 > **Cel:** Zaprojektowanie "kręgosłupa" serwisu, który wytrzyma skalowanie.

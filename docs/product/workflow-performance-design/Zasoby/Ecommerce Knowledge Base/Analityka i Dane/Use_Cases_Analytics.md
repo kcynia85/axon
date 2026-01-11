@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Analityka — 10 Use Cases
 
 <aside>

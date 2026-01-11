@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Aplikacja do nauki języków obcych "LinguaConnect" (Analiza)
 
 <aside>

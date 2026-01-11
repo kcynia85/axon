@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # AI Value Creation Strategy
 
 > **Status:** Strategic Framework

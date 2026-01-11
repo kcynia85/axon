@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Persony & Segmentacja
 
 ## 💡 Metodologia i Narzędzia

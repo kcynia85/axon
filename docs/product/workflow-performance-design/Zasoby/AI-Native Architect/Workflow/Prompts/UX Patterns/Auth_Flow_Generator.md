@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agent Prompt: Auth Flow Generator
 
 **Skopiuj poniższy prompt i wklej go do Agenta (LLM) w celu wygenerowania kompletnego flow autoryzacji zgodnego ze standardami UX.**

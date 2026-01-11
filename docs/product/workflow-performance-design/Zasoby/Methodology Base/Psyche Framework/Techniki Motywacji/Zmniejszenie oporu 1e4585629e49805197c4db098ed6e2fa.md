@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Zmniejszenie oporu
 
 ### Redukacja opcji (Hick’s Law)

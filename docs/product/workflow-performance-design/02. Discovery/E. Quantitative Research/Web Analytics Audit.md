@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Web Analytics Audit (Protocol: One-Man Army)
 
 > **Cel:** Szybka diagnoza zdrowia produktu w 30 minut.

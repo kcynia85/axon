@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Oto przykładowy **Service Blueprint** dla usługi **rezerwacji wizyty u lekarza online** w formie tabeli."
+---
+
 # Use case: Usługa rezerwacji wizyty u lekarza online
 
 Oto przykładowy **Service Blueprint** dla usługi **rezerwacji wizyty u lekarza online** w formie tabeli.

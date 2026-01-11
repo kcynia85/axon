@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Writing Action-Based Messages
 
 <aside>

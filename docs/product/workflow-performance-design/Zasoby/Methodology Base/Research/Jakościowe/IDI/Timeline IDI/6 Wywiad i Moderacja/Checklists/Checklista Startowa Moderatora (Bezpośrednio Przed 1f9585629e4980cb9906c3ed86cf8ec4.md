@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Checklista Startowa Moderatora (Bezpośrednio Przed Sesją)
 
 - [ ]  **Sprzęt sprawdzony:**

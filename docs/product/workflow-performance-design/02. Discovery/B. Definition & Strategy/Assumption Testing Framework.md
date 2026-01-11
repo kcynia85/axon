@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Assumption Testing Framework
 
 > **Cel:** Szybka weryfikacja pomysłów *zanim* napiszemy linijkę kodu.

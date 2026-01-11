@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Software Architecture Standards (The Guardrails)
 
 > **Status:** Enforced Standard

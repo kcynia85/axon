@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Medium i Formaty
 
 ## Medium

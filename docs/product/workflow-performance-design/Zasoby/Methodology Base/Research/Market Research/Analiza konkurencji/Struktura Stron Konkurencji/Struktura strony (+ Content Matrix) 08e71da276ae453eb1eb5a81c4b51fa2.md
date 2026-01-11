@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Struktura strony (+ Content Matrix)
 
 ### Value Proposition

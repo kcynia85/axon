@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # IA Audit & Design Protocol (Action-First)
 
 > **Cel:** Diagnostyka i naprawa struktury informacji na stronie.

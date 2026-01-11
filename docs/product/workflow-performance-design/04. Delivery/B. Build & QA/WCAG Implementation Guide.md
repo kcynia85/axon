@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Delivery
+---
+
 # WCAG 2.1 Implementation Guide (Level AA)
 
 > **Dla kogo:** Frontend Developerzy / QA Engineers.

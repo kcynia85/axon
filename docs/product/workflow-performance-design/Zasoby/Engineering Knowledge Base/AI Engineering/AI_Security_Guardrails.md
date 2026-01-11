@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI Security Guardrails & Evaluation
 
 > **Status:** Security Protocol

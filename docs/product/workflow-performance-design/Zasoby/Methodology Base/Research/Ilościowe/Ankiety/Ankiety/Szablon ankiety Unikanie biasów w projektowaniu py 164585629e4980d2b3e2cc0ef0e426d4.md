@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Szablon ankiety: Unikanie biasów w projektowaniu pytań
 
 ### 

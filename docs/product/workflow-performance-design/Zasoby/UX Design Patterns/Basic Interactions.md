@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Basic Interaction Patterns
 
 > **Cel:** Standardy projektowania podstawowych interakcji użytkownika, minimalizujące tarcie i błędy.

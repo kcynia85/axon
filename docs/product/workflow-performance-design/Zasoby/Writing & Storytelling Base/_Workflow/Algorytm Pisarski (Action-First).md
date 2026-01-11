@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Algorytm Pisarski (Action-First)
 
 > **Cel:** Zamiana chaosu twórczego w powtarzalny proces generowania tekstów o wysokiej konwersji i jakości literackiej.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Więcej o Rekrutacji
 
 <aside>

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Pozycjonowanie sklepu
 
 ## Ogólnie o pozycjonowaniu

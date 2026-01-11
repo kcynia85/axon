@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Meta-Prompt Generator (Self-Refinement)
 
 > **Cel:** Narzędzie dla Agenta AI do samodzielnego ulepszania własnych promptów.

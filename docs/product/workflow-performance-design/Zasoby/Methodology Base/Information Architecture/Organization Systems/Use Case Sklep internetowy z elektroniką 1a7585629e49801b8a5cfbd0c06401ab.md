@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Use Case: Sklep internetowy z elektroniką
 
 <aside>

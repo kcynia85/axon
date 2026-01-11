@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Proces i Listy kontrolne
 
 > “Wszystkie szczęśliwe rodziny są do siebie podobne, każda nieszczęśliwa rodzina jest nieszczęśliwa na swój sposób” - Tołstoj

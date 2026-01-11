@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # IA Audit & Content Inventory Protocol
 
 > **Cel:** Zrozumienie "co my tu mamy" i "czy to ma sens".

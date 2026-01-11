@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Etyka i uprzedzania
 
 <aside>

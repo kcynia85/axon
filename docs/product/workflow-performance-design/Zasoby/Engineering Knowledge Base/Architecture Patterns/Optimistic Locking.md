@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Concurrent Editing (Optimistic Locking)
 
 > **Problem:** Użytkownik A nadpisuje zmiany Użytkownika B (Lost Update).

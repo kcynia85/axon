@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # Architektura Informacji
 
 ## 💡 Metodologia i Narzędzia

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Analityka — Źródła pozyskiwania danych
 
 - Dane transakcyjne

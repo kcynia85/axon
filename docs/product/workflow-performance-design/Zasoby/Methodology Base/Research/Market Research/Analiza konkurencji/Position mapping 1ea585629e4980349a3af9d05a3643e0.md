@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Position mapping
 
 ### Perception vs Differentiation

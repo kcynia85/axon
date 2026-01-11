@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # User Onboarding Patterns
 
 > **Cel:** Płynne wprowadzenie użytkownika do produktu, minimalizacja barier wejścia i budowanie nawyku.

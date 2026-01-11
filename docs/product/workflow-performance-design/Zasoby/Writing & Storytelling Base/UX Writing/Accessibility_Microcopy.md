@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Dobry mikrotekst (microcopy) poprawia doświadczenie użytkownika i jest szczególnie ważny dla osób z ograniczeniami wzrokowymi i poznawczymi, którzy potrzebują jasnego i łatwego do zrozumienia tekstu."
+---
+
 # Accessibility in UX Microcopy
 
 Dobry mikrotekst (microcopy) poprawia doświadczenie użytkownika i jest szczególnie ważny dla osób z ograniczeniami wzrokowymi i poznawczymi, którzy potrzebują jasnego i łatwego do zrozumienia tekstu.

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Monomit, Struktury Narracyjne i Storytelling
 
 > **Źródło:** Pełna baza wiedzy z Notion (Podróż Bohatera, Emocje i Racjonalność, Opowieść).

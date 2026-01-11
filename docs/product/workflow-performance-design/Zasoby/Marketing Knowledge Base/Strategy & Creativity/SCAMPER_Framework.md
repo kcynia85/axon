@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # SCAMPER Framework for Marketing
 
 > **Status:** Actionable Tool

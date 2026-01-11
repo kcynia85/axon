@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # AI Readiness Assessment (Ocena Gotowości na AI)
 
 > **Cel:** Sprawdzenie, czy organizacja/klient jest gotowy na wdrożenie AI. Pozwala uniknąć porażki przez brak danych lub kultury.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Decision Making Framework for AI Agents
 
 > **Cel:** Ten dokument dostarcza Agentowi AI zestawu ram decyzyjnych, które pomagają w wyborze najlepszej strategii działania w zależności od kontekstu zadania, dostępnych narzędzi i potencjalnych ryzyk.

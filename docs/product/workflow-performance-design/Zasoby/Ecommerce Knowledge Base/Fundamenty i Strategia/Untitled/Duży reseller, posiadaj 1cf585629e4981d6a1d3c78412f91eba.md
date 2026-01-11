@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Duży reseller, posiadaj
 
 Potencjalne zagrożenia związane z zarządzaniem ceną: - Duża konkurencja na rynku

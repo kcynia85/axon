@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Delivery
+---
+
 # Coding Tracker
 
 ## 1. Tablica Zadań (Task Board)

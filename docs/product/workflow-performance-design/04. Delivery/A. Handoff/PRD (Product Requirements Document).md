@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Delivery
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: PRODUCT OWNER
 Rola: Senior Product Manager & User Psychologist.

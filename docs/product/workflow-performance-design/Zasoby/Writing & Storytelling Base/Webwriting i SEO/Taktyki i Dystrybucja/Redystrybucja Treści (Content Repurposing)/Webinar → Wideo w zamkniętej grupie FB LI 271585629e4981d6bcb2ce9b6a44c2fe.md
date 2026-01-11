@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Webinar → Wideo w zamkniętej grupie FB/LI
 
 <aside>

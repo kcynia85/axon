@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Design
+---
+
 # Logika biznesowa (+Skrypt prototypu)
 
 ### **Zasady działania procesów**

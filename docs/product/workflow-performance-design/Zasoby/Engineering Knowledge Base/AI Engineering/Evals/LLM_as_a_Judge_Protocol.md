@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # LLM-as-a-Judge Protocol
 
 > **Cel:** Obiektywna, skalowalna ocena jakości odpowiedzi generowanych przez systemy AI (RAG, Agenci) bez udziału człowieka.

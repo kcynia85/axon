@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Koszyk zakupowy jest kluczowym elementem doświadczenia użytkownika w sklepach internetowych. Oto jego najważniejsze cechy:"
+---
+
 # Shopping Carts
 
 Koszyk zakupowy jest kluczowym elementem doświadczenia użytkownika w sklepach internetowych. Oto jego najważniejsze cechy:

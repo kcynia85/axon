@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Gdzie szukać okazji
 
 ## Desk research

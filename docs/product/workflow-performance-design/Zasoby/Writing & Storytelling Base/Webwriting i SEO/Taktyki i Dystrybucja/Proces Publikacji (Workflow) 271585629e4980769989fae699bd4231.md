@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Proces Publikacji (Workflow)
 
 ### **Role i odpowiedzialność (Responsibility)**

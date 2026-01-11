@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Monomit (Podróż Bohatera)
 
 # **Definicja i kontekst**

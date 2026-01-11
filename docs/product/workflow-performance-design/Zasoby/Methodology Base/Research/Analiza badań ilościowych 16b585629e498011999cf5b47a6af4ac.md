@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Analiza badań ilościowych
 
 ### **Analyzing quantitative data**

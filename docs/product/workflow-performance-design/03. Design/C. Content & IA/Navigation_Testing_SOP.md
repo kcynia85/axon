@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Design
+---
+
 # Navigation Testing SOP (Validation)
 
 > **Cel:** Weryfikacja, czy użytkownicy potrafią znaleźć to, czego szukają, ZANIM napiszemy kod.

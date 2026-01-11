@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Growth & Market
+---
+
 # AI Value Proposition Canvas
 
 > **Powiązane Zasoby (Wiedza):**

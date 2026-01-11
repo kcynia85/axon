@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Data Stack & Infrastructure (MVP to Scale)
 
 > **Cel:** Dobrać narzędzia adekwatne do skali, budżetu i potrzeb. Nie strzelać z armaty (BigQuery) do wróbla (100 zamówień/mc), ale też nie utonąć w Excelu przy skali.

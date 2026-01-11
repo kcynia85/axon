@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Uczciwość i zaufanie w biznesie
 
 <aside>

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Grupa docelowa
 
 ### Basic tools

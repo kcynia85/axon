@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Ensuring Consistency
 
 <aside>

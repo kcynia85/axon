@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Information Architecture Principles (Theory Base)
 
 > **Rola:** Fundament teoretyczny dla decyzji projektowych.

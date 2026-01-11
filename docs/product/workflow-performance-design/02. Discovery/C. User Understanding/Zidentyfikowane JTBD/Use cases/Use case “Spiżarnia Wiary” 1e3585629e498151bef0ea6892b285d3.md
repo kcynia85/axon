@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Use case: “Spiżarnia Wiary”
 
 ### **JTBD – Jobs to Be Done**

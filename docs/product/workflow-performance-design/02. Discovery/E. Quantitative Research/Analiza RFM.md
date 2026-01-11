@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Analiza RFM (Standard Operacyjny)
 
 > **Cel:** Segmentacja bazy klientów, aby nie wysyłać tego samego spamu do wszystkich.

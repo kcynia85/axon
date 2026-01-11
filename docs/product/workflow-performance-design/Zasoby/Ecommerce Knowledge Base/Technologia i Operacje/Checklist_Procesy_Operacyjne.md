@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Checklist: Procesy Operacyjne E-commerce (Action-First)
 
 > **Cel:** Uporządkowanie rutynowych działań w e-commerce. Oparte na analizie procesów: Obsługa Klienta, Zarządzanie Produktem, Zarządzanie Sprzedażą.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Filozofia Prostego Języka
 
 ### Plain Language Index (PLI)

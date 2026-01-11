@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Schematy Storytellingowe
 
 <aside>

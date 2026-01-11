@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Character Archetypes
 
 ## Przeobrażenie bohatera

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Hexagonal Architecture (Porty i Adaptery)
 
 > **Cel:** Całkowita izolacja logiki biznesowej (Domeny) od technologii zewnętrznych (Frameworki, Bazy Danych, Modele AI).

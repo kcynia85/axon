@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # RAG Engineering Compendium
 
 > **Status:** Deep Engineering Guide

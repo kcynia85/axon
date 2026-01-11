@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Artykuł: Różaniec — jak się modlić i dlaczego ma znaczenie
 
 ### 0. Meta i ustawienia techniczne

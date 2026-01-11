@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI Resilience & Cost Patterns (The Shield)
 
 > **Context:** AI jest wolne, drogie i niedeterministyczne. Te wzorce chronią budżet i stabilność systemu.

@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Mechanizmy napędzające zaangażowanie i podtrzymujące aktywność."
+---
+
 # Nawyki, Motywacja i Działanie
 
 Mechanizmy napędzające zaangażowanie i podtrzymujące aktywność.

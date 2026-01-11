@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Use Case: Wywiad pogłębiony (In-Depth Interview)
 
 ### **Projekt: Stworzenie aplikacji wspierającej zdrowe odżywianie**

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Lightweight Audit Log (JSONB Backpack)
 
 > **Problem:** Potrzeba historii zmian rekordu (kto, co, kiedy), ale Event Sourcing to overkill.

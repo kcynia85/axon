@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Rodzaje Fabuły i Teoria
 
 ### Klasyczna historia sukcesu

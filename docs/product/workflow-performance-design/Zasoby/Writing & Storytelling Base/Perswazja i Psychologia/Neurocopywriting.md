@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Neurocopywriting i Psychologia Sprzedaży
 
 > **Źródło:** Pełna baza wiedzy z Notion (Neurocopywriting, Psychologia odbiorcy, Modele obaw, Magnetyzatory, Tone of Voice).

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Dekoder Produktu (Analiza F-A-B-E)
 
 > **Cel:** Przełożenie cech technicznych na język korzyści i emocji. Narzędzie priorytetyzacji komunikacji.

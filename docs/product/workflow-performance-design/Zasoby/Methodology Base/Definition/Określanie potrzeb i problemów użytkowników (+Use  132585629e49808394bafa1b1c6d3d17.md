@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Określanie potrzeb i problemów użytkowników (+Use Cases)
 
 <aside>

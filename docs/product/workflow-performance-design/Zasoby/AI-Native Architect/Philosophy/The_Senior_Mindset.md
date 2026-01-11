@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # The Senior Mindset (Philosophy of Engineering)
 
 > **Context:** To, co odróżnia Seniora od Mid-a, to podejście do problemów, a nie tylko znajomość kodu.

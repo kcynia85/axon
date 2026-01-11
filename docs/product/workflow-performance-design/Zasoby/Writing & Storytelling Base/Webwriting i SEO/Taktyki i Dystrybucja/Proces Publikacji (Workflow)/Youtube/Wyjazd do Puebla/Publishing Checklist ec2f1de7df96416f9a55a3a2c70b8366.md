@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Publishing Checklist
 
 # Uploading and Publishing

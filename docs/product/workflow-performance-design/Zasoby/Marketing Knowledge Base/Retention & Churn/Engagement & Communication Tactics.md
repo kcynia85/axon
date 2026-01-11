@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Engagement & Communication Tactics (Retention)
 
 > **Cel:** Utrzymanie zaangażowania użytkownika poprzez wielokanałową komunikację (Push, Email, In-App) i budowanie społeczności.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # UX Writing: Microcopy i Wzorce
 
 ## 1. Fundamenty UX Writingu

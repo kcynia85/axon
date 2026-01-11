@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Model Klastrów Tematycznych (Strategia Głębi)
 
 <aside>

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Techniques for Defining Deeper Ideas and Ranking
 
 <aside>

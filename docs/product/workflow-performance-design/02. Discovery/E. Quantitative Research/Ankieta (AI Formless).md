@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Ankieta AI (Formless Strategy)
 
 > **Cel:** Zbieranie danych ilościowych w formie konwersacji, a nie nudnego formularza.

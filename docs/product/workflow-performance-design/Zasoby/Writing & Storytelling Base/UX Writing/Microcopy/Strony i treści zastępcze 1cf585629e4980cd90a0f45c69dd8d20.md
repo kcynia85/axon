@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Strony i treści zastępcze
 
 ### *Empty states*

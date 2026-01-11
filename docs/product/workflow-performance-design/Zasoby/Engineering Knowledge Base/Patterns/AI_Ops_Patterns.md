@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # AI Engineering & Ops Patterns
 
 > **Context:** Wzorce specyficzne dla pracy z LLM i Agentami.

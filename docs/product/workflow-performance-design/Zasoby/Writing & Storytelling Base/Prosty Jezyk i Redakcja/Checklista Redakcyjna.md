@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Checklista Redakcyjna
 
 ### Słabe i Nieprecyzyjne Słowa

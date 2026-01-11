@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Analityczne myślenie
 
 ### Czym jest analityczne myślenie

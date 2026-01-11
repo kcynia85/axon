@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Engagement & Management Patterns
 
 > **Cel:** Utrzymanie zaangażowania i danie użytkownikowi kontroli nad doświadczeniem.

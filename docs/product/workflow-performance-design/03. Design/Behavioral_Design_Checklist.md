@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Design
+---
+
 # Behavioral Design Checklist (Psychology Audit)
 
 > **Cel:** "Utwardzenie" projektu psychologią behawioralną. Sprawienie, by użytkownik *chciał* kliknąć.

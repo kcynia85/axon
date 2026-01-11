@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Priorytetowe Wskaźniki
 
 ### 8 Priorytetowych Wskaźników na Dashboardach

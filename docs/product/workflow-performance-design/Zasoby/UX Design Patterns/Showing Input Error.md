@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Showing Input Error
 
 ### **Zapobiegaj błędom od samego początku**

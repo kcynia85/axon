@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Metric Hierarchy Framework
 
 > **Cel:** Uporządkowanie chaosu danych. Od wizji (North Star) do codziennych metryk operacyjnych.

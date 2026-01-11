@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Prosty Język i Redakcja (Plain Language & Editing)
 
 > **Źródło:** Pełna baza wiedzy z Notion (Taktyki Prostego Języka, Techniki pisarskie, Metoda OPEN).

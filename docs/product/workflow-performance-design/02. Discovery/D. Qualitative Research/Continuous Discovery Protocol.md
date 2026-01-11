@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Continuous Discovery Protocol
 
 > **Cel:** Zamiana "wielkich badań" na nawyk cotygodniowych rozmów z klientami.

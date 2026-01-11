@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # [Draft] Szablon określania celu badań UX
 
 ## 1. Kontekst projektowy

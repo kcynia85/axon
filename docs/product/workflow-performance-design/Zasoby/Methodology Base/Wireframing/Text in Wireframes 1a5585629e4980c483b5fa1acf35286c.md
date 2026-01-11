@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Strony internetowe i aplikacje opierają się na tekście. [Treść](https://app.uxcel.com/glossary/content) tekstowa, wraz z elementami wizualnymi, ułatwia nawigację i realizację zadań w przejrzystej [kom"
+---
+
 # Text in Wireframes
 
 Strony internetowe i aplikacje opierają się na tekście. [Treść](https://app.uxcel.com/glossary/content) tekstowa, wraz z elementami wizualnymi, ułatwia nawigację i realizację zadań w przejrzystej [kompozycji](https://app.uxcel.com/glossary/layout-composition).

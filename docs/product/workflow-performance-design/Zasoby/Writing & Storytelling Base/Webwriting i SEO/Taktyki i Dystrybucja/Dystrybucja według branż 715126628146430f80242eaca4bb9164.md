@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Dystrybucja według branż
 
 ### B2B

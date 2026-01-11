@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Rekrutacja i Screening
 
 > **Cel:** Znalezienie właściwych ludzi, a nie "profesjonalnych respondentów".

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Best Practices for Vertical Navigation
 
 <aside>

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Product Management
+---
+
 # Scrum Rituals
 
 ## 1. Daily Stand-up (15 min)

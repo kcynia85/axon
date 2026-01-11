@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Data-Driven E-Commerce & E-Marketing
 
 <aside>

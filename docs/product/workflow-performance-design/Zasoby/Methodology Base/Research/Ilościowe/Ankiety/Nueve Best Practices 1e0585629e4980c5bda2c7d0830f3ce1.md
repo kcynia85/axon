@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Nueve Best Practices
 
 <aside>

@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # Modelowanie Treści
 
 ## 💡 Metodologia i Narzędzia

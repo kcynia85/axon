@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Behavioral Motivation Toolkit: Techniki UX 9K
 
 > **Cel:** Zestaw narzędzi psychologicznych do modelowania zachowań użytkownika.

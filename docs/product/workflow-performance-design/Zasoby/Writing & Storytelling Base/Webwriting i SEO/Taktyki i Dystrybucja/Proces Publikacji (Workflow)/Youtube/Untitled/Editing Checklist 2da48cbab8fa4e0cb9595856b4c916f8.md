@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Editing Checklist
 
 # A-Cut

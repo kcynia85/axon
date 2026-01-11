@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Ludzie są istotami społecznymi i w sytuacjach niepewności patrzą na innych, by wiedzieć, jak się zachować."
+---
+
 # Dowód Społeczny i Wpływ
 
 Ludzie są istotami społecznymi i w sytuacjach niepewności patrzą na innych, by wiedzieć, jak się zachować.

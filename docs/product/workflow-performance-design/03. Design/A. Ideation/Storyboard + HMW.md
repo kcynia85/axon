@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # Storyboard + HMW (How Might We)
 
 ## 💡 Metodologia i Narzędzia

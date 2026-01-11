@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Potencjalne zagrożenia związane z zarządzaniem ceną: - Potencjalne konkurowanie za pomocą ceny z własnym dystrybutorem (operującymi zarówno online, jak i na rynku tradycyjnym) - Możliwa konieczność op"
+---
+
 # Sklep producencki (marka D2C)
 
 Potencjalne zagrożenia związane z zarządzaniem ceną: - Potencjalne konkurowanie za pomocą ceny z własnym dystrybutorem (operującymi zarówno online, jak i na rynku tradycyjnym)

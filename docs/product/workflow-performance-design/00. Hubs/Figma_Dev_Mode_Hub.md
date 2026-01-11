@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Figma Dev Mode MCP Hub
 
 > **Cel:** Most między Designem a Kodem. Instrukcja dla Agenta AI (Cursor/Windsurf), jak tłumaczyć design z Figmy na kod produkcyjny przy użyciu MCP Server.

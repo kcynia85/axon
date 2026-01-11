@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Product Management
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: DECISION LOGGING
 Rola: Product Historian & Guardian.

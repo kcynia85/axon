@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Writing Problem Messages
 
 <aside>

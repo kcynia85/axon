@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Modele Perswazyjne i Frameworki Sprzedażowe
 
 > **Źródło:** Pełna baza wiedzy z Notion (AIDA, PAS, FAB, BAB, And So What, Taktyki Perswazji).

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agent Prompt: Storyboard & Breadboard Architect
 
 **Skopiuj poniższy prompt i wklej go do Agenta (LLM) w celu wygenerowania koncepcji produktu bez zbędnego wireframingu.**

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Model FAB + SPICE
 
 ### Opis produktu / oferty

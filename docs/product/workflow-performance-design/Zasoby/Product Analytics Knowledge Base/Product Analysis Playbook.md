@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Product Analysis Playbook
 
 > **Cel:** Przewodnik taktyczny dla PM-ów i Analityków. Jak wyciągać wnioski z danych, a nie tylko patrzeć na wykresy.

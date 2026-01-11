@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # React Best Practices (2025)
 
 ## Core Principles

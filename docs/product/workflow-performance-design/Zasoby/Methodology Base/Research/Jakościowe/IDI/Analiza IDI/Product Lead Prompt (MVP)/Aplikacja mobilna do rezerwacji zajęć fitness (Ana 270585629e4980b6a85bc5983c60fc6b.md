@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Aplikacja mobilna do rezerwacji zajęć fitness (Analiza)
 
 <aside>

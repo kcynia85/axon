@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # E-commerce & Conversion Patterns
 
 > **Cel:** Maksymalizacja sprzedaży poprzez usuwanie tarcia w procesie zakupowym.

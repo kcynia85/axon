@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Prototypowanie w Design Thinking
 
 <aside>

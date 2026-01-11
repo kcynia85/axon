@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Best Practices for Effective Ideation Sessions
 
 <aside>

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # North Star Metric & Outcome Mapping
 
 > **Cel:** Ustalenie jednego, głównego kierunku rozwoju produktu, który łączy wartość dla klienta z wynikiem biznesowym.

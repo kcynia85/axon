@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI Project Management Framework (RIGC)
 
 > **Status:** Strategic Tool

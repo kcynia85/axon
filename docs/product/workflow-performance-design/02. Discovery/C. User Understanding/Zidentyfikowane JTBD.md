@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: DISCOVERY & STRATEGY
 Rola: Senior UX Researcher & Product Strategist.

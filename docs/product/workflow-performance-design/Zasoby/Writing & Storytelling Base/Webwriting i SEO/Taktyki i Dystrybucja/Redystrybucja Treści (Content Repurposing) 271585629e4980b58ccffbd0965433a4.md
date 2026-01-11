@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Redystrybucja Treści (Content Repurposing)
 
 ### **Z wpisu blogowego**

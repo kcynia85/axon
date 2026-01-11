@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Writing Action Hub
 
 > **Cel:** Centrum dowodzenia dla wszystkich zadań związanych z pisaniem i storytellingiem.

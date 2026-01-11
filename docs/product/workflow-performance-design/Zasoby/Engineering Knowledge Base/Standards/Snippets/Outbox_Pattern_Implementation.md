@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Snippet: Transactional Outbox Pattern (Operationalized)
 
 > **Context:** Use this snippet when you need to write to DB and publish an Event atomically.

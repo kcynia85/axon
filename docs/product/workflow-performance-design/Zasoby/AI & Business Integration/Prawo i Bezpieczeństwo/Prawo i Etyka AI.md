@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Prawo, Bezpieczeństwo i Etyka w AI
 
 ## 1. Kluczowe Obszary Ryzyka

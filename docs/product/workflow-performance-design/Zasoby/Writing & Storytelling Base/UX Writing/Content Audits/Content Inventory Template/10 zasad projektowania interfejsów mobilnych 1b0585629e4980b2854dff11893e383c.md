@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # 10 zasad projektowania interfejsów mobilnych
 
 Topic: Technology

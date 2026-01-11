@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Aplikacja do planowania podróży grupowych "TripSync"
 
 <aside>

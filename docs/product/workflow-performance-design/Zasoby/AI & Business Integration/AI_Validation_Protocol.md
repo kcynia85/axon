@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI Output Validation Protocol (Bullshit Detector)
 
 > **Zasada nr 1:** Ufać, ale sprawdzać. Modele językowe (LLM) nie "liczą" – one "przewidują następny token". W analityce to recepta na katastrofę, jeśli nie masz procedury weryfikacji.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Context Injector Snippet (Manual RAG)
 
 > **Cel:** Gotowy szablon "Kanapki Kontekstowej" do wklejenia na początku każdej nowej sesji z Agentem AI.

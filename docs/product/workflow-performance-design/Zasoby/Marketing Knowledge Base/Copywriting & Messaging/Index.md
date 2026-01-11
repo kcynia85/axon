@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Copywriting & Messaging Strategy
 
 ## Modele Narracyjne

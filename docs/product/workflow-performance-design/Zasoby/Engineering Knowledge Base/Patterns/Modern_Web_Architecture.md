@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Modern Web Architecture Standards (Frontend)
 
 > **Context:** Stack Next.js + React. Wzorce dla wysokiej wydajności (Performance) i UX.

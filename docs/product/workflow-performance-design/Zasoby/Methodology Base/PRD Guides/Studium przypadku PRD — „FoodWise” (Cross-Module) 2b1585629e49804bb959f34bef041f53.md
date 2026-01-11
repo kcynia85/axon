@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Studium przypadku PRD — „FoodWise” (Cross-Module)
 
 ### PRD

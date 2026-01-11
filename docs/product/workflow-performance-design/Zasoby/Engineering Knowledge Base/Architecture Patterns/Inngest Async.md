@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Inngest Flows (Durable Execution)
 
 > **Problem:** Długie zadania (AI, PDF) są ucinane przez timeouty Vercel (Serverless).

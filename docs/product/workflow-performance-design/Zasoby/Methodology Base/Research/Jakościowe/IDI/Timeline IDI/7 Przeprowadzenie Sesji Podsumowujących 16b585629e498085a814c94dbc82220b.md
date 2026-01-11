@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # 7. Przeprowadzenie Sesji Podsumowujących
 
 <aside>

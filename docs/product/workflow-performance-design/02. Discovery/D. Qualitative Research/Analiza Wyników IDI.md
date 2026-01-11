@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Analiza Wyników IDI
 
 > **Cel:** Zamiana godzin nagrań w konkretne wnioski (Insights) i JTBD.

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Gamification Design Canvas (Workshop Template)
 
 > **Cel:** Zaprojektowanie kompletnego systemu motywacyjnego dla produktu.

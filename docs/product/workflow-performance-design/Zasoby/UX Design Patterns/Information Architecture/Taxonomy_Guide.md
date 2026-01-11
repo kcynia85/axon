@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Taxonomy & Metadata Guide
 
 > **Taksonomia:** To nie tylko "kategorie". To język, którym system "rozmawia" z użytkownikiem i bazą danych.

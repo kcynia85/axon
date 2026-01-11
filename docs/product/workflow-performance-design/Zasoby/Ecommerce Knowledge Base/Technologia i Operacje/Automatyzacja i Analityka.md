@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Automatyzacja i Analityka w E-commerce
 
 ## 1. Obszary do Automatyzacji

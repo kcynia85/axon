@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Researching User Needs
 
 <aside>

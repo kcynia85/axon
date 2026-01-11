@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Aplikacja do zarządzania finansami osobistymi "BudgetWise"
 
 <aside>

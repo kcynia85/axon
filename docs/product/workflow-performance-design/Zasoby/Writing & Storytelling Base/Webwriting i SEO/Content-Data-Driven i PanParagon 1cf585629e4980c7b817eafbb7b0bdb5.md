@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Content-Data-Driven i PanParagon
 
 <aside>

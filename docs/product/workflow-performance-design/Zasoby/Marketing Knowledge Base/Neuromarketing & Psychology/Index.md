@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Neuromarketing i Psychologia
 
 ## Podstawy psychologiczne

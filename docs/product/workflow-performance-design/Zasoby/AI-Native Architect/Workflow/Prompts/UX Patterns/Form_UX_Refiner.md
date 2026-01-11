@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agent Prompt: Form UX Refiner
 
 **Skopiuj poniższy prompt i wklej go do Agenta (LLM) w celu audytu i poprawy dowolnego formularza.**

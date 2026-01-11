@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Potencjalne zagrożenia związane z zarządzaniem ceną: - Mały potencjał sprzedażowy - Słabe warunki zakupowe - Nawet “dobra” cena promocyjna może nie być atrakcyjna dla klientów docelowych - Brak “dobre"
+---
+
 # Mały sklep internetowy działający w popularnej kategorii
 
 Potencjalne zagrożenia związane z zarządzaniem ceną: - Mały potencjał sprzedażowy

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Quick 10 rules of form validation
 
 1. Używaj natychmiastowej walidacji tylko dla trudnych do odpowiedzi (i skończonych) pytań

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agent Prompt: Discovery Interrogator
 
 **Skopiuj poniższy prompt i wklej go do Agenta (LLM), aby zamienić chaotyczne notatki w ustrukturyzowany fundament projektu.**

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Dystrybucja Treści i Formaty
 
 "Content is King, but Distribution is Queen and she wears the pants."

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Progressive Disclosure in UX
 
 <aside>

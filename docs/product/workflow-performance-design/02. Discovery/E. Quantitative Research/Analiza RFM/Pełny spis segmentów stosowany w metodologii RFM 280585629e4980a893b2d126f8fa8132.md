@@ -1,3 +1,9 @@
+---
+template_type: flow
+target_workspace: Discovery
+description: "W segmentacji RFM wartości **Recency (R)**, **Frequency (F)** i **Monetary (M)** są przypisywane w postaci skali numerycznej, najczęściej od **1 do 5** (lub 1 do 4), gdzie wyższa liczba oznacza lepszy"
+---
+
 # Pełny spis segmentów stosowany w metodologii RFM
 
 W segmentacji RFM wartości **Recency (R)**, **Frequency (F)** i **Monetary (M)** są przypisywane w postaci skali numerycznej, najczęściej od **1 do 5** (lub 1 do 4), gdzie wyższa liczba oznacza lepszy wynik. Oto, jak te wartości są przypisane do najpopularniejszych segmentów:

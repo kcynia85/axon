@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Techniki wpływające na percepcję wartości i ceny."
+---
+
 # Psychologia Cen i Decyzji
 
 Techniki wpływające na percepcję wartości i ceny.

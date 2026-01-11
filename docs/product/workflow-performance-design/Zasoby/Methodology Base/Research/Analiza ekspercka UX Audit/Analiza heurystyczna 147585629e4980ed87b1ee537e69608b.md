@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Analiza heurystyczna
 
 [**Heuristic evaluation**](../Jako%C5%9Bciowe%20160585629e4980ac8fdfc6e1b7f74636.md) 

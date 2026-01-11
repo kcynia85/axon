@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Copywriting, CRO i UX Writing w E-commerce
 
 ## 1. Karta Produktu (Product Page) - Twoja "Home Page"

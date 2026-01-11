@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Strategia i KPI w E-commerce
 
 > Fundamenty strategiczne dla sklepu internetowego.

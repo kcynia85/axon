@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Lista błędów wpływających na planowanie, ocenę ryzyka i zarządzanie projektami (zarówno u użytkowników, jak i w zespole produktowym)."
+---
+
 # Błędy Poznawcze w Procesie Decyzyjnym
 
 Lista błędów wpływających na planowanie, ocenę ryzyka i zarządzanie projektami (zarówno u użytkowników, jak i w zespole produktowym).

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Retention Experiments Kit
 
 > **Cel:** Zestaw narzędzi i hipotez do testowania strategii utrzymania klienta.

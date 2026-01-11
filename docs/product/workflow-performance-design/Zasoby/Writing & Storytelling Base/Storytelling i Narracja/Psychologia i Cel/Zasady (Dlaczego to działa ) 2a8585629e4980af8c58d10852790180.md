@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Zasady (Dlaczego to działa?)
 
 <aside>

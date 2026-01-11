@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Product Management
+---
+
 # Product Legal & Compliance Checklist
 
 > **Cel:** Szybka weryfikacja zgodności produktu z prawem na etapie Discovery/Delivery.

@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Delivery
+---
+
 # MVP Status
 
 ## 1. Podsumowanie Wdrożenia

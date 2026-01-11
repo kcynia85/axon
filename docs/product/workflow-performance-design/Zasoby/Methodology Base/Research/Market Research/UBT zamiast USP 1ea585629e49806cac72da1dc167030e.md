@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # UBT zamiast USP
 
 ### Unique Buying Tribe (UBT)

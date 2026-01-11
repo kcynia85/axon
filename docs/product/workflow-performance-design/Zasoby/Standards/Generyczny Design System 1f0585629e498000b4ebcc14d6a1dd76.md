@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Generyczny Design System*
 
 <aside>

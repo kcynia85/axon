@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # Service Blueprinting
 
 ## 💡 Metodologia i Narzędzia

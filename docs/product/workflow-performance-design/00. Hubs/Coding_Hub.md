@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Coding Action Hub
 
 > **Cel:** Centrum sterowania procesem wytwarzania oprogramowania. Od wymagań po deployment.

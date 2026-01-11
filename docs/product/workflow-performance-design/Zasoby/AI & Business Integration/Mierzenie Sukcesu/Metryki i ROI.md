@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Mierzenie Sukcesu Wdrożeń AI (ROI)
 
 ## 1. Rodzaje Korzyści (Gdzie szukać ROI)

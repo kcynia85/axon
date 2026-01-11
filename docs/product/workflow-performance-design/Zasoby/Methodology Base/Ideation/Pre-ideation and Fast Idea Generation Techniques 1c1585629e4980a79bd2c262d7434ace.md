@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Pre-ideation and Fast Idea Generation Techniques
 
 <aside>

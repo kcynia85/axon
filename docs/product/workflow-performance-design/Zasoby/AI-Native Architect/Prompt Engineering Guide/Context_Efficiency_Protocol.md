@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Context Efficiency Protocol (Token Window Management)
 
 > **"Context is King, but too much Context is Noise."**

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Raport z badania Card Sorting
 
 ## Informacje o badaniu

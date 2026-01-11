@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # E-commerce Optimization Strategy
 
 > **Cel:** Systematyczne podnoszenie konwersji (CRO), a nie losowe strzały.

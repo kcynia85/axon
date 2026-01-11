@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Product Management
+---
+
 # AI Implementation Roadmap (Mapa Drogowa Wdrożenia)
 
 > **Cel:** Ustrukturyzowany plan wdrożenia AI, od pomysłu do skalowania, minimalizujący ryzyko i opór zespołu.

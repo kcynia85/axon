@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Tools for Problem Definition
 
 <aside>

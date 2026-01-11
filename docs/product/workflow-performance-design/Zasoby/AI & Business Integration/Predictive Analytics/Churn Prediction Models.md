@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Churn Prediction & Predictive Analytics
 
 > **Cel:** Wykorzystanie danych i AI do przewidywania odejścia klienta *zanim* to nastąpi.

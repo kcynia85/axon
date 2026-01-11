@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Psyche Framework
 
 ## 💡 Metodologia i Narzędzia

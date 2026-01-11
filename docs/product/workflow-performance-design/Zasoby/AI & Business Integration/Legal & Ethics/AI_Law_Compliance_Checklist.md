@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI & Law Compliance Checklist
 
 > **Status:** Operational Standard

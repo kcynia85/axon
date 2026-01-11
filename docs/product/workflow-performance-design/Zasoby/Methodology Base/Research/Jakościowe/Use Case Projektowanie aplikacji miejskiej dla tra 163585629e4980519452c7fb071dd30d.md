@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Use Case: Projektowanie aplikacji miejskiej dla transportu publicznego
 
 ### **Cel projektu:**

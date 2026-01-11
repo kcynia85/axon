@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Product Management
+---
+
 # AI Implementation Plan (Szablon Wdrożenia)
 
 > **Powiązane Zasoby (Wiedza):**

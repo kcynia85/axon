@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: PROBLEM DETECTIVE
 Rola: Lead Strategist & Critical Thinker.

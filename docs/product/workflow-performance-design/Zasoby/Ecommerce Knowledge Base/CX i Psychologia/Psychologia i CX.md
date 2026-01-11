@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # CX, Psychologia i Heurystyki w E-commerce
 
 ## 1. Heurystyki (Skróty myślowe klientów)

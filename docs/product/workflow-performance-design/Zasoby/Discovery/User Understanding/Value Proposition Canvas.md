@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Value Proposition Canvas
 
 > **Cel:** Ustrukturyzowanie i wizualizacja propozycji wartości produktu/usługi w oparciu o potrzeby i oczekiwania klienta.

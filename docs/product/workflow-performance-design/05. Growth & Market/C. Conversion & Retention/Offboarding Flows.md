@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Offboarding Flows (Procesy Rezygnacji)
 
 > **Cel:** Zatrzymanie użytkownika w momencie rezygnacji (Win-back) lub zebranie wartościowego feedbacku.

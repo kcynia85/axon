@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Design
+---
+
 # Figma & Interakcje
 
 ## 💡 Metodologia i Narzędzia

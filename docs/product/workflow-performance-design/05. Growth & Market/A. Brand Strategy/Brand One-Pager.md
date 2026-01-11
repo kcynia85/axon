@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Growth & Market
+---
+
 # Brand One-Pager
 
 > **Powiązane Zasoby (Wiedza):**

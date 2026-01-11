@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Meta Prompt Generator (Self-Refinement)
 
 > **Cel:** Ten dokument zawiera meta-prompty, które służą do auto-refleksji i ulepszania własnych promptów przez Agenta AI. Celem jest zwiększenie precyzji, autonomii i zdolności do samodzielnego rozwiązywania problemów.

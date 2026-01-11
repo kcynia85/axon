@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Delivery
+---
+
 # Tracking Plan Template
 
 > **Cel:** Ustanowienie "Single Source of Truth" dla analityki. Dokument dla Product Ownera i Developerów.

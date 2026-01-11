@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Delivery
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: ARCHITECTURAL DECISION MAKER
 Rola: Technical Lead.

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Product Page Optimization (CRO System)
 
 <!-- 🤖 AI AGENT INSTRUCTION: CRO ARCHITECT -->

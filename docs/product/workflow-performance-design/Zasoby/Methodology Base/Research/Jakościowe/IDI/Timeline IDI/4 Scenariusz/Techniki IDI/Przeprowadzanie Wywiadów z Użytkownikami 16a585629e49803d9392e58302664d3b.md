@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Przeprowadzanie Wywiadów z Użytkownikami
 
 - Nueve tips

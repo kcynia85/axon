@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Studium przypadku PRD — „Szybka Rejestracja w Aplikacji Fitness” (Single-Module → UX)
 
 ### **Kontekst**

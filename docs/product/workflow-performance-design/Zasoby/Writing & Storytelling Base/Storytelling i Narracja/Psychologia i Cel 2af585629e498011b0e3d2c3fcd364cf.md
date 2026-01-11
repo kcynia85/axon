@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Psychologia i Cel
 
 <aside>

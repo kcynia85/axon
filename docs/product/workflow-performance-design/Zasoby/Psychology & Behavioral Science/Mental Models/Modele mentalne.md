@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Definicja: Użytkownicy tworzą uproszczone reprezentacje działania systemu. Kontekst UX: Myślenie, Zapamiętywanie Nazwa angielska: Mental models Przykład: Nawigacja: Użycie standardowej ikony koszyka z"
+---
+
 # Modele mentalne
 
 Definicja: Użytkownicy tworzą uproszczone reprezentacje działania systemu.

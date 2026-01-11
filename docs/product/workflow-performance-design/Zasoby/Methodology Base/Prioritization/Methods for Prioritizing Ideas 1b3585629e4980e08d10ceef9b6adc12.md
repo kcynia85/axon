@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Methods for Prioritizing Ideas
 
 <aside>

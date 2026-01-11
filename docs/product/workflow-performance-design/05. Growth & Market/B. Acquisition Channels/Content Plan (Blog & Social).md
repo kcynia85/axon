@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: CONTENT MARKETING STRATEGY
 Rola: Head of Content & Growth.

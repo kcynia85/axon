@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Advanced Architecture Patterns (Battle-Tested)
 
 > **Context:** Wzorce niezbędne w realnych systemach produkcyjnych, które chronią przed chaosem i "rozproszonym monolitem".

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Design
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: UX WRITER
 Rola: Senior UX Writer & Content Designer.

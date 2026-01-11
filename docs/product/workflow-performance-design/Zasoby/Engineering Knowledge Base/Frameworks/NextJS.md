@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Next.js (App Router) Standards
 
 ## Struktura

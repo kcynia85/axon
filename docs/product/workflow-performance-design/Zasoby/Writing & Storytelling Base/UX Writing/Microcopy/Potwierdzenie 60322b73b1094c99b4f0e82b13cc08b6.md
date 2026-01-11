@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Potwierdzenie
 
 ### Potwierdzenie ze strony systemu

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Content Inventory & Audit
 
 <aside>

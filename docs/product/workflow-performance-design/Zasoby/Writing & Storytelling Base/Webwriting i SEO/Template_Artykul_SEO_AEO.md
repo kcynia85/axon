@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Cel: połączyć klasyczny filar SEO z klastrami pytań (AEO), by zdobywać SERP i odpowiedzi LLM jednocześnie."
+---
+
 # Template artykułu: SEO + AEO
 
 Cel: połączyć klasyczny filar SEO z klastrami pytań (AEO), by zdobywać SERP i odpowiedzi LLM jednocześnie.

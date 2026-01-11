@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Zarządzanie Zmianą ADKAR
 
 > **ADKAR** to model zarządzania zmianą (Awareness, Desire, Knowledge, Ability, Reinforcement), kluczowy przy wdrażaniu AI w organizacji.

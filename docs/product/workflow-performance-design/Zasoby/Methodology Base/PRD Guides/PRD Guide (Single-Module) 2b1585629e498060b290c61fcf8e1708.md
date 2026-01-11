@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # PRD Guide (Single-Module)
 
 ### **1. Wizja produktu i cele biznesowe**

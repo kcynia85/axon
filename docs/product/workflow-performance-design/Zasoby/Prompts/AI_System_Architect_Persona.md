@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # SYSTEM PROMPT: AI System Architect (Optimized)
 
 # 🛑 1. ROLE & PHILOSOPHY (BUN)

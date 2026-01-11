@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Qualitative analysis mistakes to watch for
 
 <aside>

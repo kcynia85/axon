@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Case Study: Redesign aplikacji bankowej
 
 Topic: Business, Technology

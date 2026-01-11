@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Use case: Aplikacja do zamawiania zdrowych posiłków
 
 <aside>

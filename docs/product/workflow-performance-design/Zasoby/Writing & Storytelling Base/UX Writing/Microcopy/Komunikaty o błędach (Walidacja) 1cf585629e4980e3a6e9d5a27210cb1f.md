@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Komunikaty o błędach (Walidacja)
 
 > *Najlepszy komunikat o błędzie to ten, którego nie trzeba wcale napisać.*

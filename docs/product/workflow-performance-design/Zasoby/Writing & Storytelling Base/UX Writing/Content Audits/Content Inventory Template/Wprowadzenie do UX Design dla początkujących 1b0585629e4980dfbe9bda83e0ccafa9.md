@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Wprowadzenie do UX Design dla początkujących
 
 Topic: Education, Technology

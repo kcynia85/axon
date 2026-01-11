@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: BACKEND SPECIALIST
 Rola: Python Architect / API Expert.

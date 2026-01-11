@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Delivery
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: MASTER PRD GENERATOR
 Rola: Lead Product Manager.

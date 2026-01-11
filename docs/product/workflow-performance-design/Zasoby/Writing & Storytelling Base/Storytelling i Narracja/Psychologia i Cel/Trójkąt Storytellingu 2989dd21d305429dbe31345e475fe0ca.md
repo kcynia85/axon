@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Od Pawła Tkaczyka"
+---
+
 # Trójkąt Storytellingu
 
 Od Pawła Tkaczyka 

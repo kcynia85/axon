@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Pozycjonowanie (CEP & Rytuały)
 
 ## 💡 Metodologia i Narzędzia

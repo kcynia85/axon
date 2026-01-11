@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Framework POEM
 
 ### Paid

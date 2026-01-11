@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Testowanie w Design Thinking
 
 <aside>

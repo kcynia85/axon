@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Hexagonal Structure Snippet (Python/FastAPI)
 
 > **Cel:** Gotowa struktura folderów i kodu dla architektury heksagonalnej w projekcie AI.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Leak-Proof Multi-tenancy (RLS)
 
 > **Problem:** Ryzyko wycieku danych między klientami w aplikacjach B2B (SaaS).

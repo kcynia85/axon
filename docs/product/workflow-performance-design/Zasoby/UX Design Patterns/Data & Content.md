@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Data & Content Patterns
 
 > **Cel:** Przejrzysta prezentacja dużych zbiorów danych i zarządzanie brakiem treści.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Ideation Techniques & Challenges
 
 [**Ideation Stage of Service Design**](https://www.notion.so/Ideation-Stage-of-Service-Design-1b3585629e4980a39590cd3cb87e80f8?pvs=21) 

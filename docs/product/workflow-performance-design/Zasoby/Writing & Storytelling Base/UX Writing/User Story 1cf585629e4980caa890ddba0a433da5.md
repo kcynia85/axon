@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # User Story
 
 ### **User story (Diagram)**

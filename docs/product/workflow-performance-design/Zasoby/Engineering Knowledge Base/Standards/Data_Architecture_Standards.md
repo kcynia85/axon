@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Data Architecture Standards (Integrity in AI Era)
 
 > **Context:** Jak zarządzać danymi, którymi karmimy AI i które od AI otrzymujemy.

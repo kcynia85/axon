@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Organization Schemes & Structures
 
 > **Systemy Organizacji:** Metody grupowania treści. Wybór zależy od mentalnego modelu użytkownika.

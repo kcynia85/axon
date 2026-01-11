@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Performance UX Patterns
 
 > **Zasada:** Szybkość to "Feature". Odczuwalna wydajność (Perceived Performance) jest ważniejsza niż surowe milisekundy.

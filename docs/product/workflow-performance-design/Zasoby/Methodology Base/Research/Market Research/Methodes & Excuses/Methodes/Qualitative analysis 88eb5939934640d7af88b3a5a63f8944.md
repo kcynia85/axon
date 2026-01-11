@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Qualitative analysis
 
 - Nie można generalizować na całą populację

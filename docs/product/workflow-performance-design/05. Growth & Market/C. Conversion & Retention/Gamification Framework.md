@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Gamification & Loyalty Framework (Master Guide)
 
 > **Cel:** Operacyjny system projektowania zachowań (Behavioral Design System).

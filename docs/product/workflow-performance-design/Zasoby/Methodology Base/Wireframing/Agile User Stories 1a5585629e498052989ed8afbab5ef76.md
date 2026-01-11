@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agile User Stories
 
 <aside>

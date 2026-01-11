@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Delivery
+---
+
 # AI & Human-Centric Quality Assurance Checklist
 
 ## 💡 Metodologia i Narzędzia

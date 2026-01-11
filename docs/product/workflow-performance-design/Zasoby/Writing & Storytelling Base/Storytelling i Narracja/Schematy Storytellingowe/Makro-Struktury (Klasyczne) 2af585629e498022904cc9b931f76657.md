@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Makro-Struktury (Klasyczne)
 
 ### **Hero’s journey**

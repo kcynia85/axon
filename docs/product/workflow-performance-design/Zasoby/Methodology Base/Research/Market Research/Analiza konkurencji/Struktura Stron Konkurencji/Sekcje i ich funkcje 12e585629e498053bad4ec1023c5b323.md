@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Sekcje i ich funkcje
 
 | **Sekcja** | **Funkcja** |

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Product Management
+---
+
 # Sprint Dashboard
 
 ## 💡 Metodologia i Narzędzia

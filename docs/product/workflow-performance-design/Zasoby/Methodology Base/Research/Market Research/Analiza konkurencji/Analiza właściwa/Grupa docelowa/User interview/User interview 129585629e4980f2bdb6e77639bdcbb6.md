@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # User interview
 
 ## Przygotowanie i zakres badania

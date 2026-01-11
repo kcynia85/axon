@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Dobór Taktyk i Formatów
 
 ### Wartość

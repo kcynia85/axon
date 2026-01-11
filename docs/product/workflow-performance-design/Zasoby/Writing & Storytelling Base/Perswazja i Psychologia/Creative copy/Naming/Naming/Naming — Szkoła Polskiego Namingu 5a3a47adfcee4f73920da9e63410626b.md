@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Naming — Szkoła Polskiego Namingu
 
 <aside>

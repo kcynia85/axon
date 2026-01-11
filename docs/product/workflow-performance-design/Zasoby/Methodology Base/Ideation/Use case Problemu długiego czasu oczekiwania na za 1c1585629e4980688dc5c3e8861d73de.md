@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Use case:  Problemu długiego czasu oczekiwania na zamówienie w restauracjach fast food (Technika SCAMPER)
 
 <aside>

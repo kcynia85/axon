@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # E-commerce UX Design Guide
 
 > **Cel:** Kompleksowy przewodnik po projektowaniu doświadczeń użytkownika w e-commerce, od badań po optymalizację ścieżek zakupowych.

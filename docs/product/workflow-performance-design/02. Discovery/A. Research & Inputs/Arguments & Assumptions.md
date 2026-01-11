@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Arguments & Assumptions
 
 ## 💡 Metodologia i Narzędzia

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Manifesto: Zderzenie Epok
 
 > *Dokument definiujący przejście z roli "Programisty" na "Architekta Systemów AI".*

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Data, Persistence & Resilience Patterns
 
 > **Context:** Bazy danych, cache i niezawodność infrastruktury.

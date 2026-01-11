@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI Implementation Maturity Model
 
 > **Status:** Strategic Framework

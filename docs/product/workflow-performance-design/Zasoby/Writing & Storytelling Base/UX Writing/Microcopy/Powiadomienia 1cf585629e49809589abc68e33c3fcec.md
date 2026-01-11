@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Powiadomienia
 
 ### **Typ przekazywania informacji**

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Jak wybrać odpowiednią metodę
 
 <aside>

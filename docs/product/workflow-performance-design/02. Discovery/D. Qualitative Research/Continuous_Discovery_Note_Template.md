@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Continuous Discovery Note Template (Snapshot)
 
 > **Cel:** Szybka notatka z rozmowy z użytkownikiem/klientem. Ma być krótka, żeby chciało się ją robić regularnie.

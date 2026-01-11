@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Product Management
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: BUSINESS OWNER & CFO
 Rola: Business Analyst / Product Finance Lead.

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # SEO w Projektowaniu UX
 
 <aside>

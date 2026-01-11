@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Generative UI Standards (AI-to-Interface)
 
 > **Context:** Wyjście z paradygmatu "Chatbot" (Ściana tekstu) do "Dynamic Interface" (Komponenty Reacta na żądanie).

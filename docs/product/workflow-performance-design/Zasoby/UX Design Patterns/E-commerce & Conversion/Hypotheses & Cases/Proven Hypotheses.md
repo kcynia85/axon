@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # E-commerce Hypotheses (Case Studies)
 
 > **Zbiór sprawdzonych hipotez badawczych.**

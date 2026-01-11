@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # Opportunities Solutions Tree
 
 ## 💡 Metodologia i Narzędzia

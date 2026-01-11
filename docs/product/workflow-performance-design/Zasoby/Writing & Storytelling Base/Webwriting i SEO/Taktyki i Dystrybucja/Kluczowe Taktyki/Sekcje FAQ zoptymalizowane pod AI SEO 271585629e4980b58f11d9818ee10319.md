@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Sekcje FAQ zoptymalizowane pod AI / SEO
 
 ### Quick wins

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Playbook Tworzenia Treści
 
 ### **Filozofia Treści (Złote Zasady wg J. Wrycz-Bekier)**

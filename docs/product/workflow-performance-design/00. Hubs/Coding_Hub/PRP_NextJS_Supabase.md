@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: FRONTEND SPECIALIST
 Rola: Senior React Developer / Vercel Expert.

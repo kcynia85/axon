@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Analiza Konkurencji & Benchmarks
 
 ## 💡 Metodologia i Narzędzia

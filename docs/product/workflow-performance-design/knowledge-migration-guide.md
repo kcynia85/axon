@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Knowledge Migration Guide
 
 > **Role:** Operational Guide for Knowledge Ingestion

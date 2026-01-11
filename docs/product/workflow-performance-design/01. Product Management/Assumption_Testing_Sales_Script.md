@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Product Management
+---
+
 # Assumption Testing Sales Script
 > **Cel:** Przekonanie klienta, że "wolniej znaczy szybciej". Testowanie założeń to nie koszt, to oszczędność.
 > **Użycie:** Podczas rozmowy sprzedażowej / warsztatu zerowego, gdy klient chce "już kodować".

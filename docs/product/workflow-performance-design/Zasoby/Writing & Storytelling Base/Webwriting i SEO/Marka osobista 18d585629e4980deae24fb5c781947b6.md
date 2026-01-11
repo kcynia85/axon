@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Marka osobista
 
 <aside>

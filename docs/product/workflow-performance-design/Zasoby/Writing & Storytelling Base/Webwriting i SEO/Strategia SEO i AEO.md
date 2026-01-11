@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Strategia SEO (Search Engine Optimization) i AEO (Answer Engine Optimization)
 
 ## 1. Nowa Era Wyszukiwania: Od Słów Kluczowych do Intencji

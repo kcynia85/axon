@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Model PRISMA / NextJS
 
 ## 1. Definicja schematu Prisma

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Product Lead Prompt (MVP)
 
 ### Analiza Danych z Wywiadów z Użytkownikami (Template)

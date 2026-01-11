@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Prompt Structure Fundamentals
 
 > **Cel:** Fundamenty skutecznej komunikacji z modelem LLM.

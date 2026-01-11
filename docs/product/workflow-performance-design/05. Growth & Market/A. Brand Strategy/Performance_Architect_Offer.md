@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Oferta: Performance Product Architect (One-Man Army)
 
 > **Status:** Draft Strategiczny

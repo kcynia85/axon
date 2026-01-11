@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Instant Analytics (Materialized Views)
 
 > **Problem:** Dashboardy ładują się wolno, bo liczą agregacje (SUM, COUNT) na żywo.

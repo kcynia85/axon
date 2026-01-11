@@ -1,3 +1,8 @@
+---
+template_type: crew
+description: "Z modułami: Marketing, UX Writing, UX/UI, Coding, Sale Enablement"
+---
+
 # PRD Guide (Cross-Module)
 
 Z modułami: Marketing, UX Writing, UX/UI, Coding, Sale Enablement

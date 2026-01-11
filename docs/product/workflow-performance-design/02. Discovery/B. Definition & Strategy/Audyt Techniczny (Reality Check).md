@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Operational Reality Check (Brief Techniczny / Audyt)
 
 > **Cel:** Szybka weryfikacja zasobów klienta, aby dobrać technologię, której nie trzeba "ratować" po wdrożeniu.

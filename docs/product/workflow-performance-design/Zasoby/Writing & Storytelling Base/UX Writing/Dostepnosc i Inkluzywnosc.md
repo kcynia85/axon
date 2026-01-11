@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Dostępność i Inkluzywność w UX Writing
 
 ## 1. Dostępność (Accessibility / WCAG)

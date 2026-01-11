@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agent Prompt: Checkout Optimizer
 
 **Skopiuj poniższy prompt i wklej go do Agenta (LLM) w celu zaprojektowania lub optymalizacji procesu zakupowego (Checkout).**

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Vibe Coding Protocol (The Accelerators)
 
 > **Status:** New Standard

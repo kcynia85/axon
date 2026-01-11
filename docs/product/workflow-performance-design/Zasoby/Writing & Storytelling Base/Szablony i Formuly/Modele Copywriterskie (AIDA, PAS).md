@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Model AIDA
 
 ### Zero-shot plus + Model AIDA

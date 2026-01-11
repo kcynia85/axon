@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Usability Benchmarking - Example
 
 ### Cel:

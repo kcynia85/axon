@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Kontekst Biznesowy (JTBD Biznesu)
 
 ## 💡 Metodologia i Narzędzia

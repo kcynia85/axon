@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Circuit Breaker Pattern (Resilience)
 
 > **Problem:** Kaskadowe awarie. Gdy zewnętrzny serwis (np. OpenAI, API Płatności) pada, Twój system wisi, zużywając zasoby (wątki/połączenia), aż sam padnie.

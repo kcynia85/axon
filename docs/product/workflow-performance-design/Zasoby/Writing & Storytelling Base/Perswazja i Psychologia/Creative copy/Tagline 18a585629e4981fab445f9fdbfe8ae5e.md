@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Slogan pozycjonujący — Claim"
+---
+
 # Tagline
 
 Slogan pozycjonujący — Claim

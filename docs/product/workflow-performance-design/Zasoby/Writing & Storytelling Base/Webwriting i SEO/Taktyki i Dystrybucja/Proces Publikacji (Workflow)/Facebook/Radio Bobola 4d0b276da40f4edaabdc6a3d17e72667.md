@@ -1,3 +1,8 @@
+---
+template_type: crew
+description: "Status: Research Format: Behind scene Post No.: 1"
+---
+
 # Radio Bobola
 
 Status: Research

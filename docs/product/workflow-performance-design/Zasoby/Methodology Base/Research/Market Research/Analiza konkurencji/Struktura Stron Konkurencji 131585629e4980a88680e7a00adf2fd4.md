@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Struktura Stron Konkurencji
 
 ## Research + Dokumentacja

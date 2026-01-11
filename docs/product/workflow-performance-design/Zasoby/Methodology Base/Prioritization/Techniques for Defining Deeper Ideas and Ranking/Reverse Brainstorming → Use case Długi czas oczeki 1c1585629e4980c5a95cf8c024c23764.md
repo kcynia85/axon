@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Reverse Brainstorming → Use case: Długi czas oczekiwania na zamówienie w restauracji fast food
 
 ### 🔍 **Jak działa Reverse Brainstorming?**

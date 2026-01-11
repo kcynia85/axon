@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Cele Biznesowe
 
 <aside>

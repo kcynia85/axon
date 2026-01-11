@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Information Architecture Fundamentals
 
 > **Fundamenty:** Jak użytkownicy szukają informacji i jak my powinniśmy im to ułatwić.

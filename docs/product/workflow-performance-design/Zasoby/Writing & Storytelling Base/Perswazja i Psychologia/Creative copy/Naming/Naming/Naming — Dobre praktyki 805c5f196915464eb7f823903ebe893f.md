@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Naming — Dobre praktyki
 
 <aside>

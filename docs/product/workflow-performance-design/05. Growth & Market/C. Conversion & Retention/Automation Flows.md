@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Growth & Market
+---
+
 # Automation Flows
 
 ## 💡 Metodologia i Narzędzia

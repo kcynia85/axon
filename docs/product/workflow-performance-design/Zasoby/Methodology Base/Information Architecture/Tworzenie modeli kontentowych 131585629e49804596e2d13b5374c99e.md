@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Tworzenie modeli kontentowych
 
 <aside>

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Delivery
+---
+
 # UX Audit — Analiza heurystyczna (Ecommerce)
 
 > **Cel:** Przeprowadzenie heurystycznej analizy UX dla interfejsów e-commerce, identyfikacja problemów i rekomendacja rozwiązań.

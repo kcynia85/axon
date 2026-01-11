@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Churn Prevention Strategy & Framework
 
 > **Cel:** Zmniejszenie odpływu klientów (Logo Churn & Revenue Churn).

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Persona marketingowa vs UX persona
 
 [text.txt](Persona%20marketingowa%20vs%20UX%20persona/text.txt)

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # E-commerce Copywriting Master Guide
 
 > **Cel:** Kompleksowy przewodnik po efektywnym copywritingu w e-commerce, od fundamentów SEO po zaawansowane techniki perswazji i optymalizacji konwersji.

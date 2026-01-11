@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Differentation
 
 ### Who shares the brandscape

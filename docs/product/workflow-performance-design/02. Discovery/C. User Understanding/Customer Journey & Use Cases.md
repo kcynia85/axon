@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # Customer Journey & Use Cases
 
 ## 💡 Metodologia i Narzędzia

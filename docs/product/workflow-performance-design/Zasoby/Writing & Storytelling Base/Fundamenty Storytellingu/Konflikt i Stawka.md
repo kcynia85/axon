@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Konflikt i Stawka
 
 > **Silnik opowieści.** Bez konfliktu nie ma historii. Bez stawki historia nikogo nie obchodzi.

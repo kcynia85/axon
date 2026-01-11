@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Analytics Tools & Tech Stack
 
 > **Cel:** Przegląd narzędzi do zbierania, analizy i aktywacji danych.

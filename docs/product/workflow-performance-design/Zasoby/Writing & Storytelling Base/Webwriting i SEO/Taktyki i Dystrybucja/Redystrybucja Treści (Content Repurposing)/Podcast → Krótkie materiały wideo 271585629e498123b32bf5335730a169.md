@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Podcast → Krótkie materiały wideo
 
 <aside>

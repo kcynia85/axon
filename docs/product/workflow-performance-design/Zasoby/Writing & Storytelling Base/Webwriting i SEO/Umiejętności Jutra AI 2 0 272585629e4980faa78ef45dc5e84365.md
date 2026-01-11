@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Umiejętności Jutra AI 2.0
 
 ### Stworzymy nowe treści

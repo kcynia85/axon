@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Tool Stack Hub
 
 > **Cel:** Centralny rejestr narzędzi wykorzystywanych w Workflow Performance Design.

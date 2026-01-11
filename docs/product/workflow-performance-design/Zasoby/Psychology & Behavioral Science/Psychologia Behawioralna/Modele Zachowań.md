@@ -1,3 +1,8 @@
+---
+template_type: crew
+description: "Modele tłumaczące, dlaczego ludzie podejmują (lub nie) określone działania."
+---
+
 # Modele Zachowań
 
 Modele tłumaczące, dlaczego ludzie podejmują (lub nie) określone działania.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Model Iteracyjny (Strategia Elastyczności)
 
 ### **Iteracyjne Ulepszanie (Podejście elastyczne)**

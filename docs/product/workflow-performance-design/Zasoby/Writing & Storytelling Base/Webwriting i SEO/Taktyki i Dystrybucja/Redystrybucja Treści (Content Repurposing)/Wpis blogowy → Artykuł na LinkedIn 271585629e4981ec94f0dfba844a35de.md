@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Wpis blogowy → Artykuł na LinkedIn
 
 <aside>

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Franchise model
 
 ### Budowanie modelu biznesowego na zasadzie franczyzy

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Analityka — Rodzaje danych klienta
 
 ### Demograficzne

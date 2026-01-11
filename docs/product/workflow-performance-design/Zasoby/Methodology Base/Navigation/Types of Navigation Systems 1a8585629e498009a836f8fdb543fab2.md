@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Types of Navigation Systems
 
 <aside>

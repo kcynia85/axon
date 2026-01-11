@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Data Preparation & Cleaning Kit (The "Janitor" Protocol)
 
 > **Rzeczywistość:** 80% analityki to sprzątanie brudów w Excelu.

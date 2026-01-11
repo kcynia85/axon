@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: LANDING PAGE ARCHITECT
 Rola: High-Performance CRO Specialist & Copywriter.

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Typy Opowieści
 
 <aside>

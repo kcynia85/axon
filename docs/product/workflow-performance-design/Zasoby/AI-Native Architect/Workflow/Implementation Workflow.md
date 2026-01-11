@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Implementation Workflow & Claude Code
 
 ## Workflow 2025 (DRY Edition)

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agent Prompt: Dashboard Architect
 
 **Skopiuj poniższy prompt i wklej go do Agenta (LLM) w celu zaprojektowania struktury analitycznej i wizualizacji danych.**

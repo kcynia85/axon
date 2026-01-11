@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agile UX & Lean UX: Metodologia Pracy
 
 > **Context:** Fundament teoretyczny dla współpracy Product Designera z zespołami Deweloperskimi.

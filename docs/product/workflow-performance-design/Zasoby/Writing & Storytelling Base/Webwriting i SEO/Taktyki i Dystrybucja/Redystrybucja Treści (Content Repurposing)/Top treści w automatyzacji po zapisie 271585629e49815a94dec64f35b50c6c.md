@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Jeżeli ktoś zapisuje się na Twoją listę mailową i przez kilka tygodni nie nawiązujesz z nim żadnego kontaktu, to nie oczekuj od niego zaangażowania. Moment po zapisie na newsletter jest kluczowy i war"
+---
+
 # Top treści w automatyzacji po zapisie
 
 Jeżeli ktoś zapisuje się na Twoją listę mailową i przez kilka tygodni nie nawiązujesz z nim żadnego kontaktu, to nie oczekuj od niego zaangażowania. Moment po zapisie na newsletter jest kluczowy i warto go dobrze wykorzystać.

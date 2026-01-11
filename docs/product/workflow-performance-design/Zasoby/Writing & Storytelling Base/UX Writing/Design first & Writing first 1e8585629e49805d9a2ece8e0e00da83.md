@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Design first & Writing first
 
 ### UX Designer wyznacza kierunek

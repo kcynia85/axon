@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Churn Prevention Master Guide
 
 > **Status:** Knowledge Base (Theory & Patterns)

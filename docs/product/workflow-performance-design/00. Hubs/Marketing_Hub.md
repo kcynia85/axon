@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Marketing Action Hub
 
 > **Cel:** Planowanie strategii, kampanii i wzrostu.

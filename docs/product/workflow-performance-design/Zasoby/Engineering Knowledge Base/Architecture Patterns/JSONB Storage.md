@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Hybrid Data Storage (JSONB + GIN)
 
 > **Problem:** Potrzeba przechowywania danych o zmiennej strukturze (np. atrybuty produktów) w relacyjnej bazie bez migracji.

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # AI Prompting i Frameworki
 
 > **Źródło:** Pełna baza wiedzy z Notion (Techniki Promptowania, Meta Prompty, Frameworki z AI).

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # Gamification & Behavioral Audit Checklist
 
 > **Cel:** Szybka diagnoza stanu behawioralnego produktu.

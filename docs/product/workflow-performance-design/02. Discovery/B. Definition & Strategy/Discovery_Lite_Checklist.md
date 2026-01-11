@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Discovery Lite Checklist (4h Process)
 
 > **Cel:** Szybka weryfikacja sensu biznesowego dla małych projektów / MVP.

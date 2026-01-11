@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Product Legal & Compliance Handbook
 
 > **Cel:** Kompendium wiedzy prawnej dla Product Managera.

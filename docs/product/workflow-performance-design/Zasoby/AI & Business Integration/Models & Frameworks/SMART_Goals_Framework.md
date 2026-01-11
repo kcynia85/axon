@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # SMART Goals Framework
 
 > **Status:** Operational Tool

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # AI Personalization Framework
 
 > **Cel:** Wykorzystanie AI do dostarczania spersonalizowanych doświadczeń, które zwiększają konwersję i retencję.

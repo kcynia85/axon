@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Formuły do Pisania Nagłówków
 
 <aside>

@@ -1,3 +1,8 @@
+---
+template_type: flow
+description: "Potencjalne zagrożenia związane z zarządzaniem ceną: - Mały potencjał wartości rynku związany z niszą może spowodować koniczność utrzymania relatywnie wysokich cen, aby generować odpowiedni poziom zys"
+---
+
 # Sklep specjalistyczny, oferujący produkty oferujące produkty niszowe lub mało rozpoznawalne marki
 
 Potencjalne zagrożenia związane z zarządzaniem ceną: - Mały potencjał wartości rynku związany z niszą może spowodować koniczność utrzymania relatywnie wysokich cen, aby generować odpowiedni poziom zysku

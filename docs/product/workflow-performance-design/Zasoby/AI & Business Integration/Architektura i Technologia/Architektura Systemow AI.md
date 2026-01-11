@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Architektura Systemów AI i Zarządzanie Danymi
 
 ## 1. ML (Machine Learning) vs LLM (Large Language Models)

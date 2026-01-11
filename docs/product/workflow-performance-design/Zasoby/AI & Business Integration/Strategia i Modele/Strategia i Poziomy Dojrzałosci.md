@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Strategia Wdrażania AI i Modele Biznesowe
 
 ## 1. 5 Poziomów Dojrzałości AI

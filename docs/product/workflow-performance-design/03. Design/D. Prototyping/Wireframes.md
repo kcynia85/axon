@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Design
+---
+
 # Wireframes (Cognitive Structure)
 
 <!-- 🤖 AI AGENT INSTRUCTION: UX ARCHITECT -->

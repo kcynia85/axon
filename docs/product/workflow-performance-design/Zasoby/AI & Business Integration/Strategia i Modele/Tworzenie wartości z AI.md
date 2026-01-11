@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Tworzenie wartości z AI
 
 ## Systemowe wdrożenie z AI

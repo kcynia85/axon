@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Visual Design Theory
 
 ## Kolor

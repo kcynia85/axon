@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # AI i Umiejętności Jutra
 
 ### Human in the loop

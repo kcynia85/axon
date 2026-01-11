@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Charakterystyka behawioralna
 
 - źródła danych

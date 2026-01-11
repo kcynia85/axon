@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Growth & Market
+---
+
 # E-commerce Audit Checklist
 
 > **Powiązane Zasoby (Wiedza):**

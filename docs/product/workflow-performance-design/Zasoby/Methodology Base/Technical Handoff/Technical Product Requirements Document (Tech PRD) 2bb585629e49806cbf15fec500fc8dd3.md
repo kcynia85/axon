@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Technical Product Requirements Document (Tech PRD)
 
 ### Kiedy pisać Tech PRD? (Matryca Decyzyjna)

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI System Testing Strategy (The "How-To")
 
 > **Context:** Testing AI systems is hard because LLMs are non-deterministic and expensive.

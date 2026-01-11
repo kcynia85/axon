@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Posty w social media żyją krótko
 
 <aside>

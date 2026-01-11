@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Mikro-Struktury
 
 ### Hemingway Style

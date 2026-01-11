@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Analiza właściwa
 
 ### Typy konkurencji

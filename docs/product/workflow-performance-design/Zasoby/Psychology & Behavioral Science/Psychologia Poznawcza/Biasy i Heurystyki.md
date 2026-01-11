@@ -1,3 +1,8 @@
+---
+template_type: crew
+description: "Ten dokument kataloguje błędy poznawcze (biasy) i skróty myślowe (heurystyki), które wpływają na decyzje użytkowników i proces projektowy."
+---
+
 # Biasy i Heurystyki Poznawcze
 
 Ten dokument kataloguje błędy poznawcze (biasy) i skróty myślowe (heurystyki), które wpływają na decyzje użytkowników i proces projektowy.

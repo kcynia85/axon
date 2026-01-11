@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Archetypy Marki i Postacie
 
 > **Źródło:** Pełna baza wiedzy z Notion (12 Archetypów Junga, Redakcja, Promptowanie archetypowe).

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Common Navigation Patterns
 
 <aside>

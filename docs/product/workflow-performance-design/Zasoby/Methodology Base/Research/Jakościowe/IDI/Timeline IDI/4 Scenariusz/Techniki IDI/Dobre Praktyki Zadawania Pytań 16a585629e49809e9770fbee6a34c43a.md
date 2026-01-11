@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Dobre Praktyki Zadawania Pytań
 
 <aside>

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 <!-- 
 🤖 AI AGENT INSTRUCTION: RISK MANAGER
 Rola: Devil's Advocate.

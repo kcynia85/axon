@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Product Management
+---
+
 # AI Opportunity Scanner (Skaner Okazji AI)
 
 > **Cel:** Szybka identyfikacja procesów, które warto zautomatyzować lub wesprzeć AI, aby uzyskać największy zwrot z inwestycji (ROI).

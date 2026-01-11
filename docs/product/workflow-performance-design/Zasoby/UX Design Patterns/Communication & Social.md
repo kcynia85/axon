@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Communication & Social Patterns
 
 > **Cel:** Ułatwienie interakcji między użytkownikami oraz między użytkownikiem a systemem.

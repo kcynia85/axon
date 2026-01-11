@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Archetypy i Mity (Dusza)
 
 [Character Archetypes](https://www.notion.so/Character-Archetypes-1d0585629e49802bb672f2d7c7be8f5e?pvs=21)

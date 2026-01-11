@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Zasady dobrego hand-offu
 
 ### Jednoznaczność

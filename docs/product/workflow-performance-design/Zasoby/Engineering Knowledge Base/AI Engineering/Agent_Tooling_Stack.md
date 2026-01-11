@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Agent Tooling & Ecosystem
 
 > **Status:** Tech Stack Standard

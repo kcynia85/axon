@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Drzewo decyzyjne (Issue tree)
 
 <aside>

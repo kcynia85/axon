@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Delivery
+---
+
 # E-commerce Functional Scope
 
 > **Cel:** Definicja zakresu funkcji dla platformy e-commerce, obejmująca kluczowe aspekty silnika, procesu zakupowego, zarządzania produktami i lojalności.

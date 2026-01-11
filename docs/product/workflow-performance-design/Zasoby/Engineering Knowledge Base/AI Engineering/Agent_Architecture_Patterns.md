@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agent Architecture Patterns & SOP Protocols
 
 > **Status:** Engineering Standard

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Delivery
+---
+
 # Smoke Test
 
 ## 1. Checklista Przed Wdrożeniem (Pre-flight Check)

@@ -1,3 +1,8 @@
+---
+template_type: crew
+description: "Zrozumienie limitów ludzkiej uwagi i pamięci jest kluczowe dla tworzenia użytecznych produktów."
+---
+
 # Obciążenie Poznawcze i Pamięć
 
 Zrozumienie limitów ludzkiej uwagi i pamięci jest kluczowe dla tworzenia użytecznych produktów.

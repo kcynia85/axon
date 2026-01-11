@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # Architektura systemu
 
 ### Typowe pytania, na które odpowiada architekt oprogramowania:

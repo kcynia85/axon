@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI Change Management (ADKAR)
 
 > **Status:** Operational Framework

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Ideation Techniques for Reducing Options
 
 <aside>

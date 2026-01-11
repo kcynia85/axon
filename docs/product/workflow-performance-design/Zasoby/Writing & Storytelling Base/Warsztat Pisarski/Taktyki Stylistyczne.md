@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Taktyki Stylistyczne i Budowa Zdania
 
 > **Źródło:** Pełna baza wiedzy z Notion (Figury retoryczne, Części mowy, Taktyki dla Krótkich Form, Taktyki Angażowania, Budowa Zdania).

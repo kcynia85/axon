@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Design
+---
+
 # E-commerce Automation Map
 
 > **Powiązane Zasoby (Wiedza):**

@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Strategia Data-Driven
 
 ## Definiowanie celów

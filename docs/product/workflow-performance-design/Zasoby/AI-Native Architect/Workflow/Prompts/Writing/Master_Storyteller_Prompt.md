@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Agent Prompt: The Master Storyteller
 
 **Skopiuj poniższy prompt i wklej go do Agenta (LLM), aby wygenerować tekst o najwyższej jakości literackiej i perswazyjnej, zgodny z Twoim Workflow.**

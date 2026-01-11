@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Research with no budget
 
 <aside>

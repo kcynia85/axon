@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Classic Architecture Reference
 
 > **Context:** Fundamenty architektury systemów rozproszonych.

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # AI-Assisted UX Research Methods
 
 > **Status:** Actionable Resource

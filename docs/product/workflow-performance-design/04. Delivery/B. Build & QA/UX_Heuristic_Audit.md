@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Delivery
+---
+
 # Agent Prompt: UX Heuristic Audit (Nielsen & Patterns)
 
 **Skopiuj poniższy prompt i wklej go do Agenta (LLM) w celu przeprowadzenia audytu UX dostarczonego interfejsu (zrzut ekranu lub kod).**

@@ -1,3 +1,8 @@
+---
+template_type: crew
+target_workspace: Discovery
+---
+
 # Testy A/B (Eksperymenty)
 
 > **Cel:** Naukowa weryfikacja hipotez. Koniec ze zgadywaniem.

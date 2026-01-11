@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # email marketing
 
 - Jarek’s notes

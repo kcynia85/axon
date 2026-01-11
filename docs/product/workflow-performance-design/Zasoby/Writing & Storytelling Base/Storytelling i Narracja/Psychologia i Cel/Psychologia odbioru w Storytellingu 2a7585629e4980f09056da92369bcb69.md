@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Psychologia odbioru w Storytellingu
 
 <aside>

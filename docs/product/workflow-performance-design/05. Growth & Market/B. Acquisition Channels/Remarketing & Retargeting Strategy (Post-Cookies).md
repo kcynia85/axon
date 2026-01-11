@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Growth & Market
+---
+
 # Remarketing & Retargeting Strategy (Post-Cookies)
 
 > **Cel:** Utrzymanie efektywności kampanii remarketingowych i retargetingowych w obliczu zmian w polityce prywatności (era post-cookies).

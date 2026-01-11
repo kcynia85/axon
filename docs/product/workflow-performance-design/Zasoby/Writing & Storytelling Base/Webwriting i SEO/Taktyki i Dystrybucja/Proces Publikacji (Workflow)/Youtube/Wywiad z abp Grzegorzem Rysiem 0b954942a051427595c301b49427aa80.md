@@ -1,3 +1,8 @@
+---
+template_type: crew
+description: "Status: Idea Format: Interview - Special guest, Vlog Publish Date: September 26, 2021 Video No.: 1"
+---
+
 # Wywiad z abp Grzegorzem Rysiem
 
 Status: Idea

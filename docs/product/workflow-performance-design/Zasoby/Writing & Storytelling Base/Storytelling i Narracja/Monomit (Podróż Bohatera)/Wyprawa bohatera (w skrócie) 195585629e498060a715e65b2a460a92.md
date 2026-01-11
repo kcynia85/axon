@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Wyprawa bohatera (w skrócie)
 
 ### 1. Wezwanie do wyprawy

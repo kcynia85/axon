@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Psyche Flow Mapping
 
 <aside>

@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Growth & Market
+---
+
 # E-commerce Analytics Dashboard Plan
 
 > **Powiązane Zasoby (Wiedza):**

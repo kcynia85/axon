@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Discovery Action Hub
 
 > **Cel:** Zrozumieć biznes, użytkownika i technologię zanim postawisz pierwszą linię kodu lub designu.

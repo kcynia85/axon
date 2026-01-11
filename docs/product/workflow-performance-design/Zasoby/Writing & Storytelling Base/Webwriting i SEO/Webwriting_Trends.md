@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Trends
 
 ### Being more specificity

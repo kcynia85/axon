@@ -1,3 +1,8 @@
+---
+template_type: flow
+target_workspace: Discovery
+---
+
 # UX Persona + Model mentalny
 
 <aside>

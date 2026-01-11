@@ -1,3 +1,8 @@
+---
+template_type: crew
+description: "Emocje są fundamentalnym elementem procesu decyzyjnego i oceny produktu."
+---
+
 # Emocje i Design
 
 Emocje są fundamentalnym elementem procesu decyzyjnego i oceny produktu.

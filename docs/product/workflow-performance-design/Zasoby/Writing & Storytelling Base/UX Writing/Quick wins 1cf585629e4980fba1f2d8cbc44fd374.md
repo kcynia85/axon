@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Quick wins
 
 ### Zasada dobrej konwersacji

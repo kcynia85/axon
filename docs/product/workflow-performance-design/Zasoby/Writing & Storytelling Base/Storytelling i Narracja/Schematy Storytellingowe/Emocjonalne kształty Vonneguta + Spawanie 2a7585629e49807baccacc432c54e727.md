@@ -1,3 +1,8 @@
+---
+template_type: crew
+description: "Łącz ze sobą kilka prostych kształtów, aby stworzyć dłuższą, bardziej złożoną i wciągającą narrację."
+---
+
 # Emocjonalne kształty Vonneguta + Spawanie
 
 Łącz ze sobą kilka prostych kształtów, aby stworzyć dłuższą, bardziej złożoną i wciągającą narrację.

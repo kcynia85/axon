@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # UX Writing — Brand Voice & Tone of Voice
 
 <aside>

@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # 🌐 Domains & Roles Reference
 
 > **Context:** Mapa ról (Personas) i domen (Bounded Contexts) obsługiwanych przez system Workflow Performance Design.

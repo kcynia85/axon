@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Webinar → Lead magnet
 
 <aside>

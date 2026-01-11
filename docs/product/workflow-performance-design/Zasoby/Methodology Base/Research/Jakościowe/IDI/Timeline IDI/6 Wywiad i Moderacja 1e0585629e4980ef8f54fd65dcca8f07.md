@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # 6. Wywiad i Moderacja
 
 <aside>

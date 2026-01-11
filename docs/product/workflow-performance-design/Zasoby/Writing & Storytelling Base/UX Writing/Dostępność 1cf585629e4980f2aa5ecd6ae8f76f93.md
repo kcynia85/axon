@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Dostępność
 
 > “Nasze projekty czynią ludzi niepełnosprawnymi” - Sarah Winters

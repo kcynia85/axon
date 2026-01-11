@@ -1,3 +1,7 @@
+---
+template_type: crew
+---
+
 # Franchise Model for Solo-Entrepreneurs
 
 > **Status:** Business Model Framework

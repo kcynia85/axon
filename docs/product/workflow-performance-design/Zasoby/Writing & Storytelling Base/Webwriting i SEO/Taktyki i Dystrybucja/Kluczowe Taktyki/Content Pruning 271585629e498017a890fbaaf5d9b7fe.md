@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # Content Pruning
 
 ### Optymalizacja i usuwanie starych treści

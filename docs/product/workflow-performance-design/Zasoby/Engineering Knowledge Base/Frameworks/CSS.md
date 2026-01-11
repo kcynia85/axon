@@ -1,3 +1,7 @@
+---
+template_type: flow
+---
+
 # CSS & Styling (Tailwind)
 
 ## Stack
