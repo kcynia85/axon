@@ -14,8 +14,18 @@
 # 🧠 Standards (Libraries)
 - **Fetch & Data fetching:** Prefer Next.js v16 server data fetching (RSC/server fetch) for initial loads; use `TanStack Query` in client components for interactivity and cache/mutations.
 - **Forms:** React Hook Form + Zod.
+- **Authentication:** Better Auth (default for new apps): https://www.better-auth.com/docs/introduction
  
 ---
+
+# 🌐 Built-in Browser APIs (Recommended)
+- **Popover API:** Use the native Popover API as the default for the following components to ensure performance and accessibility:
+  - Context Menus
+  - Dropdowns
+  - Tooltips
+  - User Menus
+  - Dialogs
+  - Toggles (for showing/hiding content)
 
 # 🧩 TanStack Ecosystem (Recommended)
 TanStack provides a set of well-designed, type-safe utilities that świetnie uzupełniają React + TypeScript stacks. Dodajemy następujące narzędzia jako rekomendowane:
@@ -54,6 +64,4 @@ Wdrożenie: traktuj te narzędzia jako rekomendowane dependency w `package.json`
     box-sizing: inherit;
   }
   ```
-
----
 
