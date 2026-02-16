@@ -1,0 +1,64 @@
+### RAG & AI Core (Upgraded Architecture)
+
+- [ ]  **Advanced ETL Pipeline (Ingestion Layer)**
+    - Zastępuje proste parsowanie Markdown
+    - Obsługa: PDF, DOCX, Tables, HTML
+    - **Plan:** `Unstructured` lub `LlamaParse`
+    - **Flow:**
+        
+        Typ pliku → ekstrakcja struktury → chunking semantyczny → metadata → deduplikacja (MD5)
+        
+
+---
+
+- [ ]  **Knowledge Hubs (Semantic Scoping Layer)**
+    - **Cel:** logiczne „działy wiedzy” przypisywane do Agentów
+    - **Implementacja:**
+        
+        `metadata: { hub_name, source_file, header, category }`
+        
+    - **Zasada:**
+        
+        👉 *Pre-filtering po hubie przed similarity search*
+        
+
+---
+
+- [ ]  **Hybrid Search (pgvector + BM25)**
+    - Rozwiązanie problemu „ślepoty na słowa kluczowe”
+    - **Plan:**
+        - `embedding VECTOR`
+        - `tsvector` (Postgres FTS)
+    - **Retriever:**
+        
+        Ensemble (Vector + Keyword) + **RRF (Reciprocal Rank Fusion)**
+        
+
+---
+
+- [ ]  **Re-ranking Layer (Quality Gate)**
+    - Selekcja kontekstu **przed LLM**
+    - **Flow:**
+        
+        Top-20 → Re-rank → Top-3
+        
+    - **Narzędzia:**
+        
+        `FlashRank` (local) / `Cohere Rerank`
+        
+
+---
+
+- [ ]  **Semantic Caching**
+    - **Cel:** redukcja kosztów + latency
+    - **Mechanizm:**
+        
+        Similarity > 0.95 → cache hit → brak calla do LLM
+        
+
+---
+
+- [ ]  **User Feedback Loop**
+    - 👍 / 👎 w UI
+    - Logowanie w Langfuse
+    - Oznaczanie chunków jako `useful / not useful`

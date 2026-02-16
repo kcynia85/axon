@@ -1,0 +1,10 @@
+- [ ]  **Meta-Agent oparty o System Awareness RAG**
+    - Rola: **AI-Architekt**, nie wykonawca
+    - Analizuje:
+        - aktualny stan Space
+        - istniejące byty domenowe
+    - Generuje:
+        - propozycje Agentów
+        - Crews
+        - Flows / Patterns
+        - relacje między nimi

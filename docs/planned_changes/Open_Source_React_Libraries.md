@@ -1,0 +1,1 @@
+Wykorzystanie: React Flow (grafy), TanStack Table (dane), dnd-kit (drag&drop), BlockNote (edytor), Geist Mono (fonty).
