@@ -1,0 +1,7 @@
+- [ ]  Space ([ReactFlow Library](https://reactflow.dev/))
+    - Mental Modal (UX)
+        - **Rozmieszczenie:** wszystkie pola w jednej kolumnie, prosty przepływ od góry do dołu.
+        - **Fokus:** po otwarciu modala fokus automatycznie w polu nazwy.
+        - **Feedback:** walidacja nazwy (unikalność, max. długość).
+        - **Szybki start:** jeżeli użytkownik nie wybiera template ani projectu, domyślnie tworzy Detached, blank Space.
+        - **Wymiary modala:** nie za duży, aby nie przytłaczał, ale wystarczająco przestronny na pola.
