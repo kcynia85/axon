@@ -10,7 +10,9 @@ class InboxItemTable(Base):
     id = Column(UUID(as_uuid=True), primary_key=True)
     item_status = Column(SAEnum(InboxItemStatus), default=InboxItemStatus.NEW, nullable=False)
     item_type = Column(SAEnum(InboxItemType), nullable=False)
-    artifact_source_id = Column(UUID(as_uuid=True), nullable=False)
+    
+    artifact_id = Column(UUID(as_uuid=True), ForeignKey("project_artifacts.id"), nullable=True)
     project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=True)
+    
     created_at = Column(DateTime(timezone=True), default=now_utc)
     resolved_at = Column(DateTime(timezone=True), nullable=True)

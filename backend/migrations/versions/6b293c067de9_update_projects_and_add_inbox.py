@@ -28,17 +28,18 @@ def create_enum_if_not_exists(name: str, values: list[str]):
 def upgrade() -> None:
     # 0. Create Enums safely
     create_enum_if_not_exists('projectstatus', ['IDEA', 'IN_PROGRESS', 'COMPLETED'])
-    create_enum_if_not_exists('resourceprovider', ['NOTION', 'FIGMA', 'GITHUB', 'OTHER'])
-    create_enum_if_not_exists('approvalstatus', ['DRAFT', 'IN_REVIEW', 'APPROVED'])
-    create_enum_if_not_exists('inboxitemstatus', ['NEW', 'RESOLVED'])
-    create_enum_if_not_exists('inboxitemtype', ['ARTIFACT_READY', 'CONSULTATION', 'APPROVAL_NEEDED'])
+    # create_enum_if_not_exists('resourceprovider', ['NOTION', 'FIGMA', 'GITHUB', 'OTHER'])
+    # create_enum_if_not_exists('approvalstatus', ['DRAFT', 'IN_REVIEW', 'APPROVED'])
+    # inboxitemstatus and inboxitemtype will be created by create_table
+    # create_enum_if_not_exists('inboxitemstatus', ['NEW', 'RESOLVED'])
+    # create_enum_if_not_exists('inboxitemtype', ['ARTIFACT_READY', 'CONSULTATION', 'APPROVAL_NEEDED'])
 
     # 1. Create new tables
     # Note: Using sa.Enum(..., create_type=False) to avoid DuplicateObjectError
     op.create_table('inbox_items',
         sa.Column('id', sa.UUID(), nullable=False),
-        sa.Column('item_status', sa.Enum('NEW', 'RESOLVED', name='inboxitemstatus', create_type=False), nullable=False),
-        sa.Column('item_type', sa.Enum('ARTIFACT_READY', 'CONSULTATION', 'APPROVAL_NEEDED', name='inboxitemtype', create_type=False), nullable=False),
+        sa.Column('item_status', sa.Enum('NEW', 'RESOLVED', name='inboxitemstatus'), nullable=False),
+        sa.Column('item_type', sa.Enum('ARTIFACT_READY', 'CONSULTATION', 'APPROVAL_NEEDED', name='inboxitemtype'), nullable=False),
         sa.Column('artifact_source_id', sa.UUID(), nullable=False),
         sa.Column('project_id', sa.UUID(), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
@@ -52,7 +53,7 @@ def upgrade() -> None:
         sa.Column('artifact_source_path', sa.String(), nullable=False),
         sa.Column('artifact_deliverable_url', sa.String(), nullable=False),
         sa.Column('workspace_domain', sa.String(), nullable=True),
-        sa.Column('artifact_approval_status', sa.Enum('DRAFT', 'IN_REVIEW', 'APPROVED', name='approvalstatus', create_type=False), nullable=False),
+        sa.Column('artifact_approval_status', sa.Enum('DRAFT', 'IN_REVIEW', 'APPROVED', name='approvalstatus'), nullable=False),
         sa.Column('approved_by_user_id', sa.UUID(), nullable=True),
         sa.Column('artifact_approved_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('project_id', sa.UUID(), nullable=False),
@@ -63,7 +64,7 @@ def upgrade() -> None:
     )
     op.create_table('project_key_resources',
         sa.Column('id', sa.UUID(), nullable=False),
-        sa.Column('resource_provider_type', sa.Enum('NOTION', 'FIGMA', 'GITHUB', 'OTHER', name='resourceprovider', create_type=False), nullable=False),
+        sa.Column('resource_provider_type', sa.Enum('NOTION', 'FIGMA', 'GITHUB', 'OTHER', name='resourceprovider'), nullable=False),
         sa.Column('resource_label', sa.String(), nullable=False),
         sa.Column('resource_url', sa.String(), nullable=False),
         sa.Column('resource_icon', sa.String(), nullable=True),

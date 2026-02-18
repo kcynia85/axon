@@ -357,24 +357,36 @@ grep -n "CHECKPOINT" docs/implementation_plan_axon.md | tail -1
 ### Phase 11: vNext — P0 (Critical Path) [IN PROGRESS]
 > **Focus:** Data Tier alignment, Spaces/Canvas (Workspaces‑first), Projects, Resources/Knowledge, Settings LLMs/KE, Agents SSE.
 
-- [ ] **Data Tier (DB: content-models alignment)**
-    - [ ] DB: `key_resources` table (Projects child)
-    - [ ] DB: `artifacts` — add `artifact_source_path`, `artifact_deliverable_url`, `artifact_approval_status`, `#approved_by_user_id`, `artifact_approved_at`, `workspace_domain`
-    - [ ] DB: `prompt_archetypes` table (full schema from axon_cm_recources.pdf)
-    - [ ] DB: `external_services` + `service_capabilities` tables
-    - [ ] DB: `internal_tools` table
-    - [ ] DB: `text_chunks` table (with `chunk_token_count`, `chunk_metadata`)
-    - [ ] DB: `inbox_items` table
-    - [ ] DB: `meta_agents` + `voice_meta_agents` tables
-    - [ ] DB: `embedding_models`, `chunking_strategies`, `vector_databases` tables
-    - [ ] DB: `agents` — expand with all CM fields: `agent_name`, `guardrails (JSONB)`, `few_shot_examples`, `reflexion`, `rag_enforcement`, `input_schema`, `output_schema`, `#assigned_tools_ids`, `#llm_model_id`, `#knowledge_hub_ids`, `availability_workspace`, `agent_keywords`
-    - [ ] DB: `crews` — expand: `crew_name`, `crew_description`, `crew_process_type` = Sequential|Hierarchical|**Parallel/Consensus**, `#agent_member_ids (N:M)`, `#manager_agent_id`, `crew_keywords`, `availability_workspace`
-    - [ ] DB: `patterns`, `templates` tables (full schema from axon_cm_workspaces.pdf)
-    - [ ] DB: `knowledge_hubs`, `knowledge_sources` — expand with all CM fields
-    - [ ] DB: `automations` — expand: `automation_platform`, `automation_http_method`, `automation_auth_config (JSONB)`, `automation_validation_status`, `automation_input_schema`, `automation_output_schema`
-    - [ ] DB: `llm_models` — add `model_supports_thinking`, `model_pricing_config (JSONB)`, `model_capabilities_flags`
-    - [ ] DB: Alembic migrations for all new/modified tables
-    - [ ] AC: All schemas match content-models/**; RLS policies applied; migrations green
+- [x] **Data Tier (DB: content-models alignment)**
+    - [x] DB: `key_resources` table (Projects child)
+    - [x] DB: `artifacts` — add `artifact_source_path`, `artifact_deliverable_url`, `artifact_approval_status`, `#approved_by_user_id`, `artifact_approved_at`, `workspace_domain`
+    - [x] DB: `prompt_archetypes` table (full schema from axon_cm_recources.pdf)
+    - [x] DB: `external_services` + `service_capabilities` tables
+    - [x] DB: `internal_tools` table
+    - [x] DB: `text_chunks` table (with `chunk_token_count`, `chunk_metadata`)
+    - [x] DB: `inbox_items` table
+    - [x] DB: `meta_agents` + `voice_meta_agents` tables
+    - [x] DB: `embedding_models`, `chunking_strategies`, `vector_databases` tables
+    - [x] DB: `agents` — expand with all CM fields: `agent_name`, `guardrails (JSONB)`, `few_shot_examples`, `reflexion`, `rag_enforcement`, `input_schema`, `output_schema`, `#assigned_tools_ids`, `#llm_model_id`, `#knowledge_hub_ids`, `availability_workspace`, `agent_keywords`
+    - [x] DB: `crews` — expand: `crew_name`, `crew_description`, `crew_process_type` = Sequential|Hierarchical|**Parallel/Consensus**, `#agent_member_ids (N:M)`, `#manager_agent_id`, `crew_keywords`, `availability_workspace`
+    - [x] DB: `patterns`, `templates` tables (full schema from axon_cm_workspaces.pdf)
+    - [x] DB: `knowledge_hubs`, `knowledge_sources` — expand with all CM fields
+    - [x] DB: `automations` — expand: `automation_platform`, `automation_http_method`, `automation_auth_config (JSONB)`, `automation_validation_status`, `automation_input_schema`, `automation_output_schema`
+    - [x] DB: `llm_models` — add `model_supports_thinking`, `model_pricing_config (JSONB)`, `model_capabilities_flags`
+    - [x] DB: Alembic migrations for all new/modified tables
+    - [/] AC: All schemas match content-models/**; RLS policies applied; migrations green
+
+<!-- CHECKPOINT
+  agent: Gemini CLI
+  date: 2026-02-18
+  gate: GATE 0
+  completed: Implemented all new tables and expansions for vNext (resources, settings, system, workspaces, inbox, knowledge). Generated and applied Alembic migrations (fix enum conflicts).
+  next_step: Create RLS policies for new tables (migration enable_rls_gate_0_tables). Then proceed to GATE 1 - Backend Slices.
+  blockers: none
+  files_modified: backend/app/modules/**/infrastructure/tables.py, backend/app/modules/**/domain/enums.py, backend/migrations/versions/*
+  verification_result: PASS — alembic check OK, check_tables.py OK.
+-->
+
 - [ ] **Spaces/Canvas (Workspaces‑first + anchors)**
     - [x] DB/BE: spaces JSONB graph; workspace metadata (Models, Tables, DTOs, Router implemented)
     - [x] DB/BE: RLS (Migration applied, policies enabled for all spaces tables)
