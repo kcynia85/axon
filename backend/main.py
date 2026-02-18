@@ -17,6 +17,10 @@ from backend.app.modules.agents.interface.config_router import router as agents_
 from backend.app.modules.knowledge.interface.router import router as knowledge_router
 from backend.app.modules.workflows.interface.router import router as workflows_router
 from backend.app.modules.spaces.interface.router import router as spaces_router
+from backend.app.modules.resources.interface.router import router as resources_router
+from backend.app.modules.settings.interface.router import router as settings_router
+from backend.app.modules.inbox.interface.router import router as inbox_router
+from backend.app.modules.system.interface.router import router as system_router
 from backend.app.shared.infrastructure.inngest_client import inngest_client
 from backend.app.modules.workflows.infrastructure.inngest_functions import hello_world
 from backend.app.modules.agents.application.workflows import writer_workflow, generic_agent_workflow
@@ -57,6 +61,10 @@ app.include_router(agents_config_router)
 app.include_router(knowledge_router)
 app.include_router(workflows_router) # Auto-prefix from router module
 app.include_router(spaces_router)
+app.include_router(resources_router)
+app.include_router(settings_router)
+app.include_router(inbox_router)
+app.include_router(system_router)
 
 # Inngest Handler
 inngest_handler = serve(

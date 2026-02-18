@@ -379,12 +379,12 @@ grep -n "CHECKPOINT" docs/implementation_plan_axon.md | tail -1
 <!-- CHECKPOINT
   agent: Gemini CLI
   date: 2026-02-18
-  gate: GATE 0
-  completed: Implemented all new tables and expansions for vNext (resources, settings, system, workspaces, inbox, knowledge). Generated and applied Alembic migrations (fix enum conflicts).
-  next_step: Create RLS policies for new tables (migration enable_rls_gate_0_tables). Then proceed to GATE 1 - Backend Slices.
+  gate: GATE 1
+  completed: Implemented Resources Slice (backend/app/modules/resources) and Settings Slice (backend/app/modules/settings). Registered routers in main.py. Verified with pytest.
+  next_step: Implement Inbox Slice (backend/app/modules/inbox) and System Slice (backend/app/modules/system).
   blockers: none
-  files_modified: backend/app/modules/**/infrastructure/tables.py, backend/app/modules/**/domain/enums.py, backend/migrations/versions/*
-  verification_result: PASS — alembic check OK, check_tables.py OK.
+  files_modified: backend/app/modules/settings/**, backend/main.py, backend/app/modules/resources/**
+  verification_result: PASS — pytest app/modules/settings/tests/test_settings.py passed.
 -->
 
 - [ ] **Spaces/Canvas (Workspaces‑first + anchors)**
@@ -1205,3 +1205,14 @@ cd frontend && pnpm exec playwright test
 - [ ] Global search Cmd+K
 - [ ] Advanced filters/sort nuances
 - [ ] Semantic cache (if enabled)
+
+<!-- CHECKPOINT
+    agent: GitHub Copilot
+    date: 2026-02-18T14:00:00+01:00
+    gate: GATE 0
+    completed: Pushed local changes (new/updated migration and module table files) to remote origin/main.
+    next_step: Run `cd backend && alembic upgrade head` to apply migrations, then run `python -m pytest tests/ -x` to verify no regressions.
+    blockers: none
+    files_modified: backend/app/modules/agents/infrastructure/tables.py, backend/app/modules/inbox/infrastructure/tables.py, backend/app/modules/knowledge/infrastructure/tables.py, backend/migrations/env.py, backend/migrations/versions/6b293c067de9_update_projects_and_add_inbox.py, docs/implementation_plan_axon.md, backend/app/modules/knowledge/domain/enums.py, backend/app/modules/resources/__init__.py, backend/app/modules/resources/domain/enums.py, backend/app/modules/resources/infrastructure/tables.py, backend/app/modules/settings/domain/enums.py, backend/app/modules/settings/infrastructure/tables.py, backend/app/modules/system/domain/enums.py, backend/app/modules/system/infrastructure/tables.py, backend/app/modules/workspaces/domain/enums.py, backend/app/modules/workspaces/infrastructure/tables.py, backend/migrations/versions/5f0314dd3c96_gate_0_vnext_schema.py
+    verification_result: PASS — git push succeeded
+-->

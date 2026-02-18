@@ -9,7 +9,7 @@ class InboxItem(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     item_status: InboxItemStatus = InboxItemStatus.NEW
     item_type: InboxItemType
-    artifact_source_id: UUID # Link to artifact, consultation node, etc.
+    artifact_id: Optional[UUID] = None
     project_id: Optional[UUID] = None
     created_at: datetime = Field(default_factory=now_utc)
     resolved_at: Optional[datetime] = None
