@@ -1,0 +1,82 @@
+# vNext Traceability Matrix (IA → Routes → Features → Data)
+
+Covers all 78 screens from ../product/information_architecture/screen_inventory.md. Gaps: none (47 in P1).
+
+- 1 — Dashboard → / → n/a → src/app/page.tsx → user/org
+- 2 — Projects List → /projects → projects → src/app/projects/page.tsx → projects, artifacts agg
+- 3 — New Project Modal → /projects?modal=new → projects → projects page modal → projects, spaces (unassigned)
+- 4 — Edit Project Modal → /projects/:id?modal=edit → projects → project detail modal → projects
+- 5 — Project Overview → /projects/:id?tab=overview → projects → src/app/projects/[id]/page.tsx → projects
+- 6 — Project Key Resources → /projects/:id?tab=resources → projects → same page → key_resources
+- 7 — Project Artifacts → /projects/:id?tab=artifacts → projects → same page → artifacts
+- 8 — Add Resource Modal → /projects/:id?modal=add-resource → projects → modal → key_resources
+- 9 — Add Artifact Modal → /projects/:id?modal=add-artifact → projects → modal → artifacts
+- 10 — Delete Project → /projects/:id?modal=delete → projects → modal → projects (soft delete)
+- 11 — Spaces Overview → /spaces → spaces → src/app/spaces/page.tsx → spaces
+- 12 — New Space Modal → /spaces?modal=new → spaces → modal → spaces
+- 13 — Edit Space Modal → /spaces/:id?modal=edit → spaces → modal → spaces
+- 14 — Canvas View → /spaces/:id (?node, #zone-*) → spaces → src/app/spaces/[id]/page.tsx → spaces.graph
+- 15 — Save Pattern Modal (P1) → /spaces/:id?modal=save-pattern → spaces → modal → patterns (P1)
+- 16 — Space Settings Modal → /spaces/:id?modal=settings → spaces → modal → spaces
+- 17 — Delete Space → /spaces/:id?modal=delete → spaces → modal → spaces
+- 18 — Workspaces Overview → /workspaces → workspaces → src/app/workspaces/page.tsx → static meta
+- 19 — Workspace Detail → /workspaces/:workspace → workspaces → src/app/workspaces/[workspace]/page.tsx → aggregates
+- 20 — Agents List → /workspaces/:workspace/agents → agents → src/app/workspaces/[workspace]/agents/page.tsx → agents
+- 21 — Agent Side Peek → ?peek=:id → agents → side-peek → agents
+- 22 — New Agent Step 1 → /workspaces/:workspace/agents/new?modal=archetype → agents → modal → prompts
+- 23 — Archetype Library → same → resources/prompts → modal → prompts
+- 24 — New Agent Step 2 → /workspaces/:workspace/agents/new?modal=skills → agents → modal → internal tools
+- 25 — New/Edit Agent Page → /workspaces/:workspace/agents/:id/edit → agents → page → agents JSONB
+- 26 — Crews List (P1) → /workspaces/:workspace/crews → agents/workflows → page → crews
+- 27 — Crew Side Peek (P1) → list side-peek → agents/workflows → side-peek → crews
+- 28 — New Crew Type (P1) → /workspaces/:workspace/crews/new?modal=type → agents/workflows → modal → crews
+- 29 — Edit Crew Parallel (P1) → /workspaces/:workspace/crews/:id/edit → agents/workflows → page → crews
+- 30 — Edit Crew Sequential (P1) → same → agents/workflows → page → crews
+- 31 — Edit Crew Hierarchical (P1) → same → agents/workflows → page → crews
+- 32 — Patterns List (P1) → /workspaces/:workspace/patterns → spaces → page → patterns
+- 33 — Pattern Side Peek (P1) → list side-peek → spaces → side-peek → patterns
+- 34 — Edit Pattern Modal (P1) → /workspaces/:workspace/patterns/:id?modal=edit → spaces → modal → patterns
+- 35 — Templates List (P1) → /workspaces/:workspace/templates → resources/templates → page → templates
+- 36 — Template Side Peek (P1) → list side-peek → resources/templates → side-peek → templates
+- 37 — New/Edit Template (P1) → /workspaces/:workspace/templates/:id/edit → resources/templates → page → templates
+- 38 — Knowledge Hubs List → /resources/knowledge → knowledge → page → knowledge_hubs
+- 39 — New Hub Modal → /resources/knowledge?modal=new → knowledge → modal → knowledge_hubs
+- 40 — Edit Hub Modal → /resources/knowledge/:hubId?modal=edit → knowledge → modal → knowledge_hubs
+- 41 — Delete Hub → /resources/knowledge/:hubId?modal=delete → knowledge → modal → knowledge_hubs
+- 42 — Knowledge Hub Detail → /resources/knowledge/:hubId → knowledge → page → knowledge_sources
+- 43 — Add Source Modal → /resources/knowledge/:hubId?modal=add-source → knowledge → modal → upload + strategies
+- 44 — Knowledge Source Detail → /resources/knowledge/:hubId/:sourceId → knowledge → page → knowledge_sources
+- 45 — Edit Source Modal → /resources/knowledge/:hubId/:sourceId?modal=edit → knowledge → modal → knowledge_sources
+- 46 — Delete Source → /resources/knowledge/:hubId/:sourceId?modal=delete → knowledge → modal → knowledge_sources
+- 47 — RAG Debugger (P1) → /resources/knowledge/:hubId/:sourceId/debugger or ?modal=debugger → knowledge → component → chunks/vectors
+- 48 — Archetypes List → /resources/prompts → resources/prompts → page → prompts
+- 49 — Archetype Side Peek → list side-peek → resources/prompts → side-peek → prompts
+- 50 — New/Edit Archetype → /resources/prompts/:id/edit → resources/prompts → page → prompts
+- 51 — Automations List (P1) → /resources/automations → resources/automations → page → automations
+- 52 — Automation Side Peek (P1) → list side-peek → resources/automations → side-peek → automations
+- 53 — New/Edit Automation (P1) → /resources/automations/:id/edit → resources/automations → page → automations
+- 54 — Services List (P1) → /resources/services → resources/services → page → services
+- 55 — Service Side Peek (P1) → list side-peek → resources/services → side-peek → services
+- 56 — New/Edit Service (P1) → /resources/services/:id/edit → resources/services → page → services
+- 57 — Internal Tools List (P1) → /resources/tools → resources/tools → page → tools
+- 58 — Tool Side Peek (P1) → list side-peek → resources/tools → side-peek → tools
+- 59 — Edit Tool Modal (P1) → /resources/tools/:id?modal=edit → resources/tools → modal → tools
+- 60 — Inbox List → /inbox → inbox → page → inbox table
+- 61 — Settings Home → /settings (→ providers) → settings → redirect → n/a
+- 62 — LLM Providers List → /settings/llms/providers → settings/llms → page → llm_providers
+- 63 — Provider Type Selection → /settings/llms/providers?modal=new → settings/llms → modal → llm_providers
+- 64 — Provider Detail - Cloud → /settings/llms/providers/:id → settings/llms → page → llm_providers
+- 65 — Provider Detail - Meta → same → settings/llms → page → llm_providers
+- 66 — OpenRouter Marketplace → /settings/llms/providers?modal=marketplace → settings/llms → modal → provider registry
+- 67 — Provider Detail - Local → /settings/llms/providers/:id → settings/llms → page → llm_providers
+- 68 — Model Registry List → /settings/llms/models → settings/llms → page → llm_models
+- 69 — Add Model Modal → /settings/llms/models/new → settings/llms → modal → llm_models
+- 70 — Model Detail → /settings/llms/models/:id → settings/llms → page → llm_models
+- 71 — Routers List → /settings/llms/routers → settings/llms → page → llm_routers
+- 72 — New/Edit Router → /settings/llms/routers/:id/edit → settings/llms → page → llm_routers
+- 73 — Embedding Models List → /settings/knowledge-engine/embedding → settings/ke → page → embedding_models
+- 74 — New/Edit Embedding Model → /settings/knowledge-engine/embedding/:id/edit → settings/ke → page → embedding_models
+- 75 — Chunking Strategies List → /settings/knowledge-engine/chunking → settings/ke → page → chunking_strategies
+- 76 — New/Edit Chunking Strategy → /settings/knowledge-engine/chunking/:id/edit → settings/ke → page → chunking_strategies
+- 77 — Vector Databases List → /settings/knowledge-engine/vectors → settings/ke → page → vector_dbs
+- 78 — New/Edit Vector Database → /settings/knowledge-engine/vectors/:id/edit → settings/ke → page → vector_dbs

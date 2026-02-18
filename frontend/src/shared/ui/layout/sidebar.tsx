@@ -44,13 +44,15 @@ export const Sidebar = () => {
     <SidebarContainer>
       <SidebarHeader>
         <SidebarBrand>
-          <Image 
-            src="/logo-symbol-axon.svg" 
-            alt="Axon" 
-            width={40} 
-            height={40} 
-            className="h-10 w-10 dark:invert"
-          />
+          <Link href="/dashboard" className="block transition-opacity hover:opacity-80">
+            <Image 
+              src="/logo-symbol-axon.svg" 
+              alt="Axon" 
+              width={40} 
+              height={40} 
+              className="h-10 w-10 dark:invert"
+            />
+          </Link>
         </SidebarBrand>
       </SidebarHeader>
       

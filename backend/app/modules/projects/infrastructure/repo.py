@@ -1,112 +1,142 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from uuid import UUID
 from typing import List, Optional
-from backend.app.modules.projects.domain.models import Project, Artifact, Scenario
-from backend.app.modules.projects.infrastructure.tables import ProjectTable, ArtifactTable, ScenarioTable
-from backend.app.modules.projects.domain.enums import ReviewState
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update, delete
+from sqlalchemy.orm import selectinload
+from backend.app.modules.projects.domain.models import Project, KeyResource, Artifact
+from backend.app.modules.projects.infrastructure.tables import ProjectTable, KeyResourceTable, ArtifactTable
+from backend.app.shared.utils.time import now_utc
 
 class ProjectRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    def _to_domain(self, row: ProjectTable) -> Project:
+        return Project(
+            id=row.id,
+            project_name=row.project_name,
+            project_status=row.project_status,
+            project_summary=row.project_summary,
+            project_keywords=row.project_keywords,
+            project_strategy_url=row.project_strategy_url,
+            space_id=row.space_id,
+            owner_id=row.owner_id,
+            created_at=row.created_at,
+            updated_at=row.updated_at,
+            # Eagerly loaded
+            key_resources=[
+                KeyResource(
+                    id=kr.id,
+                    resource_provider_type=kr.resource_provider_type,
+                    resource_label=kr.resource_label,
+                    resource_url=kr.resource_url,
+                    resource_icon=kr.resource_icon,
+                    project_id=kr.project_id,
+                    created_at=kr.created_at,
+                    updated_at=kr.updated_at
+                ) for kr in row.key_resources
+            ],
+            artifacts=[
+                Artifact(
+                    id=a.id,
+                    artifact_name=a.artifact_name,
+                    artifact_source_path=a.artifact_source_path,
+                    artifact_deliverable_url=a.artifact_deliverable_url,
+                    workspace_domain=a.workspace_domain,
+                    artifact_approval_status=a.artifact_approval_status,
+                    approved_by_user_id=a.approved_by_user_id,
+                    artifact_approved_at=a.artifact_approved_at,
+                    project_id=a.project_id,
+                    created_at=a.created_at,
+                    updated_at=a.updated_at
+                ) for a in row.artifacts
+            ],
+            # Workspaces derived from Space Zones (not loaded here, handled by Service/SpaceRepo if needed)
+        )
+
     async def create(self, project: Project) -> Project:
-        db_project = ProjectTable(**project.model_dump(exclude={"artifacts"}))
+        db_project = ProjectTable(
+            id=project.id,
+            project_name=project.project_name,
+            project_status=project.project_status,
+            project_summary=project.project_summary,
+            project_keywords=project.project_keywords,
+            project_strategy_url=project.project_strategy_url,
+            space_id=project.space_id,
+            owner_id=project.owner_id,
+            created_at=project.created_at,
+            updated_at=project.updated_at
+        )
         self.session.add(db_project)
         await self.session.commit()
         await self.session.refresh(db_project)
-        return Project.model_validate(db_project, from_attributes=True)
+        # Return empty lists for relations on create
+        return self._to_domain(db_project)
 
     async def get(self, project_id: UUID) -> Optional[Project]:
-        result = await self.session.execute(select(ProjectTable).where(ProjectTable.id == project_id))
-        db_project = result.scalar_one_or_none()
-        if db_project:
-            return Project.model_validate(db_project, from_attributes=True)
-        return None
+        result = await self.session.execute(
+            select(ProjectTable)
+            .where(ProjectTable.id == project_id)
+            .options(
+                selectinload(ProjectTable.key_resources),
+                selectinload(ProjectTable.artifacts)
+            )
+        )
+        row = result.scalar_one_or_none()
+        return self._to_domain(row) if row else None
 
-    async def list_by_user(self, user_id: UUID) -> List[Project]:
-        result = await self.session.execute(select(ProjectTable).where(ProjectTable.owner_id == user_id))
-        return [Project.model_validate(p, from_attributes=True) for p in result.scalars().all()]
+    async def list_by_user(self, owner_id: UUID, limit: int = 100, offset: int = 0) -> List[Project]:
+        result = await self.session.execute(
+            select(ProjectTable)
+            .where(ProjectTable.owner_id == owner_id)
+            .limit(limit)
+            .offset(offset)
+            .order_by(ProjectTable.updated_at.desc())
+            .options(
+                selectinload(ProjectTable.key_resources),
+                selectinload(ProjectTable.artifacts)
+            )
+        )
+        return [self._to_domain(row) for row in result.scalars().all()]
+
+    async def update(self, project_id: UUID, update_data: dict) -> Optional[Project]:
+        # Filter valid columns
+        valid_cols = {c.name for c in ProjectTable.__table__.columns}
+        clean_data = {k: v for k, v in update_data.items() if k in valid_cols and k != 'id'}
+        
+        if not clean_data:
+            return await self.get(project_id)
+            
+        clean_data['updated_at'] = now_utc()
+
+        stmt = (
+            update(ProjectTable)
+            .where(ProjectTable.id == project_id)
+            .values(**clean_data)
+            .execution_options(synchronize_session="fetch")
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+        return await self.get(project_id)
 
     async def delete(self, project_id: UUID) -> bool:
-        result = await self.session.execute(select(ProjectTable).where(ProjectTable.id == project_id))
-        project = result.scalar_one_or_none()
-        if project:
-            await self.session.delete(project)
-            await self.session.commit()
-            return True
-        return False
-
-class ArtifactRepository:
-    def __init__(self, session: AsyncSession):
-        self.session = session
-
-    async def list_for_inbox(self, user_id: UUID) -> List[Artifact]:
-        """
-        List all artifacts that are in DRAFT or REVIEW status for projects owned by the user.
-        """
-        # Join Artifact with Project to filter by Project Owner
-        stmt = (
-            select(ArtifactTable)
-            .join(ProjectTable)
-            .where(
-                ProjectTable.owner_id == user_id,
-                ArtifactTable.status.in_([ReviewState.DRAFT, ReviewState.REVIEWED])
-            )
-            .order_by(ArtifactTable.updated_at.desc())
-        )
+        stmt = delete(ProjectTable).where(ProjectTable.id == project_id)
         result = await self.session.execute(stmt)
-        return [Artifact.model_validate(a, from_attributes=True) for a in result.scalars().all()]
-
-    async def get(self, artifact_id: UUID) -> Optional[Artifact]:
-        result = await self.session.execute(select(ArtifactTable).where(ArtifactTable.id == artifact_id))
-        db_artifact = result.scalar_one_or_none()
-        if db_artifact:
-            return Artifact.model_validate(db_artifact, from_attributes=True)
-        return None
-
-    async def create(self, artifact: Artifact) -> Artifact:
-        db_obj = ArtifactTable(
-            id=artifact.id,
-            project_id=artifact.project_id,
-            title=artifact.title,
-            type=artifact.type,
-            content=artifact.content,
-            status=artifact.status,
-            metadata_=artifact.metadata,
-            created_at=artifact.created_at,
-            updated_at=artifact.updated_at
-        )
-        self.session.add(db_obj)
         await self.session.commit()
-        await self.session.refresh(db_obj)
-        return Artifact.model_validate(db_obj, from_attributes=True)
+        return result.rowcount > 0
 
-class ScenarioRepository:
-    def __init__(self, session: AsyncSession):
-        self.session = session
+    # --- Child Entity Methods ---
 
-    async def list_by_project(self, project_id: UUID) -> List[Scenario]:
-        result = await self.session.execute(select(ScenarioTable).where(ScenarioTable.project_id == project_id))
-        return [Scenario.model_validate(s, from_attributes=True) for s in result.scalars().all()]
-
-    async def list_templates(self) -> List[Scenario]:
-        result = await self.session.execute(select(ScenarioTable).where(ScenarioTable.project_id == None))
-        return [Scenario.model_validate(s, from_attributes=True) for s in result.scalars().all()]
-
-    async def create(self, scenario: Scenario) -> Scenario:
-        db_obj = ScenarioTable(
-            id=scenario.id,
-            project_id=scenario.project_id,
-            title=scenario.title,
-            description=scenario.description,
-            category=scenario.category,
-            prompt_template=scenario.prompt_template,
-            icon=scenario.icon,
-            created_at=scenario.created_at,
-            updated_at=scenario.updated_at
-        )
-        self.session.add(db_obj)
+    async def add_resource(self, resource: KeyResource) -> KeyResource:
+        db_res = KeyResourceTable(**resource.model_dump())
+        self.session.add(db_res)
         await self.session.commit()
-        await self.session.refresh(db_obj)
-        return Scenario.model_validate(db_obj, from_attributes=True)
+        await self.session.refresh(db_res)
+        return resource # Return domain object
+
+    async def add_artifact(self, artifact: Artifact) -> Artifact:
+        db_art = ArtifactTable(**artifact.model_dump())
+        self.session.add(db_art)
+        await self.session.commit()
+        await self.session.refresh(db_art)
+        return artifact

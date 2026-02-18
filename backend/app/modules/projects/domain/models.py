@@ -1,41 +1,46 @@
 from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from datetime import datetime
-from typing import List, Optional, Dict, Any
-from backend.app.modules.projects.domain.enums import HubType, Status, FileType, ReviewState
+from typing import Optional, List
+from backend.app.modules.projects.domain.enums import ProjectStatus, ResourceProvider, ApprovalStatus
 from backend.app.shared.utils.time import now_utc
 
-class Artifact(BaseModel):
+class KeyResource(BaseModel):
     id: UUID = Field(default_factory=uuid4)
+    resource_provider_type: ResourceProvider
+    resource_label: str
+    resource_url: str
+    resource_icon: Optional[str] = None
     project_id: UUID
-    title: str
-    type: FileType
-    content: str
-    status: ReviewState = ReviewState.DRAFT
-    metadata: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
 
-class Scenario(BaseModel):
+class Artifact(BaseModel):
     id: UUID = Field(default_factory=uuid4)
-    project_id: Optional[UUID] = None
-    title: str
-    description: str
-    category: str
-    prompt_template: str
-    icon: Optional[str] = None
+    artifact_name: str
+    artifact_source_path: str
+    artifact_deliverable_url: str
+    workspace_domain: Optional[str] = None
+    artifact_approval_status: ApprovalStatus = ApprovalStatus.DRAFT
+    approved_by_user_id: Optional[UUID] = None
+    artifact_approved_at: Optional[datetime] = None
+    project_id: UUID
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
 
 class Project(BaseModel):
     id: UUID = Field(default_factory=uuid4)
-    name: str
-    description: Optional[str] = None
-    domain: HubType
-    status: Status = Status.IDEA
+    project_name: str
+    project_status: ProjectStatus = ProjectStatus.IDEA
+    project_summary: Optional[str] = None
+    project_keywords: List[str] = Field(default_factory=list)
+    project_strategy_url: Optional[str] = None
+    space_id: Optional[UUID] = None
     owner_id: UUID
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
     
-    # Aggregates (optional fetch)
+    # Relationships for DTOs
+    key_resources: List[KeyResource] = Field(default_factory=list)
     artifacts: List[Artifact] = Field(default_factory=list)
+    workspaces: List[str] = Field(default_factory=list) # Derived from Space Zones

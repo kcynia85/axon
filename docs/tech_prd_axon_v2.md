@@ -1,91 +1,98 @@
-# Tech PRD: RAGAS Core System (v2 - `crewAI` & `LangChain` Migration)
+# Tech PRD: Axon Core System (vNext — crewAI + LangChain, Inngest, pgvector)
 
-## 1. Kontekst i Cel
-*   **Dokument:** Technical Product Requirements Document (Tech PRD)
-*   **Status:** Gotowy do Implementacji
-*   **Cel:** Ten dokument definiuje techniczne wymagania dla refaktoryzacji rdzenia systemu RAGAS, migrując z niestandardowej logiki agentowej na architekturę opartą o frameworki `crewAI` (orkiestracja) i `LangChain` (abstrakcja infrastruktury).
-*   **Źródło:** Ta wersja jest bezpośrednią konsekwencją decyzji architektonicznych zawartych w `ard_axon_v2.md`.
+Spec definiuje vNext z core: crewAI (orkiestracja) + LangChain (LLM/Retriever/VectorStore), z trwałością przez Inngest, SSE streamingiem oraz Supabase+pgvector (domyślnie 768‑d). ADK jest opcjonalnym adapterem przez port LLM Gateway (future‑proof).
 
-## 2. Kluczowe Zasady Techniczne (Core Principles)
-1.  **Orkiestracja Deklaratywna:** Cała logika przepływu pracy agentów musi być zaimplementowana przy użyciu `crewAI` (Agenci, Zadania, Zespoły). Niestandardowe pętle `while` i logika routingu muszą zostać usunięte.
-2.  **Abstrakcja Infrastruktury:** Wszystkie interakcje z zewnętrznymi systemami AI (LLM, modele embeddingów) i bazami danych wektorowych muszą odbywać się przez warstwę abstrakcji `LangChain`. Bezpośrednie wywołania SDK (np. `google-generativeai`) są niedozwolone.
-3.  **Niezależność od Modeli (Model Agnostic):** Architektura musi umożliwiać zmianę dostawcy LLM lub modelu embeddingów poprzez modyfikację wyłącznie warstwy konfiguracyjnej/infrastrukturalnej, bez wpływu na logikę aplikacyjną.
-4.  **Narzędzia jako API Agenta:** Wszystkie zdolności agenta do interakcji ze światem (czytanie plików, RAG, API) muszą być zaimplementowane jako `crewAI Tools` (`@tool`).
-5.  **Trwałość Wykonania (Durable Execution):** Wszystkie długotrwałe operacje `Crew` muszą być uruchamiane asynchronicznie poprzez silnik workflow `Inngest`.
+1. Context and goal
+- Status: Ready to implement
+- Goal: Deliver P0 critical path (Spaces/Canvas Workspaces-first, Resources/Knowledge baseline, Settings LLMs/Knowledge Engine, Agents SSE), then P1 depth and P2 enhancements
 
-## 3. Główne Epiki i Historyjki Techniczne (MVP Refactoring)
+2. Core principles
+- Vertical slices only; no cross‑module imports (tylko shared)
+- Orkiestracja: crewAI (Agents/Tasks/Crew) wywoływana durable przez Inngest
+- Infrastruktura LLM/RAG: LangChain (Chat*, Retrievers, VectorStore pgvector)
+- LLM Gateway (port): domyślnie adapter LangChain; ADK jako opcjonalny adapter (fallback/alternatywa)
+- SSE‑first; FastAPI async; JWT na routerach; Supabase RLS; soft deletes
+- Contract‑first (Zod); cytowania obowiązkowe
 
-### Epic 1: Refaktoryzacja Warstwy Orkiestracji na `crewAI`
-*   **Cel:** Zastąpienie obecnej, niestandardowej logiki sterującej agentami przez deklaratywne komponenty `crewAI`.
-*   **Historyjki Techniczne:**
-    1.  **Jako deweloper, chcę zdefiniować agentów `Manager`, `Researcher` i `Builder` jako obiekty `Agent` z `crewAI`**, aby ich role, cele i narzędzia były jasno określone i łatwe do modyfikacji.
-        *   **Akceptacja:** Istnieją pliki (np. `app/modules/agents/agents.py`) zawierające konfiguracje agentów z `role`, `goal`, `backstory`, `tools` i przypisanym `llm` z `LangChain`.
-    2.  **Jako deweloper, chcę zamodelować istniejące przepływy pracy jako obiekty `Task` i `Crew` z `crewAI`**, aby logika biznesowa była czytelna i oddzielona od implementacji.
-        *   **Akceptacja:** Istnieją pliki (np. `app/modules/agents/crews.py`) definiujące `Crew` dla kluczowych scenariuszy (np. `research_crew`, `code_generation_crew`).
-    3.  **Jako deweloper, chcę zastąpić wszystkie wywołania niestandardowej pętli agenta jednym wywołaniem `crew.kickoff()`**, aby uprościć kod i polegać na sprawdzonym mechanizmie frameworka.
-        *   **Akceptacja:** W kodzie aplikacyjnym nie ma już ręcznie zaimplementowanej pętli `Think -> Tool -> Act`.
+3. DDD & Vertical Slice invariants
+- Granice slice’a: każdy moduł w backend/app/modules/<slice> posiada {interface, application, domain, infrastructure} i jest autonomiczny.
+- Imports: dozwolone wyłącznie z własnego slice’a lub ze shared/; bezpośrednie importy między różnymi modules/* są zabronione.
+- Dependency Injection: routery (interface) wstrzykują use‑cases przez FastAPI Depends(); use‑cases są czystymi callable’ami.
+- Dostęp do danych: tylko przez infrastrukturę slice’a (repozytoria/adapters); brak dostępu do repo innego slice’a.
+- Workflow: Inngest functions deklarowane w workflows slice; wywoływane z warstwy application innych slice’ów przez klienta (bez importów kodu).
+- SSE: emisja zdarzeń wyłącznie w warstwie interface; format zdarzeń kontraktowy {type: token|tool|final, ...}.
+- Frontend BFF: Next.js route handlers wyłącznie proxy do FastAPI; zero logiki biznesowej w FE.
+- Testy: unit (domain, application), integration (interface/SSE), contract tests (schematy Zod dla list/SSE).
+- Nazewnictwo i URL: kebab‑case, kolekcje w liczbie mnogiej; tabs/modals w query; anchors w hash – zgodnie z url_structure.md.
 
-### Epic 2: Abstrakcja Warstwy Infrastruktury przez `LangChain`
-*   **Cel:** Uniezależnienie kodu od konkretnych dostawców AI i baz danych.
-*   **Historyjki Techniczne:**
-    1.  **Jako deweloper, chcę stworzyć centralny serwis (`LLMService`)**, który dostarcza skonfigurowane instancje modeli czatu `LangChain` (np. `ChatGoogleGenerativeAI`, `ChatOpenAI`).
-        *   **Akceptacja:** Agenci `crewAI` otrzymują obiekt `llm` z tego serwisu, a nie tworzą go samodzielnie.
-    2.  **Jako deweloper, chcę zrefaktoryzować logikę RAG**, aby korzystała ze standardowych interfejsów `LangChain VectorStore` i `Retriever`.
-        *   **Akceptacja:** Cała logika połączenia i przeszukiwania `pgvector` jest zamknięta wewnątrz obiektu `LangChain Retriever`.
-    3.  **Jako deweloper, chcę opakować wszystkie funkcje pomocnicze (np. `query_vector_db`, `read_file`) w dekorator `@tool` z `crewai_tools`**, aby stały się one formalnymi narzędziami dostępnymi dla agentów.
-        *   **Akceptacja:** Narzędzia mają jasne opisy (`docstring`), które służą agentowi do podejmowania decyzji o ich użyciu.
+3. Routes (per [docs/product/information_architecture/url_structure.md](docs/product/information_architecture/url_structure.md))
+- Projects: /projects, /projects/:id?tab=overview|resources|artifacts
+- Spaces: /spaces, /spaces/:id, ?node=..., #zone-:workspace
+- Workspaces: /workspaces, /workspaces/:workspace?tab=agents|crews|patterns|templates|services|automations
+- Resources: /resources/knowledge (hubs, sources, P1: /debugger or ?modal=debugger)
+- Settings: /settings/llms/(providers|models|routers), /settings/knowledge-engine/(embedding|chunking|vectors)
 
-## 4. Specyfikacja Komponentów Technicznych
+4. APIs and contracts (slices)
+- Agents — POST /agents/chat (SSE). Events: { type: token|tool|final, ... }. Backend: crewAI run (crew.kickoff()) w workerze Inngest; narzędzia emitują zdarzenia tool
+- Knowledge — list/ingest/detail; ingest → Inngest (durable indexing)
+- Projects — CRUD incl. createNewSpace/existingSpaceId per Projects plan
+- Settings — CRUD providers/models/routers; Knowledge Engine configs (embedding/chunking/vectors)
 
-### 4.1. Agenci (`crewAI` Agents)
-| Rola | Cel (Goal) | Backstory | Kluczowe Narzędzia | Model (`LangChain`) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Manager** | Orkiestracja i delegacja zadań do specjalistów. | Doświadczony project manager... | - | `Tier 1 (Gemini 3 Pro)` |
-| **Researcher** | Wyszukiwanie i synteza informacji. | Ekspert od researchu... | `search_knowledge_base`, `fetch_url_content` | `Tier 2 (Gemini 2.5 Pro)` |
-| **Builder** | Tworzenie konkretnych artefaktów. | Starszy inżynier oprogramowania... | `write_artifact_to_project`, `read_file` | `Tier 2 (Gemini 2.5 Pro)` |
+5. Data and NFRs
+- pgvector (domyślnie 768‑d); JSONB GIN filters; Langfuse traces
+- SSE resilience; auth; RLS; cost/latency metrics; CORS for localhost:3000
 
-### 4.2. Narzędzia (`crewAI Tools`)
-Wszystkie narzędzia muszą być zdefiniowane w module `app/modules/knowledge/tools.py` lub podobnym. Muszą posiadać typowanie argumentów i czytelny `docstring`.
-*   `search_knowledge_base(query: str) -> str`: Przeszukuje bazę wektorową (RAG).
-*   `get_asset(slug: str) -> str`: Pobiera pełną treść zasobu (SOP, szablon) po jego unikalnym identyfikatorze.
-*   `fetch_url_content(url: str) -> str`: Pobiera i czyści treść z podanego adresu URL.
-*   `write_artifact_to_project(project_id: str, file_name: str, content: str) -> str`: Zapisuje plik w kontekście danego projektu.
-*   `read_file(file_path: str) -> str`: Odczytuje plik z systemu plików.
+5a. Niezmienniki systemowe (pozostają bez zmian)
+- Trustworthy Attribution: odpowiedzi z RAG zawierają cytowania (źródło/hub/sourceId/chunk).
+- Project isolation: Supabase RLS; JWT na routerach; soft‑deletes domyślnie filtrowane.
+- Async + idempotencja: narzędzia modyfikujące stan są idempotentne; operacje długie przez Inngest.
+- Contract‑first: listy/SSE zgodne z ustalonymi schematami; błędy 404/403/500 per error_states.
 
-## 5. Niezmienniki Systemowe i Wymagania Niefunkcjonalne
-(Przeniesione z `prp_axon.md` - pozostają w mocy)
-1.  **Trustworthy Attribution:** Każda odpowiedź z RAG MUSI zawierać cytaty do źródeł.
-2.  **Project Isolation (RLS):** Dostęp do danych musi być ograniczony na poziomie bazy danych per użytkownik.
-3.  **Idempotent Execution:** Narzędzia modyfikujące stan muszą być idempotentne.
-4.  **Contract-First UI:** Backend musi dostarczać JSON zgodny z predefiniowanym schematem Zod.
-5.  **Fallback Resilience:** System musi automatycznie przełączyć się na model zapasowy w razie awarii głównego.
-... (i pozostałe z `prp_axon.md`)
+6. Phasing and AC
+- P0: Spaces/Canvas, Resources/Knowledge baseline, Settings LLMs/KE, Agents SSE (crewAI+LangChain baseline; ADK opcjonalny)
+- AC: URLs/tabs/modals/anchors per rules; lists per filter/search/sort; SSE token/tool/final; citations; 404/403/500 per spec
+- P1: Editors (Automations/Services/Tools), Agents/Crew editors, RAG Debugger
+- P2: Global search; advanced filters/sort
 
-## 6. Techniczna Checklista Implementacji (v2)
-- [ ] **Zależności:** Dodaj `crewai`, `crewai_tools`, `langchain`, `langchain-google-genai`, `langchain-community` do `pyproject.toml`.
-- [ ] **Nowa Struktura Modułów Backendu:**
-    - [ ] Utwórz katalog `app/modules/orchestration/`.
-    - [ ] Utwórz plik `app/modules/orchestration/task_builder.py` odpowiedzialny za konstruowanie zadań `crewAI` z `I/O Schema`.
-    - [ ] Utwórz plik `app/modules/orchestration/crew_runner.py` do uruchamiania załóg.
-    - [ ] W `app/modules/agents/` umieść logikę CRUD i walidacji dla Agentów.
-    - [ ] W `app/modules/crews/` umieść logikę CRUD i walidacji dla Załóg.
-    - [ ] W `app/modules/flows/` umieść logikę CRUD i walidacji dla Przepływów.
-- [ ] **Struktura Modułu `knowledge`:**
-    - [ ] Utwórz `app/modules/knowledge/tools.py` dla definicji Narzędzi `@tool`.
-    - [ ] Utwórz `app/modules/knowledge/retrievers.py` do konfiguracji `LangChain Retrievers`.
-- [ ] **Warstwa Infrastruktury (`app/shared/infrastructure`):**
-    - [ ] Utwórz serwis `llms.py` do zarządzania instancjami `LangChain ChatModels`.
-    - [ ] Utwórz serwis `embeddings.py` do zarządzania instancjami `LangChain Embeddings`.
-- [ ] **Nowa Struktura Frontend (`frontend/src/modules`):**
-    - [ ] Zaimplementuj `frontend/modules/agents/utils/schemaSuggester.ts` z logiką inteligentnego wypełniania.
-    - [ ] Zbuduj komponenty `AgentForm.tsx`, `SimpleSchemaInput.tsx` i `StructuredSchemaEditor.tsx`.
-    - [ ] Stwórz reużywalny hook `frontend/shared/hooks/useAutoSave.ts`.
-- [ ] **Refaktoryzacja API & Orkiestracji:**
-    - [ ] Zmodyfikuj endpointy API, aby przekazywały zadania do `Inngest`.
-    - [ ] Funkcja `Inngest` powinna używać `crew_runner.py` do uruchamiania załóg, a `task_builder.py` do przygotowywania zadań.
-- [ ] **Usunięcie Starego Kodu:** Zidentyfikuj i usuń niestandardową logikę pętli agenta, `Agent Factory` i `Router Logic`.
+6a. Transitional “today‑ready” bridge (status: Ready to Implement od 2026‑02‑17)
+Cel: zachować bieżące działanie i umożliwić płynne przejście na crewAI + LangChain bez Big‑Bang.
 
-## 7. Poza Zakresem MVP tej Refaktoryzacji
-*   Pełna implementacja `LLM-as-a-Judge` (zostaje jako proces manualny).
-*   Zaawansowany `Semantic Cache` (na razie polegamy na podstawowym cache'u `LangChain`).
-*   Nowe narzędzia (Tools) wykraczające poza te już istniejące w obecnej implementacji.
+- Krok T1: Port LLM Gateway (shared/ports/illm_gateway)
+	- Zdefiniuj interfejs (generate(request) → response z usage/cost). 
+	- AC: istnieje port + test jednostkowy; brak zmian funkcjonalnych.
+
+- Krok T2: Adapter domyślny (CurrentAdapter)
+	- Zaimplementuj adapter używający aktualnego klienta LLM (obecny ADK/klient w projekcie), spięty z portem.
+	- Podmień wywołania w agents application na port (DI), zostawiając bieżące zachowanie.
+	- AC: endpoint /agents/chat działa identycznie; SSE bez zmian; Langfuse metryki zbierane.
+
+- Krok T3: Szkielet adaptera LangChain (LangChainAdapter)
+	- Dodaj implementację opartą o LangChain Chat* + mapowanie parametrów (może być za feature‑flagiem, bez domyślnego włączenia).
+	- AC: test integracyjny z mockiem; flaga off by default.
+
+- Krok T4: Facade orkiestracji crewAI
+	- Utwórz crew_runner (application) i crew definitions (stub), ale na razie deleguj do obecnego przepływu (bridge). 
+	- Zarejestruj funkcję Inngest o docelowym API; wewnątrz wywołuj aktualny kod do czasu migracji agentów.
+	- AC: Inngest handler istnieje; brak regresji; logi/trace spójne.
+
+- Krok T5: Retriever Port dla RAG
+	- Zdefiniuj port IKnowledgeRetriever; dodaj adapter CurrentRetriever (oparty o vecs) + stub LangChainRetriever (flaga off).
+	- AC: wyszukiwanie działa jak dziś; flaga pozwala na testy LangChain bez wpływu na prod.
+
+- Krok T6: KE/Embedding
+	- Jeśli obecny wymiar ≠ 768‑d, zostaw aktualny; pokaż ostrzeżenie o reindeksacji w Settings (P1). 
+	- AC: brak wymuszonej migracji; status KE wyświetla bieżący wymiar.
+
+- DoD (dla T1–T6):
+	- Brak zmian w kontraktach FE (SSE/listy); testy kontraktowe zielone.
+	- Wydajność i koszty bez regresji (>‑= baseline).
+	- Feature‑flagi i DI pozwalają włączać adaptery per środowisko.
+
+7. Risks & Assumptions
+- Risks: SSE proxying; debugger perf; embedding dim migration
+- Assumptions: Workspace Zones are visual-only (no separate entity)
+
+11. Changelog vNext
+- Adds: Workspaces-first Canvas; Settings LLMs/KE; Resources/Knowledge baseline; Agents SSE; LLM Gateway (port) z adapterami
+- Clarifies: Core = crewAI (orkiestracja) + LangChain (LLM/Retriever/VectorStore); ADK = opcjonalny adapter
+- Modifies: embeddings (domyślnie 768‑d); standardized tabs/modals/anchors

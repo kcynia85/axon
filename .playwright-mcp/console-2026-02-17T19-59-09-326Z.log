@@ -1,0 +1,119 @@
+[    1185ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[    1187ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:42
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:680:11
+    at new Promise (<anonymous>)
+    at retryable (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:662:21)
+    at SupabaseAuthClient._refreshAccessToken (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4812:231)
+    at SupabaseAuthClient._callRefreshToken (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4968:48)
+    at SupabaseAuthClient._recoverAndRefresh (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4917:50)
+    at async SupabaseAuthClient._initialize (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:3012:13)
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:2950:24 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[    1425ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[    1426ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[    2210ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[    2211ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[    3062ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[    3063ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[    4699ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[    4699ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[    7941ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[    7941ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   14393ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[   14394ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   27233ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[   27233ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   27234ms] [ERROR] AuthRetryableFetchError: Failed to fetch
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:956:15)
+    at async _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:18)
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:24
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   27275ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[   27275ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:42
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:680:11
+    at new Promise (<anonymous>)
+    at retryable (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:662:21)
+    at SupabaseAuthClient._refreshAccessToken (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4812:231)
+    at SupabaseAuthClient._callRefreshToken (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4968:48)
+    at SupabaseAuthClient.__loadSession (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4115:57)
+    at async SupabaseAuthClient._useSession (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4045:28)
+    at async SupabaseAuthClient._emitInitialSession (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4592:16) @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   27521ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[   27522ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   27957ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[   27957ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   28862ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[   28862ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   30499ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[   30499ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[   33760ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[   33760ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:598:23
+    at _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:952:24)
+    at _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:939:24)
+    at http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:4817:232
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_7e50c0d3._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117

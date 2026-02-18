@@ -1,23 +1,40 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field
+from typing import Optional, List
 from uuid import UUID
-from backend.app.modules.projects.domain.enums import HubType, Status
+from backend.app.modules.projects.domain.enums import ProjectStatus, ResourceProvider, ApprovalStatus
 
-class ProjectCreate(BaseModel):
-    name: str
-    description: Optional[str] = None
-    domain: HubType
-    status: Status = Status.IDEA
+# --- Command DTOs (Input) ---
 
-class ProjectUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[Status] = None
+class ProjectCreateDTO(BaseModel):
+    project_name: str
+    project_status: ProjectStatus = ProjectStatus.IDEA
+    project_summary: Optional[str] = None
+    project_keywords: List[str] = Field(default_factory=list)
+    project_strategy_url: Optional[str] = None
+    # space_id is optional, can be linked later
 
-class ScenarioCreate(BaseModel):
-    project_id: UUID
-    title: str
-    description: str
-    category: str
-    prompt_template: str
-    icon: Optional[str] = None
+class ProjectUpdateDTO(BaseModel):
+    project_name: Optional[str] = None
+    project_status: Optional[ProjectStatus] = None
+    project_summary: Optional[str] = None
+    project_keywords: Optional[List[str]] = None
+    project_strategy_url: Optional[str] = None
+    space_id: Optional[UUID] = None
+
+class ResourceCreateDTO(BaseModel):
+    resource_provider_type: ResourceProvider
+    resource_label: str
+    resource_url: str
+    resource_icon: Optional[str] = None
+
+class ArtifactCreateDTO(BaseModel):
+    artifact_name: str
+    artifact_source_path: str
+    artifact_deliverable_url: str
+    workspace_domain: Optional[str] = None
+    # Approval defaults to Draft
+
+# --- Response DTOs (Output) ---
+# We can often reuse Domain Models for simple outputs, 
+# but DTOs allow for computed fields or hiding internal IDs.
+# For now, we will return Domain Models directly from Service.

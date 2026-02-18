@@ -1,27 +1,17 @@
 from enum import Enum
 
-class HubType(str, Enum):
-    PRODUCT = "product"
-    DISCOVERY = "discovery"
-    DESIGN = "design"
-    DELIVERY = "delivery"
-    GROWTH = "growth"
-    WRITING = "writing"
+class ProjectStatus(str, Enum):
+    IDEA = "Idea"
+    IN_PROGRESS = "In Progress"
+    COMPLETED = "Completed"
 
-class Status(str, Enum):
-    IDEA = "idea"
-    IN_PROGRESS = "in_progress"
-    REVIEW = "review"
-    DONE = "done"
-    ARCHIVED = "archived"
+class ResourceProvider(str, Enum):
+    NOTION = "Notion"
+    FIGMA = "Figma"
+    GITHUB = "Github"
+    OTHER = "Other"
 
-class FileType(str, Enum):
-    MARKDOWN = "markdown"
-    CODE = "code"
-    JSON = "json"
-    IMAGE = "image"
-
-class ReviewState(str, Enum):
-    DRAFT = "draft"
-    REVIEWED = "reviewed"
-    APPROVED = "approved"
+class ApprovalStatus(str, Enum):
+    DRAFT = "Draft"
+    IN_REVIEW = "In Review"
+    APPROVED = "Approved"

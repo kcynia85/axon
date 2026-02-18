@@ -1,26 +1,27 @@
 import {
   LayoutDashboard,
-  MessageSquare,
   Library,
-  Brain,
-  Settings,
-  Inbox,
+  Layout,
+  SquareStack,
+  Database,
+  AppWindow,
   FileText,
-  Workflow,
-  Zap
+  Inbox,
+  Settings,
+  Home
 } from "lucide-react";
 
 export const mainNavigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Workspace", href: "/workspace", icon: MessageSquare },
+  { name: "Home", href: "/dashboard", icon: Home },
   { name: "Projects", href: "/projects", icon: Library },
+  { name: "Spaces", href: "/spaces", icon: Layout },
+  { name: "Workspaces", href: "/workspaces", icon: SquareStack },
+  { name: "Resources", href: "/resources", icon: Database },
+  { name: "Apps", href: "/apps", icon: AppWindow },
   { name: "Inbox", href: "/inbox", icon: Inbox },
-  { name: "Brain", href: "/brain", icon: Brain },
-  { name: "Workflows", href: "/workflows", icon: Workflow },
-  { name: "Common Uses", href: "/common-uses", icon: Zap },
 ];
 
 export const secondaryNavigation = [
-  { name: "Settings", href: "/settings", icon: Settings },
   { name: "Docs", href: "/docs", icon: FileText },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];

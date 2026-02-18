@@ -1,3 +1,45 @@
+# ARD (Architecture Requirements Document) – vNext (Axon)
+Produkt: Axon — AI Command Center
+Wzorzec: DDD + Modular Monolith
+Core: FastAPI (async), Next.js 16 (App Router), Supabase Postgres + pgvector (domyślnie 768‑d), Inngest, crewAI (orkiestracja) + LangChain (LLM/Retriever/VectorStore), SSE streaming
+
+1. Bounded Contexts (Vertical Slices)
+- projects, spaces (Canvas, JSONB graph, Workspace Zones visual-only), workspaces, resources/knowledge (RAG), agents, settings (LLMs + Knowledge Engine), workflows (Inngest)
+
+2. Architecture
+- API: FastAPI routers per slice; BFF via Next.js; SSE for agents (token/tool/final)
+- Application: Inngest (durable runs) + crewAI (Agents/Tasks/Crew orchestracja)
+- Domain: entities/value objects; soft-deletes
+- Infrastructure (LangChain‑first):
+    - LLM Gateway (port): domyślnie adapter LangChain (ChatGoogleGenerativeAI/OpenAI/Anthropic); opcjonalnie adapter ADK (fallback/alternatywa) – future‑proof
+    - RAG: LangChain Retriever + VectorStore nad pgvector (JSONB+GIN filtry)
+    - Embeddings: konfigurowalne (domyślnie 768‑d); reindeksacja przez Settings (KE)
+    - Storage/Obs: MinIO/S3; Langfuse traces
+- Security: JWT na routerach; Supabase RLS
+
+3. IA alignment
+- URLs per [docs/product/information_architecture/url_structure.md](docs/product/information_architecture/url_structure.md)
+- Filters/search/sort per IA patterns; tabs/modals via query; anchors via #zone-*
+
+4. Delta (v2→vNext)
+- Adds: Workspaces-first Canvas; Settings baselines (LLMs/KE); Resources baseline; port `LLM Gateway` (LangChain adapter domyślny, ADK jako opcjonalny)
+- Modifies: doprecyzowanie, że core = crewAI (orkiestracja) + LangChain (LLM/Retriever/VectorStore); ujednolicone 768‑d embeddings; ustandaryzowane query/hash w URL
+- Removes: brak – crewAI/LangChain pozostaje rdzeniem; ADK traktowany jako opcjonalny adapter
+
+5. Phasing
+- P0: Spaces/Canvas, Resources/Knowledge baseline, Settings LLMs/KE, Agents SSE
+- P1: Editors (Automations/Services/Tools), Agents/Crew editors, RAG Debugger
+- P2: Global search, advanced filters/sort
+
+6. Acceptance (high-level)
+- URLs ok; lists follow IA patterns; SSE emits token/tool/final; citations enforced; 404/403/500 per spec; JWT+RLS; soft-deletes
+
+7. Risks & DoD
+- Risks: SSE reliability; debugger perf; embedding migration
+- DoD: contracts stable; deep-links; Langfuse traces; tests green
+
+---
+Legacy v2 (crewAI & LangChain) content retained below for reference:
 # 🏗️ ARD (Architecture Requirements Document) - v2 (crewAI & LangChain)
 **Produkt:** RAGAS — AI Command Center  
 **Wzorzec:** Domain-Driven Design (DDD) + Modular Monolith with crewAI/LangChain
