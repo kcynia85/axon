@@ -1,0 +1,274 @@
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/agents/features/chat-session/ui/session-message-bubble.tsx
+  3:10  warning  'Avatar' is defined but never used          @typescript-eslint/no-unused-vars
+  3:18  warning  'AvatarFallback' is defined but never used  @typescript-eslint/no-unused-vars
+  3:34  warning  'AvatarImage' is defined but never used     @typescript-eslint/no-unused-vars
+  5:10  warning  'User' is defined but never used            @typescript-eslint/no-unused-vars
+  5:16  warning  'Bot' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/agents/infrastructure/ai-actions.tsx
+  85:30  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/agents/tests/session-message-bubble.test.tsx
+  5:10  warning  'AgentRole' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/common-uses/features/catalog/infrastructure/api.ts
+  30:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/common-uses/features/catalog/ui/scenario-list.tsx
+  64:35  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:18  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/inbox/infrastructure/api.ts
+  11:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/inbox/ui/inbox-list.tsx
+  5:16  warning  'CardHeader' is defined but never used       @typescript-eslint/no-unused-vars
+  5:28  warning  'CardTitle' is defined but never used        @typescript-eslint/no-unused-vars
+  5:39  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/knowledge/features/browse-assets/ui/asset-card.tsx
+  2:29  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/projects/features/project-details/ui/project-details-view.tsx
+  6:35  warning  'ImageIcon' is defined but never used    @typescript-eslint/no-unused-vars
+  8:10  warning  'Tabs' is defined but never used         @typescript-eslint/no-unused-vars
+  8:16  warning  'TabsContent' is defined but never used  @typescript-eslint/no-unused-vars
+  8:29  warning  'TabsList' is defined but never used     @typescript-eslint/no-unused-vars
+  8:39  warning  'TabsTrigger' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/prompts/features/manage-prompts/ui/prompt-editor-dialog.tsx
+  14:16  warning  'Edit' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/prompts/features/manage-prompts/ui/prompt-list.tsx
+  23:22  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/application/use-automations.ts
+  18:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/application/use-external-services.ts
+  18:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/application/use-internal-tools.ts
+  1:20  warning  'useMutation' is defined but never used     @typescript-eslint/no-unused-vars
+  1:33  warning  'useQueryClient' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/application/use-prompt-archetypes.ts
+  14:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/infrastructure/api.ts
+  18:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  47:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/ui/automation-form.tsx
+   7:28  warning  'AutomationPlatformSchema' is defined but never used  @typescript-eslint/no-unused-vars
+  36:10  warning  'Checkbox' is defined but never used                  @typescript-eslint/no-unused-vars
+  37:15  warning  'Play' is defined but never used                      @typescript-eslint/no-unused-vars
+  37:31  warning  'Plus' is defined but never used                      @typescript-eslint/no-unused-vars
+  38:10  warning  'cn' is defined but never used                        @typescript-eslint/no-unused-vars
+  62:62  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/ui/automation-simulator.tsx
+  4:39  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'Badge' is defined but never used            @typescript-eslint/no-unused-vars
+  6:35  warning  'XCircle' is defined but never used          @typescript-eslint/no-unused-vars
+  6:44  warning  'ArrowRight' is defined but never used       @typescript-eslint/no-unused-vars
+  6:56  warning  'Zap' is defined but never used              @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/ui/automations-list.tsx
+  8:15  warning  'Activity' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/ui/external-service-form.tsx
+    7:10  warning  'ExternalServiceSchema' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+    7:33  warning  'ServiceCategorySchema' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   17:10  warning  'Card' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   17:16  warning  'CardHeader' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   17:28  warning  'CardTitle' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+   17:39  warning  'CardDescription' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   17:56  warning  'CardContent' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   18:10  warning  'Skeleton' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   19:10  warning  'Badge' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   27:5   warning  'FormDescription' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   38:10  warning  'Checkbox' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   48:5   warning  'Users' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   49:5   warning  'Workflow' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   50:5   warning  'Network' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   51:5   warning  'Settings2' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+   52:5   warning  'Zap' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   54:10  warning  'cn' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   80:59  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  213:60  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/ui/external-service-form.tsx:213:60
+  211 |                                                         form.setValue("capabilities", caps);
+  212 |                                                     }}
+> 213 |                                                     value={form.watch(`capabilities.${index}`)}
+      |                                                            ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  214 |                                                 />
+  215 |                                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => removeCapability(index)}>
+  216 |                                                     <Trash2 className="w-3.5 h-3.5" />  react-hooks/incompatible-library
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/ui/prompt-archetype-editor.tsx
+  30:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+  50:61  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/resources/ui/prompt-archetypes-list.tsx
+  8:33  warning  'Trash2' is defined but never used  @typescript-eslint/no-unused-vars
+  8:41  warning  'Globe' is defined but never used   @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/settings/ui/chunking-simulator.tsx
+   15:26  warning  'Database' is defined but never used      @typescript-eslint/no-unused-vars
+   15:58  warning  'RefreshCcw' is defined but never used    @typescript-eslint/no-unused-vars
+   17:10  warning  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+  167:35  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/settings/ui/chunking-strategies-list.tsx
+   7:10  warning  'Button' is defined but never used       @typescript-eslint/no-unused-vars
+  10:5   warning  'Database' is defined but never used     @typescript-eslint/no-unused-vars
+  11:5   warning  'Layers' is defined but never used       @typescript-eslint/no-unused-vars
+  13:5   warning  'Settings2' is defined but never used    @typescript-eslint/no-unused-vars
+  14:5   warning  'Route' is defined but never used        @typescript-eslint/no-unused-vars
+  15:5   warning  'Zap' is defined but never used          @typescript-eslint/no-unused-vars
+  16:5   warning  'Settings' is defined but never used     @typescript-eslint/no-unused-vars
+  17:5   warning  'Play' is defined but never used         @typescript-eslint/no-unused-vars
+  18:5   warning  'ShieldCheck' is defined but never used  @typescript-eslint/no-unused-vars
+  19:5   warning  'BarChart2' is defined but never used    @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/settings/ui/embedding-models-list.tsx
+  8:10  warning  'Database' is defined but never used  @typescript-eslint/no-unused-vars
+  8:28  warning  'Activity' is defined but never used  @typescript-eslint/no-unused-vars
+  8:38  warning  'Key' is defined but never used       @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/settings/ui/llm-models-list.tsx
+  15:10  warning  'Check' is defined but never used        @typescript-eslint/no-unused-vars
+  15:17  warning  'X' is defined but never used            @typescript-eslint/no-unused-vars
+  15:20  warning  'ShieldAlert' is defined but never used  @typescript-eslint/no-unused-vars
+  15:33  warning  'Zap' is defined but never used          @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/settings/ui/llm-provider-form.tsx
+    7:29   warning  'ModelTierSchema' is defined but never used                      @typescript-eslint/no-unused-vars
+   35:15   warning  'Key' is defined but never used                                  @typescript-eslint/no-unused-vars
+   35:20   warning  'Save' is defined but never used                                 @typescript-eslint/no-unused-vars
+   35:39   warning  'Database' is defined but never used                             @typescript-eslint/no-unused-vars
+   55:60   error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  112:103  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/settings/ui/llm-providers-list.tsx
+  8:15  warning  'ShieldCheck' is defined but never used  @typescript-eslint/no-unused-vars
+  8:28  warning  'Activity' is defined but never used     @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/settings/ui/llm-routers-list.tsx
+   5:39  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+   7:17  warning  'Zap' is defined but never used              @typescript-eslint/no-unused-vars
+  16:37  error    'Skeleton' is not defined                    react/jsx-no-undef
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/settings/ui/vector-databases-list.tsx
+  8:43  warning  'Settings2' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/spaces/ui/canvas-view.tsx
+  31:17  warning  'setNodes' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/spaces/ui/node-types/agent-node.tsx
+  15:90  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/tools/features/browse-tools/ui/tool-catalog.tsx
+  5:28  warning  'Globe' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workflows/features/manage-workflows/infrastructure/api.ts
+  39:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/application/use-agents.ts
+  17:21  warning  '_' is defined but never used          @typescript-eslint/no-unused-vars
+  17:24  warning  'variables' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/application/use-crews.ts
+  15:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/application/use-patterns.ts
+  15:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/application/use-templates.ts
+  15:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/infrastructure/api.ts
+  14:7   warning  'USE_MOCK' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  21:25  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  44:25  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  47:49  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  53:65  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  67:25  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  70:55  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  80:25  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  83:57  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/infrastructure/mock-api.ts
+  125:21  warning  'workspaceId' is defined but never used  @typescript-eslint/no-unused-vars
+  130:20  warning  'workspaceId' is defined but never used  @typescript-eslint/no-unused-vars
+  135:23  warning  'workspaceId' is defined but never used  @typescript-eslint/no-unused-vars
+  140:24  warning  'workspaceId' is defined but never used  @typescript-eslint/no-unused-vars
+  145:23  warning  'workspaceId' is defined but never used  @typescript-eslint/no-unused-vars
+  150:26  warning  'workspaceId' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/automations-section.tsx
+  5:39  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/cost-estimator.tsx
+  4:10  warning  'Badge' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/modals/archetype-loader-modal.tsx
+  34:38   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  83:110  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  83:119  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/modals/crew-modal.tsx
+  154:35  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/modals/crew-modal.tsx:154:35
+  152 |                         onValueChange={field.onChange}
+  153 |                         defaultValue={field.value || "none"}
+> 154 |                         disabled={form.watch("crew_process_type") !== "Hierarchical"}
+      |                                   ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  155 |                       >
+  156 |                         <FormControl>
+  157 |                           <SelectTrigger className="text-xs">  react-hooks/incompatible-library
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/modals/internal-skills-modal.tsx
+  122:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/modals/pattern-modal.tsx
+  9:5  warning  'PatternTypeSchema' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/modals/service-modal.tsx
+  14:10  warning  'Skeleton' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/patterns-section.tsx
+  5:39  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+  8:35  warning  'ExternalLink' is defined but never used     @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/services-section.tsx
+  17:35  warning  'workspaceId' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/modules/workspaces/ui/templates-section.tsx
+  5:39  warning  'CardDescription' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/shared/config/navigation.ts
+  2:3  warning  'LayoutDashboard' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kamil/Documents/DEV/axon/axon/frontend/src/shared/infrastructure/supabase/server.ts
+  1:35  warning  'CookieOptions' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 145 problems (41 errors, 104 warnings)
+

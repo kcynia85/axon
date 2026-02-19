@@ -47,6 +47,7 @@ class AgentConfig(BaseModel):
     
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
+    deleted_at: Optional[datetime] = None
 
 class ChatSession(BaseModel):
     id: UUID = Field(default_factory=uuid4)

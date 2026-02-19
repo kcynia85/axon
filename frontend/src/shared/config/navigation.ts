@@ -1,5 +1,4 @@
 import {
-  LayoutDashboard,
   Library,
   Layout,
   SquareStack,

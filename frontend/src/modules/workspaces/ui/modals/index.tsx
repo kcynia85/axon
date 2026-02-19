@@ -3,7 +3,10 @@
 import { AgentModal } from "./agent-modal";
 import { CrewModal } from "./crew-modal";
 import { ServiceModal } from "./service-modal";
-import { AutomationModal } from "./automation-modal";
+import { PatternModal } from "./pattern-modal";
+import { TemplateModal } from "./template-modal";
+import { ArchetypeLoaderModal } from "./archetype-loader-modal";
+import { InternalSkillsModal } from "./internal-skills-modal";
 import { Suspense } from "react";
 
 export const WorkspaceModals = () => {
@@ -12,8 +15,10 @@ export const WorkspaceModals = () => {
       <AgentModal />
       <CrewModal />
       <ServiceModal />
-      <AutomationModal />
-      {/* Templates i Patterns będą dodane w kolejnym kroku */}
+      <PatternModal />
+      <TemplateModal />
+      <ArchetypeLoaderModal />
+      <InternalSkillsModal />
     </Suspense>
   );
 };

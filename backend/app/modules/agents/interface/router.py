@@ -6,6 +6,10 @@ from backend.app.modules.agents.application import service
 from backend.app.modules.agents.domain.models import Tool, AgentConfig
 from backend.app.api.deps import get_current_user
 
+from backend.app.modules.resources.application.service import ResourcesService
+from backend.app.modules.resources.dependencies import get_resources_service
+from backend.app.modules.resources.application.schemas import PromptArchetypeResponse
+
 router = APIRouter(
     prefix="/agents", 
     tags=["agents"],
@@ -83,3 +87,10 @@ async def estimate_cost(
     if not estimate:
         raise HTTPException(status_code=404, detail="Agent not found")
     return estimate
+
+@router.get("/archetypes", response_model=List[PromptArchetypeResponse])
+async def list_agent_archetypes(
+    resources_service: ResourcesService = Depends(get_resources_service)
+):
+    """List all prompt archetypes (proxy to resources)."""
+    return await resources_service.list_prompt_archetypes()

@@ -1,86 +1,112 @@
 import { z } from "zod";
 
-// --- Domain Entities (Value Objects) ---
+// --- Enums to match Backend ---
+export const PatternTypeSchema = z.enum(["Pattern", "Reusable Template"]);
+export const ProcessTypeSchema = z.enum(["Sequential", "Hierarchical", "Parallel"]);
+
+// --- Domain Entities ---
 
 export const AgentSchema = z.object({
   id: z.string().uuid(),
-  role: z.string(),
-  goal: z.string(),
-  backstory: z.string().optional(),
-  keywords: z.array(z.string()).optional(),
+  agent_name: z.string().nullable(),
+  agent_role_text: z.string().nullable(),
+  agent_goal: z.string().nullable(),
+  agent_backstory: z.string().nullable(),
+  guardrails: z.object({
+    instructions: z.array(z.string()),
+    constraints: z.array(z.string()),
+  }).default({ instructions: [], constraints: [] }),
+  few_shot_examples: z.array(z.any()).default([]),
+  reflexion: z.boolean().default(false),
+  temperature: z.number().min(0).max(2).default(0.7),
+  rag_enforcement: z.boolean().default(false),
+  input_schema: z.record(z.any()).nullable().optional(),
+  output_schema: z.record(z.any()).nullable().optional(),
+  availability_workspace: z.array(z.string()).default([]),
+  agent_keywords: z.array(z.string()).default([]),
+  llm_model_id: z.string().uuid().nullable().optional(),
+  knowledge_hub_ids: z.array(z.string().uuid()).nullable().optional(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
 });
 
 export type Agent = z.infer<typeof AgentSchema>;
 
 export const CrewSchema = z.object({
   id: z.string().uuid(),
-  name: z.string(),
-  process: z.enum(["sequential", "hierarchical"]),
-  agents: z.array(z.string().uuid()), // List of Agent IDs
+  crew_name: z.string(),
+  crew_description: z.string().nullable().optional(),
+  crew_process_type: ProcessTypeSchema,
+  manager_agent_id: z.string().uuid().nullable().optional(),
+  crew_keywords: z.array(z.string()).default([]),
+  availability_workspace: z.array(z.string()).default([]),
+  agent_member_ids: z.array(z.string().uuid()).default([]),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
 });
 
 export type Crew = z.infer<typeof CrewSchema>;
 
-export const WorkspaceSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().optional(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
-});
-
-export type Workspace = z.infer<typeof WorkspaceSchema>;
-
 export const PatternSchema = z.object({
   id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().optional(),
-  type: z.enum(["architecture", "behavior", "workflow"]),
-  content: z.string(), // JSON or YAML content
+  pattern_name: z.string(),
+  pattern_type: PatternTypeSchema,
+  pattern_okr_context: z.string().nullable().optional(),
+  pattern_graph_structure: z.record(z.any()),
+  pattern_keywords: z.array(z.string()).default([]),
+  availability_workspace: z.array(z.string()).default([]),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
 });
+
 export type Pattern = z.infer<typeof PatternSchema>;
 
 export const TemplateSchema = z.object({
   id: z.string().uuid(),
-  name: z.string(),
-  description: z.string().optional(),
-  category: z.string(),
-  tags: z.array(z.string()),
+  template_name: z.string(),
+  template_description: z.string().nullable().optional(),
+  template_markdown_content: z.string(),
+  template_checklist_items: z.array(z.record(z.any())).default([]),
+  template_keywords: z.array(z.string()).default([]),
+  availability_workspace: z.array(z.string()).default([]),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
 });
+
 export type Template = z.infer<typeof TemplateSchema>;
+
+// === New Entities for vNext ===
+
+export const WorkspaceSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable().optional(),
+  created_at: z.string().datetime().optional(),
+  updated_at: z.string().datetime().optional(),
+});
+
+export type Workspace = z.infer<typeof WorkspaceSchema>;
 
 export const ServiceSchema = z.object({
   id: z.string().uuid(),
-  name: z.string(),
-  url: z.string(),
-  category: z.string().optional(),
-  keywords: z.array(z.string()).optional(),
-  capabilities: z.array(z.string()).optional(),
-  workspaces: z.array(z.string()).optional(),
-  authType: z.enum(["bearer", "api-key", "none"]),
-  status: z.enum(["active", "inactive", "error"]),
+  service_name: z.string(),
+  service_description: z.string().nullable().optional(),
+  service_category: z.string(),
+  availability_workspace: z.array(z.string()).default([]),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
 });
+
 export type Service = z.infer<typeof ServiceSchema>;
 
 export const AutomationSchema = z.object({
   id: z.string().uuid(),
-  name: z.string(),
-  status: z.string().default("Gotowy"),
-  description: z.string().optional(),
-  keywords: z.array(z.string()).optional(),
-  context: z.array(z.object({ name: z.string(), type: z.string() })).optional(),
-  artefacts: z.array(z.object({ name: z.string(), type: z.string() })).optional(),
-  workspaces: z.array(z.string()).optional(),
-  trigger: z.string(),
-  enabled: z.boolean(),
-  lastRun: z.string().datetime().optional(),
+  automation_name: z.string(),
+  automation_description: z.string().nullable().optional(),
+  automation_platform: z.string(),
+  availability_workspace: z.array(z.string()).default([]),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
 });
+
 export type Automation = z.infer<typeof AutomationSchema>;
-
-// --- API Contracts (DTOs) ---
-
-export const CreateWorkspaceSchema = WorkspaceSchema.pick({ name: true, description: true });
-export type CreateWorkspaceDTO = z.infer<typeof CreateWorkspaceSchema>;
-
-export const CreateAgentSchema = AgentSchema.omit({ id: true });
-export type CreateAgentDTO = z.infer<typeof CreateAgentSchema>;

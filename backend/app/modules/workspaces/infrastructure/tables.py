@@ -17,6 +17,7 @@ class PatternTable(Base):
     availability_workspace = Column(ARRAY(String), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 class TemplateTable(Base):
     __tablename__ = "templates"
@@ -30,6 +31,7 @@ class TemplateTable(Base):
     availability_workspace = Column(ARRAY(String), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 # Association table for Crew <-> Agent
 crew_agents_association = Table(
@@ -51,6 +53,7 @@ class CrewTable(Base):
     availability_workspace = Column(ARRAY(String), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     
     # Relationships
     agents = relationship("AgentConfigTable", secondary=crew_agents_association, backref="crews")

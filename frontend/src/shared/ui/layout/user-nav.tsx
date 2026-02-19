@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { LogOut, User } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { createClient } from "@/shared/infrastructure/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -28,7 +28,7 @@ export function UserNav() {
       }
     }
     getUser()
-  }, [])
+  }, [supabase.auth])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -44,7 +44,7 @@ export function UserNav() {
         <Button variant="ghost" className="relative h-10 w-full justify-start gap-2 px-2">
           <Avatar className="h-8 w-8">
             <AvatarFallback className="bg-primary/10 text-primary">
-                {email[0].toUpperCase()}
+              {email[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col space-y-1 text-left truncate max-w-[140px]">

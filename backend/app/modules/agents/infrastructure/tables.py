@@ -36,6 +36,7 @@ class AgentConfigTable(Base):
     
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 class ChatSessionTable(Base):
     __tablename__ = "chat_sessions"

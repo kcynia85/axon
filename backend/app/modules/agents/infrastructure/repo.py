@@ -27,10 +27,9 @@ class AgentConfigRepository:
         return None
 
     async def list_all(self, workspace: Optional[str] = None) -> List[AgentConfig]:
-        stmt = select(AgentConfigTable)
-        # If filtering by workspace:
-        # if workspace:
-        #     stmt = stmt.where(AgentConfigTable.availability_workspace.contains([workspace]))
+        stmt = select(AgentConfigTable).where(AgentConfigTable.deleted_at == None)
+        if workspace:
+             stmt = stmt.where(AgentConfigTable.availability_workspace.contains([workspace]))
         result = await self.session.execute(stmt)
         return [AgentConfig.model_validate(r, from_attributes=True) for r in result.scalars().all()]
 
@@ -42,7 +41,11 @@ class AgentConfigRepository:
         return await self.get(id)
 
     async def delete(self, id: UUID) -> bool:
-        stmt = delete(AgentConfigTable).where(AgentConfigTable.id == id)
+        stmt = (
+            update(AgentConfigTable)
+            .where(AgentConfigTable.id == id)
+            .values(deleted_at=now_utc())
+        )
         result = await self.session.execute(stmt)
         await self.session.commit()
         return result.rowcount > 0

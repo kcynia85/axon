@@ -7,8 +7,8 @@ const mockProject: Project = {
     id: '1',
     name: 'Test Project',
     description: 'Test Description',
-    domain: HubType.CODING,
-    status: ProjectStatus.ACTIVE,
+    domain: HubType.PRODUCT,
+    status: ProjectStatus.IN_PROGRESS,
     owner_id: 'user-1',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -17,10 +17,10 @@ const mockProject: Project = {
 describe('ProjectCard', () => {
     it('renders project details', () => {
         render(<ProjectCard project={mockProject} />)
-        
+
         expect(screen.getByText('Test Project')).toBeInTheDocument()
         expect(screen.getByText('Test Description')).toBeInTheDocument()
-        expect(screen.getByText(/CODING HUB/i)).toBeInTheDocument()
-        expect(screen.getByText('ACTIVE')).toBeInTheDocument()
+        expect(screen.getByText(/PRODUCT HUB/i)).toBeInTheDocument()
+        expect(screen.getByText('in_progress')).toBeInTheDocument()
     })
 })

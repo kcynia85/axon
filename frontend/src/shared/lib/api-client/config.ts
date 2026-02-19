@@ -20,11 +20,11 @@ const createApiClient = (baseUrl: string) => {
                 ...options?.headers,
             },
         });
-        
+
         if (!res.ok) {
             throw new Error(`API Error: ${res.statusText}`);
         }
-        
+
         return res;
     };
 
@@ -64,6 +64,23 @@ const createApiClient = (baseUrl: string) => {
         return res;
     };
 
+    const patch = async (path: string, body?: unknown, options?: RequestInit) => {
+        const res = await fetch(`${baseUrl}${path}`, {
+            ...options,
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                ...options?.headers,
+            },
+            body: body ? JSON.stringify(body) : undefined,
+        });
+
+        if (!res.ok) {
+            throw new Error(`API Error: ${res.statusText}`);
+        }
+
+        return res;
+    };
     const del = async (path: string, options?: RequestInit) => {
         const res = await fetch(`${baseUrl}${path}`, {
             ...options,
@@ -85,6 +102,7 @@ const createApiClient = (baseUrl: string) => {
         get,
         post,
         put,
+        patch,
         delete: del,
     };
 };

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { workspacesApi } from "../infrastructure/api";
+import { Workspace } from "@/shared/domain/workspaces";
 
 export const workspaceKeys = {
   all: ["workspaces"] as const,
@@ -14,7 +15,7 @@ export const workspaceKeys = {
 };
 
 export const useWorkspaces = () => {
-  return useQuery({
+  return useQuery<Workspace[]>({
     queryKey: workspaceKeys.lists(),
     queryFn: workspacesApi.getWorkspaces,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -22,7 +23,7 @@ export const useWorkspaces = () => {
 };
 
 export const useWorkspace = (id: string) => {
-  return useQuery({
+  return useQuery<Workspace>({
     queryKey: workspaceKeys.detail(id),
     queryFn: () => workspacesApi.getWorkspace(id),
     enabled: !!id,

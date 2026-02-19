@@ -1,20 +1,20 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 export const createClient = async () => {
   const cookieStore = await cookies()
-  
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!url || !key) {
-      console.warn("Supabase URL or Key missing in Server Client.")
-      // Prevent crash, use placeholder
-      return createServerClient(
-        url || 'https://placeholder.supabase.co',
-        key || 'placeholder',
-        { cookies: { getAll: () => [], setAll: () => {} } }
-      )
+    console.warn("Supabase URL or Key missing in Server Client.")
+    // Prevent crash, use placeholder
+    return createServerClient(
+      url || 'https://placeholder.supabase.co',
+      key || 'placeholder',
+      { cookies: { getAll: () => [], setAll: () => { } } }
+    )
   }
 
   return createServerClient(
