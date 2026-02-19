@@ -1,5 +1,5 @@
 import pytest
-from backend.app.shared.security.guardrails import check_input_safety, preprocess_input
+from app.shared.security.guardrails import check_input_safety, preprocess_input
 
 class TestSecurityGuard:
     

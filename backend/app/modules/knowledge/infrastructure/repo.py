@@ -2,9 +2,9 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from typing import Optional, List
-from backend.app.modules.knowledge.domain.models import Asset
-from backend.app.modules.knowledge.infrastructure.tables import AssetTable
-from backend.app.shared.infrastructure.vecs_client import get_vecs_client
+from app.modules.knowledge.domain.models import Asset
+from app.modules.knowledge.infrastructure.tables import AssetTable
+from app.shared.infrastructure.vecs_client import get_vecs_client
 
 class AssetRepository:
     def __init__(self, session: AsyncSession):

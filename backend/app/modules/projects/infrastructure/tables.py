@@ -1,9 +1,9 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
-from backend.app.shared.infrastructure.base import Base
-from backend.app.shared.utils.time import now_utc
-from backend.app.modules.projects.domain.enums import ProjectStatus, ResourceProvider, ApprovalStatus
+from app.shared.infrastructure.base import Base
+from app.shared.utils.time import now_utc
+from app.modules.projects.domain.enums import ProjectStatus, ResourceProvider, ApprovalStatus
 
 class ProjectTable(Base):
     __tablename__ = "projects"

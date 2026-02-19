@@ -1,16 +1,16 @@
 from uuid import UUID, uuid4
 from typing import List, Optional, Dict, Any
-from backend.app.modules.resources.infrastructure.repo import ResourcesRepository
-from backend.app.modules.resources.domain.models import (
+from app.modules.resources.infrastructure.repo import ResourcesRepository
+from app.modules.resources.domain.models import (
     PromptArchetype, ExternalService, ServiceCapability, InternalTool, Automation
 )
-from backend.app.modules.resources.application.schemas import (
+from app.modules.resources.application.schemas import (
     CreatePromptArchetypeRequest, UpdatePromptArchetypeRequest, 
     CreateExternalServiceRequest, CreateCapabilityRequest,
     CreateAutomationRequest, TestPayload, SimulatorResultResponse, SyncResultResponse
 )
-from backend.app.modules.resources.domain.enums import ValidationStatus
-from backend.app.shared.utils.time import now_utc
+from app.modules.resources.domain.enums import ValidationStatus
+from app.shared.utils.time import now_utc
 
 class ResourcesService:
     def __init__(self, repo: ResourcesRepository):

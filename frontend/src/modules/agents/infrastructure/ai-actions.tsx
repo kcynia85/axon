@@ -2,7 +2,6 @@
 
 import { createStreamableUI } from 'ai/rsc';
 import { ReactNode } from 'react';
-import { API_BASE_URL } from '@/shared/lib/api-client/config';
 import { createClient } from '@/shared/infrastructure/supabase/server';
 
 export async function submitUserMessage(input: string, projectId: string): Promise<{ id: number; display: ReactNode }> {
@@ -25,7 +24,7 @@ export async function submitUserMessage(input: string, projectId: string): Promi
              throw new Error("Unauthorized: Please sign in.");
         }
 
-        const response = await fetch(`${API_BASE_URL}/agents/chat/stream`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SSE_DIRECT_URL || ""}/api/agents/chat`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',

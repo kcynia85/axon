@@ -1,8 +1,8 @@
 import boto3
 from botocore.exceptions import ClientError
 from typing import Union, BinaryIO
-from backend.app.config import settings
-from backend.app.shared.domain.ports.storage import StoragePort
+from app.config import settings
+from app.shared.domain.ports.storage import StoragePort
 
 class S3StorageAdapter(StoragePort):
     def __init__(self):

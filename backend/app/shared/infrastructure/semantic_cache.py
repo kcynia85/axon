@@ -1,7 +1,7 @@
 from typing import Optional, List
 from sqlalchemy import create_engine, text
-from backend.app.config import settings
-from backend.app.shared.infrastructure.vecs_client import get_vecs_client
+from app.config import settings
+from app.shared.infrastructure.vecs_client import get_vecs_client
 
 class SemanticCache:
     _instance = None

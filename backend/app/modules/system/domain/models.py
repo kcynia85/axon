@@ -2,8 +2,8 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Optional, Dict, List, Any
 from pydantic import BaseModel, Field
-from backend.app.shared.utils.time import now_utc
-from backend.app.modules.system.domain.enums import UserRole, VoiceProvider
+from app.shared.utils.time import now_utc
+from app.modules.system.domain.enums import UserRole, VoiceProvider
 
 class User(BaseModel):
     id: UUID

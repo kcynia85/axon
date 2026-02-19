@@ -2,10 +2,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from typing import Optional, List
 from uuid import UUID
-from backend.app.modules.agents.domain.models import AgentConfig, ChatSession
-from backend.app.modules.agents.infrastructure.tables import AgentConfigTable, ChatSessionTable
-from backend.app.modules.agents.domain.enums import AgentRole
-from backend.app.shared.utils.time import now_utc
+from app.modules.agents.domain.models import AgentConfig, ChatSession
+from app.modules.agents.infrastructure.tables import AgentConfigTable, ChatSessionTable
+from app.modules.agents.domain.enums import AgentRole
+from app.shared.utils.time import now_utc
 
 class AgentConfigRepository:
     def __init__(self, session: AsyncSession):

@@ -2,13 +2,13 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List, Optional
 from uuid import UUID
 from sse_starlette.sse import EventSourceResponse
-from backend.app.modules.agents.application import service
-from backend.app.modules.agents.domain.models import Tool, AgentConfig
-from backend.app.api.deps import get_current_user
+from app.modules.agents.application import service
+from app.modules.agents.domain.models import Tool, AgentConfig
+from app.api.deps import get_current_user
 
-from backend.app.modules.resources.application.service import ResourcesService
-from backend.app.modules.resources.dependencies import get_resources_service
-from backend.app.modules.resources.application.schemas import PromptArchetypeResponse
+from app.modules.resources.application.service import ResourcesService
+from app.modules.resources.dependencies import get_resources_service
+from app.modules.resources.application.schemas import PromptArchetypeResponse
 
 router = APIRouter(
     prefix="/agents", 

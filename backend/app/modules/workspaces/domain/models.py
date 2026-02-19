@@ -2,8 +2,8 @@ from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from backend.app.modules.workspaces.domain.enums import PatternType, ProcessType
-from backend.app.shared.utils.time import now_utc
+from app.modules.workspaces.domain.enums import PatternType, ProcessType
+from app.shared.utils.time import now_utc
 
 class Pattern(BaseModel):
     id: UUID = Field(default_factory=uuid4)

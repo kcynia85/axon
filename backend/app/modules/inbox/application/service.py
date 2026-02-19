@@ -1,8 +1,8 @@
 from uuid import UUID
 from typing import List, Optional
-from backend.app.modules.inbox.infrastructure.repo import InboxRepository
-from backend.app.modules.inbox.domain.models import InboxItem
-from backend.app.modules.inbox.application.schemas import BulkResolveRequest
+from app.modules.inbox.infrastructure.repo import InboxRepository
+from app.modules.inbox.domain.models import InboxItem
+from app.modules.inbox.application.schemas import BulkResolveRequest
 
 class InboxService:
     def __init__(self, repo: InboxRepository):

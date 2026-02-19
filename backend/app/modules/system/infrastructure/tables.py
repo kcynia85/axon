@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, Enum as SAEnum, Float
 from sqlalchemy.dialects.postgresql import UUID, JSONB
-from backend.app.shared.infrastructure.base import Base
-from backend.app.shared.utils.time import now_utc
-from backend.app.modules.system.domain.enums import UserRole, VoiceProvider
+from app.shared.infrastructure.base import Base
+from app.shared.utils.time import now_utc
+from app.modules.system.domain.enums import UserRole, VoiceProvider
 
 class UserTable(Base):
     __tablename__ = "users"

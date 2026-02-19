@@ -2,10 +2,10 @@ from uuid import UUID
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
-from backend.app.modules.inbox.domain.models import InboxItem
-from backend.app.modules.inbox.infrastructure.tables import InboxItemTable
-from backend.app.modules.inbox.domain.enums import InboxItemStatus
-from backend.app.shared.utils.time import now_utc
+from app.modules.inbox.domain.models import InboxItem
+from app.modules.inbox.infrastructure.tables import InboxItemTable
+from app.modules.inbox.domain.enums import InboxItemStatus
+from app.shared.utils.time import now_utc
 
 class InboxRepository:
     def __init__(self, session: AsyncSession):
@@ -24,7 +24,7 @@ class InboxRepository:
 
     async def list_for_user(self, user_id: UUID) -> List[InboxItem]:
         # Filter by projects owned by user
-        from backend.app.modules.projects.infrastructure.tables import ProjectTable
+        from app.modules.projects.infrastructure.tables import ProjectTable
         
         # We need items where project_id belongs to user OR linked artifact belongs to project belonging to user.
         # But RLS should handle this automatically if we just select * from inbox_items!

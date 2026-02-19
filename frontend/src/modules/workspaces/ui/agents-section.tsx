@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useAgents } from "../application/use-agents";
+import { useCostEstimate } from "@/modules/agents/application/use-cost-estimate";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/card";
 import { Skeleton } from "@/shared/ui/ui/skeleton";
 import { Badge } from "@/shared/ui/ui/badge";
@@ -17,6 +18,7 @@ interface AgentsSectionProps {
 export const AgentsSection = ({ workspaceId }: AgentsSectionProps) => {
   const { data: agents, isLoading } = useAgents(workspaceId);
   const [selectedAgentId, setSelectedAgentId] = React.useState<string | null>(null);
+  const { data: costEstimate, isLoading: isCostLoading } = useCostEstimate(selectedAgentId);
 
   if (isLoading) {
     return (
@@ -94,7 +96,11 @@ export const AgentsSection = ({ workspaceId }: AgentsSectionProps) => {
               <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
                 <Zap className="w-3 h-3" /> Economics
               </h4>
-              <CostEstimator estimate={mockEstimate} />
+              {isCostLoading || !costEstimate ? (
+                <Skeleton className="h-24 w-full" />
+              ) : (
+                <CostEstimator estimate={costEstimate} />
+              )}
             </section>
 
             <div className="flex gap-3 pt-6 border-t border-muted">
@@ -115,20 +121,3 @@ export const AgentsSection = ({ workspaceId }: AgentsSectionProps) => {
   );
 };
 
-// Temporary mock for CostEstimator until real calculation integrated
-const mockEstimate = {
-  staticCost: 0.015,
-  dynamicCost: 0.045,
-  totalEstimate: 0.06,
-  breakdown: {
-    agentSetup: 0.015,
-    ragUsage: 0.02,
-    toolCalls: 0.015,
-    inputTokens: 0.005,
-    outputTokens: 0.005
-  },
-  suggestions: [
-    "Switch to Tier 1 Mini for non-expert tasks",
-    "Reduce history window to 10 context points"
-  ]
-};

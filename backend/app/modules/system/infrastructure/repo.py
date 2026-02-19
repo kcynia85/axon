@@ -2,8 +2,8 @@ from uuid import UUID, uuid4
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
-from backend.app.modules.system.domain.models import MetaAgent, VoiceMetaAgent
-from backend.app.modules.system.infrastructure.tables import MetaAgentTable, VoiceMetaAgentTable
+from app.modules.system.domain.models import MetaAgent, VoiceMetaAgent
+from app.modules.system.infrastructure.tables import MetaAgentTable, VoiceMetaAgentTable
 
 class SystemRepository:
     def __init__(self, session: AsyncSession):

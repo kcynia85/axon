@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.shared.infrastructure.database import get_db
-from backend.app.modules.agents.domain.models import AgentConfig
-from backend.app.modules.agents.domain.enums import AgentRole
-from backend.app.modules.agents.infrastructure.repo import AgentConfigRepository
+from app.shared.infrastructure.database import get_db
+from app.modules.agents.domain.models import AgentConfig
+from app.modules.agents.domain.enums import AgentRole
+from app.modules.agents.infrastructure.repo import AgentConfigRepository
 
 router = APIRouter(prefix="/agents/configs", tags=["agent-configs"])
 

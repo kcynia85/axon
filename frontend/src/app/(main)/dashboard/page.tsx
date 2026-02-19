@@ -1,22 +1,173 @@
-import { getProjects, ProjectList } from "@/modules/projects";
-import { CreateProjectDialog } from "@/modules/projects/features/browse-projects/ui/create-project-dialog";
-import { PageHeader } from "@/shared/ui/layout/page-header";
+"use client";
+
+import { useState } from "react";
+import { useUIState, useActions } from "ai/rsc";
+import type { AI } from "@/modules/agents/infrastructure/ai-provider";
+import { Button } from "@/shared/ui/ui/button";
+import { Textarea } from "@/shared/ui/ui/textarea";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/card";
+import { ScrollArea } from "@/shared/ui/ui/scroll-area";
+import { SendIcon, Clock, Zap, FolderOpen, Sparkles } from "lucide-react";
 import { PageContainer } from "@/shared/ui/layout/page-container";
 import { PageContent } from "@/shared/ui/layout/page-content";
+import Link from "next/link";
 
-const DashboardPage = async () => {
-    const projects = await getProjects();
+const DashboardPage = () => {
+    const [messages, setMessages] = useUIState<typeof AI>();
+    const { submitUserMessage } = useActions<typeof AI>();
+    const [inputValue, setInputValue] = useState("");
+
+    const handleSubmission = async (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (!inputValue.trim()) return;
+
+        const value = inputValue;
+        setInputValue("");
+
+        setMessages((current) => [
+            ...current,
+            {
+                id: Date.now(),
+                display: (
+                    <div className="flex items-start gap-3 mb-4">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold">U</div>
+                        <div className="flex-1 bg-muted/50 rounded-lg p-3 text-sm">{value}</div>
+                    </div>
+                ),
+            },
+        ]);
+
+        try {
+            const responseMessage = await submitUserMessage(value, "home");
+            setMessages((current) => [...current, responseMessage]);
+        } catch (error) {
+            console.error("Error submitting message:", error);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmission();
+        }
+    };
+
+    const quickActions = [
+        { label: "Create project", icon: FolderOpen, href: "/projects?modal=new" },
+        { label: "Quick prompt", icon: Sparkles, href: "/workspaces" },
+        { label: "View inbox", icon: Zap, href: "/inbox" },
+    ];
+
+    const recentSpaces = [
+        { name: "Product Strategy", href: "/spaces/1", workspace: "Growth" },
+        { name: "Q4 Planning", href: "/spaces/2", workspace: "Operations" },
+        { name: "AI Research", href: "/spaces/3", workspace: "R&D" },
+    ];
 
     return (
-        <PageContainer>
-            <PageHeader 
-                title="Dashboard" 
-                description="Manage your AI-powered projects." 
-            >
-                <CreateProjectDialog />
-            </PageHeader>
-            <PageContent>
-                <ProjectList projects={projects} />
+        <PageContainer className="max-w-4xl mx-auto">
+            <PageContent className="space-y-8 py-8">
+                {/* AI Input Hero */}
+                <div className="text-center space-y-4">
+                    <h1 className="text-3xl font-bold tracking-tight">What do you want to create?</h1>
+                    <p className="text-muted-foreground">Ask Axon to help with projects, analysis, or creative tasks.</p>
+                </div>
+
+                {/* AI Input */}
+                <Card className="border-2 shadow-lg">
+                    <CardContent className="p-4">
+                        <form onSubmit={handleSubmission} className="relative">
+                            <Textarea
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Ask anything... e.g., 'Analyze Q4 metrics' or 'Draft project proposal'"
+                                className="min-h-[100px] resize-none pr-14 text-base"
+                            />
+                            <Button
+                                type="submit"
+                                size="icon"
+                                disabled={!inputValue.trim()}
+                                className="absolute right-3 bottom-3 h-10 w-10"
+                            >
+                                <SendIcon className="h-5 w-5" />
+                            </Button>
+                        </form>
+                    </CardContent>
+                </Card>
+
+                {/* Messages Area */}
+                {messages.length > 0 && (
+                    <ScrollArea className="h-[300px] rounded-lg border p-4">
+                        {messages.map((message) => (
+                            <div key={message.id}>{message.display}</div>
+                        ))}
+                    </ScrollArea>
+                )}
+
+                {/* Quick Actions */}
+                <div className="grid grid-cols-3 gap-4">
+                    {quickActions.map((action) => (
+                        <Link key={action.label} href={action.href}>
+                            <Card className="hover:border-primary/50 transition-all cursor-pointer group">
+                                <CardContent className="p-4 flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                        <action.icon className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <span className="font-medium text-sm">{action.label}</span>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                    {/* Recently Used Spaces */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base flex items-center gap-2">
+                                <Clock className="w-4 h-4" /> Recently Used Spaces
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            {recentSpaces.map((space) => (
+                                <Link key={space.name} href={space.href}>
+                                    <div className="flex items-center justify-between p-2 hover:bg-muted rounded-md transition-colors">
+                                        <div>
+                                            <p className="font-medium text-sm">{space.name}</p>
+                                            <p className="text-xs text-muted-foreground">{space.workspace}</p>
+                                        </div>
+                                        <Zap className="w-4 h-4 text-muted-foreground" />
+                                    </div>
+                                </Link>
+                            ))}
+                        </CardContent>
+                    </Card>
+
+                    {/* Continue Last Project */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-base">Continue Last Project</CardTitle>
+                            <CardDescription>Marketing Campaign Q1</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2 text-sm">
+                                    <div className="w-2 h-2 rounded-full bg-green-500" />
+                                    <span>3 active agents</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-sm">
+                                    <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                                    <span>2 pending artifacts</span>
+                                </div>
+                                <Button className="w-full mt-4" size="sm">
+                                    <FolderOpen className="w-4 h-4 mr-2" />
+                                    Open Project
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </PageContent>
         </PageContainer>
     );

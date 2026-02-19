@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, status
-from backend.app.api.deps import get_current_user
-from backend.app.modules.system.application.service import SystemService
-from backend.app.modules.system.dependencies import get_system_service
-from backend.app.modules.system.application.schemas import (
+from app.api.deps import get_current_user
+from app.modules.system.application.service import SystemService
+from app.modules.system.dependencies import get_system_service
+from app.modules.system.application.schemas import (
     MetaAgentResponse, UpdateMetaAgentRequest,
     VoiceMetaAgentResponse, UpdateVoiceMetaAgentRequest
 )

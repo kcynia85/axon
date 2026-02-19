@@ -1,5 +1,5 @@
 import inngest
-from backend.app.shared.infrastructure.inngest_client import inngest_client
+from app.shared.infrastructure.inngest_client import inngest_client
 
 @inngest_client.create_function(
     fn_id="hello-world",

@@ -110,3 +110,19 @@ export const AutomationSchema = z.object({
 });
 
 export type Automation = z.infer<typeof AutomationSchema>;
+
+export const CostEstimateSchema = z.object({
+  staticCost: z.number(),
+  dynamicCost: z.number(),
+  totalEstimate: z.number(),
+  breakdown: z.object({
+    agentSetup: z.number(),
+    ragUsage: z.number(),
+    toolCalls: z.number(),
+    inputTokens: z.number(),
+    outputTokens: z.number(),
+  }),
+  suggestions: z.array(z.string()).optional(),
+});
+
+export type CostEstimate = z.infer<typeof CostEstimateSchema>;

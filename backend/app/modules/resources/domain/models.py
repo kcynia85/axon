@@ -2,8 +2,8 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
-from backend.app.shared.utils.time import now_utc
-from backend.app.modules.resources.domain.enums import (
+from app.shared.utils.time import now_utc
+from app.modules.resources.domain.enums import (
     AutomationPlatform, AutomationHttpMethod, ValidationStatus,
     ServiceCategory, ToolCategory
 )

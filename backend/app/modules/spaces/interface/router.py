@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, status
 from uuid import UUID
-from backend.app.modules.spaces.domain.models import Space
-from backend.app.modules.spaces.application.service import (
+from app.modules.spaces.domain.models import Space
+from app.modules.spaces.application.service import (
     SpaceService, 
     get_space_repo,
     create_space_use_case,
     get_space_details_use_case
 )
-from backend.app.modules.spaces.application.schemas import SpaceDetailDTO
-from backend.app.modules.spaces.infrastructure.repo import SpaceRepository
+from app.modules.spaces.application.schemas import SpaceDetailDTO
+from app.modules.spaces.infrastructure.repo import SpaceRepository
 
 router = APIRouter(prefix="/spaces", tags=["Spaces"])
 
@@ -24,7 +24,7 @@ async def create_space(
 
 @router.get("/{space_id}/canvas", response_model=SpaceDetailDTO)
 async def get_space_canvas(
-    space_id: UUID,
+    space_id: str,
     repo: SpaceRepository = Depends(get_space_repo)
 ):
     """

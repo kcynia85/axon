@@ -3,10 +3,10 @@ import os
 import glob
 from uuid import uuid4
 from sqlalchemy import select, delete
-from backend.app.shared.infrastructure.database import AsyncSessionLocal
-from backend.app.modules.knowledge.infrastructure.tables import AssetTable
-from backend.app.shared.infrastructure.adk import GoogleADK
-from backend.app.shared.infrastructure.vecs_client import get_vecs_client
+from app.shared.infrastructure.database import AsyncSessionLocal
+from app.modules.knowledge.infrastructure.tables import AssetTable
+from app.shared.infrastructure.adk import GoogleADK
+from app.shared.infrastructure.vecs_client import get_vecs_client
 import vecs
 
 # --- Configuration ---

@@ -2,10 +2,10 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 from datetime import datetime
-from backend.app.modules.projects.infrastructure.repo import ProjectRepository
-from backend.app.modules.projects.domain.models import Project
-from backend.app.modules.projects.infrastructure.tables import ProjectTable
-from backend.app.modules.projects.domain.enums import HubType, Status
+from app.modules.projects.infrastructure.repo import ProjectRepository
+from app.modules.projects.domain.models import Project
+from app.modules.projects.infrastructure.tables import ProjectTable
+from app.modules.projects.domain.enums import HubType, Status
 
 @pytest.fixture
 def mock_session():

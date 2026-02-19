@@ -1,8 +1,8 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.shared.infrastructure.database import get_db
-from backend.app.modules.workspaces.infrastructure.repo import WorkspaceRepository
-from backend.app.modules.workspaces.application.service import WorkspaceService
+from app.shared.infrastructure.database import get_db
+from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
+from app.modules.workspaces.application.service import WorkspaceService
 
 async def get_workspace_repo(session: AsyncSession = Depends(get_db)) -> WorkspaceRepository:
     return WorkspaceRepository(session)

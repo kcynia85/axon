@@ -3,11 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from uuid import UUID
 
-from backend.app.shared.infrastructure.database import get_db
-from backend.app.modules.projects.infrastructure.repo import ArtifactRepository
-from backend.app.modules.projects.domain.models import Artifact
-from backend.app.api.deps import get_current_user
-from backend.app.shared.security.schemas import UserPayload
+from app.shared.infrastructure.database import get_db
+from app.modules.projects.infrastructure.repo import ArtifactRepository
+from app.modules.projects.domain.models import Artifact
+from app.api.deps import get_current_user
+from app.shared.security.schemas import UserPayload
 
 router = APIRouter(prefix="/artifacts", tags=["artifacts"])
 

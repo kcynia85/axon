@@ -1,17 +1,17 @@
 from uuid import UUID, uuid4
 from typing import List, Optional
-from backend.app.modules.settings.infrastructure.repo import SettingsRepository
-from backend.app.modules.settings.domain.models import (
+from app.modules.settings.infrastructure.repo import SettingsRepository
+from app.modules.settings.domain.models import (
     LLMProvider, LLMModel, LLMRouter, EmbeddingModel, ChunkingStrategy, VectorDatabase
 )
-from backend.app.modules.settings.application.schemas import (
+from app.modules.settings.application.schemas import (
     CreateLLMProviderRequest, CreateLLMModelRequest, CreateLLMRouterRequest,
     CreateEmbeddingModelRequest, CreateChunkingStrategyRequest, CreateVectorDatabaseRequest,
     SimulateChunkingRequest, SimulateChunkingResponse,
     TestPromptRequest, SanityCheckResponse, ConnectionTestResponse
 )
-from backend.app.modules.settings.domain.enums import ConnectionStatus
-from backend.app.shared.utils.time import now_utc
+from app.modules.settings.domain.enums import ConnectionStatus
+from app.shared.utils.time import now_utc
 
 class SettingsService:
     def __init__(self, repo: SettingsRepository):

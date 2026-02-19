@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from backend.app.shared.infrastructure.semantic_cache import SemanticCache
+from app.shared.infrastructure.semantic_cache import SemanticCache
 
 @pytest.mark.asyncio
 async def test_semantic_cache_singleton():

@@ -2,15 +2,15 @@ from fastapi import APIRouter, Depends, status
 from typing import List
 from uuid import UUID
 
-from backend.app.modules.projects.domain.models import Project, KeyResource, Artifact
-from backend.app.modules.projects.application import service
-from backend.app.modules.projects.application.schemas import (
+from app.modules.projects.domain.models import Project, KeyResource, Artifact
+from app.modules.projects.application import service
+from app.modules.projects.application.schemas import (
     ProjectCreateDTO, 
     ProjectUpdateDTO,
     ResourceCreateDTO,
     ArtifactCreateDTO
 )
-from backend.app.api.deps import get_current_user
+from app.api.deps import get_current_user
 
 router = APIRouter(
     prefix="/projects", 

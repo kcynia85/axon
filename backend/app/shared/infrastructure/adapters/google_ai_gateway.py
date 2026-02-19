@@ -1,6 +1,6 @@
 from typing import Any, AsyncGenerator
-from backend.app.shared.domain.ports.llm_gateway import LLMGateway
-from backend.app.shared.infrastructure.adk import GoogleADK
+from app.shared.domain.ports.llm_gateway import LLMGateway
+from app.shared.infrastructure.adk import GoogleADK
 
 class GoogleGeminiGateway(LLMGateway):
     """

@@ -3,8 +3,8 @@ from typing import List, Optional, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
-from backend.app.modules.spaces.domain.models import Space, SpaceZone, SpaceNode, NodeEdge
-from backend.app.modules.spaces.infrastructure.tables import (
+from app.modules.spaces.domain.models import Space, SpaceZone, SpaceNode, NodeEdge
+from app.modules.spaces.infrastructure.tables import (
     SpaceTable, 
     SpaceZoneTable, 
     SpaceNodeTable, 
@@ -31,7 +31,7 @@ class SpaceRepository:
         await self.session.refresh(db_space)
         return space
 
-    async def get_space(self, space_id: UUID) -> Optional[Space]:
+    async def get_space(self, space_id: str) -> Optional[Space]:
         """Returns pure Domain Model (Aggregate Root only)"""
         result = await self.session.execute(
             select(SpaceTable).where(SpaceTable.id == space_id)
@@ -51,7 +51,7 @@ class SpaceRepository:
             updated_at=row.updated_at
         )
 
-    async def get_space_orm(self, space_id: UUID) -> Optional[SpaceTable]:
+    async def get_space_orm(self, space_id: str) -> Optional[SpaceTable]:
         """
         Returns the raw ORM object with loaded relationships. 
         Used by Service layer for complex DTO mapping (CQRS-lite read model).

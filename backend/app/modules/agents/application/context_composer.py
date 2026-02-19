@@ -1,6 +1,6 @@
 from uuid import UUID
-from backend.app.shared.infrastructure.database import AsyncSessionLocal
-from backend.app.modules.projects.infrastructure.repo import ProjectRepository
+from app.shared.infrastructure.database import AsyncSessionLocal
+from app.modules.projects.infrastructure.repo import ProjectRepository
 
 class ContextComposer:
     async def build_context(self, project_id: UUID) -> str:

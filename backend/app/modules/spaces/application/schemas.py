@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from uuid import UUID
 from typing import Any, List, Optional
-from backend.app.modules.spaces.domain.models import Space, SpaceNode, NodeEdge, SpaceZone
+from app.modules.spaces.domain.models import Space, SpaceNode, NodeEdge, SpaceZone
 
 # --- React Flow Specific Schemas ---
 
@@ -38,6 +38,14 @@ class ReactFlowViewport(BaseModel):
 
 # --- API Response DTO ---
 
+class ReactFlowZone(BaseModel):
+    id: str
+    workspaceDomain: str
+    position: ReactFlowNodePosition
+    width: float
+    height: float
+    color: Optional[str] = None
+
 class SpaceDetailDTO(BaseModel):
     """
     Aggregate response optimized for React Flow Canvas initialization.
@@ -51,7 +59,7 @@ class SpaceDetailDTO(BaseModel):
     viewport: ReactFlowViewport
     nodes: List[ReactFlowNode]
     edges: List[ReactFlowEdge]
-    zones: List[SpaceZone] # Zones might be rendered as special "Group Nodes" or background layers
+    zones: List[ReactFlowZone]
 
     @classmethod
     def from_domain(cls, space: Space) -> "SpaceDetailDTO":

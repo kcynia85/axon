@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
-from backend.app.modules.workspaces.infrastructure.repo import WorkspaceRepository
-from backend.app.modules.workspaces.domain.models import Pattern, Template, Crew
-from backend.app.modules.workspaces.infrastructure.tables import PatternTable, TemplateTable, CrewTable
-from backend.app.modules.workspaces.domain.enums import PatternType, ProcessType
-from backend.app.shared.utils.time import now_utc
-from backend.app.modules.agents.infrastructure.tables import AgentConfigTable
+from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
+from app.modules.workspaces.domain.models import Pattern, Template, Crew
+from app.modules.workspaces.infrastructure.tables import PatternTable, TemplateTable, CrewTable
+from app.modules.workspaces.domain.enums import PatternType, ProcessType
+from app.shared.utils.time import now_utc
+from app.modules.agents.infrastructure.tables import AgentConfigTable
 
 @pytest.fixture
 def mock_session():

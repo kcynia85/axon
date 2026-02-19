@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
-from backend.app.shared.infrastructure.base import Base
-from backend.app.shared.utils.time import now_utc
-from backend.app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType
+from app.shared.infrastructure.base import Base
+from app.shared.utils.time import now_utc
+from app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType
 
 class InboxItemTable(Base):
     __tablename__ = "inbox_items"

@@ -2,10 +2,10 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 from datetime import datetime
-from backend.app.modules.resources.infrastructure.repo import ResourcesRepository
-from backend.app.modules.resources.domain.models import PromptArchetype, ExternalService
-from backend.app.modules.resources.infrastructure.tables import PromptArchetypeTable, ExternalServiceTable
-from backend.app.shared.utils.time import now_utc
+from app.modules.resources.infrastructure.repo import ResourcesRepository
+from app.modules.resources.domain.models import PromptArchetype, ExternalService
+from app.modules.resources.infrastructure.tables import PromptArchetypeTable, ExternalServiceTable
+from app.shared.utils.time import now_utc
 
 @pytest.fixture
 def mock_session():

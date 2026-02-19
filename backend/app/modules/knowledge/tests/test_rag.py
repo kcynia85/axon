@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from backend.app.modules.knowledge.application.rag import RAGService
-from backend.app.modules.knowledge.domain.models import Asset
+from app.modules.knowledge.application.rag import RAGService
+from app.modules.knowledge.domain.models import Asset
 
 @pytest.mark.asyncio
 async def test_get_asset():

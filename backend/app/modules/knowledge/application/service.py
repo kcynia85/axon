@@ -2,10 +2,10 @@ from uuid import UUID
 from typing import List, Optional
 from fastapi import Depends, HTTPException, Query
 
-from backend.app.modules.knowledge.domain.models import Asset
-from backend.app.modules.knowledge.infrastructure.repo import AssetRepository
-from backend.app.modules.knowledge.application.schemas import AssetUpdate
-from backend.app.modules.knowledge.dependencies import get_asset_repo
+from app.modules.knowledge.domain.models import Asset
+from app.modules.knowledge.infrastructure.repo import AssetRepository
+from app.modules.knowledge.application.schemas import AssetUpdate
+from app.modules.knowledge.dependencies import get_asset_repo
 
 # Function-First Service Layer
 

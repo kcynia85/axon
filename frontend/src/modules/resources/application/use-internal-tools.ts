@@ -1,13 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/shared/lib/api-client/config";
+import { useQuery } from "@tanstack/react-query";
 import { InternalTool } from "@/shared/domain/resources";
+import { resourcesApi } from "../infrastructure/api";
 
 export const useInternalTools = () => {
     return useQuery({
         queryKey: ["internal-tools"],
-        queryFn: async () => {
-            const response = await apiClient.get("/resources/tools/internal");
-            return response.json() as Promise<InternalTool[]>;
+        queryFn: async (): Promise<InternalTool[]> => {
+            return resourcesApi.getInternalTools();
         },
     });
 };

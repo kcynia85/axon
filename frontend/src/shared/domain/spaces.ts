@@ -34,6 +34,15 @@ export const ViewportSchema = z.object({
   zoom: z.number(),
 });
 
+export const SpaceZoneSchema = z.object({
+  id: z.string(),
+  workspaceDomain: z.string(),
+  position: NodePositionSchema,
+  width: z.number(),
+  height: z.number(),
+  color: z.string().optional(),
+});
+
 export const SpaceCanvasSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
@@ -42,8 +51,10 @@ export const SpaceCanvasSchema = z.object({
   viewport: ViewportSchema,
   nodes: z.array(SpaceNodeSchema),
   edges: z.array(SpaceEdgeSchema),
+  zones: z.array(SpaceZoneSchema).optional(),
 });
 
 export type SpaceCanvas = z.infer<typeof SpaceCanvasSchema>;
 export type SpaceNode = z.infer<typeof SpaceNodeSchema>;
 export type SpaceEdge = z.infer<typeof SpaceEdgeSchema>;
+export type SpaceZone = z.infer<typeof SpaceZoneSchema>;

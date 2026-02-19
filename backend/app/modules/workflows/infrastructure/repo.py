@@ -2,9 +2,9 @@ from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.modules.workflows.infrastructure.tables import WorkflowTable
-from backend.app.modules.workflows.domain.models import Workflow
-from backend.app.modules.projects.infrastructure.tables import ProjectTable
+from app.modules.workflows.infrastructure.tables import WorkflowTable
+from app.modules.workflows.domain.models import Workflow
+from app.modules.projects.infrastructure.tables import ProjectTable
 
 class WorkflowRepository:
     def __init__(self, session: AsyncSession):

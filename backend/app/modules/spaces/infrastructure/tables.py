@@ -1,9 +1,9 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Enum as SAEnum, Float, Integer, Numeric, Text
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
-from backend.app.shared.infrastructure.base import Base
-from backend.app.shared.utils.time import now_utc
-from backend.app.modules.spaces.domain.enums import (
+from app.shared.infrastructure.base import Base
+from app.shared.utils.time import now_utc
+from app.modules.spaces.domain.enums import (
     SpaceStatus, 
     WorkspaceDomain, 
     NodeExecutionStatus, 

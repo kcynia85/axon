@@ -2,8 +2,8 @@ from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Optional
-from backend.app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType
-from backend.app.shared.utils.time import now_utc
+from app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType
+from app.shared.utils.time import now_utc
 
 class InboxItem(BaseModel):
     id: UUID = Field(default_factory=uuid4)

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
 from uuid import UUID
-from backend.app.api.deps import get_db, get_current_user
-from backend.app.shared.security.schemas import UserPayload
+from app.api.deps import get_db, get_current_user
+from app.shared.security.schemas import UserPayload
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.modules.workflows.domain.models import Workflow
-from backend.app.modules.workflows.infrastructure.repo import WorkflowRepository
+from app.modules.workflows.domain.models import Workflow
+from app.modules.workflows.infrastructure.repo import WorkflowRepository
 
 router = APIRouter(
     prefix="/workflows",

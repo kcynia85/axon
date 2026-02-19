@@ -2,9 +2,9 @@ from sqlalchemy import Column, String, DateTime, Boolean, Index, Integer, Enum a
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from pgvector.sqlalchemy import Vector
 from sqlalchemy.orm import relationship
-from backend.app.shared.utils.time import now_utc
-from backend.app.shared.infrastructure.base import Base
-from backend.app.modules.knowledge.domain.enums import SourceFileFormat, RAGIndexingStatus
+from app.shared.utils.time import now_utc
+from app.shared.infrastructure.base import Base
+from app.modules.knowledge.domain.enums import SourceFileFormat, RAGIndexingStatus
 
 class KnowledgeHubTable(Base):
     __tablename__ = "knowledge_hubs"
@@ -52,3 +52,19 @@ class TextChunkTable(Base):
     created_at = Column(DateTime(timezone=True), default=now_utc)
 
     source = relationship("KnowledgeSourceTable", back_populates="chunks")
+
+
+class AssetTable(Base):
+    __tablename__ = "assets"
+
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    slug = Column(String, unique=True, nullable=False)
+    title = Column(String, nullable=False)
+    content = Column(String, nullable=False)
+    type = Column(String, nullable=False)  # template, sop, checklist
+    domain = Column(String, nullable=False)  # design, discovery, etc.
+    metadata_ = Column("metadata", JSONB, default={})
+    description_embedding = Column(Vector(768))
+    is_deleted = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), default=now_utc)
+    updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)

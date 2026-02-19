@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List
 from uuid import UUID
 
-from backend.app.api.deps import get_current_user
-from backend.app.modules.settings.application.service import SettingsService
-from backend.app.modules.settings.dependencies import get_settings_service
-from backend.app.modules.settings.application.schemas import (
+from app.api.deps import get_current_user
+from app.modules.settings.application.service import SettingsService
+from app.modules.settings.dependencies import get_settings_service
+from app.modules.settings.application.schemas import (
     LLMProviderResponse, CreateLLMProviderRequest,
     LLMModelResponse, CreateLLMModelRequest,
     LLMRouterResponse, CreateLLMRouterRequest, TestPromptRequest, SanityCheckResponse,

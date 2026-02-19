@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, patch
-from backend.app.shared.infrastructure.database import get_db
+from app.shared.infrastructure.database import get_db
 
 @pytest.mark.asyncio
 async def test_get_db_yields_session():

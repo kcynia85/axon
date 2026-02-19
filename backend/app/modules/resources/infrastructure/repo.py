@@ -4,14 +4,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
 
-from backend.app.modules.resources.domain.models import (
+from app.modules.resources.domain.models import (
     PromptArchetype, ExternalService, ServiceCapability, InternalTool, Automation, AutomationExecution
 )
-from backend.app.modules.resources.infrastructure.tables import (
+from app.modules.resources.infrastructure.tables import (
     PromptArchetypeTable, ExternalServiceTable, ServiceCapabilityTable, 
     InternalToolTable, AutomationTable, AutomationExecutionTable
 )
-from backend.app.shared.utils.time import now_utc
+from app.shared.utils.time import now_utc
 
 class ResourcesRepository:
     def __init__(self, session: AsyncSession):

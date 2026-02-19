@@ -1,5 +1,5 @@
 import inngest
-from backend.app.config import settings
+from app.config import settings
 
 # Initialize Inngest Client
 inngest_client = inngest.Inngest(

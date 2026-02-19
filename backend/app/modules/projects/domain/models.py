@@ -2,8 +2,8 @@ from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Optional, List
-from backend.app.modules.projects.domain.enums import ProjectStatus, ResourceProvider, ApprovalStatus
-from backend.app.shared.utils.time import now_utc
+from app.modules.projects.domain.enums import ProjectStatus, ResourceProvider, ApprovalStatus
+from app.shared.utils.time import now_utc
 
 class KeyResource(BaseModel):
     id: UUID = Field(default_factory=uuid4)

@@ -3,9 +3,9 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
-from backend.app.modules.projects.domain.models import Project, KeyResource, Artifact
-from backend.app.modules.projects.infrastructure.tables import ProjectTable, KeyResourceTable, ArtifactTable
-from backend.app.shared.utils.time import now_utc
+from app.modules.projects.domain.models import Project, KeyResource, Artifact
+from app.modules.projects.infrastructure.tables import ProjectTable, KeyResourceTable, ArtifactTable
+from app.shared.utils.time import now_utc
 
 class ProjectRepository:
     def __init__(self, session: AsyncSession):
@@ -140,3 +140,40 @@ class ProjectRepository:
         await self.session.commit()
         await self.session.refresh(db_art)
         return artifact
+
+
+class ArtifactRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def list_for_inbox(self, owner_id: UUID) -> List[Artifact]:
+        """List artifacts requiring review for a given user."""
+        from sqlalchemy import or_
+        result = await self.session.execute(
+            select(ArtifactTable)
+            .where(ArtifactTable.approved_by_user_id.is_(None))
+            .where(
+                or_(
+                    ArtifactTable.artifact_approval_status == "pending_review",
+                    ArtifactTable.artifact_approval_status.is_(None)
+                )
+            )
+            .order_by(ArtifactTable.created_at.desc())
+            .limit(100)
+        )
+        rows = result.scalars().all()
+        return [
+            Artifact(
+                id=r.id,
+                artifact_name=r.artifact_name,
+                artifact_source_path=r.artifact_source_path,
+                artifact_deliverable_url=r.artifact_deliverable_url,
+                workspace_domain=r.workspace_domain,
+                artifact_approval_status=r.artifact_approval_status,
+                approved_by_user_id=r.approved_by_user_id,
+                artifact_approved_at=r.artifact_approved_at,
+                project_id=r.project_id,
+                created_at=r.created_at,
+                updated_at=r.updated_at
+            ) for r in rows
+        ]

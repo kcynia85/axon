@@ -1,6 +1,6 @@
 import json
 from typing import Dict
-from backend.app.shared.infrastructure.adk import GoogleADK
+from app.shared.infrastructure.adk import GoogleADK
 
 # Prompts for LLM-as-a-Judge
 FAITHFULNESS_PROMPT = """

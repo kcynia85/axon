@@ -2,11 +2,11 @@ from fastapi import Depends
 from typing import List, Optional
 from uuid import UUID
 import inngest
-from backend.app.modules.agents.application.schemas import ChatRequest
-from backend.app.modules.agents.application import orchestrator
-from backend.app.modules.agents.dependencies import get_inngest_client, get_agent_repo
-from backend.app.modules.agents.domain.models import Tool, AgentConfig
-from backend.app.modules.agents.infrastructure.repo import AgentConfigRepository
+from app.modules.agents.application.schemas import ChatRequest
+from app.modules.agents.application import orchestrator
+from app.modules.agents.dependencies import get_inngest_client, get_agent_repo
+from app.modules.agents.domain.models import Tool, AgentConfig
+from app.modules.agents.infrastructure.repo import AgentConfigRepository
 
 # Function-First Service Layer
 

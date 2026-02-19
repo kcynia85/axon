@@ -1,7 +1,7 @@
 from typing import Optional
-from backend.app.modules.system.infrastructure.repo import SystemRepository
-from backend.app.modules.system.domain.models import MetaAgent, VoiceMetaAgent
-from backend.app.modules.system.application.schemas import (
+from app.modules.system.infrastructure.repo import SystemRepository
+from app.modules.system.domain.models import MetaAgent, VoiceMetaAgent
+from app.modules.system.application.schemas import (
     UpdateMetaAgentRequest, UpdateVoiceMetaAgentRequest
 )
 

@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, patch
-from backend.app.shared.infrastructure.adk_agents import agent, sequential, loop, ToolContext
+from app.shared.infrastructure.adk_agents import agent, sequential, loop, ToolContext
 
 @pytest.mark.asyncio
 async def test_simple_agent():

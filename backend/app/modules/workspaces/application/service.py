@@ -1,8 +1,8 @@
 from typing import List, Optional
 from uuid import UUID
-from backend.app.modules.workspaces.infrastructure.repo import WorkspaceRepository
-from backend.app.modules.workspaces.domain.models import Pattern, Template, Crew
-from backend.app.modules.workspaces.application.schemas import (
+from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
+from app.modules.workspaces.domain.models import Pattern, Template, Crew
+from app.modules.workspaces.application.schemas import (
     CreatePatternRequest, UpdatePatternRequest,
     CreateTemplateRequest, UpdateTemplateRequest,
     CreateCrewRequest, UpdateCrewRequest
@@ -11,6 +11,10 @@ from backend.app.modules.workspaces.application.schemas import (
 class WorkspaceService:
     def __init__(self, repo: WorkspaceRepository):
         self.repo = repo
+
+    async def get_unique_workspaces(self) -> List[str]:
+        """Get all unique workspace identifiers from patterns, templates, and crews."""
+        return await self.repo.get_unique_workspaces()
 
     # --- Patterns ---
     async def list_patterns(self, workspace: Optional[str] = None) -> List[Pattern]:

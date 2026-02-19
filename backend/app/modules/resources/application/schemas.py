@@ -2,7 +2,7 @@ from typing import List, Optional, Dict, Any
 from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel, Field
-from backend.app.modules.resources.domain.enums import (
+from app.modules.resources.domain.enums import (
     AutomationPlatform, AutomationHttpMethod, ValidationStatus,
     ServiceCategory, ToolCategory, AvailabilityWorkspace
 )

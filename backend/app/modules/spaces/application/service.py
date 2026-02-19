@@ -2,17 +2,18 @@ from uuid import UUID
 from typing import List, Optional
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.modules.spaces.domain.models import Space
-from backend.app.modules.spaces.infrastructure.repo import SpaceRepository
-from backend.app.modules.spaces.application.schemas import (
+from app.modules.spaces.domain.models import Space
+from app.modules.spaces.infrastructure.repo import SpaceRepository
+from app.modules.spaces.application.schemas import (
     SpaceDetailDTO, 
     ReactFlowNode, 
     ReactFlowNodeData, 
     ReactFlowNodePosition, 
     ReactFlowEdge,
-    ReactFlowViewport
+    ReactFlowViewport,
+    ReactFlowZone
 )
-from backend.app.shared.infrastructure.database import get_db
+from app.shared.infrastructure.database import get_db
 
 async def get_space_repo(session: AsyncSession = Depends(get_db)) -> SpaceRepository:
     return SpaceRepository(session)
@@ -24,7 +25,7 @@ class SpaceService:
     async def create_space(self, space: Space) -> Space:
         return await self.repo.create_space(space)
 
-    async def get_space_canvas(self, space_id: UUID) -> SpaceDetailDTO:
+    async def get_space_canvas(self, space_id: str) -> SpaceDetailDTO:
         """
         Retrieves the Space and converts it into a React Flow compatible DTO.
         """
@@ -61,6 +62,18 @@ class SpaceService:
             ) for e in space_orm.edges
         ]
         
+        # Map zones
+        zones_dto = [
+            ReactFlowZone(
+                id=str(z.id),
+                workspaceDomain=z.workspace_domain.value,
+                position=ReactFlowNodePosition(x=z.zone_position_x, y=z.zone_position_y),
+                width=z.zone_width,
+                height=z.zone_height,
+                color=z.zone_color
+            ) for z in space_orm.zones
+        ]
+        
         viewport_config = space_orm.space_viewport_config or {}
 
         return SpaceDetailDTO(
@@ -75,7 +88,20 @@ class SpaceService:
             ),
             nodes=nodes_dto,
             edges=edges_dto,
-            zones=[] # Add mapping if needed, zones are usually background nodes
+            zones=zones_dto
         )
 
     # ... existing methods ...
+
+
+async def create_space_use_case(space: Space, repo: SpaceRepository) -> Space:
+    """Create a new space use case."""
+    return await repo.create_space(space)
+
+
+async def get_space_details_use_case(space_id: UUID, repo: SpaceRepository):
+    """Get space details use case."""
+    space = await repo.get_space(space_id)
+    if not space:
+        raise HTTPException(status_code=404, detail="Space not found")
+    return space

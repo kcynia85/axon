@@ -2,9 +2,9 @@ import google.generativeai as genai
 from google.generativeai import protos
 from google.api_core.exceptions import ResourceExhausted, ServiceUnavailable, InternalServerError
 from typing import List, AsyncGenerator
-from backend.app.config import settings
+from app.config import settings
 import asyncio
-from backend.app.shared.infrastructure.semantic_cache import SemanticCache
+from app.shared.infrastructure.semantic_cache import SemanticCache
 
 # Initialize GenAI
 if settings.GOOGLE_API_KEY:

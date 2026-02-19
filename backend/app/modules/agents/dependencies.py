@@ -1,8 +1,8 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from backend.app.shared.infrastructure.database import get_db
-from backend.app.shared.infrastructure.inngest_client import inngest_client
-from backend.app.modules.agents.infrastructure.repo import AgentConfigRepository
+from app.shared.infrastructure.database import get_db
+from app.shared.infrastructure.inngest_client import inngest_client
+from app.modules.agents.infrastructure.repo import AgentConfigRepository
 
 async def get_inngest_client():
     return inngest_client

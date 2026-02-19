@@ -2,8 +2,8 @@ import pytest
 import json
 from unittest.mock import AsyncMock, patch
 from uuid import uuid4
-from backend.app.modules.agents.application.orchestrator import create_session, run_turn_stream
-from backend.app.modules.agents.domain.enums import AgentRole
+from app.modules.agents.application.orchestrator import create_session, run_turn_stream
+from app.modules.agents.domain.enums import AgentRole
 
 @pytest.mark.asyncio
 async def test_create_session():

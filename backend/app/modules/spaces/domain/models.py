@@ -2,14 +2,14 @@ from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Any, Optional
-from backend.app.modules.spaces.domain.enums import (
+from app.modules.spaces.domain.enums import (
     SpaceStatus, 
     WorkspaceDomain, 
     NodeExecutionStatus, 
     LogStatus, 
     SessionStatus
 )
-from backend.app.shared.utils.time import now_utc
+from app.shared.utils.time import now_utc
 
 class Space(BaseModel):
     id: UUID = Field(default_factory=uuid4)

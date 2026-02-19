@@ -1,6 +1,6 @@
-from backend.app.modules.knowledge.application.rag import RAGService
-from backend.app.shared.infrastructure.database import AsyncSessionLocal
-from backend.app.shared.infrastructure.adk_agents import ToolContext
+from app.modules.knowledge.application.rag import RAGService
+from app.shared.infrastructure.database import AsyncSessionLocal
+from app.shared.infrastructure.adk_agents import ToolContext
 
 async def search_knowledge_base(query: str):
     """

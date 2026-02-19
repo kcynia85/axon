@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Query
 from typing import List, Optional
 
-from backend.app.modules.knowledge.domain.models import Asset
-from backend.app.modules.knowledge.application import service
-from backend.app.api.deps import get_current_user
+from app.modules.knowledge.domain.models import Asset
+from app.modules.knowledge.application import service
+from app.api.deps import get_current_user
 
 router = APIRouter(
     prefix="/knowledge", 

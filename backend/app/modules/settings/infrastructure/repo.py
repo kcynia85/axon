@@ -4,13 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
 
-from backend.app.modules.settings.domain.models import (
+from app.modules.settings.domain.models import (
     LLMProvider, LLMModel, LLMRouter, EmbeddingModel, ChunkingStrategy, VectorDatabase
 )
-from backend.app.modules.settings.infrastructure.tables import (
+from app.modules.settings.infrastructure.tables import (
     LLMProviderTable, LLMModelTable, LLMRouterTable, EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable
 )
-from backend.app.shared.utils.time import now_utc
+from app.shared.utils.time import now_utc
 
 class SettingsRepository:
     def __init__(self, session: AsyncSession):

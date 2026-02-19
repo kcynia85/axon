@@ -2,10 +2,10 @@ import json
 from uuid import UUID
 from typing import AsyncGenerator
 import inngest
-from backend.app.modules.agents.domain.models import ChatSession, Message
-from backend.app.modules.agents.domain.enums import AgentRole
-from backend.app.shared.security.guardrails import check_input_safety, preprocess_input
-from backend.app.shared.utils.time import now_utc
+from app.modules.agents.domain.models import ChatSession, Message
+from app.modules.agents.domain.enums import AgentRole
+from app.shared.security.guardrails import check_input_safety, preprocess_input
+from app.shared.utils.time import now_utc
 
 # Note: Dependency Injection pattern. 
 # Functions receive external clients/adapters as arguments.

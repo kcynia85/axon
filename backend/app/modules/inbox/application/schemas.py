@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
-from backend.app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType
+from app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType
 
 class InboxItemResponse(BaseModel):
     id: UUID

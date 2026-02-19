@@ -3,9 +3,9 @@ import json
 from uuid import uuid4
 from fastapi.testclient import TestClient
 from backend.main import app
-from backend.app.api.deps import get_current_user
-from backend.app.modules.agents.application import service
-from backend.app.modules.agents.application.schemas import ChatRequest
+from app.api.deps import get_current_user
+from app.modules.agents.application import service
+from app.modules.agents.application.schemas import ChatRequest
 
 client = TestClient(app)
 

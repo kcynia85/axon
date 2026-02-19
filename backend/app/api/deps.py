@@ -1,10 +1,10 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import jwt
-from backend.app.config import settings
-from backend.app.shared.security.schemas import UserPayload
+from app.config import settings
+from app.shared.security.schemas import UserPayload
 from pydantic import ValidationError
-from backend.app.shared.infrastructure.database import get_db
+from app.shared.infrastructure.database import get_db
 
 from uuid import uuid4, UUID
 

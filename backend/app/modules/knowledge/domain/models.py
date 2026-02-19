@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Optional, Dict, Any
-from backend.app.shared.utils.time import now_utc
+from app.shared.utils.time import now_utc
 
 class Asset(BaseModel):
     id: UUID = Field(default_factory=uuid4)

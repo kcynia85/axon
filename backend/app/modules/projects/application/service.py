@@ -2,17 +2,17 @@ from uuid import UUID
 from typing import List
 from fastapi import Depends, HTTPException
 
-from backend.app.modules.projects.infrastructure.repo import ProjectRepository
-from backend.app.modules.projects.domain.models import Project, KeyResource, Artifact
-from backend.app.modules.projects.application.schemas import (
+from app.modules.projects.infrastructure.repo import ProjectRepository
+from app.modules.projects.domain.models import Project, KeyResource, Artifact
+from app.modules.projects.application.schemas import (
     ProjectCreateDTO, 
     ProjectUpdateDTO,
     ResourceCreateDTO,
     ArtifactCreateDTO
 )
-from backend.app.modules.projects.dependencies import get_project_repo
-from backend.app.shared.security.schemas import UserPayload
-from backend.app.api.deps import get_current_user
+from app.modules.projects.dependencies import get_project_repo
+from app.shared.security.schemas import UserPayload
+from app.api.deps import get_current_user
 
 # Function-First Service Layer
 

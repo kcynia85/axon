@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     # AI
     GOOGLE_API_KEY: str
 
+    # Feature Flags (Phase 11.T Transitional Bridge)
+    FEATURE_LANGCHAIN_ADAPTER: bool = False  # T3: LangChainAdapter - default OFF
+    FEATURE_LANGFUSE_TELEMETRY: bool = False  # GATE 4: Telemetry
+    FEATURE_LLM_GATEWAY: bool = False  # T3: LLM Gateway port
+
     # Inngest (Workflows)
     INNGEST_SIGNING_KEY: Optional[str] = None
     INNGEST_EVENT_KEY: Optional[str] = None

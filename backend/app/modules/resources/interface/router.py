@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List
 from uuid import UUID
 
-from backend.app.api.deps import get_current_user
-from backend.app.shared.security.schemas import UserPayload
-from backend.app.modules.resources.application.service import ResourcesService
-from backend.app.modules.resources.dependencies import get_resources_service
-from backend.app.modules.resources.application.schemas import (
+from app.api.deps import get_current_user
+from app.shared.security.schemas import UserPayload
+from app.modules.resources.application.service import ResourcesService
+from app.modules.resources.dependencies import get_resources_service
+from app.modules.resources.application.schemas import (
     PromptArchetypeResponse, CreatePromptArchetypeRequest, UpdatePromptArchetypeRequest,
     ExternalServiceResponse, CreateExternalServiceRequest, ServiceCapabilityResponse, CreateCapabilityRequest,
     InternalToolResponse, SyncResultResponse,

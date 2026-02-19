@@ -1,13 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiClient } from "@/shared/lib/api-client/config";
 import { Automation } from "@/shared/domain/resources";
+import { resourcesApi } from "../infrastructure/api";
 
 export const useAutomations = () => {
     return useQuery({
         queryKey: ["automations"],
-        queryFn: async () => {
-            const response = await apiClient.get("/resources/automations");
-            return response.json() as Promise<Automation[]>;
+        queryFn: async (): Promise<Automation[]> => {
+            return resourcesApi.getAutomations();
         },
     });
 };
@@ -16,8 +15,7 @@ export const useCreateAutomation = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (data: any) => {
-            const response = await apiClient.post("/resources/automations", data);
-            return response.json();
+            return resourcesApi.createAutomation(data);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["automations"] });

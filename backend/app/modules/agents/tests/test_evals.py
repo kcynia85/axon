@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, patch
-from backend.app.modules.agents.application.evals import EvaluationService
+from app.modules.agents.application.evals import EvaluationService
 
 @pytest.mark.asyncio
 async def test_evaluate_faithfulness():

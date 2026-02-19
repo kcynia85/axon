@@ -1,7 +1,7 @@
 import asyncio
 from typing import List, Optional, Any, Dict, Union, Callable, Awaitable
 from dataclasses import dataclass, field
-from backend.app.shared.infrastructure.adk import GoogleADK
+from app.shared.infrastructure.adk import GoogleADK
 
 # --- ADK Tool Context Pattern ---
 

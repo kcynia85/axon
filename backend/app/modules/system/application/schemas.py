@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from uuid import UUID
-from backend.app.modules.system.domain.enums import VoiceProvider
+from app.modules.system.domain.enums import VoiceProvider
 
 class MetaAgentResponse(BaseModel):
     id: UUID

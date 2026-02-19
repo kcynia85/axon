@@ -1,9 +1,9 @@
 import asyncio
 from typing import Any
 import vecs
-from backend.app.shared.domain.ports.knowledge_retriever import KnowledgeRetriever
-from backend.app.shared.domain.ports.llm_gateway import LLMGateway
-from backend.app.config import settings
+from app.shared.domain.ports.knowledge_retriever import KnowledgeRetriever
+from app.shared.domain.ports.llm_gateway import LLMGateway
+from app.config import settings
 
 class VecsRetriever(KnowledgeRetriever):
     """

@@ -3,8 +3,8 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
-from backend.app.modules.workspaces.domain.models import Pattern, Template, Crew
-from backend.app.modules.workspaces.infrastructure.tables import PatternTable, TemplateTable, CrewTable, crew_agents_association
+from app.modules.workspaces.domain.models import Pattern, Template, Crew
+from app.modules.workspaces.infrastructure.tables import PatternTable, TemplateTable, CrewTable, crew_agents_association
 
 class WorkspaceRepository:
     def __init__(self, session: AsyncSession):
@@ -119,7 +119,7 @@ class WorkspaceRepository:
     async def update_crew(self, crew_id: UUID, data: dict, agent_ids: Optional[List[UUID]] = None) -> Optional[Crew]:
         data["updated_at"] = now_utc()
         
-        from backend.app.modules.agents.infrastructure.tables import AgentConfigTable
+        from app.modules.agents.infrastructure.tables import AgentConfigTable
         stmt = select(CrewTable).options(selectinload(CrewTable.agents)).where(CrewTable.id == crew_id)
         result = await self.session.execute(stmt)
         row = result.scalar_one_or_none()
@@ -149,7 +149,7 @@ class WorkspaceRepository:
         new_row = CrewTable(**data)
         
         # Link agents
-        from backend.app.modules.agents.infrastructure.tables import AgentConfigTable
+        from app.modules.agents.infrastructure.tables import AgentConfigTable
         if agent_ids:
             agents_stmt = select(AgentConfigTable).where(AgentConfigTable.id.in_(agent_ids))
             agents_result = await self.session.execute(agents_stmt)
@@ -158,6 +158,30 @@ class WorkspaceRepository:
         self.session.add(new_row)
         await self.session.commit()
         return self._crew_to_domain(new_row)
+
+    async def get_unique_workspaces(self) -> List[str]:
+        """Get all unique workspace identifiers from patterns, templates, and crews."""
+        workspaces = set()
+        
+        # Get from patterns
+        result = await self.session.execute(select(PatternTable.availability_workspace).distinct())
+        for row in result.scalars().all():
+            if row:
+                workspaces.update(row)
+        
+        # Get from templates
+        result = await self.session.execute(select(TemplateTable.availability_workspace).distinct())
+        for row in result.scalars().all():
+            if row:
+                workspaces.update(row)
+        
+        # Get from crews
+        result = await self.session.execute(select(CrewTable.availability_workspace).distinct())
+        for row in result.scalars().all():
+            if row:
+                workspaces.update(row)
+        
+        return sorted(list(workspaces))
 
     def _crew_to_domain(self, row: CrewTable) -> Crew:
         return Crew(

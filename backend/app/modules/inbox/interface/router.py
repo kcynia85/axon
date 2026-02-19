@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List
 from uuid import UUID
 
-from backend.app.api.deps import get_current_user
-from backend.app.shared.security.schemas import UserPayload
-from backend.app.modules.inbox.application.service import InboxService
-from backend.app.modules.inbox.dependencies import get_inbox_service
-from backend.app.modules.inbox.application.schemas import InboxItemResponse, BulkResolveRequest
+from app.api.deps import get_current_user
+from app.shared.security.schemas import UserPayload
+from app.modules.inbox.application.service import InboxService
+from app.modules.inbox.dependencies import get_inbox_service
+from app.modules.inbox.application.schemas import InboxItemResponse, BulkResolveRequest
 
 router = APIRouter(
     prefix="/inbox",

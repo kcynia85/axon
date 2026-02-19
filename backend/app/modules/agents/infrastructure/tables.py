@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Enum as SAEnum, Index, Boolean, Float
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
-from backend.app.modules.agents.domain.enums import AgentRole, ModelTier
-from backend.app.shared.utils.time import now_utc
-from backend.app.shared.infrastructure.base import Base
+from app.modules.agents.domain.enums import AgentRole, ModelTier
+from app.shared.utils.time import now_utc
+from app.shared.infrastructure.base import Base
 
 class AgentConfigTable(Base):
     __tablename__ = "agent_configs"

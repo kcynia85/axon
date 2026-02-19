@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Integer
 from sqlalchemy.dialects.postgresql import UUID
-from backend.app.shared.utils.time import now_utc
-from backend.app.shared.infrastructure.base import Base
+from app.shared.utils.time import now_utc
+from app.shared.infrastructure.base import Base
 
 class WorkflowTable(Base):
     __tablename__ = "workflows"

@@ -1,9 +1,9 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, Enum as SAEnum, Integer, Float, Table
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import relationship
-from backend.app.shared.infrastructure.base import Base
-from backend.app.shared.utils.time import now_utc
-from backend.app.modules.workspaces.domain.enums import PatternType, ProcessType
+from app.shared.infrastructure.base import Base
+from app.shared.utils.time import now_utc
+from app.modules.workspaces.domain.enums import PatternType, ProcessType
 
 class PatternTable(Base):
     __tablename__ = "patterns"

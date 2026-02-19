@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List, Optional
 from uuid import UUID
 
-from backend.app.api.deps import get_current_user
-from backend.app.modules.workspaces.application.service import WorkspaceService
-from backend.app.modules.workspaces.dependencies import get_workspace_service
-from backend.app.modules.workspaces.application.schemas import (
+from app.api.deps import get_current_user
+from app.modules.workspaces.application.service import WorkspaceService
+from app.modules.workspaces.dependencies import get_workspace_service
+from app.modules.workspaces.application.schemas import (
     PatternResponse, CreatePatternRequest, UpdatePatternRequest,
     TemplateResponse, CreateTemplateRequest, UpdateTemplateRequest,
     CrewResponse, CreateCrewRequest, UpdateCrewRequest
@@ -16,6 +16,13 @@ router = APIRouter(
     tags=["workspaces"],
     dependencies=[Depends(get_current_user)]
 )
+
+@router.get("/", response_model=List[str])
+async def list_workspaces(
+    service: WorkspaceService = Depends(get_workspace_service)
+):
+    """List all unique workspace identifiers from patterns, templates, and crews."""
+    return await service.get_unique_workspaces()
 
 # --- Patterns ---
 
