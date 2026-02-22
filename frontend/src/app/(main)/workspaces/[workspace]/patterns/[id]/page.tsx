@@ -1,21 +1,20 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { SidePeek } from "@/shared/ui/layout/side-peek";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Button } from "@/shared/ui/ui/button";
-import { Separator } from "@/shared/ui/ui/separator";
-import { usePatterns } from "@/modules/workspaces/application/use-workspaces";
+import { useParams } from "next/navigation";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Button } from "@/shared/ui/ui/Button";
+import { Separator } from "@/shared/ui/ui/Separator";
+import { usePatterns } from "@/modules/workspaces/application/useWorkspaces";
 import { Box, Layers, ExternalLink, Globe } from "lucide-react";
 
 export default function PatternSidePeekPage() {
   const params = useParams();
-  const router = useRouter();
   const workspaceId = params.workspace as string;
   const patternId = params.id as string;
   
   const { data: patterns } = usePatterns(workspaceId);
-  const pattern = patterns?.find(p => p.id === patternId);
+    const pattern = patterns?.find((patternItem) => patternItem.id === patternId);
 
   if (!pattern) return null;
 

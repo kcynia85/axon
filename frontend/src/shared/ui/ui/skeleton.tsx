@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
+const Skeleton: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) => {
   return (
     <div
       data-slot="skeleton"

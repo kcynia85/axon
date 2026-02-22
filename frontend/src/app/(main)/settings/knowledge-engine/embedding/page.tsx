@@ -1,8 +1,8 @@
-import { EmbeddingModelsList } from "@/modules/settings/ui/embedding-models-list";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Button } from "@/shared/ui/ui/button";
+import { EmbeddingModelsList } from "@/modules/settings/ui/EmbeddingModelsList";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Button } from "@/shared/ui/ui/Button";
 import { Plus } from "lucide-react";
 
 const EmbeddingPage = () => {

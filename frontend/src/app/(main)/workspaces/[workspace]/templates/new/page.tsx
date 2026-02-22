@@ -2,17 +2,15 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TemplateSchema, Template } from "@/shared/domain/workspaces";
-import { useWorkspace } from "@/modules/workspaces/application/use-workspaces";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/shared/ui/ui/form";
-import { Input } from "@/shared/ui/ui/input";
-import { Button } from "@/shared/ui/ui/button";
-import { Textarea } from "@/shared/ui/ui/textarea";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/ui/Form";
+import { Input } from "@/shared/ui/ui/Input";
+import { Button } from "@/shared/ui/ui/Button";
+import { Textarea } from "@/shared/ui/ui/Textarea";
 import { useParams, useRouter } from "next/navigation";
-import { Separator } from "@/shared/ui/ui/separator";
+import { Separator } from "@/shared/ui/ui/Separator";
 import { z } from "zod";
 
 const FormSchema = z.object({
@@ -29,9 +27,9 @@ export default function NewTemplatePage() {
   const router = useRouter();
   const workspaceId = params.workspace as string;
 
-  const { data: workspace } = useWorkspace(workspaceId);
+  // workspace unused for now
 
-  const form = useForm<any>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       template_name: "",
@@ -41,7 +39,7 @@ export default function NewTemplatePage() {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: FormValues) => {
     console.log("Saving template:", data);
     // TODO: Mutation
     router.push(`/workspaces/${workspaceId}/templates`);
@@ -55,7 +53,7 @@ export default function NewTemplatePage() {
       />
 
       <PageContent className="max-w-3xl">
-        <Form {...(form as any)}>
+        <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
             {/* Section 1: Definition */}
             <section className="space-y-6">
@@ -103,7 +101,7 @@ export default function NewTemplatePage() {
                         <Input
                           placeholder="np. Research, Analiza"
                           value={field.value?.join(", ") || ""}
-                          onChange={(e) => field.onChange(e.target.value.split(",").map(s => s.trim()))}
+                          onChange={(event) => field.onChange(event.target.value.split(",").map((tag) => tag.trim()))}
                         />
                       </FormControl>
                       <FormMessage />

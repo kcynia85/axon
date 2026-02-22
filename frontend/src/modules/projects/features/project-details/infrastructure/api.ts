@@ -19,8 +19,8 @@ export const getProjectDetails = async (id: string): Promise<Project | null> => 
         if (!res.ok) throw new Error("Failed to fetch project");
 
         return res.json();
-    } catch (e) {
-        console.error(e);
+    } catch (error) {
+        console.error(error);
         return null;
     }
 };
@@ -44,8 +44,8 @@ export const getProjectArtifacts = async (projectId: string): Promise<Artifact[]
         }
 
         return res.json();
-    } catch (e) {
-        console.error(e);
+    } catch (error) {
+        console.error(error);
         return [];
     }
 };

@@ -1,21 +1,21 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CrewSchema, Crew } from "@/shared/domain/workspaces";
-import { useAgents, useWorkspace } from "@/modules/workspaces/application/use-workspaces";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/shared/ui/ui/form";
-import { Input } from "@/shared/ui/ui/input";
-import { Button } from "@/shared/ui/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
-import { Checkbox } from "@/shared/ui/ui/checkbox";
+import { useAgents, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/shared/ui/ui/Form";
+import { Input } from "@/shared/ui/ui/Input";
+import { Button } from "@/shared/ui/ui/Button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/Select";
+import { Checkbox } from "@/shared/ui/ui/Checkbox";
 import { useParams, useRouter } from "next/navigation";
-import { Skeleton } from "@/shared/ui/ui/skeleton";
-import { Card, CardContent } from "@/shared/ui/ui/card";
-import { Separator } from "@/shared/ui/ui/separator";
+import { Skeleton } from "@/shared/ui/ui/Skeleton";
+import { Separator } from "@/shared/ui/ui/Separator";
+import React from "react";
 
 export default function NewCrewPage() {
   const params = useParams();
@@ -32,6 +32,11 @@ export default function NewCrewPage() {
       process: "sequential",
       agents: [],
     },
+  });
+
+  const selectedAgents = useWatch({
+    control: form.control,
+    name: "agents",
   });
 
   const onSubmit = async (data: Partial<Crew>) => {
@@ -128,7 +133,7 @@ export default function NewCrewPage() {
 
                 <div className="grid gap-4 md:grid-cols-2">
                     {isLoadingAgents ? (
-                        [1, 2, 3, 4].map(i => <Skeleton key={i} className="h-20 w-full" />)
+                        [1, 2, 3, 4].map((index) => <Skeleton key={index} className="h-20 w-full" />)
                     ) : (
                         agents?.map((agent) => (
                             <FormField
@@ -169,7 +174,7 @@ export default function NewCrewPage() {
 
             <div className="flex justify-end gap-4 pt-6 border-t">
                 <Button type="button" variant="ghost" onClick={() => router.back()}>Anuluj</Button>
-                <Button type="submit" size="lg" disabled={form.watch("agents")?.length === 0}>
+                <Button type="submit" size="lg" disabled={(selectedAgents?.length || 0) === 0}>
                     Zapisz Team
                 </Button>
             </div>

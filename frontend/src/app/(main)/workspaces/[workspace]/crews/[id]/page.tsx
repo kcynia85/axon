@@ -1,11 +1,11 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { SidePeek } from "@/shared/ui/layout/side-peek";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Button } from "@/shared/ui/ui/button";
-import { Separator } from "@/shared/ui/ui/separator";
-import { useCrews, useAgents } from "@/modules/workspaces/application/use-workspaces";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Button } from "@/shared/ui/ui/Button";
+import { Separator } from "@/shared/ui/ui/Separator";
+import { useCrews, useAgents } from "@/modules/workspaces/application/useWorkspaces";
 import { Users, Info, Box, LayoutPanelLeft } from "lucide-react";
 
 export default function CrewSidePeekPage() {
@@ -16,11 +16,11 @@ export default function CrewSidePeekPage() {
   
   const { data: crews } = useCrews(workspaceId);
   const { data: agents } = useAgents(workspaceId);
-  const crew = crews?.find(c => c.id === crewId);
+    const crew = crews?.find((crewItem) => crewItem.id === crewId);
 
   if (!crew) return null;
 
-  const crewAgents = agents?.filter(a => crew.agents.includes(a.id)) || [];
+    const crewAgents = agents?.filter((agentItem) => crew.agents.includes(agentItem.id)) || [];
 
   return (
     <SidePeek 

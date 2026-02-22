@@ -1,4 +1,4 @@
-import { DashboardSkeleton } from "@/modules/dashboard/features/view-dashboard/ui/dashboard-skeleton";
+import { DashboardSkeleton } from "@/modules/dashboard/features/view-dashboard/ui/DashboardSkeleton";
 
 const Loading = () => {
     return <DashboardSkeleton />;

@@ -1,20 +1,20 @@
 "use client";
 
-import { useWorkspace } from "@/modules/workspaces/application/use-workspaces";
-import { AgentsSection } from "@/modules/workspaces/ui/agents-section";
-import { CrewsSection } from "@/modules/workspaces/ui/crews-section";
-import { PatternsSection } from "@/modules/workspaces/ui/patterns-section";
-import { TemplatesSection } from "@/modules/workspaces/ui/templates-section";
-import { ServicesSection } from "@/modules/workspaces/ui/services-section";
-import { AutomationsSection } from "@/modules/workspaces/ui/automations-section";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Skeleton } from "@/shared/ui/ui/skeleton";
-import { Button } from "@/shared/ui/ui/button";
+import { useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import { AgentsSection } from "@/modules/workspaces/ui/AgentsSection";
+import { CrewsSection } from "@/modules/workspaces/ui/CrewsSection";
+import { PatternsSection } from "@/modules/workspaces/ui/PatternsSection";
+import { TemplatesSection } from "@/modules/workspaces/ui/TemplatesSection";
+import { ServicesSection } from "@/modules/workspaces/ui/ServicesSection";
+import { AutomationsSection } from "@/modules/workspaces/ui/AutomationsSection";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Skeleton } from "@/shared/ui/ui/Skeleton";
+import { Button } from "@/shared/ui/ui/Button";
 import { ChevronRight, Search } from "lucide-react";
 import { useParams } from "next/navigation";
-import { Input } from "@/shared/ui/ui/input";
+import { Input } from "@/shared/ui/ui/Input";
 import Link from "next/link";
 
 const SECTIONS = [

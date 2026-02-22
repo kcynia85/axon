@@ -146,15 +146,40 @@ class ArtifactRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def list_by_project(self, project_id: UUID) -> List[Artifact]:
+        """List all artifacts for a given project."""
+        result = await self.session.execute(
+            select(ArtifactTable)
+            .where(ArtifactTable.project_id == project_id)
+            .order_by(ArtifactTable.created_at.desc())
+        )
+        rows = result.scalars().all()
+        return [
+            Artifact(
+                id=r.id,
+                artifact_name=r.artifact_name,
+                artifact_source_path=r.artifact_source_path,
+                artifact_deliverable_url=r.artifact_deliverable_url,
+                workspace_domain=r.workspace_domain,
+                artifact_approval_status=r.artifact_approval_status,
+                approved_by_user_id=r.approved_by_user_id,
+                artifact_approved_at=r.artifact_approved_at,
+                project_id=r.project_id,
+                created_at=r.created_at,
+                updated_at=r.updated_at
+            ) for r in rows
+        ]
+
     async def list_for_inbox(self, owner_id: UUID) -> List[Artifact]:
         """List artifacts requiring review for a given user."""
         from sqlalchemy import or_
+        from app.modules.projects.domain.enums import ApprovalStatus
         result = await self.session.execute(
             select(ArtifactTable)
             .where(ArtifactTable.approved_by_user_id.is_(None))
             .where(
                 or_(
-                    ArtifactTable.artifact_approval_status == "pending_review",
+                    ArtifactTable.artifact_approval_status == ApprovalStatus.IN_REVIEW.value,
                     ArtifactTable.artifact_approval_status.is_(None)
                 )
             )

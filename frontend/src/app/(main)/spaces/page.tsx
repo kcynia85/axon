@@ -1,9 +1,9 @@
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { Button } from "@/shared/ui/ui/button";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { Button } from "@/shared/ui/ui/Button";
 import { Plus, Layout } from "lucide-react";
 import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/shared/ui/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/shared/ui/ui/Card";
 
 export default function SpacesPage() {
   return (

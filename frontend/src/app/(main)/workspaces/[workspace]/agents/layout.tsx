@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+// Suspense import removed - not used in layout
 
 export default function AgentsLayout({
   children,

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from uuid import UUID, uuid4
 from datetime import datetime
 from typing import Optional, List
@@ -44,3 +44,10 @@ class Project(BaseModel):
     key_resources: List[KeyResource] = Field(default_factory=list)
     artifacts: List[Artifact] = Field(default_factory=list)
     workspaces: List[str] = Field(default_factory=list) # Derived from Space Zones
+
+    @field_validator("project_keywords", mode="before")
+    @classmethod
+    def validate_keywords(cls, v):
+        if v is None:
+            return []
+        return v

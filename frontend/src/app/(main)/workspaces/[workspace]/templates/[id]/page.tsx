@@ -1,11 +1,11 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { SidePeek } from "@/shared/ui/layout/side-peek";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Button } from "@/shared/ui/ui/button";
-import { Separator } from "@/shared/ui/ui/separator";
-import { useTemplates } from "@/modules/workspaces/application/use-workspaces";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Button } from "@/shared/ui/ui/Button";
+import { Separator } from "@/shared/ui/ui/Separator";
+import { useTemplates } from "@/modules/workspaces/application/useWorkspaces";
 import { FileText, Tag, ListTodo, Info } from "lucide-react";
 
 export default function TemplateSidePeekPage() {
@@ -15,7 +15,7 @@ export default function TemplateSidePeekPage() {
   const templateId = params.id as string;
   
   const { data: templates } = useTemplates(workspaceId);
-  const template = templates?.find(t => t.id === templateId);
+    const template = templates?.find((templateItem) => templateItem.id === templateId);
 
   if (!template) return null;
 

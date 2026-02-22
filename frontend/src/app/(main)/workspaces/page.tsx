@@ -1,8 +1,8 @@
-import { WorkspacesList } from "@/modules/workspaces/ui/workspaces-list";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Button } from "@/shared/ui/ui/button";
+import { WorkspacesList } from "@/modules/workspaces/ui/WorkspacesList";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Button } from "@/shared/ui/ui/Button";
 import { Plus } from "lucide-react";
 
 export default function WorkspacesPage() {

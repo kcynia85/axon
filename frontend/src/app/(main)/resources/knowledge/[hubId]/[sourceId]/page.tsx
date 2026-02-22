@@ -1,11 +1,11 @@
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/card";
-import { Button } from "@/shared/ui/ui/button";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
-import { ArrowLeft, FileText, Settings, Eye, Database } from "lucide-react";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
+import { Button } from "@/shared/ui/ui/Button";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/Tabs";
+import { ArrowLeft, FileText, Settings, Database } from "lucide-react";
 import Link from "next/link";
 
 interface PageProps {

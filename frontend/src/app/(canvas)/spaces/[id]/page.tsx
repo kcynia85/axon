@@ -1,18 +1,14 @@
 "use client";
 
-import { useSpaceCanvas } from "@/modules/spaces/application/use-space-canvas";
-import { CanvasView } from "@/modules/spaces/ui/canvas-view";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { Skeleton } from "@/shared/ui/ui/skeleton";
-import { useParams } from "next/navigation";
+import { CanvasView } from "@/modules/spaces/ui/View";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { Skeleton } from "@/shared/ui/ui/Skeleton";
+import { ReactFlowProvider } from '@xyflow/react';
+import { useSpacePageLogic } from "@/modules/spaces/application/useSpacePageLogic";
+import React from "react";
 
-export default function SpaceCanvasPage() {
-  const params = useParams();
-  const id = params.id as string;
-  // Mocking data loading for now as we transition to ReactFlow fully
-  const isLoading = false;
-  const error = null;
-  const canvas = { id }; 
+const SpaceCanvasPage = () => {
+  const { isLoading, error, canvas } = useSpacePageLogic();
 
   if (isLoading) {
     return (
@@ -34,7 +30,11 @@ export default function SpaceCanvasPage() {
 
   return (
       <main className="h-screen w-screen overflow-hidden bg-[#f9f9f9] dark:bg-[#0a0a0a]">
-        <CanvasView initialData={canvas} />
+        <ReactFlowProvider>
+          <CanvasView initialData={canvas} />
+        </ReactFlowProvider>
       </main>
   );
-}
+};
+
+export default SpaceCanvasPage;

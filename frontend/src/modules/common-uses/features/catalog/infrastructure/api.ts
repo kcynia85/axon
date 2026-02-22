@@ -27,12 +27,15 @@ export const getScenarios = async (): Promise<Scenario[]> => {
     }
 
     const data = await res.json();
-    return data.map((s: any) => ({
-        id: s.id,
-        title: s.title,
-        description: s.description,
-        category: s.category,
-        promptTemplate: s.prompt_template,
-        icon: s.icon
-    }));
+    return data.map((s: unknown) => {
+        const src = s as unknown;
+        return {
+            id: src.id,
+            title: src.title,
+            description: src.description,
+            category: src.category,
+            promptTemplate: src.prompt_template,
+            icon: src.icon
+        };
+    });
 };

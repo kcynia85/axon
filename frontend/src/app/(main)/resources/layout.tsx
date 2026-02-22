@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { ResourcesSidebar } from "@/modules/resources/ui/resources-sidebar";
+import { ResourcesSidebar } from "@/modules/resources/ui/ResourcesSidebar";
 
 export const metadata: Metadata = {
     title: "Resources - Axon",

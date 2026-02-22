@@ -8,7 +8,7 @@ export const inboxApi = {
     getInboxItems: async (): Promise<InboxItem[]> => {
         const res = await apiClient.get("/inbox");
         const data = await res.json();
-        return data.map((i: any) => InboxItemSchema.parse(i));
+        return data.map((i: unknown) => InboxItemSchema.parse(i as unknown));
     },
 
     resolveItem: async (id: string): Promise<InboxItem> => {

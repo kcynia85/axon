@@ -4,5 +4,5 @@
 export * from "./domain";
 
 // Features (UI & Logic)
-export { ProjectList } from "./features/browse-projects/ui/project-list";
+export { ProjectList } from "./features/browse-projects/ui/ProjectList";
 export { getProjects, createProject } from "./features/browse-projects/infrastructure/api";

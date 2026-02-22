@@ -1,0 +1,4 @@
+[    2304ms] TypeError: Failed to execute 'measure' on 'Performance': '​SettingsPage' cannot have a negative time stamp.
+    at flushComponentPerformance (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-server-dom-turbopack_6723cebf._.js:2140:45)
+    at flushComponentPerformance (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-server-dom-turbopack_6723cebf._.js:2112:31)
+    at flushInitialRenderPerformance (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-server-dom-turbopack_6723cebf._.js:2302:74)

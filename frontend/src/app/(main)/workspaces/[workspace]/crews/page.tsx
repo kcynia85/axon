@@ -1,16 +1,16 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import { useCrews, useWorkspace } from "@/modules/workspaces/application/use-workspaces";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Button } from "@/shared/ui/ui/button";
-import { Input } from "@/shared/ui/ui/input";
+import { useParams } from "next/navigation";
+import { useCrews, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Button } from "@/shared/ui/ui/Button";
+import { Input } from "@/shared/ui/ui/Input";
 import { Plus, Search, Filter, ArrowUpDown, Users } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/ui/card";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Skeleton } from "@/shared/ui/ui/skeleton";
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/ui/Card";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import Link from "next/link";
 
 /**
@@ -19,7 +19,6 @@ import Link from "next/link";
  */
 export default function CrewsListPage() {
   const params = useParams();
-  const router = useRouter();
   const workspaceId = params.workspace as string;
   
   const { data: workspace } = useWorkspace(workspaceId);
@@ -59,7 +58,7 @@ export default function CrewsListPage() {
 
         {isLoading ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2].map(i => <Skeleton key={i} className="h-40 w-full" />)}
+                {[1, 2].map((index) => <Skeleton key={index} className="h-40 w-full" />)}
             </div>
         ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

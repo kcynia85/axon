@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/shared/ui/ui/scroll-area"
+import { ScrollArea } from "@/shared/ui/ui/ScrollArea"
 
 const Sidebar = React.forwardRef<
   HTMLDivElement,

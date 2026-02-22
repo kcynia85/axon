@@ -1,12 +1,12 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { SidePeek } from "@/shared/ui/layout/side-peek";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Button } from "@/shared/ui/ui/button";
-import { Separator } from "@/shared/ui/ui/separator";
-import { useAutomations } from "@/modules/workspaces/application/use-workspaces";
-import { Zap, Clock, ExternalLink, Activity, Layout, Info, Tag, Layers } from "lucide-react";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Button } from "@/shared/ui/ui/Button";
+import { Separator } from "@/shared/ui/ui/Separator";
+import { useAutomations } from "@/modules/workspaces/application/useWorkspaces";
+import { Zap, Layout, Info, Tag, Layers } from "lucide-react";
 
 /**
  * AutomationSidePeekPage - Dedicated detail view for Automations.
@@ -19,7 +19,7 @@ export default function AutomationSidePeekPage() {
   const automationId = params.id as string;
   
   const { data: automations } = useAutomations(workspaceId);
-  const automation = automations?.find(a => a.id === automationId);
+    const automation = automations?.find((automationItem) => automationItem.id === automationId);
 
   if (!automation) return null;
 
@@ -50,8 +50,8 @@ export default function AutomationSidePeekPage() {
                     <Tag className="h-3 w-3" /> Keywords
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
-                    {automation.keywords?.map(k => (
-                        <Badge key={k} variant="secondary" className="font-normal text-[10px]">#{k}</Badge>
+                        {automation.keywords?.map((keyword) => (
+                            <Badge key={keyword} variant="secondary" className="font-normal text-[10px]">#{keyword}</Badge>
                     )) || <Badge variant="secondary" className="font-normal text-[10px]">#finanse</Badge>}
                 </div>
             </section>

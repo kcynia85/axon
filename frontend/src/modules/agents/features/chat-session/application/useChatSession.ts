@@ -60,8 +60,8 @@ export const useChatSession = ({ projectId, agentRole }: UseAgentSessionProps) =
                                     return historyCopy;
                                 });
                             }
-                        } catch (e) {
-                            console.warn("Failed to parse reasoning event", e);
+                        } catch (parseError) {
+                            console.warn("Failed to parse reasoning event", parseError);
                         }
                     }
                 }

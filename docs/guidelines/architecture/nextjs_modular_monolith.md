@@ -24,41 +24,94 @@
 
 ```text
 /frontend
-  next.config.ts         # Konfiguracja Next.js
-  package.json           # Zależności (npm)
-  tsconfig.json          # Konfiguracja TypeScript
-  /src
-    /app                 # NEXT.JS APP ROUTER
-       /(main)           # Layout główny aplikacji (Sidebar + Header)
-          /brain         # Knowledge Base
-          /common-uses   # Szablony zadań
-          /dashboard     # Dashboard główny
-          /docs          # Dokumentacja
-          /inbox         # Artifact Review Inbox
-          /profile       # Profil użytkownika
-          /projects      # Zarządzanie projektami
-          /settings      # Ustawienia (Agents, Tools, Prompts)
-          /workflows     # Builder procesów
-          /workspace     # Chat & Artifact Split-View
-          layout.tsx     # Główny layout
-          page.tsx       # Redirect do dashboard
-       /(auth)           # Strony logowania/rejestracji
-    /modules             # MODULAR MONOLITH (Features)
-       /agents           # Chat logic, Workspace UI
-       /common-uses      # Logika szablonów
-       /dashboard        # Widgety dashboardu
-       /inbox            # Review flow logic
-       /knowledge        # RAG logic, Assets browser, Docs viewer
-       /projects         # Project CRUD
-       /prompts          # Prompt management
-       /settings         # Settings logic
-       /tools            # Tool catalog & MCP integration
-       /workflows        # Workflow builder logic
-    /shared              # SHARED KERNEL
-       /domain           # Shared types
-       /lib              # Utils, API Client (Axios/Fetch), Hooks
-       /ui               # Design System (Shadcn), Layout components
-  /public                # Zasoby statyczne (SVG, obrazy)
+   .env.local
+   next.config.ts
+   next-env.d.ts
+   package.json
+   postcss.config.mjs
+   tsconfig.json
+   /public                # Static assets (icons, images)
+   /src
+      /app                 # Next.js App Router (pages & layouts)
+         globals.css
+         layout.tsx
+         providers.tsx
+         /(auth)
+            layout.tsx
+            login/
+         /(canvas)
+            layout.tsx
+            spaces/
+         /(main)
+            layout.tsx
+            page.tsx
+            dashboard/
+            docs/
+            inbox/
+            profile/
+            projects/
+            resources/
+            settings/
+            spaces/
+            workspaces/
+         api/
+            agents/
+      /modules             # Feature modules (Modular Monolith)
+         agents/
+            application/
+            domain/
+            features/
+            infrastructure/
+            tests/
+            ui/
+         auth/
+         common-uses/
+            domain/
+            features/
+         dashboard/
+            domain/
+            features/
+         inbox/
+            application/
+            domain/
+            features/
+            infrastructure/
+            ui/
+         knowledge/
+            domain/
+            features/
+         projects/
+            index.ts
+            domain/
+            features/
+            tests/
+         prompts/
+            index.ts
+            domain/
+            features/
+         resources/
+            application/
+            infrastructure/
+            ui/
+         settings/
+            application/
+            domain/
+            features/
+            infrastructure/
+            ui/
+         spaces/
+            application/
+            ...
+         system/
+         tools/
+         workflows/
+         workspaces/
+      /shared
+         config/
+         domain/
+         infrastructure/
+         lib/
+         ui/
 ```
 
 ### 🟦 TypeScript / JavaScript

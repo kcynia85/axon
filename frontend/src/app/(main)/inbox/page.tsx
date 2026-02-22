@@ -1,8 +1,8 @@
-import { InboxList } from "@/modules/inbox/features/review-inbox/ui/inbox-list";
+import { InboxList } from "@/modules/inbox/features/review-inbox/ui/InboxList";
 import { getInboxItems } from "@/modules/inbox/features/review-inbox/infrastructure/api";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
 
 const InboxPage = async () => {
     const items = await getInboxItems();

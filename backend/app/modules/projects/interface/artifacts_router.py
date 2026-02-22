@@ -23,3 +23,14 @@ async def get_inbox_artifacts(
     Get all artifacts requiring review for the current user.
     """
     return await repo.list_for_inbox(current_user.sub)
+
+@router.get("/project/{project_id}", response_model=List[Artifact])
+async def list_artifacts_by_project(
+    project_id: UUID,
+    repo: ArtifactRepository = Depends(get_artifact_repo),
+    _: UserPayload = Depends(get_current_user)
+):
+    """
+    List all artifacts for a specific project.
+    """
+    return await repo.list_by_project(project_id)

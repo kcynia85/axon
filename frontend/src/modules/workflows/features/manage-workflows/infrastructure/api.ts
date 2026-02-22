@@ -36,15 +36,18 @@ export const getWorkflows = async (projectId?: string): Promise<Workflow[]> => {
     
     // Adapt backend model (snake_case) to frontend model (camelCase)
     const data = await res.json();
-    return data.map((w: any) => ({
-        id: w.id,
-        title: w.title,
-        description: w.description,
-        status: w.status,
-        stepsCount: w.steps_count,
-        lastRun: w.last_run,
-        projectId: w.project_id
-    }));
+    return data.map((w: unknown) => {
+        const src = w as unknown;
+        return {
+            id: src.id,
+            title: src.title,
+            description: src.description,
+            status: src.status,
+            stepsCount: src.steps_count,
+            lastRun: src.last_run,
+            projectId: src.project_id
+        };
+    });
 };
 
 export const createWorkflow = async (workflow: Omit<Workflow, 'id' | 'lastRun'> & { projectId: string }): Promise<Workflow> => {

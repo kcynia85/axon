@@ -1,12 +1,12 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { SidePeek } from "@/shared/ui/layout/side-peek";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Button } from "@/shared/ui/ui/button";
-import { Separator } from "@/shared/ui/ui/separator";
-import { useServices } from "@/modules/workspaces/application/use-workspaces";
-import { Globe, Shield, ExternalLink, Activity, Zap, Layers, Briefcase } from "lucide-react";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Button } from "@/shared/ui/ui/Button";
+import { Separator } from "@/shared/ui/ui/Separator";
+import { useServices } from "@/modules/workspaces/application/useWorkspaces";
+import { Activity, Zap, Layers, Briefcase } from "lucide-react";
 
 /**
  * ServiceSidePeekPage - Dedicated detail view for External Services.
@@ -19,7 +19,7 @@ export default function ServiceSidePeekPage() {
   const serviceId = params.id as string;
   
   const { data: services } = useServices(workspaceId);
-  const service = services?.find(s => s.id === serviceId);
+    const service = services?.find((serviceItem) => serviceItem.id === serviceId);
 
   if (!service) return null;
 
@@ -49,8 +49,8 @@ export default function ServiceSidePeekPage() {
                     <div className="space-y-2">
                         <div className="text-xs text-muted-foreground">Keywords</div>
                         <div className="flex flex-wrap gap-1.5">
-                            {service.keywords?.map(k => (
-                                <Badge key={k} variant="secondary" className="font-normal text-[10px]">#{k}</Badge>
+                                {service.keywords?.map((keyword) => (
+                                    <Badge key={keyword} variant="secondary" className="font-normal text-[10px]">#{keyword}</Badge>
                             )) || <Badge variant="secondary" className="font-normal text-[10px]">#audio</Badge>}
                         </div>
                     </div>

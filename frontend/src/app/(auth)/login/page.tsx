@@ -1,6 +1,6 @@
 "use client";
 
-import { LoginForm } from "@/modules/auth/features/login/ui/login-form";
+import { LoginForm } from "@/modules/auth/features/login/ui/LoginForm";
 
 const LoginPage = () => {
   return <LoginForm />;

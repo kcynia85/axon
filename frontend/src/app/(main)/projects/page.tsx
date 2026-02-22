@@ -1,8 +1,8 @@
 import { getProjects, ProjectList } from "@/modules/projects";
-import { CreateProjectDialog } from "@/modules/projects/features/browse-projects/ui/create-project-dialog";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
+import { CreateProjectDialog } from "@/modules/projects/features/browse-projects/ui/CreateProjectDialog";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
 
 const ProjectsPage = async () => {
     const projects = await getProjects();

@@ -1,5 +1,5 @@
 import { getProjectDetails, getProjectArtifacts } from "@/modules/projects/features/project-details/infrastructure/api";
-import { ProjectDetailsView } from "@/modules/projects/features/project-details/ui/project-details-view";
+import { ProjectDetailsView } from "@/modules/projects/features/project-details/ui/ProjectDetailsView";
 import { notFound } from "next/navigation";
 
 interface PageProps {

@@ -1,17 +1,17 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useAgents, useWorkspace } from "@/modules/workspaces/application/use-workspaces";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Button } from "@/shared/ui/ui/button";
-import { Input } from "@/shared/ui/ui/input";
+import { useAgents, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Button } from "@/shared/ui/ui/Button";
+import { Input } from "@/shared/ui/ui/Input";
 import { Plus, Search, Filter, ArrowUpDown } from "lucide-react";
-import { AgentModal } from "@/modules/workspaces/ui/modals/agent-modal";
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/ui/card";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Skeleton } from "@/shared/ui/ui/skeleton";
+import { AgentModal } from "@/modules/workspaces/ui/modals/AgentModal";
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/ui/Card";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Suspense } from "react";
 import Link from "next/link";
 
@@ -29,9 +29,9 @@ export default function AgentsListPage() {
   const { data: agents, isLoading } = useAgents(workspaceId);
 
   const openNewAgentModal = () => {
-    const p = new URLSearchParams(searchParams.toString());
-    p.set("modal", "new-agent");
-    router.push(`?${p.toString()}`, { scroll: false });
+    const urlSearchParams = new URLSearchParams(searchParams.toString());
+    urlSearchParams.set("modal", "new-agent");
+    router.push(`?${urlSearchParams.toString()}`, { scroll: false });
   };
 
   return (
@@ -66,7 +66,7 @@ export default function AgentsListPage() {
 
         {isLoading ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3].map(i => <Skeleton key={i} className="h-48 w-full" />)}
+                {[1, 2, 3].map((index) => <Skeleton key={index} className="h-48 w-full" />)}
             </div>
         ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

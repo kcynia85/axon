@@ -1,12 +1,12 @@
 "use client";
 
-import { AgentModal } from "./agent-modal";
-import { CrewModal } from "./crew-modal";
-import { ServiceModal } from "./service-modal";
-import { PatternModal } from "./pattern-modal";
-import { TemplateModal } from "./template-modal";
-import { ArchetypeLoaderModal } from "./archetype-loader-modal";
-import { InternalSkillsModal } from "./internal-skills-modal";
+import { AgentModal } from "./AgentModal";
+import { CrewModal } from "./CrewModal";
+import { ServiceModal } from "./ServiceModal";
+import { PatternModal } from "./PatternModal";
+import { TemplateModal } from "./TemplateModal";
+import { ArchetypeLoaderModal } from "./ArchetypeLoaderModal";
+import { InternalSkillsModal } from "./InternalSkillsModal";
 import { Suspense } from "react";
 
 export const WorkspaceModals = () => {

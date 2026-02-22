@@ -1,16 +1,16 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useTemplates, useWorkspace } from "@/modules/workspaces/application/use-workspaces";
-import { PageHeader } from "@/shared/ui/layout/page-header";
-import { PageContainer } from "@/shared/ui/layout/page-container";
-import { PageContent } from "@/shared/ui/layout/page-content";
-import { Button } from "@/shared/ui/ui/button";
-import { Input } from "@/shared/ui/ui/input";
+import { useTemplates, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import { PageHeader } from "@/shared/ui/layout/PageHeader";
+import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageContent } from "@/shared/ui/layout/PageContent";
+import { Button } from "@/shared/ui/ui/Button";
+import { Input } from "@/shared/ui/ui/Input";
 import { Plus, Search, Copy } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/ui/card";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Skeleton } from "@/shared/ui/ui/skeleton";
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/ui/Card";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import Link from "next/link";
 
 /**

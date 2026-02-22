@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ModeToggle } from "@/shared/ui/ui/mode-toggle";
-import { UserNav } from "@/shared/ui/layout/user-nav";
-import { Button } from "@/shared/ui/ui/button";
-import { Separator } from "@/shared/ui/ui/separator";
+import { ModeToggle } from "@/shared/ui/ui/ModeToggle";
+import { UserNav } from "@/shared/ui/layout/UserNav";
+import { Button } from "@/shared/ui/ui/Button";
+import { Separator } from "@/shared/ui/ui/Separator";
 import { AppWindow, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import {
   Sidebar as SidebarContainer,
@@ -19,7 +19,7 @@ import {
   SidebarFooter,
   SidebarFooterRow,
   SidebarVersion,
-} from "@/shared/ui/ui/sidebar";
+} from "@/shared/ui/ui/Sidebar";
 import { mainNavigation, appsDropdown, docsLink, bottomNavigation } from "@/shared/config/navigation";
 
 export const Sidebar = () => {

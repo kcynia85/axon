@@ -41,13 +41,13 @@ export type ButtonProps = React.ComponentProps<"button"> &
     asChild?: boolean
   }
 
-function Button({
+const Button: React.FC<ButtonProps> = ({
   className,
   variant = "default",
   size = "default",
   asChild = false,
   ...props
-}: ButtonProps) {
+}: ButtonProps) => {
   const Comp = asChild ? Slot : "button"
 
   return (

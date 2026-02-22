@@ -15,7 +15,7 @@ import {
   ServiceSchema,
   AutomationSchema
 } from "@/shared/domain/workspaces";
-import { mockApi } from "./mock-api";
+import { mockApi } from "./mockApi";
 
 // Set to false to use real backend
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
@@ -26,13 +26,16 @@ export const workspacesApi = {
     if (USE_MOCK) return mockApi.getWorkspaces();
     const res = await apiClient.get("/workspaces/");
     const data = await res.json() as unknown[];
-    return data.map((w) => WorkspaceSchema.parse(w));
+    return data.map((workspaceRaw) => WorkspaceSchema.parse(workspaceRaw));
   },
 
   getWorkspace: async (id: string): Promise<Workspace> => {
-    if (USE_MOCK) return mockApi.getWorkspace(id).then(w => w!);
+    if (USE_MOCK) {
+      const workspace = await mockApi.getWorkspace(id);
+      return workspace!;
+    }
     const res = await apiClient.get(`/workspaces/${id}`);
-    const data = await res.json();
+    const data = await res.json() as unknown;
     return WorkspaceSchema.parse(data);
   },
 
@@ -41,18 +44,18 @@ export const workspacesApi = {
     if (USE_MOCK) return mockApi.getAgents(workspaceId);
     const res = await apiClient.get(`/agents/?workspace=${workspaceId}`);
     const data = await res.json() as unknown[];
-    return data.map((a) => AgentSchema.parse(a));
+    return data.map((agentRaw) => AgentSchema.parse(agentRaw));
   },
 
   createAgent: async (agent: Partial<Agent>): Promise<Agent> => {
     const res = await apiClient.post("/agents/", agent);
-    const data = await res.json();
+    const data = await res.json() as unknown;
     return AgentSchema.parse(data);
   },
 
   updateAgent: async (id: string, agent: Partial<Agent>): Promise<Agent> => {
     const res = await apiClient.put(`/agents/${id}`, agent);
-    const data = await res.json();
+    const data = await res.json() as unknown;
     return AgentSchema.parse(data);
   },
 
@@ -65,7 +68,7 @@ export const workspacesApi = {
     if (USE_MOCK) return mockApi.getCrews(workspaceId);
     const res = await apiClient.get(`/workspaces/${workspaceId}/crews`);
     const data = await res.json() as unknown[];
-    return data.map((c) => CrewSchema.parse(c));
+    return data.map((crewRaw) => CrewSchema.parse(crewRaw));
   },
 
   createCrew: async (workspaceId: string, crew: Omit<Crew, "id" | "created_at" | "updated_at">): Promise<Crew> => {
@@ -89,7 +92,7 @@ export const workspacesApi = {
     if (USE_MOCK) return mockApi.getPatterns(workspaceId);
     const res = await apiClient.get(`/workspaces/${workspaceId}/patterns`);
     const data = await res.json() as unknown[];
-    return data.map((p) => PatternSchema.parse(p));
+    return data.map((patternRaw) => PatternSchema.parse(patternRaw));
   },
 
   createPattern: async (workspaceId: string, pattern: Omit<Pattern, "id" | "created_at" | "updated_at">): Promise<Pattern> => {
@@ -103,7 +106,7 @@ export const workspacesApi = {
     if (USE_MOCK) return mockApi.getTemplates(workspaceId);
     const res = await apiClient.get(`/workspaces/${workspaceId}/templates`);
     const data = await res.json() as unknown[];
-    return data.map((t) => TemplateSchema.parse(t));
+    return data.map((templateRaw) => TemplateSchema.parse(templateRaw));
   },
 
   createTemplate: async (workspaceId: string, template: Omit<Template, "id" | "created_at" | "updated_at">): Promise<Template> => {
@@ -117,7 +120,7 @@ export const workspacesApi = {
     if (USE_MOCK) return mockApi.getServices(workspaceId);
     const res = await apiClient.get(`/workspaces/${workspaceId}/services`);
     const data = await res.json() as unknown[];
-    return data.map((s) => ServiceSchema.parse(s));
+    return data.map((serviceRaw) => ServiceSchema.parse(serviceRaw));
   },
 
   // --- Automations ---
@@ -125,6 +128,6 @@ export const workspacesApi = {
     if (USE_MOCK) return mockApi.getAutomations(workspaceId);
     const res = await apiClient.get(`/workspaces/${workspaceId}/automations`);
     const data = await res.json() as unknown[];
-    return data.map((a) => AutomationSchema.parse(a));
+    return data.map((automationRaw) => AutomationSchema.parse(automationRaw));
   }
 };

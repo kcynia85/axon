@@ -1,11 +1,11 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { SidePeek } from "@/shared/ui/layout/side-peek";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Button } from "@/shared/ui/ui/button";
-import { Separator } from "@/shared/ui/ui/separator";
-import { useAgents } from "@/modules/workspaces/application/use-workspaces";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Button } from "@/shared/ui/ui/Button";
+import { Separator } from "@/shared/ui/ui/Separator";
+import { useAgents } from "@/modules/workspaces/application/useWorkspaces";
 import { Info, Brain, Zap, Shield, Users } from "lucide-react";
 
 export default function AgentSidePeekPage() {
@@ -15,7 +15,7 @@ export default function AgentSidePeekPage() {
   const agentId = params.id as string;
   
   const { data: agents } = useAgents(workspaceId);
-  const agent = agents?.find(a => a.id === agentId);
+    const agent = agents?.find((agentItem) => agentItem.id === agentId);
 
   if (!agent) return null;
 
@@ -48,9 +48,9 @@ export default function AgentSidePeekPage() {
                     <Zap className="h-4 w-4 text-primary" /> Keywords
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
-                    {agent.keywords?.map(k => (
-                        <Badge key={k} variant="secondary" className="font-normal">#{k}</Badge>
-                    ))}
+                        {agent.keywords?.map((keyword) => (
+                            <Badge key={keyword} variant="secondary" className="font-normal">#{keyword}</Badge>
+                        ))}
                 </div>
             </section>
 
