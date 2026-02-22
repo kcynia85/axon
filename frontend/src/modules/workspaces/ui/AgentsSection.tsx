@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useAgentsSection } from "../application/useAgents-section";
+import { useAgentsSection } from "../application/useAgentsSection";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";

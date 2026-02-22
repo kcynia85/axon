@@ -43,12 +43,12 @@ export const EntityNode = memo(({ data, selected }: NodeProps) => {
             />
             
             <Card 
-                className={`w-[240px] border-2 transition-all ${selected ? `${colorStyles.border} ${colorStyles.shadow}` : 'border-zinc-700 shadow-sm'}`}
+                className={`w-[240px] bg-black border-2 transition-all ${selected ? `${colorStyles.border} ${colorStyles.shadow}` : 'border-zinc-700 shadow-sm'}`}
             >
                 <CardBody className="p-3">
                     <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
-                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isAgent ? 'bg-zinc-100 text-zinc-600' : 'bg-default-100 text-default-600'}`}>
+                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isAgent ? 'bg-zinc-900 text-zinc-400' : 'bg-zinc-900 text-zinc-400'}`}>
                                 <Icon size={18} />
                              </div>
                              <div>

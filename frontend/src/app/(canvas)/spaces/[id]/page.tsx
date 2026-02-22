@@ -22,7 +22,7 @@ const SpaceCanvasPage = () => {
     return (
       <PageContainer>
         <div className="p-8 text-center border-2 border-dashed rounded-lg">
-          <p className="text-red-500">Error loading space: {(error as Error)?.message || "Not found"}</p>
+          <p className="text-red-500">Error loading space: {(error as any)?.message || "Not found"}</p>
         </div>
       </PageContainer>
     );

@@ -13,6 +13,7 @@ type UseCanvasLogicReturn = {
   onPaneClick: () => void;
   onDragOver: (event: React.DragEvent) => void;
   onDrop: (event: React.DragEvent) => void;
+  addNode: (type: string, data: Record<string, unknown>, workspaceId: string) => void;
   selectedNode: Node | undefined;
   onNodeDataChange: (nodeId: string, newData: Record<string, unknown>) => void;
 };
@@ -245,14 +246,17 @@ export const useCanvasLogic = (initialData?: unknown): UseCanvasLogicReturn => {
     (event: React.DragEvent) => {
       event.preventDefault();
 
-      const type = event.dataTransfer.getData('application/reactflow');
+      const transferType = event.dataTransfer.getData('application/reactflow');
       const dataString = event.dataTransfer.getData('application/axon-data');
 
-      if (!type || !dataString) {
+      if (!transferType || !dataString) {
         return;
       }
 
       const data = JSON.parse(dataString) as Record<string, unknown>;
+      
+      // If it was dragged as 'entity' from sidebar level 2, use its real type (agent, template, etc.)
+      const type = transferType === 'entity' ? (data.type as string) : transferType;
 
       const position = {
         x: event.clientX - 300,
@@ -274,6 +278,35 @@ export const useCanvasLogic = (initialData?: unknown): UseCanvasLogicReturn => {
     },
     [setNodes],
   );
+
+  const addNode = useCallback((type: string, data: Record<string, unknown>, workspaceId: string) => {
+    const parentZone = nodes.find(n => n.type === 'zone' && n.data.type === workspaceId);
+    
+    let position = { x: 100, y: 100 };
+    let parentId: string | undefined = undefined;
+
+    if (parentZone) {
+      parentId = parentZone.id;
+      position = {
+        x: 50 + Math.random() * 100,
+        y: 50 + Math.random() * 100
+      };
+    }
+
+    const newNode: Node = {
+      id: `node_${Math.random().toString(36).substr(2, 9)}`,
+      type,
+      position,
+      parentId,
+      extent: parentId ? 'parent' : undefined,
+      data: {
+        ...data,
+        state: 'missing_context',
+      },
+    };
+
+    setNodes((prevNodes) => prevNodes.concat(newNode));
+  }, [nodes, setNodes]);
 
   const onNodeDataChange = useCallback((nodeId: string, newData: Record<string, unknown>) => {
     setNodes((prevNodes) =>
@@ -314,6 +347,7 @@ export const useCanvasLogic = (initialData?: unknown): UseCanvasLogicReturn => {
     onPaneClick,
     onDragOver,
     onDrop,
+    addNode,
     selectedNode,
     onNodeDataChange,
   };

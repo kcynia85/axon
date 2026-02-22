@@ -48,13 +48,14 @@ export const CanvasView = ({ initialData }: { initialData?: unknown }) => {
     onPaneClick,
     onDragOver,
     onDrop,
+    addNode,
     selectedNode,
     onNodeDataChange,
   } = useCanvasLogic(initialData);
 
   return (
     <div className="w-full h-full relative bg-black font-mono text-white selection:bg-purple-500/30">
-      <CanvasHeader spaceName="Project Phoenix" projectName="Axon Redesign" />
+      <CanvasHeader spaceName="Project Phoenix" projectName="Axon Redesign" projectId="axon-redesign" />
 
       <ReactFlow
         nodes={nodes}
@@ -86,7 +87,7 @@ export const CanvasView = ({ initialData }: { initialData?: unknown }) => {
         </Panel>
 
         <Panel position="top-left" className="m-0 z-50">
-          <LeftSidebar />
+          <LeftSidebar onAddComponent={addNode} />
         </Panel>
 
         <Panel position="top-right" className="m-0 z-50">

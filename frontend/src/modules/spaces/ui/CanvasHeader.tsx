@@ -3,19 +3,21 @@ import {
   Card,
   CardBody,
 } from "@heroui/react";
+import Link from "next/link";
 
 interface CanvasHeaderProps {
     spaceName: string;
     projectName: string;
+    projectId?: string;
 }
 
-export const CanvasHeader = ({ spaceName, projectName }: CanvasHeaderProps) => {
+export const CanvasHeader = ({ spaceName, projectName, projectId = "p1" }: CanvasHeaderProps) => {
     return (
         <div className="absolute top-8 left-8 z-50 pointer-events-none select-none">
              <div className="flex flex-col gap-3 pointer-events-auto">
                  {/* Breadcrumbs */}
                  <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] ml-1">
-                    <span>Spaces</span>
+                    <Link href="/spaces" className="hover:text-zinc-300 transition-colors">Spaces</Link>
                     <span className="text-zinc-700">/</span>
                     <span className="text-zinc-300">{spaceName}</span>
                  </div>
@@ -31,7 +33,7 @@ export const CanvasHeader = ({ spaceName, projectName }: CanvasHeaderProps) => {
                                 </div>
                             </div>
                             <span className="text-[11px] font-bold text-zinc-500 tracking-wide">
-                                Linked: <span className="text-zinc-300">{projectName}</span>
+                                Linked: <Link href={`/projects/${projectId}`} className="text-zinc-300 hover:text-white underline decoration-zinc-700 underline-offset-4 transition-colors">{projectName}</Link>
                             </span>
                         </div>
                     </CardBody>

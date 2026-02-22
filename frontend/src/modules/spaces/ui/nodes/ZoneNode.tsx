@@ -62,7 +62,7 @@ const ZoneNodeComponent = memo(({ data, selected }: NodeProps) => {
                 <div className="absolute -top-3 left-10">
                     <div className="px-3 py-1 bg-black border border-zinc-800 rounded-md shadow-xl">
                         <span className={`text-[10px] font-black uppercase tracking-[0.25em] ${textColorClass}`}>
-                            {data.label || 'Unit'} Zone
+                            {data.label || 'Unit'}
                         </span>
                     </div>
                 </div>

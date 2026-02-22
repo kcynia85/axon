@@ -5,43 +5,43 @@ import { Users, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 
 const zoneColors: Record<string, { icon: string, selected: string, handle: string, shadow: string }> = {
     purple: { 
-        icon: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400", 
+        icon: "bg-zinc-900 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400", 
         selected: "!border-purple-500",
         handle: "!bg-purple-500",
         shadow: "shadow-[0_0_20px_rgba(168,85,247,0.2)]"
     },
     blue: { 
-        icon: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400", 
+        icon: "bg-zinc-900 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400", 
         selected: "!border-blue-500",
         handle: "!bg-blue-500",
         shadow: "shadow-[0_0_20px_rgba(59,130,246,0.2)]"
     },
     pink: { 
-        icon: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400", 
+        icon: "bg-zinc-900 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400", 
         selected: "!border-pink-500",
         handle: "!bg-pink-500",
         shadow: "shadow-[0_0_20_px_rgba(236,72,153,0.2)]"
     },
     green: { 
-        icon: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400", 
+        icon: "bg-zinc-900 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400", 
         selected: "!border-green-500",
         handle: "!bg-green-500",
         shadow: "shadow-[0_0_20_px_rgba(34,197,94,0.2)]"
     },
     yellow: { 
-        icon: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400", 
+        icon: "bg-zinc-900 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400", 
         selected: "!border-yellow-500",
         handle: "!bg-yellow-500",
         shadow: "shadow-[0_0_20_px_rgba(234,179,8,0.2)]"
     },
     orange: { 
-        icon: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400", 
+        icon: "bg-zinc-900 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400", 
         selected: "!border-orange-500",
         handle: "!bg-orange-500",
         shadow: "shadow-[0_0_20_px_rgba(249,115,22,0.2)]"
     },
     default: {
-        icon: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+        icon: "bg-zinc-900 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-400",
         selected: "!border-blue-600",
         handle: "!bg-blue-600",
         shadow: ""
@@ -61,7 +61,7 @@ export const CrewNode = memo(({ data, selected }: NodeProps) => {
                 className={`w-3 h-3 !border-zinc-800 !bg-zinc-500`} 
             />
             
-            <Card className={`w-[320px] border-2 transition-all ${selected ? `${colorStyles.selected} ${colorStyles.shadow} !ring-2` : 'border-zinc-700'} !bg-white dark:!bg-[#0f0f0f]`}>
+            <Card className={`w-[320px] border-2 transition-all ${selected ? `${colorStyles.selected} ${colorStyles.shadow} !ring-2` : 'border-zinc-700'} bg-black`}>
                 <CardHeader className="pb-2 pt-3 px-3 flex items-start gap-2">
                     <div className={`p-1.5 rounded-md border border-default-100 dark:border-default-700 ${colorStyles.icon}`}>
                         <Users size={16} />
@@ -91,21 +91,21 @@ export const CrewNode = memo(({ data, selected }: NodeProps) => {
 
                     {state === 'missing_context' && (
                         <div className="flex items-center gap-1.5 text-default-600 dark:text-default-400 text-xs bg-default-100 dark:bg-default-800 px-2 py-1.5 rounded mt-1">
-                            <AlertCircle size={12} className="text-orange-500" />
+                            <AlertCircle size={12} className="text-zinc-500" />
                             <span>Missing required context</span>
                         </div>
                     )}
 
                     {state === 'working' && (
                         <div className="flex items-center gap-1.5 text-default-600 dark:text-default-400 text-xs bg-default-100 dark:bg-default-800 px-2 py-1.5 rounded mt-1">
-                            <Loader2 size={12} className="animate-spin text-primary" />
+                            <Loader2 size={12} className="animate-spin text-zinc-400" />
                             <span>Executing step 2/5...</span>
                         </div>
                     )}
 
                     {state === 'done' && (
                         <div className="flex items-center gap-1.5 text-default-600 dark:text-default-400 text-xs bg-default-100 dark:bg-default-800 px-2 py-1.5 rounded mt-1">
-                            <CheckCircle2 size={12} className="text-green-500" />
+                            <CheckCircle2 size={12} className="text-zinc-400" />
                             <span>All tasks completed</span>
                         </div>
                     )}
