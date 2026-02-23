@@ -1,9 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import Link from "next/link";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/ui/ui/Card";
+import { Button } from "@/shared/ui/ui/Button";
+import { Input } from "@/shared/ui/ui/Input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/ui/Form";
 import { useLogin } from "../application/useLogin";
 
 export const LoginForm = () => {
@@ -36,7 +37,15 @@ export const LoginForm = () => {
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Password</FormLabel>
+                                    <div className="flex items-center justify-between">
+                                        <FormLabel>Password</FormLabel>
+                                        <Link
+                                            href="/reset-password"
+                                            className="text-xs text-muted-foreground hover:text-primary hover:underline"
+                                        >
+                                            Forgot password?
+                                        </Link>
+                                    </div>
                                     <FormControl>
                                         <Input type="password" {...field} />
                                     </FormControl>
@@ -51,6 +60,14 @@ export const LoginForm = () => {
                     </form>
                 </Form>
             </CardContent>
+            <CardFooter className="flex flex-col space-y-2">
+                <p className="text-xs text-center text-muted-foreground w-full">
+                    Don&apos;t have an account?{" "}
+                    <Link href="/signup" className="text-primary hover:underline">
+                        Create an account
+                    </Link>
+                </p>
+            </CardFooter>
         </Card>
     );
 };

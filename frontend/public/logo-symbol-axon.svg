@@ -1,11 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 250" fill="none">
-  <!-- Główny kolor (#1E293B) -->
-  <g color="#1D1D1F">
-
-    <!-- SYGNET (Wyśrodkowany) -->
-    <g>
-      <circle cx="60" cy="60" r="8" fill="currentColor"/>
-      <path d="M 31,82 A 36,36 0 1,1 89,82" stroke="currentColor" stroke-width="16" stroke-linecap="" fill="none" />
-    </g>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <circle cx="50" cy="46" r="8" fill="currentColor"/>
+  <path d="M 21,68 A 36,36 0 1,1 79,68" stroke="currentColor" stroke-width="16" fill="none" />
 </svg>

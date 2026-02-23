@@ -7,13 +7,11 @@ import {
   Inbox,
   Settings,
   Home,
-  Briefcase,
-  Workflow,
-  Cloud,
 } from "lucide-react";
 
 export const mainNavigation = [
   { name: "Home", href: "/dashboard", icon: Home },
+  { name: "Inbox", href: "/inbox", icon: Inbox },
   { name: "Projects", href: "/projects", icon: Library },
   { name: "Spaces", href: "/spaces", icon: Layout },
   { name: "Workspaces", href: "/workspaces", icon: SquareStack },
@@ -21,15 +19,15 @@ export const mainNavigation = [
 ];
 
 export const appsDropdown = [
-  { name: "Notion", href: "https://notion.so", icon: Briefcase },
-  { name: "Figma", href: "https://figma.com", icon: Layout },
-  { name: "n8n", href: "https://n8n.io", icon: Workflow },
-  { name: "Google Drive", href: "https://drive.google.com", icon: Cloud },
+  { name: "Notion", href: "https://notion.so" },
+  { name: "Figma", href: "https://figma.com" },
+  { name: "n8n", href: "https://n8n.io" },
+  { name: "Google Drive", href: "https://drive.google.com" },
 ];
 
-export const docsLink = { name: "Docs", href: "https://docs.axon.dev", icon: FileText };
+export const docsLink = { name: "Documentation", href: "/docs", icon: FileText };
 
 export const bottomNavigation = [
-  { name: "Inbox", href: "/inbox", icon: Inbox },
   { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Docs", href: "/docs", icon: FileText },
 ];
