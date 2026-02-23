@@ -20,6 +20,7 @@ type ComponentItemDisplay = {
     readonly identifier: string;
     readonly displayName: string;
     readonly type: string;
+    readonly hoverClassName: string;
     readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
 };
 
@@ -49,12 +50,12 @@ export const useSpaceCanvasSidebarManagement = () => {
 
     const workspaceUnitsForDisplay = useMemo<readonly WorkspaceUnitDisplay[]>(() => {
         return LIST_OF_AVAILABLE_WORKSPACES.map((workspaceUnit) => {
-            const visualStyles = getVisualStylesForZoneColor(workspaceUnit.identifier);
+            const visualStyles = getVisualStylesForZoneColor(workspaceUnit.visualColor);
             return {
                 identifier: workspaceUnit.identifier,
                 displayName: workspaceUnit.displayName,
-                // Cleanly prepare the hover class for the view
-                hoverClassName: `hover:${visualStyles.backgroundClassName?.replace('/5', '')}`,
+                // Use the Level 1 specific hover color (now includes 'hover:' prefix)
+                hoverClassName: visualStyles.level1HoverBackgroundClassName,
                 onClick: () => selectWorkspaceUnit(workspaceUnit.identifier),
                 onDragStart: (dragEvent: React.DragEvent<HTMLElement>) => 
                     handleDragAndDropStart(dragEvent, 'zone', {
@@ -74,13 +75,19 @@ export const useSpaceCanvasSidebarManagement = () => {
 
     const activeWorkspaceHeaderClassName = useMemo(() => {
         if (!currentlySelectedWorkspaceIdentifier) return "";
-        const visualStyles = getVisualStylesForZoneColor(currentlySelectedWorkspaceIdentifier);
-        return visualStyles.backgroundClassName?.replace('/5', '') || "bg-blue-600";
+        const workspaceUnit = LIST_OF_AVAILABLE_WORKSPACES.find(
+            (workspace) => workspace.identifier === currentlySelectedWorkspaceIdentifier
+        );
+        if (!workspaceUnit) return "bg-blue-600";
+        
+        const visualStyles = getVisualStylesForZoneColor(workspaceUnit.visualColor);
+        return visualStyles.hoverBackgroundClassName || "bg-blue-600";
     }, [currentlySelectedWorkspaceIdentifier]);
 
     const filteredComponentCategoriesForDisplay = useMemo(() => {
         const query = componentSearchQuery.trim().toLowerCase();
-        
+        const visualStyles = getVisualStylesForZoneColor(currentlySelectedWorkspaceIdentifier ? MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[currentlySelectedWorkspaceIdentifier] : 'default');
+
         return Object.entries(MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY).reduce<Record<string, readonly ComponentItemDisplay[]>>((accumulator, [categoryKey, componentList]) => {
             const filteredList = componentList
                 .filter((componentItem) => componentItem.componentName.toLowerCase().includes(query))
@@ -88,6 +95,8 @@ export const useSpaceCanvasSidebarManagement = () => {
                     identifier: componentItem.uniqueIdentifier,
                     displayName: componentItem.componentName,
                     type: componentItem.componentType,
+                    // Level 2 also uses the vibrant hover color from mapper
+                    hoverClassName: visualStyles.level1HoverBackgroundClassName,
                     onDragStart: (dragEvent: React.DragEvent<HTMLElement>) => 
                         handleDragAndDropStart(dragEvent, 'entity', {
                             label: componentItem.componentName,

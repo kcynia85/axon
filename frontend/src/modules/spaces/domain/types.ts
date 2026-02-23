@@ -42,12 +42,34 @@ export type SpaceServiceDomainData = {
   readonly zoneColor: WorkspaceColor;
 };
 
+export type TemplateAction = {
+  readonly id: string;
+  readonly label: string;
+  readonly isCompleted: boolean;
+  readonly section?: string;
+};
+
+export type TemplateContext = {
+  readonly id: string;
+  readonly label: string;
+  readonly link?: string;
+};
+
+export type TemplateArtefact = {
+  readonly id: string;
+  readonly label: string;
+  readonly link?: string;
+  readonly status: 'pending' | 'in_progress' | 'completed' | 'failed';
+};
+
 export type SpaceTemplateDomainData = {
   readonly label: string;
   readonly status: string;
-  readonly completedActions: number;
-  readonly totalActions: number;
+  readonly actions: readonly TemplateAction[];
+  readonly contexts: readonly TemplateContext[];
+  readonly artefacts: readonly TemplateArtefact[];
   readonly zoneColor: WorkspaceColor;
+  readonly customActionsContent?: string;
 };
 
 export type SpaceZoneDomainData = {
@@ -73,6 +95,20 @@ export type SpaceCanvasNodeInformation = {
 };
 
 // --- View Models (Pure Presentation Data) ---
+
+export type VisualStyleForZoneColor = {
+  readonly borderClassName: string;
+  readonly shadowClassName: string;
+  readonly handleBackgroundClassName: string;
+  readonly backgroundClassName: string;
+  readonly iconBackgroundClassName: string;
+  readonly borderSelectedClassName: string;
+  readonly textClassName: string;
+  readonly resizerLineClassName: string;
+  readonly resizerHandleClassName: string;
+  readonly hoverBackgroundClassName: string; 
+  readonly level1HoverBackgroundClassName: string; // Add this new property
+};
 
 export type NodeVisualProperties = {
     readonly containerClassName: string;
@@ -201,7 +237,7 @@ export type SpaceCrewInspectorProperties = {
 export type SpaceTemplateInspectorProperties = {
     readonly data: SpaceTemplateDomainData;
     readonly nodeId: string;
-    readonly onPropertyChange: (name: string, value: unknown) => void;
+    readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
 };
 
 export type SpaceZoneInspectorProperties = {

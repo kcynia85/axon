@@ -45,6 +45,7 @@ type ComponentItemDisplay = {
     readonly identifier: string;
     readonly displayName: string;
     readonly type: string;
+    readonly hoverClassName: string;
     readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
 };
 
@@ -86,7 +87,7 @@ export const SpaceCanvasLeftSidebarView: React.FC<SpaceCanvasLeftSidebarViewProp
                              {workspaceUnitsForDisplay.map((unit) => (
                                 <button
                                     key={unit.identifier}
-                                    className={`flex items-center h-12 w-full px-4 text-sm font-black text-zinc-300 hover:text-white transition-all rounded-xl ${unit.hoverClassName}`}
+                                    className={`flex items-center h-12 w-full px-4 text-sm font-black text-zinc-300 hover:text-white rounded-xl transition-all cursor-pointer ${unit.hoverClassName}`}
                                     onClick={unit.onClick}
                                     draggable
                                     onDragStart={unit.onDragStart}
@@ -166,7 +167,7 @@ export const SpaceCanvasLeftSidebarView: React.FC<SpaceCanvasLeftSidebarViewProp
                                             {filteredComponentCategoriesForDisplay[sectionKey]?.map((component) => (
                                                 <div
                                                     key={component.identifier}
-                                                    className="flex items-center gap-3 p-3 rounded-2xl border border-zinc-800 transition-all bg-zinc-900/40 hover:bg-zinc-900/80 hover:border-zinc-600 cursor-grab active:cursor-grabbing group shadow-sm"
+                                                    className={`flex items-center gap-3 p-3 rounded-2xl border border-zinc-800 transition-all bg-zinc-900/40 cursor-grab active:cursor-grabbing group shadow-sm ${component.hoverClassName}`}
                                                     draggable
                                                     onDragStart={component.onDragStart}
                                                 >

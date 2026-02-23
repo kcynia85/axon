@@ -31,9 +31,14 @@ export const useSpaceCanvasInspectorManagement = (
         handleNodeDataPropertyChange(currentlySelectedNodeInformation.id, { artifactStatus: newStatus });
     }, [currentlySelectedNodeInformation, handleNodeDataPropertyChange]);
 
-    const handlePropertyChange = useCallback((propertyName: string, propertyValue: unknown) => {
+    const handlePropertyChange = useCallback((propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => {
         if (!currentlySelectedNodeInformation) return;
-        handleNodeDataPropertyChange(currentlySelectedNodeInformation.id, { [propertyName]: propertyValue });
+        
+        const updates = typeof propertyNameOrObject === 'string' 
+            ? { [propertyNameOrObject]: propertyValue }
+            : propertyNameOrObject;
+            
+        handleNodeDataPropertyChange(currentlySelectedNodeInformation.id, updates);
     }, [currentlySelectedNodeInformation, handleNodeDataPropertyChange]);
 
     return {

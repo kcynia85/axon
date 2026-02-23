@@ -13,6 +13,8 @@ export const MAP_OF_VISUAL_ZONE_COLORS_TO_CSS_CLASSES: Record<string, VisualStyl
         textClassName: 'text-purple-400',
         resizerLineClassName: 'border-purple-500',
         resizerHandleClassName: 'border-purple-500',
+        hoverBackgroundClassName: 'bg-purple-500',
+        level1HoverBackgroundClassName: 'hover:bg-purple-500',
     },
     blue: { 
         borderClassName: 'border-blue-500', 
@@ -24,6 +26,8 @@ export const MAP_OF_VISUAL_ZONE_COLORS_TO_CSS_CLASSES: Record<string, VisualStyl
         textClassName: 'text-blue-400',
         resizerLineClassName: 'border-blue-500',
         resizerHandleClassName: 'border-blue-500',
+        hoverBackgroundClassName: 'bg-blue-500',
+        level1HoverBackgroundClassName: 'hover:bg-blue-500',
     },
     pink: { 
         borderClassName: 'border-pink-500', 
@@ -35,6 +39,8 @@ export const MAP_OF_VISUAL_ZONE_COLORS_TO_CSS_CLASSES: Record<string, VisualStyl
         textClassName: 'text-pink-400',
         resizerLineClassName: 'border-pink-500',
         resizerHandleClassName: 'border-pink-500',
+        hoverBackgroundClassName: 'bg-pink-500',
+        level1HoverBackgroundClassName: 'hover:bg-pink-500',
     },
     green: { 
         borderClassName: 'border-green-500', 
@@ -46,6 +52,8 @@ export const MAP_OF_VISUAL_ZONE_COLORS_TO_CSS_CLASSES: Record<string, VisualStyl
         textClassName: 'text-green-400',
         resizerLineClassName: 'border-green-500',
         resizerHandleClassName: 'border-green-500',
+        hoverBackgroundClassName: 'bg-green-500',
+        level1HoverBackgroundClassName: 'hover:bg-green-500',
     },
     yellow: { 
         borderClassName: 'border-yellow-500', 
@@ -57,6 +65,8 @@ export const MAP_OF_VISUAL_ZONE_COLORS_TO_CSS_CLASSES: Record<string, VisualStyl
         textClassName: 'text-yellow-400',
         resizerLineClassName: 'border-yellow-500',
         resizerHandleClassName: 'border-yellow-500',
+        hoverBackgroundClassName: 'bg-yellow-500',
+        level1HoverBackgroundClassName: 'hover:bg-yellow-500',
     },
     orange: { 
         borderClassName: 'border-orange-500', 
@@ -68,6 +78,8 @@ export const MAP_OF_VISUAL_ZONE_COLORS_TO_CSS_CLASSES: Record<string, VisualStyl
         textClassName: 'text-orange-400',
         resizerLineClassName: 'border-orange-500',
         resizerHandleClassName: 'border-orange-500',
+        hoverBackgroundClassName: 'bg-orange-500',
+        level1HoverBackgroundClassName: 'hover:bg-orange-500',
     },
     default: {
         borderClassName: 'border-zinc-700',
@@ -79,6 +91,8 @@ export const MAP_OF_VISUAL_ZONE_COLORS_TO_CSS_CLASSES: Record<string, VisualStyl
         textClassName: 'text-blue-400',
         resizerLineClassName: 'border-blue-500',
         resizerHandleClassName: 'border-blue-500',
+        hoverBackgroundClassName: 'bg-zinc-800', 
+        level1HoverBackgroundClassName: 'hover:bg-zinc-800',
     }
 };
 

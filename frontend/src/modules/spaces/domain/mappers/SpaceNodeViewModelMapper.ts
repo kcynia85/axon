@@ -105,12 +105,16 @@ export const mapServiceToViewModel = (data: SpaceServiceDomainData, isSelected: 
 };
 
 export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected: boolean): SpaceTemplateViewModel => {
+    const totalActions = data.actions?.length || 0;
+    const completedActions = data.actions?.filter((action) => action.isCompleted).length || 0;
+    const progressValue = totalActions > 0 ? (completedActions / totalActions) * 100 : 0;
+
     return {
         visual: mapVisualProperties(data.zoneColor, isSelected),
         displayName: data.label,
         statusText: (data.status || 'Active').toUpperCase(),
-        progressText: `${data.completedActions}/${data.totalActions} DONE`,
-        progressValue: data.totalActions > 0 ? (data.completedActions / data.totalActions) * 100 : 0,
+        progressText: `${completedActions}/${totalActions} ACTIONS`,
+        progressValue,
     };
 };
 
