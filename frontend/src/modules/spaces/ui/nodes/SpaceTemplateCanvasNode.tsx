@@ -5,6 +5,7 @@ import { Handle, Position } from '@xyflow/react';
 import { mapTemplateToViewModel } from '../../domain/mappers/SpaceNodeViewModelMapper';
 import { SpaceTemplateNodeView } from './pure/SpaceTemplateNodeView';
 import { SpaceCanvasNodeProperties, SpaceTemplateDomainData } from '../../domain/types';
+import { cn } from "@/shared/lib/utils";
 
 export const SpaceTemplateCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
     const viewModel = mapTemplateToViewModel(
@@ -13,7 +14,7 @@ export const SpaceTemplateCanvasNode = memo((nodeProperties: SpaceCanvasNodeProp
     );
 
     return (
-        <div className="select-none">
+        <div className="relative select-none">
             <Handle 
                 type="target" 
                 position={Position.Left} 
@@ -25,7 +26,10 @@ export const SpaceTemplateCanvasNode = memo((nodeProperties: SpaceCanvasNodeProp
             <Handle 
                 type="source" 
                 position={Position.Right} 
-                className={viewModel.visual.handleClassName} 
+                className={cn(
+                    viewModel.visual.handleClassName,
+                    viewModel.hasOutputArtefacts && viewModel.activeOutputClassName
+                )} 
             />
         </div>
     );

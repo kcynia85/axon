@@ -59,7 +59,8 @@ export type TemplateArtefact = {
   readonly id: string;
   readonly label: string;
   readonly link?: string;
-  readonly status: 'pending' | 'in_progress' | 'completed' | 'failed';
+  readonly status: 'pending' | 'in_progress' | 'in_review' | 'approved' | 'failed';
+  readonly isOutput?: boolean;
 };
 
 export type SpaceTemplateDomainData = {
@@ -107,7 +108,8 @@ export type VisualStyleForZoneColor = {
   readonly resizerLineClassName: string;
   readonly resizerHandleClassName: string;
   readonly hoverBackgroundClassName: string; 
-  readonly level1HoverBackgroundClassName: string; // Add this new property
+  readonly level1HoverBackgroundClassName: string;
+  readonly activeOutputClassName: string;
 };
 
 export type NodeVisualProperties = {
@@ -167,6 +169,8 @@ export type SpaceTemplateViewModel = {
     readonly statusText: string;
     readonly progressText: string;
     readonly progressValue: number;
+    readonly hasOutputArtefacts: boolean;
+    readonly activeOutputClassName: string;
 };
 
 export type SpaceZoneViewModel = {

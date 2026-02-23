@@ -108,6 +108,8 @@ export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected
     const totalActions = data.actions?.length || 0;
     const completedActions = data.actions?.filter((action) => action.isCompleted).length || 0;
     const progressValue = totalActions > 0 ? (completedActions / totalActions) * 100 : 0;
+    const hasOutputArtefacts = data.artefacts?.some(art => art.isOutput) || false;
+    const styles = getVisualStylesForZoneColor(data.zoneColor);
 
     return {
         visual: mapVisualProperties(data.zoneColor, isSelected),
@@ -115,6 +117,8 @@ export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected
         statusText: (data.status || 'Active').toUpperCase(),
         progressText: `${completedActions}/${totalActions} ACTIONS`,
         progressValue,
+        hasOutputArtefacts,
+        activeOutputClassName: styles.activeOutputClassName,
     };
 };
 
