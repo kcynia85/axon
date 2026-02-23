@@ -297,15 +297,6 @@ export const SpaceTemplateNodeInspectorView = ({
                             {(!data.artefacts || data.artefacts.length === 0) && (
                                 <p className="text-xs text-zinc-600 italic text-center py-10">No artefacts provided.</p>
                             )}
-
-                            <Button 
-                                size="sm" 
-                                variant="flat"
-                                className="w-full h-11 bg-zinc-900 text-zinc-400 font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-zinc-800 border border-zinc-800 transition-colors mt-4"
-                                startContent={<Plus size={14}/>}
-                            >
-                                Dodaj Artefakt
-                            </Button>
                         </div>
                     </ScrollShadow>
                 </Tab>

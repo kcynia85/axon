@@ -41,7 +41,9 @@ export const useSpaceTemplateInspectorLogic = (
 
     const handleArtefactStatusChange = useCallback((artefactId: string, status: TemplateArtefact['status']) => {
         const updatedArtefacts = data.artefacts.map((art) => 
-            art.id === artefactId ? { ...art, status } : art
+            art.id === artefactId 
+                ? { ...art, status, isOutput: status !== 'approved' ? false : art.isOutput } 
+                : art
         );
         onPropertyChange('artefacts', updatedArtefacts);
     }, [data.artefacts, onPropertyChange]);
