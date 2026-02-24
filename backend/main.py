@@ -15,7 +15,6 @@ from app.modules.projects.interface.artifacts_router import router as artifacts_
 from app.modules.agents.interface.router import router as agents_router
 from app.modules.agents.interface.config_router import router as agents_config_router
 from app.modules.knowledge.interface.router import router as knowledge_router
-from app.modules.workflows.interface.router import router as workflows_router
 from app.modules.spaces.interface.router import router as spaces_router
 from app.modules.resources.interface.router import router as resources_router
 from app.modules.settings.interface.router import router as settings_router
@@ -23,7 +22,6 @@ from app.modules.inbox.interface.router import router as inbox_router
 from app.modules.system.interface.router import router as system_router
 from app.modules.workspaces.interface.router import router as workspaces_router
 from app.shared.infrastructure.inngest_client import inngest_client
-from app.modules.workflows.infrastructure.inngest_functions import hello_world
 from app.modules.agents.application.workflows import writer_workflow, generic_agent_workflow
 
 app = FastAPI(title="RAGAS Axon API")
@@ -60,7 +58,6 @@ app.include_router(artifacts_router)
 app.include_router(agents_router)
 app.include_router(agents_config_router)
 app.include_router(knowledge_router)
-app.include_router(workflows_router) # Auto-prefix from router module
 app.include_router(spaces_router)
 app.include_router(resources_router)
 app.include_router(settings_router)
@@ -72,7 +69,7 @@ app.include_router(workspaces_router)
 inngest_handler = serve(
     app,
     inngest_client,
-    [hello_world, writer_workflow, generic_agent_workflow],
+    [writer_workflow, generic_agent_workflow],
 )
 
 @app.get("/")

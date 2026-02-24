@@ -20,7 +20,6 @@ from backend.app.shared.infrastructure.base import Base
 from backend.app.modules.projects.infrastructure.tables import *
 from backend.app.modules.agents.infrastructure.tables import *
 from backend.app.modules.knowledge.infrastructure.tables import *
-from backend.app.modules.workflows.infrastructure.tables import *
 from backend.app.modules.spaces.infrastructure.tables import *
 from backend.app.modules.inbox.infrastructure.tables import *
 from backend.app.modules.resources.infrastructure.tables import *
