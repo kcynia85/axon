@@ -24,6 +24,9 @@ class Template(BaseModel):
     template_markdown_content: str
     template_checklist_items: List[Dict[str, Any]] = Field(default_factory=list)
     template_keywords: List[str] = Field(default_factory=list)
+    # Deterministic I/O: defined at template config time, used on canvas
+    template_inputs: List[Dict[str, Any]] = Field(default_factory=list)   # [{"id": str, "label": str, "expectedType": str}]
+    template_outputs: List[Dict[str, Any]] = Field(default_factory=list)  # [{"id": str, "label": str}]
     availability_workspace: List[str]
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)

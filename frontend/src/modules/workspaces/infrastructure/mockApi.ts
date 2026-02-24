@@ -12,121 +12,516 @@ import {
 
 const MOCK_WORKSPACES: Workspace[] = [
   {
-    id: "ws-1",
-    name: "Product Development",
-    description: "Main workspace for product crew",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+    id: "ws-product",
+    name: "Product Management",
+    description: "Product strategy, requirements, and roadmap planning.",
+    created_at: "2026-01-10T09:00:00Z",
+    updated_at: "2026-02-24T12:00:00Z",
   },
   {
-    id: "ws-2",
-    name: "Marketing Ops",
-    description: "Campaign management and content creation",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
-
-const MOCK_AGENTS: Agent[] = [
-  {
-    id: "6ea3c829-5778-43e6-a0fa-b930d099958d",
-    agent_name: "Product Owner",
-    agent_role_text: "Lead Product Strategy",
-    agent_goal: "Define requirements and priorities",
-    agent_backstory: "Experienced product lead with focus on delivery.",
-    guardrails: { instructions: [], constraints: [] },
-    few_shot_examples: [],
-    reflexion: false,
-    temperature: 0.7,
-    rag_enforcement: false,
-    availability_workspace: ["ws-1"],
-    agent_keywords: ["product"],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
+    id: "ws-discovery",
+    name: "Discovery",
+    description: "User research, competitive analysis, and opportunity mapping.",
+    created_at: "2026-01-12T09:00:00Z",
+    updated_at: "2026-02-22T10:00:00Z",
   },
   {
-    id: "7ea3c829-5778-43e6-a0fa-b930d099958e",
-    agent_name: "Developer",
-    agent_role_text: "Fullstack implementation",
-    agent_goal: "Implement features based on specs",
-    agent_backstory: "Senior dev specialized in Next.js and FastAPI.",
-    guardrails: { instructions: [], constraints: [] },
-    few_shot_examples: [],
-    reflexion: false,
-    temperature: 0.5,
-    rag_enforcement: false,
-    availability_workspace: ["ws-1"],
-    agent_keywords: ["coding"],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
+    id: "ws-design",
+    name: "Design",
+    description: "UI/UX design, prototyping, and design system management.",
+    created_at: "2026-01-15T09:00:00Z",
+    updated_at: "2026-02-23T14:00:00Z",
+  },
+  {
+    id: "ws-delivery",
+    name: "Delivery",
+    description: "Sprint execution, code reviews, QA, and deployment.",
+    created_at: "2026-01-18T09:00:00Z",
+    updated_at: "2026-02-24T08:00:00Z",
+  },
+  {
+    id: "ws-growth",
+    name: "Growth & Market",
+    description: "Marketing campaigns, content strategy, and growth experiments.",
+    created_at: "2026-01-20T09:00:00Z",
+    updated_at: "2026-02-20T16:00:00Z",
+  },
 ];
 
-const MOCK_CREWS: Crew[] = [
-  {
-    id: "8ea3c829-5778-43e6-a0fa-b930d099958f",
-    crew_name: "Feature Delivery Crew",
-    crew_description: "Handles E2E features",
-    crew_process_type: "Sequential",
-    agent_member_ids: [MOCK_AGENTS[0].id, MOCK_AGENTS[1].id],
-    availability_workspace: ["ws-1"],
-    crew_keywords: ["delivery"],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
+const MOCK_AGENTS: Record<string, Agent[]> = {
+  "ws-product": [
+    {
+      id: "a-product-owner",
+      agent_name: "Product Owner",
+      agent_role_text: "Lead Product Strategy",
+      agent_goal: "Define requirements, prioritize backlog, and align stakeholders.",
+      agent_backstory: "Experienced product lead with 10+ years building SaaS products. Expert in PRDs and OKR frameworks.",
+      guardrails: { instructions: ["Always reference user research data", "Include success metrics"], constraints: ["No speculative features"] },
+      few_shot_examples: [],
+      reflexion: true,
+      temperature: 0.7,
+      rag_enforcement: true,
+      input_schema: { user_research_summary: "json", market_segment: "string", okr_context: "string" },
+      output_schema: { prd_document: "markdown", backlog_items: "json", priority_matrix: "json" },
+      knowledge_hub_ids: ["kh-product-management", "kh-strategy-frameworks"],
+      llm_model_id: "model-gpt4o",
+      availability_workspace: ["ws-product", "ws-discovery"],
+      agent_keywords: ["product", "strategy", "prd", "requirements"],
+      created_at: "2026-01-10T09:00:00Z",
+      updated_at: "2026-02-20T12:00:00Z",
+    },
+    {
+      id: "a-tech-writer",
+      agent_name: "Technical Writer",
+      agent_role_text: "Documentation Specialist",
+      agent_goal: "Create clear, comprehensive technical documentation.",
+      agent_backstory: "Documentation expert who believes good docs save more time than good code. Specializes in API docs and architecture decision records.",
+      guardrails: { instructions: ["Use structured templates", "Include code examples"], constraints: ["No jargon without explanation"] },
+      few_shot_examples: [],
+      reflexion: false,
+      temperature: 0.5,
+      rag_enforcement: true,
+      input_schema: { source_code: "string", api_endpoints: "json", architecture_notes: "string" },
+      output_schema: { documentation: "markdown", api_reference: "json" },
+      knowledge_hub_ids: ["kh-product-management"],
+      llm_model_id: "model-gpt4o",
+      availability_workspace: ["ws-product"],
+      agent_keywords: ["documentation", "writing", "api-docs"],
+      created_at: "2026-01-11T09:00:00Z",
+      updated_at: "2026-02-18T10:00:00Z",
+    },
+  ],
+  "ws-discovery": [
+    {
+      id: "a-user-researcher",
+      agent_name: "User Researcher",
+      agent_role_text: "UX Research Lead",
+      agent_goal: "Discover user pain points and validate product hypotheses.",
+      agent_backstory: "PhD in HCI with experience running 500+ user interviews. Expert in Jobs-to-be-Done framework.",
+      guardrails: { instructions: ["Use JTBD framework", "Cite sources"], constraints: ["No assumptions without data"] },
+      few_shot_examples: [],
+      reflexion: true,
+      temperature: 0.6,
+      rag_enforcement: true,
+      input_schema: { interview_transcripts: "json", survey_responses: "csv", persona_profiles: "json" },
+      output_schema: { research_findings: "json", insight_map: "json", recommendations: "markdown" },
+      knowledge_hub_ids: ["kh-discovery-hub", "kh-jtbd-library"],
+      llm_model_id: "model-claude-sonnet",
+      availability_workspace: ["ws-discovery"],
+      agent_keywords: ["research", "ux", "interviews", "jtbd"],
+      created_at: "2026-01-12T09:00:00Z",
+      updated_at: "2026-02-19T10:00:00Z",
+    },
+    {
+      id: "a-competitor-analyst",
+      agent_name: "Competitive Analyst",
+      agent_role_text: "Market Intelligence",
+      agent_goal: "Analyze competitor landscape and identify opportunities.",
+      agent_backstory: "Former strategy consultant at McKinsey. Expert in Porter's Five Forces and Blue Ocean Strategy.",
+      guardrails: { instructions: ["Use structured frameworks", "Include data tables"], constraints: ["No subjective opinions"] },
+      few_shot_examples: [],
+      reflexion: false,
+      temperature: 0.4,
+      rag_enforcement: true,
+      input_schema: { competitors_list: "json", market_data: "csv" },
+      output_schema: { competitive_matrix: "json", opportunity_report: "markdown" },
+      knowledge_hub_ids: ["kh-discovery-hub"],
+      llm_model_id: "model-gpt4o",
+      availability_workspace: ["ws-discovery", "ws-product"],
+      agent_keywords: ["competitors", "market", "analysis"],
+      created_at: "2026-01-13T09:00:00Z",
+      updated_at: "2026-02-21T10:00:00Z",
+    },
+  ],
+  "ws-design": [
+    {
+      id: "a-ui-designer",
+      agent_name: "UI Designer",
+      agent_role_text: "Visual Design Lead",
+      agent_goal: "Create beautiful, accessible, and consistent UI designs.",
+      agent_backstory: "Design systems architect who built Shopify Polaris v3. Expert in Figma and accessibility.",
+      guardrails: { instructions: ["Follow design system tokens", "WCAG AA compliance"], constraints: ["No custom colors outside palette"] },
+      few_shot_examples: [],
+      reflexion: false,
+      temperature: 0.8,
+      rag_enforcement: false,
+      input_schema: { brand_guidelines: "json", figma_tokens: "json" },
+      output_schema: { component_spec: "json", design_tokens: "json" },
+      knowledge_hub_ids: ["kh-design-system"],
+      llm_model_id: "model-claude-sonnet",
+      availability_workspace: ["ws-design"],
+      agent_keywords: ["ui", "design", "figma", "accessibility"],
+      created_at: "2026-01-15T09:00:00Z",
+      updated_at: "2026-02-22T10:00:00Z",
+    },
+  ],
+  "ws-delivery": [
+    {
+      id: "a-developer",
+      agent_name: "Full-Stack Developer",
+      agent_role_text: "Implementation Lead",
+      agent_goal: "Implement features based on specs with clean, tested code.",
+      agent_backstory: "Senior engineer specializing in Next.js 15, FastAPI, and PostgreSQL. Strong advocate of DDD.",
+      guardrails: { instructions: ["Follow DDD patterns", "Write tests first"], constraints: ["No any types", "Max 500 LOC per file"] },
+      few_shot_examples: [],
+      reflexion: true,
+      temperature: 0.3,
+      rag_enforcement: true,
+      input_schema: { feature_spec: "markdown", acceptance_criteria: "json", design_tokens: "json" },
+      output_schema: { source_code: "string", test_suite: "string", migration_files: "string" },
+      knowledge_hub_ids: ["kh-engineering-standards", "kh-architecture-patterns"],
+      llm_model_id: "model-gpt4o",
+      availability_workspace: ["ws-delivery"],
+      agent_keywords: ["coding", "typescript", "python", "testing"],
+      created_at: "2026-01-18T09:00:00Z",
+      updated_at: "2026-02-24T08:00:00Z",
+    },
+    {
+      id: "a-qa-engineer",
+      agent_name: "QA Engineer",
+      agent_role_text: "Quality Assurance",
+      agent_goal: "Ensure software quality through systematic testing strategies.",
+      agent_backstory: "Test automation expert. Built CI pipelines for 50+ microservices at Stripe.",
+      guardrails: { instructions: ["Cover happy path + edge cases", "Include regression checks"], constraints: ["No manual-only tests"] },
+      few_shot_examples: [],
+      reflexion: false,
+      temperature: 0.3,
+      rag_enforcement: false,
+      input_schema: { source_code: "string", test_plan: "json" },
+      output_schema: { test_results: "json", coverage_report: "json", bug_report: "markdown" },
+      knowledge_hub_ids: ["kh-engineering-standards"],
+      llm_model_id: "model-gpt4o-mini",
+      availability_workspace: ["ws-delivery"],
+      agent_keywords: ["qa", "testing", "automation", "ci"],
+      created_at: "2026-01-19T09:00:00Z",
+      updated_at: "2026-02-23T10:00:00Z",
+    },
+  ],
+  "ws-growth": [
+    {
+      id: "a-copywriter",
+      agent_name: "Copywriter",
+      agent_role_text: "Content & Copy Lead",
+      agent_goal: "Write compelling copy that converts visitors into users.",
+      agent_backstory: "Former head of content at Buffer. Expert in AIDA framework and SEO copywriting.",
+      guardrails: { instructions: ["Use AIDA framework", "Max 8th-grade reading level"], constraints: ["No clickbait", "No false claims"] },
+      few_shot_examples: [],
+      reflexion: false,
+      temperature: 0.9,
+      rag_enforcement: false,
+      input_schema: { brand_voice: "string", target_audience: "json", campaign_brief: "markdown" },
+      output_schema: { ad_copy: "string", landing_page_copy: "markdown", social_posts: "json" },
+      knowledge_hub_ids: ["kh-brand-guidelines", "kh-seo-playbook"],
+      llm_model_id: "model-claude-sonnet",
+      availability_workspace: ["ws-growth"],
+      agent_keywords: ["copy", "marketing", "content", "seo"],
+      created_at: "2026-01-20T09:00:00Z",
+      updated_at: "2026-02-20T10:00:00Z",
+    },
+  ],
+};
 
-const MOCK_PATTERNS: Pattern[] = [
-  {
-    id: "9ea3c829-5778-43e6-a0fa-b930d0999590",
-    pattern_name: "Standard Researcher",
-    pattern_type: "Pattern",
-    pattern_okr_context: "Research initiatives",
-    pattern_graph_structure: {},
-    pattern_keywords: ["research"],
-    availability_workspace: ["ws-1"],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
+const MOCK_CREWS: Record<string, Crew[]> = {
+  "ws-product": [
+    {
+      id: "c-prd-crew",
+      crew_name: "PRD Production Crew",
+      crew_description: "Creates comprehensive Product Requirements Documents from discovery insights.",
+      crew_process_type: "Sequential",
+      agent_member_ids: ["a-product-owner", "a-tech-writer"],
+      availability_workspace: ["ws-product"],
+      crew_keywords: ["prd", "writing", "strategy"],
+      created_at: "2026-01-15T09:00:00Z",
+      updated_at: "2026-02-20T12:00:00Z",
+    },
+  ],
+  "ws-discovery": [
+    {
+      id: "c-research-crew",
+      crew_name: "Research & Analysis Crew",
+      crew_description: "Runs user research and competitive analysis in parallel.",
+      crew_process_type: "Parallel",
+      agent_member_ids: ["a-user-researcher", "a-competitor-analyst"],
+      availability_workspace: ["ws-discovery"],
+      crew_keywords: ["research", "analysis", "market"],
+      created_at: "2026-01-16T09:00:00Z",
+      updated_at: "2026-02-21T10:00:00Z",
+    },
+  ],
+  "ws-design": [],
+  "ws-delivery": [
+    {
+      id: "c-dev-crew",
+      crew_name: "Feature Delivery Crew",
+      crew_description: "Implements and tests features end-to-end based on technical specs.",
+      crew_process_type: "Sequential",
+      agent_member_ids: ["a-developer", "a-qa-engineer"],
+      availability_workspace: ["ws-delivery"],
+      crew_keywords: ["delivery", "implementation", "qa"],
+      created_at: "2026-01-20T09:00:00Z",
+      updated_at: "2026-02-24T08:00:00Z",
+    },
+  ],
+  "ws-growth": [],
+};
 
-const MOCK_TEMPLATES: Template[] = [
-  {
-    id: "aea3c829-5778-43e6-a0fa-b930d0999591",
-    template_name: "Empty Workspace",
-    template_description: "Start from scratch",
-    template_markdown_content: "# Welcome",
-    template_checklist_items: [],
-    template_keywords: ["basic"],
-    availability_workspace: ["ws-1"],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
+const MOCK_PATTERNS: Record<string, Pattern[]> = {
+  "ws-product": [
+    {
+      id: "p-prd-flow",
+      pattern_name: "PRD Creation Flow",
+      pattern_type: "Pattern",
+      pattern_okr_context: "Achieve 100% PRD coverage for core features in Q1.",
+      pattern_graph_structure: {
+        nodes: { 1: "Input", 2: "Analysis", 3: "Writing", 4: "Output" },
+        edges: { "1-2": "flows to", "2-3": "flows to", "3-4": "completes" },
+        components: ["t-prd-template", "c-prd-crew"]
+      },
+      pattern_keywords: ["prd", "flow", "product", "standard"],
+      availability_workspace: ["ws-product", "ws-discovery"],
+      created_at: "2026-01-20T09:00:00Z",
+      updated_at: "2026-02-18T10:00:00Z",
+    },
+  ],
+  "ws-discovery": [
+    {
+      id: "p-research-flow",
+      pattern_name: "Discovery Research Pipeline",
+      pattern_type: "Pattern",
+      pattern_okr_context: "User understanding OKR",
+      pattern_graph_structure: { nodes: 6, edges: 5 },
+      pattern_keywords: ["research", "discovery"],
+      availability_workspace: ["ws-discovery"],
+      created_at: "2026-01-22T09:00:00Z",
+      updated_at: "2026-02-19T10:00:00Z",
+    },
+  ],
+  "ws-design": [
+    {
+      id: "p-design-audit",
+      pattern_name: "Design System Audit",
+      pattern_type: "Reusable Template",
+      pattern_okr_context: "Design quality OKR",
+      pattern_graph_structure: { nodes: 3, edges: 2 },
+      pattern_keywords: ["design", "audit", "system"],
+      availability_workspace: ["ws-design"],
+      created_at: "2026-01-25T09:00:00Z",
+      updated_at: "2026-02-22T10:00:00Z",
+    },
+  ],
+  "ws-delivery": [],
+  "ws-growth": [
+    {
+      id: "p-launch-campaign",
+      pattern_name: "Product Launch Campaign",
+      pattern_type: "Pattern",
+      pattern_okr_context: "Growth OKR",
+      pattern_graph_structure: { nodes: 5, edges: 4 },
+      pattern_keywords: ["launch", "campaign", "marketing"],
+      availability_workspace: ["ws-growth"],
+      created_at: "2026-01-28T09:00:00Z",
+      updated_at: "2026-02-20T10:00:00Z",
+    },
+  ],
+};
 
-const MOCK_SERVICES: Service[] = [
-  {
-    id: "bea3c829-5778-43e6-a0fa-b930d0999592",
-    service_name: "ElevenLabs",
-    service_description: "Voice generation platform",
-    service_category: "GenAI",
-    availability_workspace: ["ws-1"],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
+const MOCK_TEMPLATES: Record<string, Template[]> = {
+  "ws-product": [
+    {
+      id: "t-prd-template",
+      template_name: "PRD Template",
+      template_description: "Standard Product Requirements Document with user stories and acceptance criteria.",
+      template_markdown_content: "# Product Requirements Document\n\n## Problem Statement\n\n## User Stories\n\n## Acceptance Criteria\n\n## Success Metrics",
+      template_checklist_items: [
+        { id: "c1", label: "Define problem statement", isCompleted: true },
+        { id: "c2", label: "Write user stories", isCompleted: false },
+        { id: "c3", label: "Define acceptance criteria", isCompleted: false },
+        { id: "c4", label: "Set success metrics", isCompleted: false },
+      ],
+      template_inputs: [
+        { id: "ctx-research", label: "user_research_report", expectedType: "file" as const, isRequired: true },
+        { id: "ctx-competitors", label: "competitor_analysis", expectedType: "json" as const, isRequired: true },
+      ],
+      template_outputs: [
+        { id: "art-prd", label: "prd_document", outputType: "text" as const, isRequired: true },
+      ],
+      template_keywords: ["prd", "requirements", "product"],
+      availability_workspace: ["ws-product"],
+      created_at: "2026-01-15T09:00:00Z",
+      updated_at: "2026-02-20T12:00:00Z",
+    },
+  ],
+  "ws-discovery": [
+    {
+      id: "t-comp-analysis",
+      template_name: "Analiza Konkurencji",
+      template_description: "Kompleksowa analiza otoczenia rynkowego i konkurentów.",
+      template_markdown_content: "# Analiza Konkurencji\n\n## Cel Analizy\nZidentyfikowanie przewag konkurencyjnych oraz luk rynkowych.\n\n## Zakres\n- Analiza produktowa\n- Model biznesowy\n- Strategia marketingowa",
+      template_checklist_items: [
+        { id: "c1", label: "Zidentyfikuj Top 3 konkurentów", isCompleted: true },
+        { id: "c2", label: "Przeanalizuj cenniki", isCompleted: false },
+        { id: "c3", label: "Zrób analizę SWOT", isCompleted: false },
+      ],
+      template_inputs: [
+        { id: "ctx-brand", label: "brand_guidelines", expectedType: "link" as const, isRequired: true },
+        { id: "ctx-persona", label: "persona", expectedType: "text" as const, isRequired: true },
+      ],
+      template_outputs: [
+        { id: "art-comp-list", label: "competitors_list", outputType: "file" as const, isRequired: true },
+        { id: "art-bench", label: "benchmark_link", outputType: "link" as const, isRequired: true },
+      ],
+      template_keywords: ["research", "marketing", "strategy"],
+      availability_workspace: ["ws-design", "ws-discovery"],
+      created_at: "2026-02-01T10:00:00Z",
+      updated_at: "2026-02-24T12:00:00Z",
+    },
+    {
+      id: "t-research-report",
+      template_name: "Research Report",
+      template_description: "Structured user research findings with insights and recommendations.",
+      template_markdown_content: "# Research Report\n\n## Methodology\n\n## Key Findings\n\n## Insights\n\n## Recommendations",
+      template_checklist_items: [
+        { id: "c1", label: "Document methodology", isCompleted: false },
+        { id: "c2", label: "Compile findings", isCompleted: false },
+      ],
+      template_inputs: [
+        { id: "input-interviews", label: "interview_transcripts", expectedType: "file" as const, isRequired: true },
+      ],
+      template_outputs: [
+        { id: "output-report", label: "research_report", outputType: "file" as const, isRequired: true },
+      ],
+      template_keywords: ["research", "ux", "findings"],
+      availability_workspace: ["ws-discovery"],
+      created_at: "2026-01-16T09:00:00Z",
+      updated_at: "2026-02-21T10:00:00Z",
+    },
+  ],
+  "ws-design": [],
+  "ws-delivery": [
+    {
+      id: "t-sprint-retro",
+      template_name: "Sprint Retrospective",
+      template_description: "Structure for sprint reviews and feedback loops.",
+      template_markdown_content: "# Sprint Retrospective\n\n## What went well?\n\n## What could be improved?\n\n## Action Items",
+      template_checklist_items: [
+        { id: "c1", label: "Post-it collection", isCompleted: true },
+        { id: "c2", label: "Action points definition", isCompleted: false },
+      ],
+      template_inputs: [
+        { id: "input-jira", label: "jira_sprint_report", expectedType: "link" as const, isRequired: true },
+      ],
+      template_outputs: [
+        { id: "output-actions", label: "retrospective_actions", outputType: "text" as const, isRequired: true },
+      ],
+      template_keywords: ["agile", "delivery", "team"],
+      availability_workspace: ["ws-delivery"],
+      created_at: "2026-01-25T09:00:00Z",
+      updated_at: "2026-02-23T10:00:00Z",
+    },
+  ],
+  "ws-growth": [
+    {
+      id: "t-campaign-brief",
+      template_name: "Campaign Brief",
+      template_description: "Marketing campaign planning template with channels, budget, and KPIs.",
+      template_markdown_content: "# Campaign Brief\n\n## Objective\n\n## Target Audience\n\n## Channels\n\n## Budget\n\n## KPIs",
+      template_checklist_items: [
+        { id: "c1", label: "Define objective", isCompleted: false },
+        { id: "c2", label: "Identify target audience", isCompleted: false },
+      ],
+      template_inputs: [
+        { id: "input-brand", label: "brand_guidelines", expectedType: "link" as const, isRequired: true },
+      ],
+      template_outputs: [
+        { id: "output-brief", label: "campaign_brief", outputType: "file" as const, isRequired: true },
+      ],
+      template_keywords: ["campaign", "marketing", "growth"],
+      availability_workspace: ["ws-growth"],
+      created_at: "2026-01-28T09:00:00Z",
+      updated_at: "2026-02-20T10:00:00Z",
+    },
+  ],
+};
 
-const MOCK_AUTOMATIONS: Automation[] = [
-  {
-    id: "cea3c829-5778-43e6-a0fa-b930d0999593",
-    automation_name: "Invoice OCR Scanner",
-    automation_description: "Extracts data from PDF invoices.",
-    automation_platform: "n8n",
-    availability_workspace: ["ws-1"],
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  }
-];
+const MOCK_SERVICES: Record<string, Service[]> = {
+  "ws-product": [],
+  "ws-discovery": [],
+  "ws-design": [
+    {
+      id: "s-figma",
+      service_name: "Figma",
+      service_description: "Design and prototyping platform.",
+      service_category: "Utility",
+      service_url: "https://figma.com",
+      capabilities: ["Prototyping", "Vector Design", "Collaboration"],
+      availability_workspace: ["ws-design"],
+      created_at: "2026-01-20T09:00:00Z",
+      updated_at: "2026-02-22T10:00:00Z",
+    },
+  ],
+  "ws-delivery": [
+    {
+      id: "s-github",
+      service_name: "GitHub",
+      service_description: "Code hosting and collaboration platform.",
+      service_category: "Utility",
+      service_url: "https://github.com",
+      capabilities: ["CI/CD", "Version Control", "Issue Tracking"],
+      availability_workspace: ["ws-delivery"],
+      created_at: "2026-01-22T09:00:00Z",
+      updated_at: "2026-02-23T10:00:00Z",
+    },
+  ],
+  "ws-growth": [
+    {
+      id: "s-elevenlabs",
+      service_name: "ElevenLabs",
+      service_description: "AI voice generation platform for podcasts and video.",
+      service_category: "GenAI",
+      service_url: "https://elevenlabs.io",
+      capabilities: ["Text-to-Speech", "Voice Cloning"],
+      availability_workspace: ["ws-growth"],
+      created_at: "2026-01-25T09:00:00Z",
+      updated_at: "2026-02-20T10:00:00Z",
+    },
+  ],
+};
+
+const MOCK_AUTOMATIONS: Record<string, Automation[]> = {
+  "ws-product": [],
+  "ws-discovery": [],
+  "ws-design": [],
+  "ws-delivery": [
+    {
+      id: "auto-deploy",
+      automation_name: "Deploy Pipeline",
+      automation_description: "Triggers production deployment via n8n webhook.",
+      automation_platform: "n8n",
+      automation_status: "Active" as const,
+      automation_webhook_url: "https://n8n.axon.ai/webhook/deploy",
+      automation_http_method: "POST",
+      automation_keywords: ["deploy", "ci-cd", "production"],
+      availability_workspace: ["ws-delivery"],
+      created_at: "2026-01-28T09:00:00Z",
+      updated_at: "2026-02-24T08:00:00Z",
+    },
+  ],
+  "ws-growth": [
+    {
+      id: "auto-social",
+      automation_name: "Social Media Publisher",
+      automation_description: "Publishes approved content to social media channels.",
+      automation_platform: "Zapier",
+      automation_status: "Active" as const,
+      automation_webhook_url: "https://hooks.zapier.com/v1/event",
+      automation_http_method: "POST",
+      automation_keywords: ["social", "marketing", "autopilot"],
+      availability_workspace: ["ws-growth"],
+      created_at: "2026-02-01T09:00:00Z",
+      updated_at: "2026-02-20T10:00:00Z",
+    },
+  ],
+};
 
 // --- Mock Functions ---
 
@@ -143,33 +538,33 @@ export const mockApi = {
     return MOCK_WORKSPACES.find((workspace) => workspace.id === id) || null;
   },
 
-  getAgents: async (): Promise<Agent[]> => {
+  getAgents: async (workspaceId: string): Promise<Agent[]> => {
     await delay(500);
-    return MOCK_AGENTS;
+    return MOCK_AGENTS[workspaceId] ?? [];
   },
 
-  getCrews: async (): Promise<Crew[]> => {
+  getCrews: async (workspaceId: string): Promise<Crew[]> => {
     await delay(500);
-    return MOCK_CREWS;
+    return MOCK_CREWS[workspaceId] ?? [];
   },
 
-  getPatterns: async (): Promise<Pattern[]> => {
+  getPatterns: async (workspaceId: string): Promise<Pattern[]> => {
     await delay(300);
-    return MOCK_PATTERNS;
+    return MOCK_PATTERNS[workspaceId] ?? [];
   },
 
-  getTemplates: async (): Promise<Template[]> => {
+  getTemplates: async (workspaceId: string): Promise<Template[]> => {
     await delay(300);
-    return MOCK_TEMPLATES;
+    return MOCK_TEMPLATES[workspaceId] ?? [];
   },
 
-  getServices: async (): Promise<Service[]> => {
+  getServices: async (workspaceId: string): Promise<Service[]> => {
     await delay(300);
-    return MOCK_SERVICES;
+    return MOCK_SERVICES[workspaceId] ?? [];
   },
 
-  getAutomations: async (): Promise<Automation[]> => {
+  getAutomations: async (workspaceId: string): Promise<Automation[]> => {
     await delay(300);
-    return MOCK_AUTOMATIONS;
-  }
+    return MOCK_AUTOMATIONS[workspaceId] ?? [];
+  },
 };

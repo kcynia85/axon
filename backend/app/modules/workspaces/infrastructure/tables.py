@@ -28,6 +28,8 @@ class TemplateTable(Base):
     template_markdown_content = Column(String, nullable=False)
     template_checklist_items = Column(JSONB, default=[])
     template_keywords = Column(ARRAY(String), nullable=True)
+    template_inputs = Column(JSONB, nullable=False, server_default='[]')
+    template_outputs = Column(JSONB, nullable=False, server_default='[]')
     availability_workspace = Column(ARRAY(String), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)

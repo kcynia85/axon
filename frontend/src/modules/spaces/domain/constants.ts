@@ -65,11 +65,8 @@ export const LIST_OF_AVAILABLE_AGENT_EXECUTION_STATUSES = [
 ] as const;
 
 export const LIST_OF_AVAILABLE_ARTIFACT_STATUSES = [
-  { statusKey: "pending", statusDisplayName: "Pending" },
-  { statusKey: "in_progress", statusDisplayName: "In Progress" },
-  { statusKey: "done", statusDisplayName: "Done" },
-  { statusKey: "failed", statusDisplayName: "Failed" },
   { statusKey: "in_review", statusDisplayName: "In Review" },
+  { statusKey: "approved", statusDisplayName: "Approved" },
 ] as const;
 
 export const LIST_OF_AVAILABLE_CREW_EXECUTION_STATUSES = [

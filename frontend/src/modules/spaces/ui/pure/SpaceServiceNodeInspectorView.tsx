@@ -1,9 +1,9 @@
-// frontend/src/modules/spaces/ui/pure/SpaceTemplateNodeInspectorView.tsx
+// frontend/src/modules/spaces/ui/pure/SpaceServiceNodeInspectorView.tsx
 
 import React from "react";
-import dynamic from "next/dynamic";
 import {
     CardBody,
+    Button,
     ScrollShadow,
     Divider,
     Tabs,
@@ -13,8 +13,6 @@ import {
     DropdownTrigger,
     DropdownMenu,
     DropdownItem,
-    Button,
-    Checkbox,
 } from "@heroui/react";
 import {
     Link as LinkIcon,
@@ -25,24 +23,18 @@ import {
     CheckCircle,
     ArrowUpRight,
     CheckCircle2,
-    FileText,
+    Play,
+    Settings2,
+    ShieldCheck,
+    Box,
 } from "lucide-react";
-import { SpaceTemplateDomainData, TemplateAction, TemplateArtefact } from "../../domain/types";
+import { SpaceServiceDomainData, TemplateArtefact } from "../../domain/types";
 import { cn } from "@/shared/lib/utils";
 
-const SpaceTemplateCustomActionsEditor = dynamic(
-    () => import("../inspectors/components/SpaceTemplateCustomActionsEditor").then(mod => mod.SpaceTemplateCustomActionsEditor),
-    { ssr: false }
-);
-
-type SpaceTemplateNodeInspectorViewProps = {
-    readonly data: SpaceTemplateDomainData;
-    readonly isAllDone: boolean;
+type SpaceServiceNodeInspectorViewProps = {
+    readonly data: SpaceServiceDomainData;
     readonly isContextDone: boolean;
     readonly isArtefactsDone: boolean;
-    readonly groupedActions: Record<string, TemplateAction[]>;
-    readonly onActionToggle: (id: string) => void;
-    readonly onCustomActionsChange: (content: string) => void;
     readonly onContextLinkChange: (contextId: string, link: string) => void;
     readonly onArtefactLinkChange: (artefactId: string, link: string) => void;
     readonly onArtefactStatusChange: (artefactId: string, status: TemplateArtefact['status']) => void;
@@ -54,26 +46,48 @@ const ARTEFACT_STATUS_CONFIG = {
     approved: { label: "Approved", color: "text-green-500", dot: "bg-green-500", icon: CheckCircle },
 } as const;
 
-export const SpaceTemplateNodeInspectorView = ({
+export const SpaceServiceNodeInspectorView = ({
     data,
-    isAllDone,
     isContextDone,
     isArtefactsDone,
-    groupedActions,
-    onActionToggle,
-    onCustomActionsChange,
     onContextLinkChange,
     onArtefactLinkChange,
     onArtefactStatusChange,
     onArtefactOutputToggle,
-}: SpaceTemplateNodeInspectorViewProps) => {
+}: SpaceServiceNodeInspectorViewProps) => {
     return (
-        <CardBody className="p-0 flex flex-col h-full bg-black">
+        <CardBody className="p-0 flex flex-col h-full bg-black text-white">
+            {/* Action Buttons Section */}
+            <div className="px-6 pt-6 pb-2 flex flex-col gap-2">
+                <div className="flex gap-2">
+                    <Button
+                        className="flex-1 font-black uppercase tracking-widest text-[10px] bg-zinc-200 text-black rounded-md hover:bg-white transition-all h-10 shadow-lg"
+                        startContent={<Play size={14} fill="currentColor" />}
+                    >
+                        Trigger
+                    </Button>
+                    <Button
+                        variant="flat"
+                        className="flex-1 font-black uppercase tracking-widest text-[10px] bg-zinc-900 text-zinc-400 border border-zinc-800 hover:bg-zinc-800 hover:text-white transition-all rounded-md h-10"
+                        startContent={<Settings2 size={14} />}
+                    >
+                        Config
+                    </Button>
+                </div>
+                {/* Capability Info Summary */}
+                <div className="mt-2 flex items-center justify-between">
+                    <div className="flex flex-col">
+                        <h3 className="font-black text-lg tracking-tight">{data.label}</h3>
+                        <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Type: Service / Integration</p>
+                    </div>
+                </div>
+            </div>
+
             <Tabs
-                aria-label="Template Sections"
+                aria-label="Service Sections"
                 variant="underlined"
                 classNames={{
-                    base: "w-full border-b border-zinc-800",
+                    base: "w-full border-b border-zinc-800 mt-2",
                     tabList: "px-6 w-full gap-6",
                     cursor: "w-full bg-zinc-200 h-[2px]",
                     tab: "max-w-fit px-0 h-12 text-[10px] font-black uppercase tracking-widest text-zinc-500 data-[selected=true]:text-white",
@@ -81,58 +95,34 @@ export const SpaceTemplateNodeInspectorView = ({
                 }}
             >
                 <Tab
-                    key="actions"
+                    key="capabilities"
                     title={
                         <div className="flex items-center gap-2">
-                            <FileText size={12} />
-                            Actions
-                            {isAllDone && <CheckCircle2 size={10} className="text-green-500" />}
+                            <ShieldCheck size={12} />
+                            Capabilities
                         </div>
                     }
                 >
-                    <ScrollShadow className="h-[calc(100vh-220px)] p-8">
-                        <div className="space-y-12">
-                            {Object.entries(groupedActions).map(([sectionName, actions]) => (
-                                <div key={sectionName} className="space-y-5">
-                                    <div className="flex flex-col gap-1.5">
-                                        <h4 className="text-sm font-black text-white">{sectionName}</h4>
-                                        <Divider className="bg-zinc-800/50" />
-                                    </div>
-                                    <div className="flex flex-col gap-3.5 pl-1">
-                                        {actions.map((action) => (
-                                            <Checkbox
-                                                key={action.id}
-                                                size="sm"
-                                                radius="full"
-                                                isSelected={action.isCompleted}
-                                                onValueChange={() => onActionToggle(action.id)}
-                                                classNames={{
-                                                    label: cn(
-                                                        "text-xs font-bold transition-all",
-                                                        action.isCompleted ? "text-zinc-500 line-through" : "text-zinc-300"
-                                                    ),
-                                                    wrapper: "after:bg-zinc-200"
-                                                }}
-                                            >
-                                                {action.label}
-                                            </Checkbox>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
+                    <ScrollShadow className="h-[calc(100vh-320px)] p-8">
+                        <div className="space-y-6">
+                            <h4 className="text-[10px] font-black uppercase text-zinc-600 tracking-[0.3em]">Active Status</h4>
+                            <p className="text-sm font-black italic">{data.actionName || "Idle - Ready for action"}</p>
 
-                            <div className="space-y-6">
-                                <div className="flex flex-col gap-1.5">
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Notatki</h4>
+                            <Divider className="bg-zinc-800" />
+
+                            <h4 className="text-[10px] font-black uppercase text-zinc-600 tracking-[0.3em]">Available Capabilities</h4>
+                            <div className="grid grid-cols-1 gap-2">
+                                {data.capabilities?.map((cap, i) => (
+                                    <div key={i} className="p-3 rounded-xl bg-zinc-900/50 border border-zinc-800 flex items-center gap-3 transition-colors hover:bg-zinc-800/80">
+                                        <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400">
+                                            <Box size={14} />
+                                        </div>
+                                        <span className="text-[11px] font-black uppercase tracking-wider">{cap}</span>
                                     </div>
-                                </div>
-                                <div>
-                                    <SpaceTemplateCustomActionsEditor
-                                        initialContent={data.customActionsContent}
-                                        onChange={onCustomActionsChange}
-                                    />
-                                </div>
+                                ))}
+                                {(!data.capabilities || data.capabilities.length === 0) && (
+                                    <p className="text-xs text-zinc-600 italic">No capabilities defined for this service.</p>
+                                )}
                             </div>
                         </div>
                     </ScrollShadow>
@@ -148,7 +138,7 @@ export const SpaceTemplateNodeInspectorView = ({
                         </div>
                     }
                 >
-                    <ScrollShadow className="h-[calc(100vh-220px)] p-8">
+                    <ScrollShadow className="h-[calc(100vh-320px)] p-8">
                         <div className="space-y-8">
                             {data.contexts?.map((context) => (
                                 <div key={context.id} className="space-y-3">
@@ -180,7 +170,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                 </div>
                             ))}
                             {(!data.contexts || data.contexts.length === 0) && (
-                                <p className="text-xs text-zinc-600 italic text-center py-10">No context links provided.</p>
+                                <p className="text-xs text-zinc-600 italic text-center py-10">No context links required.</p>
                             )}
                         </div>
                     </ScrollShadow>
@@ -196,7 +186,7 @@ export const SpaceTemplateNodeInspectorView = ({
                         </div>
                     }
                 >
-                    <ScrollShadow className="h-[calc(100vh-220px)] p-8">
+                    <ScrollShadow className="h-[calc(100vh-320px)] p-8">
                         <div className="space-y-10">
                             {data.artefacts?.map((art) => (
                                 <div key={art.id} className="space-y-3.5">
@@ -209,18 +199,16 @@ export const SpaceTemplateNodeInspectorView = ({
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="flex items-center gap-3">
-                                            {art.link && (
-                                                <a
-                                                    href={art.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1"
-                                                >
-                                                    Open <ExternalLink size={10} />
-                                                </a>
-                                            )}
-                                        </div>
+                                        {art.link && (
+                                            <a
+                                                href={art.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1"
+                                            >
+                                                Open <ExternalLink size={10} />
+                                            </a>
+                                        )}
                                     </div>
 
                                     <div className="flex flex-col gap-2">

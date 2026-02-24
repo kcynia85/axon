@@ -33,16 +33,16 @@ export const WorkspacesList = () => {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {workspaces.map((ws) => (
-        <Link key={ws.id} href={`/workspaces/${ws.id}`} className="block h-full">
+      {workspaces.map(({ id, name, description, updated_at }) => (
+        <Link key={id} href={`/workspaces/${id}`} className="block h-full">
           <Card className="h-full hover:bg-muted/50 transition-colors">
             <CardHeader>
-              <CardTitle>{ws.name}</CardTitle>
-              <CardDescription>{ws.description}</CardDescription>
+              <CardTitle>{name}</CardTitle>
+              <CardDescription>{description}</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-xs text-muted-foreground">
-                Updated: {new Date(ws.updatedAt).toLocaleDateString()}
+                Updated: {updated_at ? new Date(updated_at).toLocaleDateString() : "—"}
               </p>
             </CardContent>
           </Card>

@@ -2,8 +2,8 @@
 
 import React from "react";
 import {
-  Card,
-  Divider,
+    Card,
+    Divider,
 } from "@heroui/react";
 import { SpaceAgentNodeInspector } from "../inspectors/SpaceAgentNodeInspector";
 import { SpaceCrewNodeInspector } from "../inspectors/SpaceCrewNodeInspector";
@@ -12,7 +12,7 @@ import { SpaceAutomationNodeInspector } from "../inspectors/SpaceAutomationNodeI
 import { SpaceServiceNodeInspector } from "../inspectors/SpaceServiceNodeInspector";
 import { SpaceTemplateNodeInspector } from "../inspectors/SpaceTemplateNodeInspector";
 import { SpaceZoneNodeInspector } from "../inspectors/SpaceZoneNodeInspector";
-import { 
+import {
     SpaceCanvasNodeInformation,
     SpaceAgentDomainData,
     SpaceCrewDomainData,
@@ -37,10 +37,10 @@ type SpaceCanvasRightSidebarViewProperties = {
     readonly isNodeSelectedRepresentingAZone: boolean;
     readonly handleStatusChange: (selection: unknown) => void;
     readonly handleArtifactStatusChange: (selection: unknown) => void;
-    readonly handlePropertyChange: (propertyName: string, propertyValue: unknown) => void;
+    readonly handlePropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
 };
 
-export const SpaceCanvasRightSidebarView = ({ 
+export const SpaceCanvasRightSidebarView = ({
     currentlySelectedNodeInformation,
     effectiveNodeType,
     isNodeSelectedRepresentingAZone,
@@ -56,49 +56,50 @@ export const SpaceCanvasRightSidebarView = ({
     return (
         <div className="h-[calc(100vh-160px)] mt-24 mr-8 pointer-events-auto flex flex-col items-end select-none">
             <Card className="bg-black border border-zinc-200 shadow-[0_0_40px_rgba(0,0,0,0.7)] w-[380px] h-full rounded-2xl overflow-hidden">
-                 {isNodeSelectedRepresentingAZone ? (
-                     <SpaceZoneNodeInspector 
-                        data={currentlySelectedNodeInformation.data as SpaceZoneDomainData} 
+                {isNodeSelectedRepresentingAZone ? (
+                    <SpaceZoneNodeInspector
+                        data={currentlySelectedNodeInformation.data as SpaceZoneDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
-                        onPropertyChange={(name, value) => handlePropertyChange(name, value)} 
-                     />
-                 ) : effectiveNodeType === 'agent' ? (
-                     <SpaceAgentNodeInspector 
-                        data={currentlySelectedNodeInformation.data as SpaceAgentDomainData} 
+                        onPropertyChange={(name, value) => handlePropertyChange(name, value)}
+                    />
+                ) : effectiveNodeType === 'agent' ? (
+                    <SpaceAgentNodeInspector
+                        data={currentlySelectedNodeInformation.data as SpaceAgentDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
-                        onStatusChange={handleStatusChange} 
-                     />
-                 ) : effectiveNodeType === 'crew' ? (
-                     <SpaceCrewNodeInspector 
-                        data={currentlySelectedNodeInformation.data as SpaceCrewDomainData} 
+                        onStatusChange={handleStatusChange}
+                    />
+                ) : effectiveNodeType === 'crew' ? (
+                    <SpaceCrewNodeInspector
+                        data={currentlySelectedNodeInformation.data as SpaceCrewDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
-                        onStatusChange={handleStatusChange} 
-                     />
-                 ) : effectiveNodeType === 'pattern' ? (
-                     <SpacePatternNodeInspector 
-                        patternNodeInformation={currentlySelectedNodeInformation} 
-                     />
-                 ) : effectiveNodeType === 'automation' ? (
-                     <SpaceAutomationNodeInspector 
-                        data={currentlySelectedNodeInformation.data as SpaceAutomationDomainData} 
+                        onStatusChange={handleStatusChange}
+                    />
+                ) : effectiveNodeType === 'pattern' ? (
+                    <SpacePatternNodeInspector
+                        patternNodeInformation={currentlySelectedNodeInformation}
+                    />
+                ) : effectiveNodeType === 'automation' ? (
+                    <SpaceAutomationNodeInspector
+                        data={currentlySelectedNodeInformation.data as SpaceAutomationDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
-                        onArtifactStatusChange={handleArtifactStatusChange} 
-                     />
-                 ) : effectiveNodeType === 'service' ? (
-                     <SpaceServiceNodeInspector 
-                        data={currentlySelectedNodeInformation.data as SpaceServiceDomainData} 
+                        onPropertyChange={handlePropertyChange}
+                    />
+                ) : effectiveNodeType === 'service' ? (
+                    <SpaceServiceNodeInspector
+                        data={currentlySelectedNodeInformation.data as SpaceServiceDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
-                        onArtifactStatusChange={handleArtifactStatusChange} 
-                     />
-                 ) : effectiveNodeType === 'template' ? (
-                     <SpaceTemplateNodeInspector 
-                        data={currentlySelectedNodeInformation.data as SpaceTemplateDomainData} 
+                        onArtifactStatusChange={handleArtifactStatusChange}
+                        onPropertyChange={handlePropertyChange}
+                    />
+                ) : effectiveNodeType === 'template' ? (
+                    <SpaceTemplateNodeInspector
+                        data={currentlySelectedNodeInformation.data as SpaceTemplateDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
-                        onPropertyChange={handlePropertyChange} 
-                     />
-                 ) : (
-                     <GenericNodeInspector nodeInformation={currentlySelectedNodeInformation} />
-                 )}
+                        onPropertyChange={handlePropertyChange}
+                    />
+                ) : (
+                    <GenericNodeInspector nodeInformation={currentlySelectedNodeInformation} />
+                )}
             </Card>
         </div>
     );

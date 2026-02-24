@@ -28,6 +28,7 @@ export type PromptArchetype = z.infer<typeof PromptArchetypeSchema>;
 export const ExternalServiceSchema = z.object({
     id: z.string().uuid(),
     service_name: z.string(),
+    service_description: z.string().nullable().optional(),
     service_category: ServiceCategorySchema,
     service_url: z.string().url(),
     service_keywords: z.array(z.string()).default([]),

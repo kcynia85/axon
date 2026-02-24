@@ -2,11 +2,11 @@
 
 import { useCallback } from 'react';
 import type { Node } from '@xyflow/react';
-import { SpaceCanvasDragAndDropInteractionLogic } from '../../domain/types';
+import { mapTemplateWorkspaceConfigToNodeData } from '../../domain/defaults';
 
 export const useSpaceCanvasDragAndDropLogic = (
   updateCanvasNodes: React.Dispatch<React.SetStateAction<Node[]>>
-): SpaceCanvasDragAndDropInteractionLogic => {
+) => {
   const handleDragOverEvent = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -24,10 +24,10 @@ export const useSpaceCanvasDragAndDropLogic = (
       }
 
       const deserializedTransferData = JSON.parse(serializedTransferData) as Record<string, unknown>;
-      
+
       // If it was dragged as 'entity' from sidebar level 2, use its real type (agent, template, etc.)
-      const nodeTypeForNewNode = dragAndDropTransferType === 'entity' 
-        ? (deserializedTransferData.type as string) 
+      const nodeTypeForNewNode = dragAndDropTransferType === 'entity'
+        ? (deserializedTransferData.type as string)
         : dragAndDropTransferType;
 
       const dropCoordinates = {
@@ -35,12 +35,21 @@ export const useSpaceCanvasDragAndDropLogic = (
         y: event.clientY - 100,
       };
 
+      const isTemplate = nodeTypeForNewNode === 'template';
+
+      // Map template_inputs/outputs (from Workspace config) → contexts/artefacts (canvas node)
+      const templateCanvasData = isTemplate
+        ? mapTemplateWorkspaceConfigToNodeData(deserializedTransferData)
+        : {};
+
       const newlyCreatedNode: Node = {
         id: `drag_and_drop_node_${Math.random()}`,
         type: nodeTypeForNewNode,
         position: dropCoordinates,
         data: {
           ...deserializedTransferData,
+          ...templateCanvasData,
+          ...(isTemplate && { actions: [], status: 'working' }),
           state: 'missing_context',
         },
         style: nodeTypeForNewNode === 'zone' ? { width: 500, height: 400 } : undefined,

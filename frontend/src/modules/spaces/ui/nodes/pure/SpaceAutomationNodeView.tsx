@@ -4,6 +4,15 @@ import React from 'react';
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { Zap, FileCode } from "lucide-react";
 import { SpaceAutomationViewModel } from '../../../domain/types';
+import { cn } from "@/shared/lib/utils";
+
+const getStatusColorClass = (status: string) => {
+    const s = status.toLowerCase();
+    if (s.includes('approved') || s.includes('done') || s.includes('completed')) return "text-green-500";
+    if (s.includes('review') || s.includes('progress')) return "text-blue-400";
+    if (s.includes('failed')) return "text-red-500";
+    return "text-zinc-600";
+};
 
 export const SpaceAutomationNodeView = ({ viewModel }: { readonly viewModel: SpaceAutomationViewModel }) => (
     <Card className={viewModel.visual.containerClassName}>
@@ -23,7 +32,12 @@ export const SpaceAutomationNodeView = ({ viewModel }: { readonly viewModel: Spa
                     <FileCode size={16} className="text-zinc-500" />
                     <div className="flex flex-col">
                         <span className="text-[10px] font-black text-zinc-300 font-mono truncate max-w-[180px]">{viewModel.artifactLabel}</span>
-                        <span className="text-[9px] font-bold text-zinc-600 uppercase">{viewModel.artifactStatusText}</span>
+                        <span className={cn(
+                            "text-[9px] font-bold uppercase",
+                            getStatusColorClass(viewModel.artifactStatusText)
+                        )}>
+                            {viewModel.artifactStatusText}
+                        </span>
                     </div>
                 </div>
             )}

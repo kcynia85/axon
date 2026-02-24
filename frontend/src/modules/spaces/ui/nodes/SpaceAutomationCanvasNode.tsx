@@ -5,6 +5,7 @@ import { Handle, Position } from '@xyflow/react';
 import { mapAutomationToViewModel } from '../../domain/mappers/SpaceNodeViewModelMapper';
 import { SpaceAutomationNodeView } from './pure/SpaceAutomationNodeView';
 import { SpaceCanvasNodeProperties, SpaceAutomationDomainData } from '../../domain/types';
+import { cn } from "@/shared/lib/utils";
 
 export const SpaceAutomationCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
     const viewModel = mapAutomationToViewModel(
@@ -13,7 +14,7 @@ export const SpaceAutomationCanvasNode = memo((nodeProperties: SpaceCanvasNodePr
     );
 
     return (
-        <div className="select-none">
+        <div className="relative select-none">
             <Handle 
                 type="target" 
                 position={Position.Left} 
@@ -25,7 +26,10 @@ export const SpaceAutomationCanvasNode = memo((nodeProperties: SpaceCanvasNodePr
             <Handle 
                 type="source" 
                 position={Position.Right} 
-                className={viewModel.visual.handleClassName} 
+                className={cn(
+                    viewModel.visual.handleClassName,
+                    viewModel.hasOutputArtefacts && viewModel.activeOutputClassName
+                )} 
             />
         </div>
     );

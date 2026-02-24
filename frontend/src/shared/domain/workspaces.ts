@@ -66,8 +66,26 @@ export const TemplateSchema = z.object({
   template_name: z.string(),
   template_description: z.string().nullable().optional(),
   template_markdown_content: z.string(),
-  template_checklist_items: z.array(z.record(z.unknown())).default([]),
+  template_checklist_items: z.array(z.object({
+    id: z.string(),
+    label: z.string(),
+    description: z.string().optional(),
+    isCompleted: z.boolean().default(false)
+  })).default([]),
   template_keywords: z.array(z.string()).default([]),
+  // Deterministic I/O — configured in Workspaces, consumed by Space canvas
+  template_inputs: z.array(z.object({
+    id: z.string(),
+    label: z.string(),
+    expectedType: z.enum(['link', 'text', 'file', 'json', 'csv', 'zip', 'image', 'any', 'string']).default('any'),
+    isRequired: z.boolean().default(true)
+  })).default([]),
+  template_outputs: z.array(z.object({
+    id: z.string(),
+    label: z.string(),
+    outputType: z.enum(['link', 'text', 'file', 'any']).default('any'),
+    isRequired: z.boolean().default(true)
+  })).default([]),
   availability_workspace: z.array(z.string()).default([]),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
@@ -92,6 +110,8 @@ export const ServiceSchema = z.object({
   service_name: z.string(),
   service_description: z.string().nullable().optional(),
   service_category: z.string(),
+  service_url: z.string().url().optional(),
+  capabilities: z.array(z.string()).default([]),
   availability_workspace: z.array(z.string()).default([]),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
@@ -104,6 +124,10 @@ export const AutomationSchema = z.object({
   automation_name: z.string(),
   automation_description: z.string().nullable().optional(),
   automation_platform: z.string(),
+  automation_status: z.enum(["Active", "Draft", "Paused"]).default("Draft"),
+  automation_webhook_url: z.string().url().optional(),
+  automation_http_method: z.string().default("POST"),
+  automation_keywords: z.array(z.string()).default([]),
   availability_workspace: z.array(z.string()).default([]),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),

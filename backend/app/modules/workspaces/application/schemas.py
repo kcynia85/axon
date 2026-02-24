@@ -29,6 +29,8 @@ class CreateTemplateRequest(BaseModel):
     template_markdown_content: str
     template_checklist_items: List[Dict[str, Any]] = []
     template_keywords: List[str] = []
+    template_inputs: List[Dict[str, Any]] = []   # [{"id": str, "label": str, "expectedType": str}]
+    template_outputs: List[Dict[str, Any]] = []  # [{"id": str, "label": str}]
     availability_workspace: List[str]
 
 class TemplateResponse(Template):
@@ -40,6 +42,8 @@ class UpdateTemplateRequest(BaseModel):
     template_markdown_content: Optional[str] = None
     template_checklist_items: Optional[List[Dict[str, Any]]] = None
     template_keywords: Optional[List[str]] = None
+    template_inputs: Optional[List[Dict[str, Any]]] = None
+    template_outputs: Optional[List[Dict[str, Any]]] = None
     availability_workspace: Optional[List[str]] = None
 
 class CreateCrewRequest(BaseModel):

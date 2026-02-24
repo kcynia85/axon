@@ -1,20 +1,20 @@
 // frontend/src/modules/spaces/domain/mappers/SpaceNodeViewModelMapper.ts
 
 import { Bot, Box, Cpu, FileText, Zap, LucideIcon } from "lucide-react";
-import { 
-    SpaceAgentDomainData, 
-    SpaceAgentViewModel, 
-    SpaceAutomationDomainData, 
-    SpaceAutomationViewModel, 
-    SpaceCrewDomainData, 
-    SpaceCrewViewModel, 
-    SpacePatternDomainData, 
-    SpacePatternViewModel, 
-    SpaceServiceDomainData, 
-    SpaceServiceViewModel, 
-    SpaceTemplateDomainData, 
-    SpaceTemplateViewModel, 
-    SpaceZoneDomainData, 
+import {
+    SpaceAgentDomainData,
+    SpaceAgentViewModel,
+    SpaceAutomationDomainData,
+    SpaceAutomationViewModel,
+    SpaceCrewDomainData,
+    SpaceCrewViewModel,
+    SpacePatternDomainData,
+    SpacePatternViewModel,
+    SpaceServiceDomainData,
+    SpaceServiceViewModel,
+    SpaceTemplateDomainData,
+    SpaceTemplateViewModel,
+    SpaceZoneDomainData,
     SpaceZoneViewModel,
     SpaceEntityNodeDomainData,
     SpaceEntityViewModel,
@@ -32,11 +32,11 @@ const MAP_OF_NODE_TYPES_TO_VISUAL_ICONS: Record<string, LucideIcon> = {
 };
 
 const mapVisualProperties = (
-    colorIdentifier: string, 
+    colorIdentifier: string,
     isSelected: boolean
 ): NodeVisualProperties => {
     const styles = getVisualStylesForZoneColor(colorIdentifier);
-    
+
     return {
         containerClassName: `w-[280px] bg-black border-2 transition-all rounded-2xl ${isSelected ? `${styles.borderClassName} ${styles.shadowClassName}` : 'border-zinc-700'}`,
         headerClassName: "p-4 flex items-start gap-3",
@@ -58,13 +58,21 @@ export const mapAgentToViewModel = (data: SpaceAgentDomainData, isSelected: bool
 };
 
 export const mapAutomationToViewModel = (data: SpaceAutomationDomainData, isSelected: boolean): SpaceAutomationViewModel => {
+    const artefacts = data.artefacts || [];
+    const outputArtefact = artefacts.find(art => art.isOutput) || artefacts[0];
+
+    const hasOutputArtefacts = artefacts.some(art => art.isOutput);
+    const styles = getVisualStylesForZoneColor(data.zoneColor);
+
     return {
         visual: mapVisualProperties(data.zoneColor, isSelected),
         displayName: data.label,
         statusText: data.state.toUpperCase(),
-        artifactLabel: data.artifactName || 'data.json',
-        artifactStatusText: data.state === 'completed' ? 'DONE' : 'IN PROGRESS',
-        hasArtifact: !!data.artifactName,
+        artifactLabel: outputArtefact?.label || 'no results',
+        artifactStatusText: (outputArtefact?.status || 'in_review').replace('_', ' ').toUpperCase(),
+        hasArtifact: !!outputArtefact,
+        hasOutputArtefacts,
+        activeOutputClassName: styles.activeOutputClassName,
     };
 };
 
@@ -108,7 +116,11 @@ export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected
     const totalActions = data.actions?.length || 0;
     const completedActions = data.actions?.filter((action) => action.isCompleted).length || 0;
     const progressValue = totalActions > 0 ? (completedActions / totalActions) * 100 : 0;
-    const hasOutputArtefacts = data.artefacts?.some(art => art.isOutput) || false;
+
+    const artefacts = data.artefacts || [];
+    const outputArtefact = artefacts.find(art => art.isOutput) || artefacts[0];
+
+    const hasOutputArtefacts = artefacts.some(art => art.isOutput);
     const styles = getVisualStylesForZoneColor(data.zoneColor);
 
     return {
@@ -117,6 +129,9 @@ export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected
         statusText: (data.status || 'Active').toUpperCase(),
         progressText: `${completedActions}/${totalActions} ACTIONS`,
         progressValue,
+        artifactLabel: outputArtefact?.label || 'no results',
+        artifactStatusText: (outputArtefact?.status || 'in_review').replace('_', ' ').toUpperCase(),
+        hasArtifact: !!outputArtefact,
         hasOutputArtefacts,
         activeOutputClassName: styles.activeOutputClassName,
     };

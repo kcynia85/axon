@@ -1,6 +1,34 @@
 // frontend/src/modules/spaces/domain/defaults.ts
 
 import type { Node, Edge } from '@xyflow/react';
+import type { TemplateContext, TemplateArtefact } from './types';
+
+/**
+ * Mapuje dane Template z Workspaces (template_inputs / template_outputs)
+ * na format Context/Artefacts używany przez Template Node na canvasie.
+ * Wywoływane przy tworzeniu nowego node'a przez drag & drop lub sidebar.
+ */
+export const mapTemplateWorkspaceConfigToNodeData = (
+  transferData: Record<string, unknown>
+): { contexts: TemplateContext[]; artefacts: TemplateArtefact[] } => {
+  const rawInputs = transferData.template_inputs as Array<{ id: string; label: string; expectedType?: string }> | undefined;
+  const rawOutputs = transferData.template_outputs as Array<{ id: string; label: string }> | undefined;
+
+  const contexts: TemplateContext[] = (rawInputs ?? []).map((input) => ({
+    id: input.id,
+    label: input.label,
+    expectedType: (input.expectedType as TemplateContext['expectedType']) ?? 'any',
+  }));
+
+  const artefacts: TemplateArtefact[] = (rawOutputs ?? []).map((output) => ({
+    id: output.id,
+    label: output.label,
+    status: 'in_review' as const,
+    isOutput: true,
+  }));
+
+  return { contexts, artefacts };
+};
 
 export const DEFAULT_INITIAL_NODES: readonly Node[] = [
   // --- DISCOVERY ZONE ---
@@ -46,8 +74,8 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
         { id: 'a6', label: 'Marketing', isCompleted: false, section: 'Wnioski Strategiczne' },
       ],
       contexts: [
-        { id: 'c1', label: 'brand_guidelines' },
-        { id: 'c2', label: 'persona' },
+        { id: 'c1', label: 'brand_guidelines', expectedType: 'json' },
+        { id: 'c2', label: 'persona', expectedType: 'json' },
       ],
       artefacts: [
         { id: 'art1', label: 'competitors_list', status: 'in_progress' },
@@ -167,8 +195,12 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     extent: 'parent',
     data: {
       label: 'CI/CD Pipeline',
-      state: 'completed',
-      artifactName: 'build_report.pdf',
+      state: 'idle',
+      contexts: [
+        { id: 'ac1', label: 'github_repo_url', expectedType: 'any' },
+        { id: 'ac2', label: 'deployment_target', expectedType: 'json' },
+      ],
+      artefacts: [],
       zoneColor: 'green',
     },
   },
@@ -177,37 +209,37 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
 export const DEFAULT_INITIAL_EDGES: readonly Edge[] = [
   // Discovery Internal
   { id: 'e-disc-1', source: 'agent-researcher', target: 'template-interviews', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },
-  
+
   // Cross-Zone: Discovery -> Product
-  { 
-    id: 'e-zone-disc-prod', 
-    source: 'zone-discovery', 
-    target: 'zone-product', 
-    type: 'CustomEdge', 
-    style: { stroke: '#666', strokeWidth: 3 } 
+  {
+    id: 'e-zone-disc-prod',
+    source: 'zone-discovery',
+    target: 'zone-product',
+    type: 'CustomEdge',
+    style: { stroke: '#666', strokeWidth: 3 }
   },
 
   // Product Internal
   { id: 'e-prod-1', source: 'agent-analyst', target: 'template-prd', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },
 
   // Cross-Zone: Product -> Design
-  { 
-    id: 'e-zone-prod-des', 
-    source: 'zone-product', 
-    target: 'zone-design', 
-    type: 'CustomEdge', 
-    style: { stroke: '#666', strokeWidth: 3 } 
+  {
+    id: 'e-zone-prod-des',
+    source: 'zone-product',
+    target: 'zone-design',
+    type: 'CustomEdge',
+    style: { stroke: '#666', strokeWidth: 3 }
   },
 
   // Design Internal
   { id: 'e-des-1', source: 'crew-design', target: 'service-figma', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },
 
   // Cross-Zone: Design -> Delivery
-  { 
-    id: 'e-zone-des-del', 
-    source: 'zone-design', 
-    target: 'zone-delivery', 
-    type: 'CustomEdge', 
-    style: { stroke: '#666', strokeWidth: 3 } 
+  {
+    id: 'e-zone-des-del',
+    source: 'zone-design',
+    target: 'zone-delivery',
+    type: 'CustomEdge',
+    style: { stroke: '#666', strokeWidth: 3 }
   },
 ];
