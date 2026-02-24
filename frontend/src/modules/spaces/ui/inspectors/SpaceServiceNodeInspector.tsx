@@ -11,9 +11,13 @@ export const SpaceServiceNodeInspector = ({
 }: SpaceServiceInspectorProperties) => {
     const {
         handleContextLinkChange,
+        handleLinkContextFromNode,
         handleArtefactLinkChange,
         handleArtefactStatusChange,
         handleArtefactOutputToggle,
+        handleAddArtefact,
+        handleCapabilityChange,
+        handleAttachedLabelChange,
         isContextDone,
         isArtefactsDone,
     } = useSpaceServiceInspectorLogic(data, onPropertyChange);
@@ -24,9 +28,13 @@ export const SpaceServiceNodeInspector = ({
             isContextDone={isContextDone}
             isArtefactsDone={isArtefactsDone}
             onContextLinkChange={handleContextLinkChange}
+            onLinkContextFromNode={handleLinkContextFromNode}
             onArtefactLinkChange={handleArtefactLinkChange}
             onArtefactStatusChange={handleArtefactStatusChange}
             onArtefactOutputToggle={handleArtefactOutputToggle}
+            onAddArtefact={handleAddArtefact}
+            onCapabilityChange={handleCapabilityChange}
+            onAttachedLabelChange={handleAttachedLabelChange}
         />
     );
 };

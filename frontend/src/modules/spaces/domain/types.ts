@@ -170,9 +170,11 @@ export type SpacePatternViewModel = {
 export type SpaceServiceViewModel = {
   readonly visual: NodeVisualProperties;
   readonly displayName: string;
-  readonly statusText: string;
   readonly actionName: string;
   readonly isProcessing: boolean;
+  readonly artefacts: readonly { readonly id: string; readonly label: string; readonly status: string }[];
+  readonly hasOutputArtefacts: boolean;
+  readonly activeOutputClassName: string;
 };
 
 export type SpaceTemplateViewModel = {
@@ -181,6 +183,9 @@ export type SpaceTemplateViewModel = {
   readonly statusText: string;
   readonly progressText: string;
   readonly progressValue: number;
+  readonly artifactLabel: string;
+  readonly artifactStatusText: string;
+  readonly hasArtifact: boolean;
   readonly hasOutputArtefacts: boolean;
   readonly activeOutputClassName: string;
 };

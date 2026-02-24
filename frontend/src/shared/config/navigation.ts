@@ -15,7 +15,6 @@ export const mainNavigation = [
   { name: "Projects", href: "/projects", icon: Library },
   { name: "Spaces", href: "/spaces", icon: Layout },
   { name: "Workspaces", href: "/workspaces", icon: SquareStack },
-  { name: "Resources", href: "/resources", icon: Database },
 ];
 
 export const appsDropdown = [
@@ -25,9 +24,8 @@ export const appsDropdown = [
   { name: "Google Drive", href: "https://drive.google.com" },
 ];
 
-export const docsLink = { name: "Documentation", href: "/docs", icon: FileText };
-
 export const bottomNavigation = [
+  { name: "Resources", href: "/resources", icon: Database },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Docs", href: "/docs", icon: FileText },
 ];

@@ -174,6 +174,26 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
       zoneColor: 'pink',
     },
   },
+  {
+    id: 'service-elevenlabs',
+    type: 'service',
+    position: { x: 50, y: 400 },
+    parentId: 'zone-design',
+    extent: 'parent',
+    data: {
+      label: 'ElevenLabs',
+      actionName: 'Generate Intro Voiceover',
+      status: 'in_progress',
+      capabilities: ['Text-to-Speech'],
+      contexts: [
+        { id: 'c1', label: 'File, URL etc.', expectedType: 'any' }
+      ],
+      artefacts: [
+        { id: 'art1', label: 'Intro Voiceover_v1.mp3', status: 'in_review', isOutput: true }
+      ],
+      zoneColor: 'pink',
+    },
+  },
 
   // --- DELIVERY ZONE ---
   {

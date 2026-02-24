@@ -103,12 +103,21 @@ export const mapPatternToViewModel = (data: SpacePatternDomainData, isSelected: 
 };
 
 export const mapServiceToViewModel = (data: SpaceServiceDomainData, isSelected: boolean): SpaceServiceViewModel => {
+    const hasOutputArtefacts = (data.artefacts || []).some(art => art.isOutput);
+    const styles = getVisualStylesForZoneColor(data.zoneColor);
+
     return {
         visual: mapVisualProperties(data.zoneColor, isSelected),
         displayName: data.label,
-        statusText: (data.status || 'Active').toUpperCase(),
         actionName: data.actionName,
         isProcessing: data.status === 'in_progress',
+        artefacts: (data.artefacts || []).map(art => ({
+            id: art.id,
+            label: art.label || 'no results',
+            status: (art.status || 'in_review').replace('_', ' ').toUpperCase(),
+        })),
+        hasOutputArtefacts,
+        activeOutputClassName: styles.activeOutputClassName,
     };
 };
 

@@ -5,27 +5,31 @@ import { Handle, Position } from '@xyflow/react';
 import { mapServiceToViewModel } from '../../domain/mappers/SpaceNodeViewModelMapper';
 import { SpaceServiceNodeView } from './pure/SpaceServiceNodeView';
 import { SpaceCanvasNodeProperties, SpaceServiceDomainData } from '../../domain/types';
+import { cn } from "@/shared/lib/utils";
 
 export const SpaceServiceCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
     const viewModel = mapServiceToViewModel(
-        nodeProperties.data as unknown as SpaceServiceDomainData, 
+        nodeProperties.data as unknown as SpaceServiceDomainData,
         nodeProperties.selected ?? false
     );
 
     return (
         <div className="select-none">
-            <Handle 
-                type="target" 
-                position={Position.Left} 
-                className={viewModel.visual.handleClassName} 
+            <Handle
+                type="target"
+                position={Position.Left}
+                className={viewModel.visual.handleClassName}
             />
-            
+
             <SpaceServiceNodeView viewModel={viewModel} />
 
-            <Handle 
-                type="source" 
-                position={Position.Right} 
-                className={viewModel.visual.handleClassName} 
+            <Handle
+                type="source"
+                position={Position.Right}
+                className={cn(
+                    viewModel.visual.handleClassName,
+                    viewModel.hasOutputArtefacts && viewModel.activeOutputClassName
+                )}
             />
         </div>
     );
