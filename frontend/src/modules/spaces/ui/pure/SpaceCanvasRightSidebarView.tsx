@@ -67,6 +67,7 @@ export const SpaceCanvasRightSidebarView = ({
                         data={currentlySelectedNodeInformation.data as SpaceAgentDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onStatusChange={handleStatusChange}
+                        onPropertyChange={handlePropertyChange}
                     />
                 ) : effectiveNodeType === 'crew' ? (
                     <SpaceCrewNodeInspector

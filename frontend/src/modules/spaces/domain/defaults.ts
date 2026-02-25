@@ -51,9 +51,32 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     extent: 'parent',
     data: {
       label: 'User Researcher',
-      state: 'working',
+      state: 'missing_context',
+      progress: 0,
+      zoneColor: 'purple',
+      context_requirements: [
+        { id: '1', label: 'topic', expectedType: 'any' },
+        { id: '2', label: 'target_audience', expectedType: 'any' },
+        { id: '3', label: 'tone_of_voice', expectedType: 'any' }
+      ]
+    },
+  },
+  {
+    id: 'agent-strategist',
+    type: 'agent',
+    position: { x: 50, y: 400 },
+    parentId: 'zone-discovery',
+    extent: 'parent',
+    data: {
+      label: 'UX Strategist',
+      state: 'conversation',
       progress: 45,
       zoneColor: 'purple',
+      pending_question: 'Czy strategia ma uwzględniać ekspansję na rynki azjatyckie w Q4?',
+      context_requirements: [
+        { id: '1', label: 'market_data', link: 'https://axon.ai/data/market_q3.json', expectedType: 'json' },
+        { id: '2', label: 'competitor_analysis', link: 'node://Interview Synthesis/competitors_list.csv', expectedType: 'csv' }
+      ]
     },
   },
   {

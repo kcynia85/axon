@@ -54,6 +54,11 @@ export const mapAgentToViewModel = (data: SpaceAgentDomainData, isSelected: bool
         statusText: data.state.replace('_', ' ').toUpperCase(),
         progressValue: data.progress,
         progressLabel: `${data.progress}%`,
+        isBriefing: data.state === 'briefing',
+        isWorking: data.state === 'working',
+        isDone: data.state === 'done',
+        isConsultation: data.state === 'conversation',
+        isMissingContext: data.state === 'missing_context',
     };
 };
 

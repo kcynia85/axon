@@ -1,0 +1,8 @@
+[    2098ms] [ERROR] React does not recognize the `%s` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `%s` instead. If you accidentally passed it from a parent component, remove it from the DOM element. asChild aschild @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[    2993ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://tkaqidapngcrlldnkuum.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[    3000ms] [ERROR] AuthApiError: Invalid Refresh Token: Refresh Token Not Found
+    at handleError (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_bddffe43._.js:909:11)
+    at async _handleRequest (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_bddffe43._.js:959:9)
+    at async _request (http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_bddffe43._.js:939:18)
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_bddffe43._.js:4923:24
+    at async http://localhost:3000/_next/static/chunks/9e883_%40supabase_auth-js_dist_module_bddffe43._.js:668:36 @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117

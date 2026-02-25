@@ -6,11 +6,29 @@ import { WorkspaceColor } from './constants';
 
 // --- Domain Models (Raw Business Data) ---
 
+export type AgentPlanStep = {
+  readonly id: string;
+  readonly label: string;
+  readonly status: 'pending' | 'working' | 'done';
+};
+
+export type AgentMetrics = {
+  readonly tokens?: number;
+  readonly cost?: number;
+  readonly duration?: string;
+};
+
 export type SpaceAgentDomainData = {
   readonly label: string;
   readonly state: string;
   readonly progress: number;
   readonly zoneColor: WorkspaceColor;
+  readonly plan_steps?: readonly AgentPlanStep[];
+  readonly metrics?: AgentMetrics;
+  readonly pending_question?: string;
+  readonly context_requirements?: readonly TemplateContext[];
+  readonly execution_logs?: readonly string[];
+  readonly artefacts?: readonly TemplateArtefact[];
 };
 
 export type SpaceAutomationDomainData = {
@@ -137,6 +155,11 @@ export type SpaceAgentViewModel = {
   readonly statusText: string;
   readonly progressValue: number;
   readonly progressLabel: string;
+  readonly isBriefing: boolean;
+  readonly isWorking: boolean;
+  readonly isDone: boolean;
+  readonly isConsultation: boolean;
+  readonly isMissingContext: boolean;
 };
 
 export type SpaceAutomationViewModel = {
@@ -241,6 +264,7 @@ export type SpaceAgentInspectorProperties = {
   readonly data: SpaceAgentDomainData;
   readonly nodeId: string;
   readonly onStatusChange: SelectionChangeHandler;
+  readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
 };
 
 export type SpaceAutomationInspectorProperties = {
