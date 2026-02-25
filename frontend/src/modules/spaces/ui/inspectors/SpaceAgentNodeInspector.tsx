@@ -36,8 +36,10 @@ import {
   History,
   AlertCircle,
   RotateCcw,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
-import { SpaceAgentInspectorProperties, TemplateArtefact } from "../../domain/types";
+import { SpaceAgentInspectorProperties, TemplateArtefact, TemplateContext } from "../../domain/types";
 import { cn } from "@/shared/lib/utils";
 
 const ARTEFACT_STATUS_CONFIG = {
@@ -61,7 +63,7 @@ export const SpaceAgentNodeInspector = ({
 }: SpaceAgentInspectorProperties) => {
     const [nodeSearch, setNodeSearch] = useState("");
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-    const [answerText, setAnswerText] = useState("");
+    const [consultationAnswers, setConsultationAnswers] = useState<Record<string, string>>({});
     const [expandedVersionHistory, setExpandedVersions] = useState<Record<string, boolean>>({});
 
     const isMissingContext = data.state === 'missing_context';
@@ -69,6 +71,20 @@ export const SpaceAgentNodeInspector = ({
     const isWorking = data.state === 'working';
     const isDone = data.state === 'done';
     const isConsultation = data.state === 'conversation';
+    const isAlignment = data.state === 'alignment';
+    const isCritique = data.state === 'critique';
+
+    // Mock predefined questions if consultation is required but questions are empty
+    const consultationQuestions = data.consultation_questions || (data.requires_consultation ? [
+        { id: 'q1', question: 'Do kogo kierujemy ten komunikat? (B2B/B2C)' },
+        { id: 'q2', question: 'Jaki jest główny cel tego zadania?' },
+        { id: 'q3', question: 'Czy są jakieś specyficzne wytyczne co do stylu?' },
+    ] : []);
+
+    const allQuestionsAnswered = consultationQuestions.every(q => 
+        (q.answer && q.answer.trim().length > 0) || 
+        (consultationAnswers[q.id] && consultationAnswers[q.id].trim().length > 0)
+    );
 
     // Simulation of dynamic working process using TanStack Query
     useQuery({
@@ -78,13 +94,20 @@ export const SpaceAgentNodeInspector = ({
                 const nextProgress = Math.min(data.progress + 2, 100);
                 const nextTokens = (data.metrics?.tokens || 3200) + Math.floor(Math.random() * 50);
                 
+                let nextState = 'working';
+                if (nextProgress >= 90 && data.requires_critique) {
+                    nextState = 'critique';
+                } else if (nextProgress === 100) {
+                    nextState = 'done';
+                }
+
                 onPropertyChange({ 
                     progress: nextProgress,
                     metrics: {
                         ...data.metrics,
                         tokens: nextTokens,
                     },
-                    state: nextProgress === 100 ? 'done' : 'working'
+                    state: nextState
                 });
                 return nextProgress;
             }
@@ -95,10 +118,10 @@ export const SpaceAgentNodeInspector = ({
     });
 
     // Context validation logic
-    const contextRequirements = data.context_requirements || [
+    const contextRequirements: readonly TemplateContext[] = data.context_requirements || [
         { id: '1', label: 'topic', expectedType: 'any' },
         { id: '2', label: 'target_audience', expectedType: 'json' },
-        { id: '3', label: 'tone_of_voice', expectedType: 'text' }
+        { id: '3', label: 'tone_of_voice', expectedType: 'any' }
     ];
     const missingFields = contextRequirements.filter(r => !r.link);
     const isContextComplete = missingFields.length === 0;
@@ -130,6 +153,29 @@ export const SpaceAgentNodeInspector = ({
 
     const transitionTo = (state: string, extraProps: Record<string, unknown> = {}) => {
         onPropertyChange({ state, ...extraProps });
+    };
+
+    const handleAnswerChange = (questionId: string, answer: string) => {
+        setConsultationAnswers(prev => ({ ...prev, [questionId]: answer }));
+    };
+
+    const submitConsultation = () => {
+        const updatedQuestions = consultationQuestions.map(q => ({
+            ...q,
+            answer: consultationAnswers[q.id] || q.answer
+        }));
+        
+        // After consultation, go to Alignment if required, else Briefing
+        const nextState = data.requires_alignment ? 'alignment' : 'briefing';
+
+        transitionTo(nextState, { 
+            consultation_questions: updatedQuestions,
+            alignment_summary: data.requires_alignment ? "Z Twoich danych wywnioskowałem, że najważniejszym priorytetem jest optymalizacja procesów B2B, powinniśmy unikać terminologii technicznej, a głównym konkurentem jest Salesforce. Będę pisał w tonie eksperckim, ale przystępnym." : undefined,
+            execution_logs: [
+                ...(data.execution_logs || []),
+                ...updatedQuestions.map(q => `Consultation: ${q.question} -> ${q.answer}`)
+            ]
+        });
     };
 
     const toggleVersionHistory = (id: string) => {
@@ -202,7 +248,15 @@ export const SpaceAgentNodeInspector = ({
                                             ? "bg-zinc-200 text-black border-white hover:bg-white" 
                                             : "bg-zinc-900 text-zinc-600 border-zinc-800 cursor-not-allowed"
                                     )}
-                                    onPress={() => transitionTo('briefing')}
+                                    onPress={() => {
+                                        if (data.requires_consultation) {
+                                            transitionTo('conversation');
+                                        } else if (data.requires_alignment) {
+                                            transitionTo('alignment', { alignment_summary: "Zanalizowałem dostarczone dane. Moim celem jest przygotowanie raportu zorientowanego na wyniki, biorąc pod uwagę ograniczenia budżetowe oraz specyfikę branży kreatywnej." });
+                                        } else {
+                                            transitionTo('briefing');
+                                        }
+                                    }}
                                 >
                                     {isContextComplete ? "Prepare Briefing" : `Missing ${missingFields.length} context fields`}
                                 </Button>
@@ -214,9 +268,89 @@ export const SpaceAgentNodeInspector = ({
                                     </div>
                                     <p className="text-[10px] text-zinc-400 font-medium italic leading-relaxed">
                                         {isContextComplete 
-                                            ? "Wszystkie dane są gotowe. Możemy przygotować briefing i rozpocząć generowanie treści." 
+                                            ? data.requires_consultation 
+                                                ? "Context complete. Consultation required before planning."
+                                                : "Wszystkie dane są gotowe. Możemy przygotować briefing i rozpocząć generowanie treści." 
                                             : `Aby Agent mógł pracować, uzupełnij wymagane parametry w zakładce Context: ${missingFields.map(f => f.label).join(', ')}`}
                                     </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {isConsultation && (
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-2 py-1">
+                                    <AlertCircle size={14} className="text-zinc-400" />
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Consultation Required</h3>
+                                </div>
+
+                                <div className="space-y-5">
+                                    {consultationQuestions.map((q) => (
+                                        <div key={q.id} className="space-y-2.5">
+                                            <p className="text-[11px] text-zinc-400 font-bold italic leading-relaxed">
+                                                {q.question}
+                                            </p>
+                                            <Input 
+                                                placeholder="Type your answer..." 
+                                                size="sm" 
+                                                variant="bordered"
+                                                value={consultationAnswers[q.id] || q.answer || ""}
+                                                onValueChange={(val) => handleAnswerChange(q.id, val)}
+                                                classNames={{ 
+                                                    input: "text-xs font-mono text-zinc-300", 
+                                                    inputWrapper: "bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 focus-within:!border-zinc-200 rounded-lg h-10 shadow-none" 
+                                                }} 
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Button 
+                                    size="sm" 
+                                    isDisabled={!allQuestionsAnswered}
+                                    className={cn(
+                                        "w-full font-black uppercase text-[10px] tracking-widest rounded-md transition-all mt-4",
+                                        allQuestionsAnswered 
+                                            ? "bg-zinc-200 text-black hover:bg-white" 
+                                            : "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed"
+                                    )}
+                                    onPress={submitConsultation}
+                                >
+                                    {allQuestionsAnswered ? "Send responses" : "Answer all questions"}
+                                </Button>
+                            </div>
+                        )}
+
+                        {isAlignment && (
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-2 py-1 text-zinc-400">
+                                    <ShieldCheck size={14} />
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Alignment / Understanding Check</h3>
+                                </div>
+
+                                <div className="p-5 bg-zinc-900/50 border border-zinc-200/10 rounded-xl space-y-3">
+                                    <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Agent understanding:</span>
+                                    <p className="text-xs text-zinc-300 font-mono leading-relaxed italic">
+                                        &quot;{data.alignment_summary}&quot;
+                                    </p>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Button 
+                                        size="sm" 
+                                        className="w-full bg-zinc-200 text-black font-black uppercase text-[10px] tracking-widest rounded-md hover:bg-white transition-all"
+                                        onPress={() => transitionTo('briefing')}
+                                    >
+                                        Looks correct, proceed to plan
+                                    </Button>
+                                    <Button 
+                                        size="sm" 
+                                        variant="flat" 
+                                        className="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] tracking-widest rounded-md hover:bg-zinc-800 transition-all"
+                                        onPress={() => transitionTo('conversation')}
+                                    >
+                                        Adjust assumptions
+                                    </Button>
                                 </div>
                             </div>
                         )}
@@ -338,41 +472,39 @@ export const SpaceAgentNodeInspector = ({
                             </div>
                         )}
 
-                        {isConsultation && (
-                            <div className="space-y-4">
-                                <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl space-y-2">
-                                    <h4 className="text-[10px] font-black text-zinc-200 uppercase tracking-widest">Consultation Required:</h4>
-                                    <p className="text-xs text-zinc-300 font-mono leading-relaxed italic">
-                                        &quot;{data.pending_question || 'Dla kogo jest ten produkt? B2B czy B2C?'}&quot;
-                                    </p>
+                        {isCritique && (
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-2 py-1 text-zinc-400">
+                                    <Zap size={14} className="text-orange-500 animate-pulse" />
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Self-Critique & Review</h3>
                                 </div>
-                                <div className="space-y-2">
-                                    <Input 
-                                        placeholder="Wpisz odpowiedź..." 
-                                        size="sm" 
-                                        variant="bordered"
-                                        value={answerText}
-                                        onValueChange={setAnswerText}
-                                        classNames={{ 
-                                            input: "text-xs font-mono text-zinc-300", 
-                                            inputWrapper: "bg-black border-zinc-800 hover:border-zinc-500 focus-within:!border-zinc-200 rounded-lg h-10" 
-                                        }} 
-                                    />
+
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center px-1">
+                                        <span className="text-[10px] font-mono text-zinc-400 animate-pulse">Running autonomous review...</span>
+                                        <span className="text-[10px] font-mono text-white">95%</span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {[
+                                            "Sprawdzanie spójności z briefem...",
+                                            "Weryfikacja faktów i danych...",
+                                            "Optymalizacja stylu i tonu...",
+                                        ].map((note, idx) => (
+                                            <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-zinc-900/30 border border-zinc-800 rounded-lg">
+                                                <div className="w-1 h-1 rounded-full bg-orange-500 animate-ping" />
+                                                <span className="text-[10px] font-mono text-zinc-300">{note}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="pt-4">
                                     <Button 
                                         size="sm" 
-                                        isDisabled={answerText.trim().length === 0}
-                                        className={cn(
-                                            "w-full font-black uppercase text-[10px] tracking-widest rounded-md transition-all",
-                                            answerText.trim().length > 0 
-                                                ? "bg-zinc-200 text-black hover:bg-white" 
-                                                : "bg-zinc-900 text-zinc-600 cursor-not-allowed"
-                                        )}
-                                        onPress={() => {
-                                            setAnswerText("");
-                                            transitionTo('working', { progress: data.progress });
-                                        }}
+                                        className="w-full bg-zinc-200 text-black font-black uppercase text-[10px] tracking-widest rounded-md hover:bg-white transition-all shadow-xl shadow-white/5"
+                                        onPress={() => transitionTo('done', { progress: 100 })}
                                     >
-                                        Send response
+                                        Finalize output
                                     </Button>
                                 </div>
                             </div>

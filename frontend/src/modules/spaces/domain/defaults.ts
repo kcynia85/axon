@@ -41,7 +41,7 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
       type: 'discovery',
       color: 'purple',
     },
-    style: { width: 1000, height: 800 },
+    style: { width: 1200, height: 1000 },
   },
   {
     id: 'agent-researcher',
@@ -54,6 +54,14 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
       state: 'missing_context',
       progress: 0,
       zoneColor: 'purple',
+      requires_consultation: true,
+      requires_alignment: true,
+      requires_critique: true,
+      consultation_questions: [
+        { id: 'q1', question: 'Jaki jest główny cel badania użytkowników?' },
+        { id: 'q2', question: 'Czy masz preferowaną metodologię (np. wywiady, ankiety)?' },
+        { id: 'q3', question: 'Na jakim etapie projektu obecnie jesteśmy?' }
+      ],
       context_requirements: [
         { id: '1', label: 'topic', expectedType: 'any' },
         { id: '2', label: 'target_audience', expectedType: 'any' },
@@ -62,49 +70,79 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     },
   },
   {
-    id: 'agent-strategist',
-    type: 'agent',
-    position: { x: 50, y: 400 },
-    parentId: 'zone-discovery',
-    extent: 'parent',
-    data: {
-      label: 'UX Strategist',
-      state: 'conversation',
-      progress: 45,
-      zoneColor: 'purple',
-      pending_question: 'Czy strategia ma uwzględniać ekspansję na rynki azjatyckie w Q4?',
-      context_requirements: [
-        { id: '1', label: 'market_data', link: 'https://axon.ai/data/market_q3.json', expectedType: 'json' },
-        { id: '2', label: 'competitor_analysis', link: 'node://Interview Synthesis/competitors_list.csv', expectedType: 'csv' }
-      ]
-    },
-  },
-  {
-    id: 'template-interviews',
-    type: 'template',
+    id: 'crew-hierarchical',
+    type: 'crew',
     position: { x: 400, y: 50 },
     parentId: 'zone-discovery',
     extent: 'parent',
     data: {
-      label: 'Interview Synthesis',
-      status: 'working',
-      actions: [
-        { id: 'a1', label: 'Zdefiniuj Pytania Badawcze', isCompleted: false, section: 'Cel Researchu (Checklist)' },
-        { id: 'a2', label: 'Indetyfikacja grupy odbiorców', isCompleted: true, section: 'Cel Researchu (Checklist)' },
-        { id: 'a3', label: 'Zidentyfikuj "white space" na rynku', isCompleted: false, section: 'Cel Researchu (Checklist)' },
-        { id: 'a4', label: 'Wypełnij tabelę na podstawie danych (Nazwa firmy + Przewaga + ceny)', isCompleted: false, section: 'Profile Konkurencji' },
-        { id: 'a5', label: 'Komunikacja', isCompleted: false, section: 'Wnioski Strategiczne' },
-        { id: 'a6', label: 'Marketing', isCompleted: false, section: 'Wnioski Strategiczne' },
+      label: 'Research Team',
+      state: 'working',
+      zoneColor: 'purple',
+      process_type: 'hierarchical',
+      manager_title: 'Social Media Manager',
+      roles: ['Social Media Analyzer', 'Report Writer', 'Web Scraper'],
+      tasks: [
+        { id: 't1', label: 'Pobierz cenniki z 5 stron', status: 'done', assignedAgentTitle: 'Web Scraper', thought: 'Przeanalizowano 5 witryn, wyekstrahowano tabele cenowe.' },
+        { id: 't2', label: 'Sprawdź sentyment komentarzy', status: 'working', assignedAgentTitle: 'Social Media Analyzer', thought: 'Analizuję 1500 komentarzy z Twittera pod kątem emocji...' },
+        { id: 't3', label: 'Przygotuj raport końcowy', status: 'pending', assignedAgentTitle: 'Report Writer' },
       ],
-      contexts: [
-        { id: 'c1', label: 'brand_guidelines', expectedType: 'json' },
-        { id: 'c2', label: 'persona', expectedType: 'json' },
+      context_requirements: [
+        { id: 'c1', label: 'brand_guidelines', link: 'docs.google.com/brand', expectedType: 'any' },
+        { id: 'c2', label: 'target_audience', link: 'Enterprise B2B', expectedType: 'any' },
+        { id: 'c3', label: 'budget_limit', link: '50k PLN', expectedType: 'any' },
       ],
       artefacts: [
-        { id: 'art1', label: 'competitors_list', status: 'in_progress' },
-        { id: 'art2', label: 'benchmark_link', status: 'completed' },
+        { id: 'a1', label: 'final_report', status: 'in_review' }
       ],
+      metrics: { duration: '2 min 15s', tokens: 4200 }
+    },
+  },
+  {
+    id: 'crew-sequential',
+    type: 'crew',
+    position: { x: 50, y: 400 },
+    parentId: 'zone-discovery',
+    extent: 'parent',
+    data: {
+      label: 'Content Pipeline',
+      state: 'missing_context',
       zoneColor: 'purple',
+      process_type: 'sequential',
+      roles: ['Web Researcher', 'Content Writer'],
+      context_requirements: [
+        { id: 'cr1', label: 'topic', expectedType: 'any' }
+      ],
+      artefacts: [
+        { id: 'art1', label: 'article_draft.md', status: 'in_review' }
+      ]
+    },
+  },
+  {
+    id: 'crew-parallel',
+    type: 'crew',
+    position: { x: 800, y: 50 },
+    parentId: 'zone-discovery',
+    extent: 'parent',
+    data: {
+      label: 'Market Sentiment Team',
+      state: 'briefing',
+      zoneColor: 'purple',
+      process_type: 'parallel',
+      roles: ['Report Writer', 'Web Scraper', 'Social Analyzer', 'News Bot'],
+      tasks: [
+        { id: 'pt1', label: 'Pobierz cenniki z 5 stron', status: 'pending', assignedAgentTitle: 'Web Scraper' },
+        { id: 'pt2', label: 'Wylicz średnią i medianę cen', status: 'pending', assignedAgentTitle: 'Social Analyzer' },
+      ],
+      context_requirements: [
+        { id: 'pc1', label: 'prices', link: 'docs.google.com/prices', expectedType: 'any' },
+        { id: 'pc2', label: 'brand_name', expectedType: 'any' },
+        { id: 'pc3', label: 'rss_channel', expectedType: 'any' },
+      ],
+      artefacts: [
+        { id: 'pa1', label: 'final_report.md', status: 'in_review' }
+      ],
+      metrics: { cost: 0.50, tokens: 8000 }
     },
   },
 
@@ -112,7 +150,7 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
   {
     id: 'zone-product',
     type: 'zone',
-    position: { x: 1200, y: 100 },
+    position: { x: 1400, y: 100 },
     data: {
       label: 'Product Management',
       type: 'product',
@@ -164,25 +202,13 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
   {
     id: 'zone-design',
     type: 'zone',
-    position: { x: 100, y: 1000 },
+    position: { x: 100, y: 1200 },
     data: {
       label: 'Design',
       type: 'design',
       color: 'pink',
     },
     style: { width: 1000, height: 800 },
-  },
-  {
-    id: 'crew-design',
-    type: 'crew',
-    position: { x: 50, y: 50 },
-    parentId: 'zone-design',
-    extent: 'parent',
-    data: {
-      label: 'UI Design Crew',
-      state: 'working',
-      zoneColor: 'pink',
-    },
   },
   {
     id: 'service-figma',
@@ -222,7 +248,7 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
   {
     id: 'zone-delivery',
     type: 'zone',
-    position: { x: 1200, y: 1000 },
+    position: { x: 1400, y: 1200 },
     data: {
       label: 'Delivery',
       type: 'delivery',
@@ -251,7 +277,8 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
 
 export const DEFAULT_INITIAL_EDGES: readonly Edge[] = [
   // Discovery Internal
-  { id: 'e-disc-1', source: 'agent-researcher', target: 'template-interviews', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },
+  { id: 'e-disc-1', source: 'agent-researcher', target: 'crew-hierarchical', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },
+  { id: 'e-disc-2', source: 'crew-sequential', target: 'crew-parallel', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },
 
   // Cross-Zone: Discovery -> Product
   {
@@ -273,9 +300,6 @@ export const DEFAULT_INITIAL_EDGES: readonly Edge[] = [
     type: 'CustomEdge',
     style: { stroke: '#666', strokeWidth: 3 }
   },
-
-  // Design Internal
-  { id: 'e-des-1', source: 'crew-design', target: 'service-figma', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },
 
   // Cross-Zone: Design -> Delivery
   {

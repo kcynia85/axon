@@ -58,6 +58,8 @@ export const mapAgentToViewModel = (data: SpaceAgentDomainData, isSelected: bool
         isWorking: data.state === 'working',
         isDone: data.state === 'done',
         isConsultation: data.state === 'conversation',
+        isAlignment: data.state === 'alignment',
+        isCritique: data.state === 'critique',
         isMissingContext: data.state === 'missing_context',
     };
 };
@@ -86,6 +88,10 @@ export const mapCrewToViewModel = (data: SpaceCrewDomainData, isSelected: boolea
     // Overriding container width for Crew
     const crewVisual = { ...visual, containerClassName: visual.containerClassName.replace('w-[280px]', 'w-[320px]') };
 
+    const totalTasks = data.tasks?.length || 0;
+    const completedTasks = data.tasks?.filter(t => t.status === 'done').length || 0;
+    const progressValue = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
     return {
         visual: crewVisual,
         displayName: data.label,
@@ -93,7 +99,12 @@ export const mapCrewToViewModel = (data: SpaceCrewDomainData, isSelected: boolea
         teamRoles: data.roles || ['Web Researcher', 'Content Writer'],
         alertMessage: data.state === 'missing_context' ? 'Missing required context' : undefined,
         isWorking: data.state === 'working',
+        isConsultation: data.state === 'conversation',
+        isBriefing: data.state === 'briefing',
+        isMissingContext: data.state === 'missing_context',
         isDone: data.state === 'done',
+        progressValue,
+        progressLabel: `${progressValue}%`,
     };
 };
 

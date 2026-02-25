@@ -2,7 +2,7 @@
 > frontend@0.1.0 dev
 > next dev
 
- ⚠ Port 3000 is in use by process 25820, using available port 3001 instead.
+ ⚠ Port 3000 is in use by process 63132, using available port 3001 instead.
 [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
  ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
  We detected multiple lockfiles and selected the directory of /Users/kamil/Documents/DEV/axon/axon/package-lock.json as the root directory.

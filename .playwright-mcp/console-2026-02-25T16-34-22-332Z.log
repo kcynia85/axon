@@ -1,0 +1,42 @@
+[    2829ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2831ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2840ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2841ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2846ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2847ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2857ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2857ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2910ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2911ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2918ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2918ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2923ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2924ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2931ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2932ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3096ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3097ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3098ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3098ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3099ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3100ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3101ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3101ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[   18269ms] ReferenceError: Bot is not defined
+    at _temp4 (http://localhost:3000/_next/static/chunks/frontend_src_f61195fd._.js:9325:246)
+    at Array.map (<anonymous>)
+    at SpaceCrewNodeInspector (http://localhost:3000/_next/static/chunks/frontend_src_f61195fd._.js:8871:26)
+    at Object.react_stack_bottom_frame (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:14816:24)
+    at renderWithHooks (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:4645:24)
+    at updateFunctionComponent (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:6106:21)
+    at beginWork (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:6702:24)
+    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:959:74)
+    at performUnitOfWork (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:9556:97)
+    at workLoopSync (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:9450:40)
+    at renderRootSync (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:9434:13)
+    at performWorkOnRoot (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:9099:47)
+    at performSyncWorkOnRoot (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:10232:9)
+    at flushSyncWorkAcrossRoots_impl (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:10148:316)
+    at processRootScheduleInMicrotask (http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:10169:106)
+    at http://localhost:3000/_next/static/chunks/9e883_next_dist_compiled_react-dom_33d456f8._.js:10243:158
+[   30308ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287

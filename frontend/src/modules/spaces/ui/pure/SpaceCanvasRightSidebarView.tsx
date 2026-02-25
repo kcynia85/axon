@@ -74,6 +74,7 @@ export const SpaceCanvasRightSidebarView = ({
                         data={currentlySelectedNodeInformation.data as SpaceCrewDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onStatusChange={handleStatusChange}
+                        onPropertyChange={handlePropertyChange}
                     />
                 ) : effectiveNodeType === 'pattern' ? (
                     <SpacePatternNodeInspector

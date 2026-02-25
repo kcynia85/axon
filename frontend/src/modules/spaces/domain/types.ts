@@ -29,6 +29,16 @@ export type SpaceAgentDomainData = {
   readonly context_requirements?: readonly TemplateContext[];
   readonly execution_logs?: readonly string[];
   readonly artefacts?: readonly TemplateArtefact[];
+  readonly requires_consultation?: boolean;
+  readonly consultation_questions?: readonly {
+    readonly id: string;
+    readonly question: string;
+    readonly answer?: string;
+  }[];
+  readonly requires_alignment?: boolean;
+  readonly alignment_summary?: string;
+  readonly requires_critique?: boolean;
+  readonly critique_notes?: readonly string[];
 };
 
 export type SpaceAutomationDomainData = {
@@ -44,11 +54,41 @@ export type SpaceAutomationDomainData = {
   readonly customActionsContent?: string;
 };
 
+export type CrewTask = {
+  readonly id: string;
+  readonly label: string;
+  readonly status: 'pending' | 'working' | 'done';
+  readonly assignedAgentTitle: string;
+  readonly output?: string;
+  readonly thought?: string; // What the agent is currently thinking/doing
+};
+
+export type SharedMemoryEntry = {
+  readonly id: string;
+  readonly fact: string;
+  readonly sourceAgentTitle: string;
+  readonly timestamp: string;
+};
+
 export type SpaceCrewDomainData = {
   readonly label: string;
   readonly state: string;
   readonly zoneColor: WorkspaceColor;
   readonly roles: readonly string[];
+  readonly process_type?: 'sequential' | 'hierarchical' | 'parallel';
+  readonly manager_title?: string;
+  readonly tasks?: readonly CrewTask[];
+  readonly active_agent_id?: string;
+  readonly execution_logs?: readonly string[];
+  readonly artefacts?: readonly TemplateArtefact[];
+  readonly context_requirements?: readonly TemplateContext[];
+  readonly requires_consultation?: boolean;
+  readonly consultation_questions?: readonly {
+    readonly id: string;
+    readonly question: string;
+    readonly answer?: string;
+  }[];
+  readonly metrics?: AgentMetrics;
 };
 
 export type SpacePatternDomainData = {
@@ -159,6 +199,8 @@ export type SpaceAgentViewModel = {
   readonly isWorking: boolean;
   readonly isDone: boolean;
   readonly isConsultation: boolean;
+  readonly isAlignment: boolean;
+  readonly isCritique: boolean;
   readonly isMissingContext: boolean;
 };
 
@@ -180,7 +222,12 @@ export type SpaceCrewViewModel = {
   readonly teamRoles: readonly string[];
   readonly alertMessage?: string;
   readonly isWorking: boolean;
+  readonly isConsultation: boolean;
+  readonly isBriefing: boolean;
+  readonly isMissingContext: boolean;
   readonly isDone: boolean;
+  readonly progressValue: number;
+  readonly progressLabel: string;
 };
 
 export type SpacePatternViewModel = {
@@ -277,6 +324,7 @@ export type SpaceCrewInspectorProperties = {
   readonly data: SpaceCrewDomainData;
   readonly nodeId: string;
   readonly onStatusChange: SelectionChangeHandler;
+  readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
 };
 
 export type SpaceTemplateInspectorProperties = {
