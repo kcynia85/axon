@@ -4,9 +4,15 @@ import { describe, it, expect } from 'vitest';
 import { 
     mapAgentToViewModel, 
     mapEntityToViewModel,
-    mapZoneToViewModel 
+    mapZoneToViewModel,
+    mapCrewToViewModel
 } from '../SpaceNodeViewModelMapper';
-import { SpaceAgentDomainData, SpaceEntityNodeDomainData, SpaceZoneDomainData } from '../../types';
+import { 
+    SpaceAgentDomainData, 
+    SpaceEntityNodeDomainData, 
+    SpaceZoneDomainData,
+    SpaceCrewDomainData
+} from '../../types';
 
 describe('SpaceNodeViewModelMapper', () => {
     describe('mapAgentToViewModel', () => {
@@ -39,6 +45,42 @@ describe('SpaceNodeViewModelMapper', () => {
 
             expect(viewModel.visual.containerClassName).toContain('border-purple-500');
             expect(viewModel.visual.containerClassName).toContain('shadow-');
+        });
+    });
+
+    describe('mapCrewToViewModel', () => {
+        it('should map crew domain data and identify active agent', () => {
+            const domainData: SpaceCrewDomainData = {
+                label: 'Research Team',
+                state: 'working',
+                zoneColor: 'purple',
+                roles: ['Web Scraper', 'Analyst'],
+                tasks: [
+                    { id: 't1', label: 'Scrape data', status: 'done', assignedAgentTitle: 'Web Scraper' },
+                    { id: 't2', label: 'Analyze', status: 'working', assignedAgentTitle: 'Analyst' }
+                ]
+            };
+
+            const viewModel = mapCrewToViewModel(domainData, false);
+
+            expect(viewModel.displayName).toBe('Research Team');
+            expect(viewModel.activeAgentTitle).toBe('Analyst');
+            expect(viewModel.progressValue).toBe(50); // 1/2 tasks done
+            expect(viewModel.isWorking).toBe(true);
+        });
+
+        it('should handle crew with no tasks', () => {
+            const domainData: SpaceCrewDomainData = {
+                label: 'Empty Team',
+                state: 'missing_context',
+                zoneColor: 'blue',
+                roles: ['Shadow'],
+            };
+
+            const viewModel = mapCrewToViewModel(domainData, false);
+
+            expect(viewModel.activeAgentTitle).toBeUndefined();
+            expect(viewModel.progressValue).toBe(0);
         });
     });
 

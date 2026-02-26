@@ -77,15 +77,15 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     extent: 'parent',
     data: {
       label: 'Research Team',
-      state: 'working',
+      state: 'missing_context',
       zoneColor: 'purple',
       process_type: 'hierarchical',
       manager_title: 'Social Media Manager',
       roles: ['Social Media Analyzer', 'Report Writer', 'Web Scraper'],
-      tasks: [
-        { id: 't1', label: 'Pobierz cenniki z 5 stron', status: 'done', assignedAgentTitle: 'Web Scraper', thought: 'Przeanalizowano 5 witryn, wyekstrahowano tabele cenowe.' },
-        { id: 't2', label: 'Sprawdź sentyment komentarzy', status: 'working', assignedAgentTitle: 'Social Media Analyzer', thought: 'Analizuję 1500 komentarzy z Twittera pod kątem emocji...' },
-        { id: 't3', label: 'Przygotuj raport końcowy', status: 'pending', assignedAgentTitle: 'Report Writer' },
+      tasks: [],
+      shared_memory: [
+        { id: 'f1', fact: 'Główni konkurenci stosują model subskrypcyjny.', sourceAgentTitle: 'Web Scraper', timestamp: '14:20' },
+        { id: 'f2', fact: 'Użytkownicy narzekają na czas ładowania dashboardu.', sourceAgentTitle: 'Social Media Analyzer', timestamp: '14:25' }
       ],
       context_requirements: [
         { id: 'c1', label: 'brand_guidelines', link: 'docs.google.com/brand', expectedType: 'any' },
@@ -110,12 +110,38 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
       zoneColor: 'purple',
       process_type: 'sequential',
       roles: ['Web Researcher', 'Content Writer'],
+      tasks: [],
       context_requirements: [
         { id: 'cr1', label: 'topic', expectedType: 'any' }
       ],
       artefacts: [
         { id: 'art1', label: 'article_draft.md', status: 'in_review' }
       ]
+    },
+  },
+  {
+    id: 'crew-marketing',
+    type: 'crew',
+    position: { x: 400, y: 400 },
+    parentId: 'zone-discovery',
+    extent: 'parent',
+    data: {
+      label: 'Marketing Content Crew',
+      state: 'missing_context',
+      zoneColor: 'purple',
+      process_type: 'sequential',
+      roles: ['SEO Specialist', 'Copywriter', 'Legal Reviewer'],
+      tasks: [],
+      shared_memory: [
+        { id: 'mf1', fact: 'Primary keyword is "agentic workflows".', sourceAgentTitle: 'SEO Specialist', timestamp: '10:05' }
+      ],
+      context_requirements: [
+        { id: 'mc1', label: 'topic', link: 'Agentic Workflows in 2026', expectedType: 'any' }
+      ],
+      artefacts: [
+        { id: 'mart1', label: 'blog_post_v1.md', status: 'in_review' }
+      ],
+      metrics: { duration: '1 min 45s', tokens: 2800 }
     },
   },
   {
@@ -126,14 +152,11 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     extent: 'parent',
     data: {
       label: 'Market Sentiment Team',
-      state: 'briefing',
+      state: 'missing_context',
       zoneColor: 'purple',
       process_type: 'parallel',
       roles: ['Report Writer', 'Web Scraper', 'Social Analyzer', 'News Bot'],
-      tasks: [
-        { id: 'pt1', label: 'Pobierz cenniki z 5 stron', status: 'pending', assignedAgentTitle: 'Web Scraper' },
-        { id: 'pt2', label: 'Wylicz średnią i medianę cen', status: 'pending', assignedAgentTitle: 'Social Analyzer' },
-      ],
+      tasks: [],
       context_requirements: [
         { id: 'pc1', label: 'prices', link: 'docs.google.com/prices', expectedType: 'any' },
         { id: 'pc2', label: 'brand_name', expectedType: 'any' },
@@ -272,6 +295,19 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
       artefacts: [],
       zoneColor: 'green',
     },
+  },
+
+  // --- GROWTH & MARKET ZONE ---
+  {
+    id: 'zone-growth',
+    type: 'zone',
+    position: { x: 100, y: 2200 },
+    data: {
+      label: 'Growth & Market',
+      type: 'growth',
+      color: 'yellow',
+    },
+    style: { width: 1000, height: 800 },
   },
 ];
 

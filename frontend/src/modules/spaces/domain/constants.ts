@@ -21,7 +21,7 @@ export const LIST_OF_AVAILABLE_WORKSPACES: readonly WorkspaceUnit[] = [
   { identifier: "discovery", displayName: "Discovery", visualColor: "purple" },
   { identifier: "design", displayName: "Design", visualColor: "pink" },
   { identifier: "delivery", displayName: "Delivery", visualColor: "green" },
-  { identifier: "growth", displayName: "Growth & Market", visualColor: "yellow" },
+  { identifier: "growth", displayName: "Growth and Product", visualColor: "yellow" },
 ];
 
 export type SpaceComponentType = "pattern" | "crew" | "agent" | "template" | "service" | "automation";
@@ -35,22 +35,29 @@ export type SpaceComponentItem = {
 export const MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY: Record<string, readonly SpaceComponentItem[]> = {
   patterns: [
     { uniqueIdentifier: "interview", componentName: "Interview Analysis", componentType: "pattern" },
+    { uniqueIdentifier: "survey", componentName: "Survey Analysis", componentType: "pattern" },
   ],
   crews: [
     { uniqueIdentifier: "design-crew", componentName: "Design Crew", componentType: "crew" },
+    { uniqueIdentifier: "research-crew", componentName: "Research Crew", componentType: "crew" },
   ],
   agents: [
     { uniqueIdentifier: "researcher", componentName: "User Researcher", componentType: "agent" },
     { uniqueIdentifier: "analyst", componentName: "Data Analyst", componentType: "agent" },
+    { uniqueIdentifier: "writer", componentName: "Content Writer", componentType: "agent" },
   ],
   templates: [
     { uniqueIdentifier: "prd", componentName: "PRD Template", componentType: "template" },
+    { uniqueIdentifier: "tech-spec", componentName: "Technical Spec", componentType: "template" },
   ],
   services: [
     { uniqueIdentifier: "jira", componentName: "Jira Integration", componentType: "service" },
+    { uniqueIdentifier: "figma", componentName: "Figma Sync", componentType: "service" },
+    { uniqueIdentifier: "elevenlabs", componentName: "ElevenLabs", componentType: "service" },
   ],
   automations: [
     { uniqueIdentifier: "notify", componentName: "Slack Notify", componentType: "automation" },
+    { uniqueIdentifier: "ci-cd", componentName: "CI/CD Pipeline", componentType: "automation" },
   ],
 };
 

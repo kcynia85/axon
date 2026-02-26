@@ -38,6 +38,7 @@ describe('Workspaces Domain Schemas - Contract Tests', () => {
                 agent_name: 'Test Agent',
                 agent_role_text: 'assistant',
                 agent_goal: 'Test goal',
+                agent_backstory: null,
                 availability_workspace: ['default'],
                 created_at: '2024-01-15T10:00:00Z',
                 updated_at: '2024-01-15T10:00:00Z'

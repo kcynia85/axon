@@ -1,7 +1,7 @@
 // frontend/src/modules/spaces/domain/types.ts
 
 import React from 'react';
-import type { Node } from '@xyflow/react';
+import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
 import { WorkspaceColor } from './constants';
 
 // --- Domain Models (Raw Business Data) ---
@@ -79,6 +79,7 @@ export type SpaceCrewDomainData = {
   readonly manager_title?: string;
   readonly tasks?: readonly CrewTask[];
   readonly active_agent_id?: string;
+  readonly shared_memory?: readonly SharedMemoryEntry[];
   readonly execution_logs?: readonly string[];
   readonly artefacts?: readonly TemplateArtefact[];
   readonly context_requirements?: readonly TemplateContext[];
@@ -127,6 +128,7 @@ export type TemplateArtefact = {
   readonly id: string;
   readonly label: string;
   readonly link?: string;
+  readonly content?: string; // Rich text content from BlockNote
   readonly status: 'in_review' | 'approved';
   readonly isOutput?: boolean;
 };
@@ -220,6 +222,7 @@ export type SpaceCrewViewModel = {
   readonly displayName: string;
   readonly statusText: string;
   readonly teamRoles: readonly string[];
+  readonly activeAgentTitle?: string;
   readonly alertMessage?: string;
   readonly isWorking: boolean;
   readonly isConsultation: boolean;
@@ -347,4 +350,34 @@ export type SpaceServiceInspectorProperties = {
   readonly nodeId: string;
   readonly onArtifactStatusChange: SelectionChangeHandler;
   readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
+};
+
+export type SpaceCanvasStateConfiguration = {
+  readonly canvasNodes: Node[];
+  readonly canvasEdges: Edge[];
+  readonly updateCanvasNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  readonly updateCanvasEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+  readonly handleCanvasNodesChange: OnNodesChange;
+  readonly handleCanvasEdgesChange: OnEdgesChange;
+  readonly currentlySelectedNode: Node | null;
+};
+
+export type SpaceCanvasOrchestrationLogic = {
+  readonly canvasNodes: Node[];
+  readonly canvasEdges: Edge[];
+  readonly handleCanvasNodesChange: OnNodesChange;
+  readonly handleCanvasEdgesChange: OnEdgesChange;
+  readonly handleNewConnectionCreated: (connection: Connection) => void;
+  readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
+  readonly handleDragOverEvent: (event: React.DragEvent) => void;
+  readonly handleDropEvent: (event: React.DragEvent) => void;
+  readonly addNewNodeToCanvas: (type: string, data: Record<string, unknown>, workspace: string) => void;
+  readonly updateNodeDataOnCanvas: (nodeId: string, data: Record<string, unknown>) => void;
+  readonly currentlySelectedNode: Node | null;
+  readonly duplicateNode: (node: Node) => void;
+  readonly deleteNodes: (nodeIds: string[]) => void;
+  readonly updateNodesStatus: (nodeIds: string[], status: string) => void;
+  readonly copyNodes: (nodes: Node[]) => void;
+  readonly cutNodes: (nodes: Node[]) => void;
+  readonly pasteNodes: (position?: { x: number; y: number }) => void;
 };

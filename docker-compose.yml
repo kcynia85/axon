@@ -31,6 +31,18 @@ services:
     networks:
       - axon-network
 
+  backend-bun:
+    build:
+      context: ./backend-bun
+      dockerfile: Dockerfile
+    container_name: axon-backend-bun
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=development
+    networks:
+      - axon-network
+
 networks:
   axon-network:
     driver: bridge

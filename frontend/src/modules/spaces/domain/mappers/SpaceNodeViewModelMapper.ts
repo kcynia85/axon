@@ -92,11 +92,23 @@ export const mapCrewToViewModel = (data: SpaceCrewDomainData, isSelected: boolea
     const completedTasks = data.tasks?.filter(t => t.status === 'done').length || 0;
     const progressValue = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
+    const activeTask = data.tasks?.find(t => t.status === 'working');
+    const activeAgentTitle = activeTask?.assignedAgentTitle;
+
+    const statusMap: Record<string, string> = {
+        'missing_context': 'Context Missing',
+        'briefing': 'Briefing...',
+        'working': 'Working...',
+        'done': 'Done',
+        'conversation': 'Needs Input'
+    };
+
     return {
         visual: crewVisual,
         displayName: data.label,
-        statusText: data.state.replace('_', ' ').toUpperCase(),
+        statusText: statusMap[data.state] || data.state.replace('_', ' ').toUpperCase(),
         teamRoles: data.roles || ['Web Researcher', 'Content Writer'],
+        activeAgentTitle,
         alertMessage: data.state === 'missing_context' ? 'Missing required context' : undefined,
         isWorking: data.state === 'working',
         isConsultation: data.state === 'conversation',
@@ -163,7 +175,7 @@ export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected
 };
 
 export const mapZoneToViewModel = (data: SpaceZoneDomainData, isSelected: boolean): SpaceZoneViewModel => {
-    const color = data.color || (data.type === 'discovery' ? 'purple' : 'blue');
+    const color = data.color || MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[data.type] || 'blue';
     const styles = getVisualStylesForZoneColor(color);
 
     return {

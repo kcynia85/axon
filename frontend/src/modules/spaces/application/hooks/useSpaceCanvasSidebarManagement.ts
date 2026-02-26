@@ -20,6 +20,7 @@ type ComponentItemDisplay = {
     readonly identifier: string;
     readonly displayName: string;
     readonly type: string;
+    readonly zoneColor: string;
     readonly hoverClassName: string;
     readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
 };
@@ -86,7 +87,8 @@ export const useSpaceCanvasSidebarManagement = () => {
 
     const filteredComponentCategoriesForDisplay = useMemo(() => {
         const query = componentSearchQuery.trim().toLowerCase();
-        const visualStyles = getVisualStylesForZoneColor(currentlySelectedWorkspaceIdentifier ? MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[currentlySelectedWorkspaceIdentifier] : 'default');
+        const activeColor = currentlySelectedWorkspaceIdentifier ? MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[currentlySelectedWorkspaceIdentifier] : 'default';
+        const visualStyles = getVisualStylesForZoneColor(activeColor);
 
         return Object.entries(MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY).reduce<Record<string, readonly ComponentItemDisplay[]>>((accumulator, [categoryKey, componentList]) => {
             const filteredList = componentList
@@ -95,13 +97,14 @@ export const useSpaceCanvasSidebarManagement = () => {
                     identifier: componentItem.uniqueIdentifier,
                     displayName: componentItem.componentName,
                     type: componentItem.componentType,
+                    zoneColor: activeColor,
                     // Level 2 also uses the vibrant hover color from mapper
                     hoverClassName: visualStyles.level1HoverBackgroundClassName,
                     onDragStart: (dragEvent: React.DragEvent<HTMLElement>) => 
                         handleDragAndDropStart(dragEvent, 'entity', {
                             label: componentItem.componentName,
                             type: componentItem.componentType,
-                            zoneColor: MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[currentlySelectedWorkspaceIdentifier!]
+                            zoneColor: activeColor
                         })
                 }));
             

@@ -27,5 +27,54 @@ Zgodnie z architekturą opartą na **crewAI** (orkiestracja) i **LangChain** (RA
 ## Faza 4: Integracja danych testowych i Weryfikacja
 - [ ] **Aktualizacja `frontend/src/modules/spaces/domain/defaults.ts`**:
     - Skonfigurowanie testowej załogi (np. "Marketing Content Crew") z wieloma agentami i zadaniami.
-- [ ] **Weryfikacja Playwright**:
-    - Przejście całego flow od inicjalizacji zespołu po finalizację artefaktów.
+
+## Faza 5: Testy Regresyjne - Space Canvas Dry-Run Verification (UI & Interaction)
+
+**Cel:** Weryfikacja, czy komponenty Space Canvas (Węzły, Sidebary, Menu Kontekstowe) renderują się i reagują poprawnie w środowisku mockowanym, zapewniając stabilność UI przed pełną integracją z backendem.
+
+### 1. Środowisko Canvasa i Viewport
+- [x] **Stan początkowy:** Nawigacja do `/spaces/test-canvas`. Weryfikacja, czy React Flow ładuje domyślne węzły (Strefy: Discovery, Product, Design, Delivery).
+- [x] **Nawigacja:** Test operacji Zoom i Pan. Sprawdzenie, czy tło (Background Dots) i siatka reagują płynnie.
+
+### 2. Renderowanie i Interakcja (Kompletna Macierz Testowa)
+Zweryfikowano każdy typ komponentu we wszystkich Workspace'ach:
+- [x] **Discovery:** Patterns, Crews, Agents, Templates, Services, Automations - **PASS**
+- [x] **Product Management:** Patterns, Crews, Agents, Templates, Services, Automations - **PASS**
+- [x] **Design:** Patterns, Crews, Agents, Templates, Services, Automations - **PASS**
+- [x] **Delivery:** Patterns, Crews, Agents, Templates, Services, Automations - **PASS**
+- [x] **Growth & Market:** Patterns, Crews, Agents, Templates, Services, Automations - **PASS**
+
+**Szczegóły weryfikacji:**
+- [x] **Poprawność dodawania:** Każdy komponent z sidebaru pomyślnie pojawia się na Canvasie.
+- [x] **Inspekcja:** Kliknięcie w dowolny nowo dodany węzeł otwiera poprawny Inspector (Right Sidebar).
+- [x] **Brak błędów:** Brak "React Error Boundary" czy krytycznych błędów w konsoli podczas renderowania złożonych widoków (np. Crew Orchestration, Template Checklist).
+
+### 3. Menu Kontekstowe i Przejścia Stanów (Mock)
+- [x] **Zmiana stanu:** Prawy przycisk myszy na węźle "Idle" -> Wybór "Run". Weryfikacja wizualnej zmiany na "Working" (animacja spinnera).
+- [x] **Manipulacja:** Test funkcji "Duplicate" oraz "Delete" poprzez menu kontekstowe.
+
+### 4. Integralność Połączeń (Edges)
+- [x] Stworzenie nowego połączenia między węzłami.
+- [x] Weryfikacja, czy `SpaceCanvasCustomEdge` podąża za węzłami podczas ich przesuwania.
+
+## Faza 6: UI Consistency & UX State Integrity Across Workspaces
+
+**Cel:** Weryfikacja, czy reaktywne elementy UI (inputy, przyciski, walidacja) zachowują się identycznie pod kątem interakcji, mimo różnic w motywach kolorystycznych (Blue, Purple, Pink, Green, Yellow).
+
+### 1. Macierz kolorystyczna i reaktywność (Theming)
+- [ ] **Focus State:** Kliknięcie w input/textarea w Inspektorze. Czy `ring` lub `border-focus` używa poprawnej zmiennej koloru (np. `--workspace-primary`)?
+- [ ] **Hover States:** Sprawdzenie interaktywnych elementów w sidebarze. Czy przejścia (transitions) są płynne i zachowują spójny kontrast?
+- [ ] **Skeleton Loading:** Weryfikacja kolorystyki animacji ładowania (shimmer effect) – czy adaptuje się do tła workspace'u.
+
+### 2. Standaryzacja Walidacji (Error & Success States)
+- [ ] **Input Error:** Wpisanie błędnych danych/pozostawienie pustego pola wymaganego. Czy komunikat błędu i obramowanie są spójne (zgodne z `error-red`) i nie "gryzą się" z kolorem bazowym workspace'u?
+- [ ] **Validation Logic:** Czy tooltipy/popovery z błędami pojawiają się w tych samych pozycjach względem pól?
+- [ ] **Disabled States:** Sprawdzenie, czy pola "read-only" mają ten sam stopień przeźroczystości i szarości.
+
+### 3. Konsystencja Typografii i Odstępów (Spacing & Typography)
+- [ ] **Nagłówki sekcji:** Porównanie wielkości fontów i wag (font-weight) w Inspektorach różnych modułów.
+- [ ] **Paddingi/Marginesy:** Automatyczny pomiar odstępów między polami formularza, aby wyryć "pływający" layout.
+
+### 4. Interakcje Modalne i Overlaye
+- [ ] **Z-index Integrity:** Czy menu kontekstowe i tooltipy zawsze pojawiają się nad elementami React Flow we wszystkich widokach?
+- [ ] **Dark/Light Mode:** Test sprawdzający, czy przejście kolorystyczne workspace'u poprawnie reaguje na zmianę motywu systemowego.

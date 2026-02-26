@@ -1,0 +1,1 @@
+[    3368ms] [ERROR] React does not recognize the `%s` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `%s` instead. If you accidentally passed it from a parent component, remove it from the DOM element. asChild aschild @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117

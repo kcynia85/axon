@@ -20,6 +20,12 @@ export const SpaceCanvasView = ({ initialCanvasConfiguration }: SpaceCanvasViewP
     addNewNodeToCanvas,
     currentlySelectedNode,
     updateNodeDataOnCanvas,
+    duplicateNode,
+    deleteNodes,
+    updateNodesStatus,
+    copyNodes,
+    cutNodes,
+    pasteNodes,
   } = useSpaceCanvasOrchestrator(initialCanvasConfiguration);
 
   return (
@@ -35,6 +41,12 @@ export const SpaceCanvasView = ({ initialCanvasConfiguration }: SpaceCanvasViewP
         addNewNodeToCanvas={addNewNodeToCanvas}
         updateNodeDataOnCanvas={updateNodeDataOnCanvas}
         currentlySelectedNode={currentlySelectedNode}
+        duplicateNode={duplicateNode}
+        deleteNodes={deleteNodes}
+        updateNodesStatus={updateNodesStatus}
+        copyNodes={copyNodes}
+        cutNodes={cutNodes}
+        pasteNodes={pasteNodes}
     />
   );
 };

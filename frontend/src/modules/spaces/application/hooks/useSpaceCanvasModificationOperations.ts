@@ -65,8 +65,49 @@ export const useSpaceCanvasModificationOperations = (
     );
   }, [updateCanvasNodes]);
 
+  const duplicateNode = useCallback((node: Node) => {
+    const uniqueNodeIdentifier = `node_${Math.random().toString(36).substring(2, 11)}`;
+    const duplicatedNode: Node = {
+      ...node,
+      id: uniqueNodeIdentifier,
+      position: {
+        x: node.position.x + 50,
+        y: node.position.y + 50,
+      },
+      selected: false,
+    };
+    updateCanvasNodes((nodes) => nodes.concat(duplicatedNode));
+  }, [updateCanvasNodes]);
+
+  const deleteNodes = useCallback((nodeIds: string[]) => {
+    updateCanvasNodes((nodes) => nodes.filter((node) => !nodeIds.includes(node.id)));
+  }, [updateCanvasNodes]);
+
+  const updateNodesStatus = useCallback((nodeIds: string[], status: string) => {
+    updateCanvasNodes((nodes) =>
+      nodes.map((node) => {
+        if (nodeIds.includes(node.id)) {
+          // Different node types might use different status fields
+          const isService = node.type === 'service';
+          const statusField = isService ? 'status' : 'state';
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              [statusField]: status,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  }, [updateCanvasNodes]);
+
   return {
     addNewNodeToCanvas,
     updateNodeDataOnCanvas,
+    duplicateNode,
+    deleteNodes,
+    updateNodesStatus,
   };
 };

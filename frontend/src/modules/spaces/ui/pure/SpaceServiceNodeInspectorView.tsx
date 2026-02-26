@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/ui/pure/SpaceServiceNodeInspectorView.tsx
 
-import React from "react";
+import React, { useState } from "react";
 import {
     CardBody,
     Button,
@@ -18,7 +18,6 @@ import {
     Tooltip,
 } from "@heroui/react";
 import {
-    Link as LinkIcon,
     Archive,
     ExternalLink,
     ChevronDown,
@@ -27,10 +26,11 @@ import {
     ArrowUpRight,
     CheckCircle2,
     Search,
-    Network,
+    Link as LinkIcon,
 } from "lucide-react";
 import { SpaceServiceDomainData, TemplateArtefact } from "../../domain/types";
 import { cn } from "@/shared/lib/utils";
+import { SpaceCrewContextTab } from "../inspectors/crews/shared/SpaceCrewContextTab";
 
 type SpaceServiceNodeInspectorViewProps = {
     readonly data: SpaceServiceDomainData;
@@ -60,15 +60,6 @@ const MOCK_CAPABILITIES = [
     { key: "Data Extraction", label: "Data Extraction" },
 ];
 
-// Simulated list of outputs available in the current workspace with explicit types
-const DETECTED_WORKSPACE_OUTPUTS = [
-    { node: "User Researcher", artifact: "user_persona.json", type: "json" },
-    { node: "Interview Synthesis", artifact: "competitors_list.csv", type: "csv" },
-    { node: "Figma Sync", artifact: "design_assets.zip", type: "zip" },
-    { node: "Brand Engine", artifact: "logo_primary.png", type: "image" },
-    { node: "Copywriter Agent", artifact: "draft_v1.json", type: "json" },
-];
-
 export const SpaceServiceNodeInspectorView = ({
     data,
     isContextDone,
@@ -82,31 +73,20 @@ export const SpaceServiceNodeInspectorView = ({
     onCapabilityChange,
     onAttachedLabelChange,
 }: SpaceServiceNodeInspectorViewProps) => {
-    const [capabilitySearch, setCapabilitySearch] = React.useState("");
-    const [nodeSearch, setNodeSearch] = React.useState("");
+    const [capabilitySearch, setCapabilitySearch] = useState("");
+    const [nodeSearch, setNodeSearch] = useState("");
+    
     const filteredCapabilities = MOCK_CAPABILITIES.filter((cap) =>
         cap.label.toLowerCase().includes(capabilitySearch.toLowerCase())
     );
 
     return (
         <CardBody className="p-0 flex flex-col h-full bg-black text-white">
-            {/* Action Buttons Section */}
-            <div className="px-6 pt-6 pb-2 flex flex-col gap-2">
-                <div className="flex gap-2">
-                    <Button
-                        className="flex-1 font-black uppercase tracking-widest text-[10px] bg-zinc-200 text-black rounded-md hover:bg-white transition-all h-10 shadow-lg"
-                        startContent={<ExternalLink size={14} />}
-                    >
-                        Open {data.label}
-                    </Button>
-                </div>
-            </div>
-
             <Tabs
                 aria-label="Service Sections"
                 variant="underlined"
                 classNames={{
-                    base: "w-full border-b border-zinc-800 mt-2",
+                    base: "w-full border-b border-zinc-800",
                     tabList: "px-6 w-full gap-6",
                     cursor: "w-full bg-zinc-200 h-[2px]",
                     tab: "max-w-fit px-0 h-12 text-[10px] font-black uppercase tracking-widest text-zinc-500 data-[selected=true]:text-white",
@@ -123,171 +103,14 @@ export const SpaceServiceNodeInspectorView = ({
                         </div>
                     }
                 >
-                    <ScrollShadow className="h-[calc(100vh-320px)] p-8">
-                        <div className="space-y-10">
-                            {data.contexts?.map((context) => {
-                                // Filter outputs based on expected type and search
-                                const compatibleOutputs = DETECTED_WORKSPACE_OUTPUTS.filter(out =>
-                                    (!context.expectedType ||
-                                    context.expectedType === 'any' ||
-                                    out.type === context.expectedType) &&
-                                    (out.node.toLowerCase().includes(nodeSearch.toLowerCase()) || 
-                                     out.artifact.toLowerCase().includes(nodeSearch.toLowerCase()))
-                                );
-
-                                return (
-                                    <div key={context.id} className="space-y-3.5">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <h4 className="text-xs font-black text-white tracking-tight">{context.label}</h4>
-                                                {context.expectedType && context.expectedType !== 'any' && (
-                                                    <span className="text-[8px] font-black px-1.5 py-0.5 bg-zinc-800 text-zinc-500 rounded border border-zinc-700 uppercase">
-                                                        {context.expectedType}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {context.link && (
-                                                <a
-                                                    href={context.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1"
-                                                >
-                                                    Open <ExternalLink size={10} />
-                                                </a>
-                                            )}
-                                        </div>
-
-                                        {context.sourceNodeLabel ? (
-                                            <div className="p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl flex items-center gap-3">
-                                                <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400">
-                                                    <Network size={14} />
-                                                </div>
-                                                <div className="flex flex-col flex-1 min-w-0">
-                                                    <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Linked from Node</span>
-                                                    <span className="text-[10px] font-black text-zinc-200 truncate">{context.sourceNodeLabel}</span>
-                                                    <span className="text-[9px] font-bold text-zinc-500 font-mono truncate">{context.sourceArtifactLabel}</span>
-                                                </div>
-                                                <Button
-                                                    size="sm"
-                                                    variant="light"
-                                                    className="min-w-0 h-8 px-2 text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-widest"
-                                                    onPress={() => onContextLinkChange(context.id, "")}
-                                                >
-                                                    Clear
-                                                </Button>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-col gap-2">
-                                                <Input
-                                                    size="sm"
-                                                    variant="bordered"
-                                                    placeholder="Paste link or link from node..."
-                                                    value={context.link || ""}
-                                                    onValueChange={(value) => onContextLinkChange(context.id, value)}
-                                                    startContent={<LinkIcon size={12} className="text-zinc-500" />}
-                                                    classNames={{
-                                                        input: "text-[10px] font-bold text-zinc-200",
-                                                        inputWrapper: "h-10 rounded-lg border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition-colors shadow-none",
-                                                    }}
-                                                />
-
-                                                <div className="flex justify-start">
-                                                    <Select
-                                                        size="sm"
-                                                        variant="flat"
-                                                        aria-label="Node Outputs"
-                                                        placeholder="Link from Node Output"
-                                                        selectedKeys={[]}
-                                                        isDisabled={compatibleOutputs.length === 0 && nodeSearch === ""}
-                                                        onSelectionChange={(keys) => {
-                                                            const key = Array.from(keys)[0];
-                                                            if (key !== undefined) {
-                                                                const source = compatibleOutputs[Number(key)];
-                                                                if (source) {
-                                                                    onLinkContextFromNode(context.id, source.node, source.artifact);
-                                                                }
-                                                            }
-                                                        }}
-                                                        onOpenChange={(isOpen) => !isOpen && setNodeSearch("")}
-                                                        classNames={{
-                                                            base: "w-full max-w-[260px]",
-                                                            trigger: "h-9 bg-zinc-900/50 text-zinc-400 font-black uppercase tracking-widest text-[10px] rounded-lg border border-zinc-800 hover:text-white hover:border-zinc-700 shadow-none data-[hover=true]:bg-zinc-800 transition-all",
-                                                            value: "text-zinc-400 font-black uppercase tracking-widest text-[10px]",
-                                                            popoverContent: "bg-zinc-950 border border-zinc-800 rounded-xl p-0 shadow-2xl",
-                                                            listbox: "p-2",
-                                                        }}
-                                                        renderValue={() => (
-                                                            <div className="flex items-center gap-2.5">
-                                                                <Network size={14} className="text-zinc-500" />
-                                                                <span>Link from Node Output</span>
-                                                            </div>
-                                                        )}
-                                                        listboxProps={{
-                                                            topContent: (
-                                                                <div className="px-1 py-2 border-b border-zinc-900 mb-1">
-                                                                    <Input
-                                                                        size="sm"
-                                                                        placeholder="Search node or artifact..."
-                                                                        value={nodeSearch}
-                                                                        onChange={(e) => setNodeSearch(e.target.value)}
-                                                                        onKeyDown={(e) => {
-                                                                            if (e.key !== "ArrowDown" && e.key !== "ArrowUp" && e.key !== "Enter" && e.key !== "Escape") {
-                                                                                e.stopPropagation();
-                                                                            }
-                                                                        }}
-                                                                        startContent={<Search size={14} className="text-zinc-600" />}
-                                                                        classNames={{
-                                                                            input: "text-zinc-300 text-[11px] font-bold",
-                                                                            inputWrapper: "h-9 bg-zinc-900 border-zinc-800 hover:border-zinc-700 transition-colors",
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                            )
-                                                        }}
-                                                    >
-                                                        {compatibleOutputs.length > 0 ? (
-                                                            compatibleOutputs.map((source, index) => (
-                                                                <SelectItem 
-                                                                    key={index} 
-                                                                    textValue={source.node}
-                                                                    className="data-[hover=true]:bg-zinc-900/80 rounded-lg py-2.5 px-3"
-                                                                >
-                                                                    <div className="flex flex-col gap-1">
-                                                                        <div className="flex items-center justify-between gap-4">
-                                                                            <span className="text-[11px] font-black uppercase tracking-wider text-zinc-200">
-                                                                                {source.node}
-                                                                            </span>
-                                                                            <span className="text-[8px] font-black px-1.5 py-0.5 bg-zinc-900 text-zinc-600 rounded border border-zinc-800 uppercase tracking-tighter shrink-0">
-                                                                                {source.type}
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="flex items-center gap-1.5">
-                                                                            <Archive size={10} className="text-zinc-600" />
-                                                                            <span className="text-[10px] font-bold text-zinc-500 font-mono truncate">
-                                                                                {source.artifact}
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </SelectItem>
-                                                            ))
-                                                        ) : (
-                                                            <SelectItem key="none" isReadOnly className="text-[10px] font-black uppercase tracking-widest text-zinc-700 text-center py-6 italic">
-                                                                No matching outputs
-                                                            </SelectItem>
-                                                        )}
-                                                    </Select>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                            {(!data.contexts || data.contexts.length === 0) && (
-                                <p className="text-xs text-zinc-600 italic text-center py-10">No context links required.</p>
-                            )}
-                        </div>
-                    </ScrollShadow>
+                    <SpaceCrewContextTab 
+                        isContextComplete={isContextDone}
+                        contextRequirements={data.contexts || []}
+                        nodeSearch={nodeSearch}
+                        setNodeSearch={setNodeSearch}
+                        handleContextLinkChange={onContextLinkChange}
+                        handleLinkContextFromNode={onLinkContextFromNode}
+                    />
                 </Tab>
 
                 <Tab
@@ -300,8 +123,8 @@ export const SpaceServiceNodeInspectorView = ({
                         </div>
                     }
                 >
-                    <div className="flex flex-col h-[calc(100vh-320px)] relative">
-                        <ScrollShadow className="flex-1 p-8 pb-32">
+                    <div className="flex flex-col h-[calc(100vh-220px)] relative">
+                        <ScrollShadow className="flex-1 p-8 pb-48">
                             <div className="space-y-10">
                                 {data.artefacts?.map((art) => (
                                     <div key={art.id} className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-3">
@@ -497,7 +320,7 @@ export const SpaceServiceNodeInspectorView = ({
 
                             </div>
                         </ScrollShadow>
-                        <div className="absolute bottom-0 left-0 right-0 p-6 bg-black border-t border-zinc-900 border-solid z-10 w-full shadow-[0px_-20px_20px_0px_rgba(0,0,0,0.8)]">
+                        <div className="absolute bottom-0 left-0 right-0 p-6 bg-black border-t border-zinc-900 border-solid z-10 w-full shadow-[0px_-20px_20px_0px_rgba(0,0,0,0.8)] space-y-3">
                             <Button
                                 variant="bordered"
                                 className="w-full border-solid border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 h-10 text-[10px] font-black uppercase tracking-widest"
@@ -505,6 +328,12 @@ export const SpaceServiceNodeInspectorView = ({
                                 onPress={onAddArtefact}
                             >
                                 Dodaj Artefakt
+                            </Button>
+                            <Button
+                                className="w-full font-black uppercase tracking-widest text-[10px] bg-zinc-200 text-black rounded-md hover:bg-white transition-all h-10 shadow-lg"
+                                startContent={<ExternalLink size={14} />}
+                            >
+                                Open {data.label}
                             </Button>
                         </div>
                     </div>

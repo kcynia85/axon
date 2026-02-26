@@ -11,20 +11,20 @@ describe('Resources Domain Schemas - Contract Tests', () => {
         it('should validate a complete archetype', () => {
             const validArchetype = {
                 id: '550e8400-e29b-41d4-a716-446655440000',
-                archetypeName: 'Expert Researcher',
-                archetypeDescription: 'A thorough research assistant',
-                archetypeRole: 'Senior Researcher',
-                archetypeGoal: 'Provide comprehensive research',
-                archetypeBackstory: 'PhD in Computer Science',
-                archetypeGuardrails: {
+                archetype_name: 'Expert Researcher',
+                archetype_description: 'A thorough research assistant',
+                archetype_role: 'Senior Researcher',
+                archetype_goal: 'Provide comprehensive research',
+                archetype_backstory: 'PhD in Computer Science',
+                archetype_guardrails: {
                     instructions: ['Be thorough', 'Cite sources'],
                     constraints: ['No speculation']
                 },
-                archetypeKnowledgeHubs: [{ id: 'hub-1', name: 'Research' }],
-                archetypeKeywords: ['research', 'analysis'],
-                workspaceDomain: 'engineering',
-                createdAt: '2024-01-15T10:00:00Z',
-                updatedAt: '2024-01-15T10:00:00Z'
+                archetype_knowledge_hubs: [{ id: 'hub-1', name: 'Research' }],
+                archetype_keywords: ['research', 'analysis'],
+                workspace_domain: 'engineering',
+                created_at: '2024-01-15T10:00:00Z',
+                updated_at: '2024-01-15T10:00:00Z'
             };
 
             const result = PromptArchetypeSchema.safeParse(validArchetype);
@@ -36,14 +36,14 @@ describe('Resources Domain Schemas - Contract Tests', () => {
         it('should validate external service', () => {
             const validService = {
                 id: '550e8400-e29b-41d4-a716-446655440000',
-                serviceName: 'OpenAI API',
-                serviceCategory: 'Business',
-                serviceUrl: 'https://api.openai.com',
-                serviceKeywords: ['ai', 'llm'],
-                availabilityWorkspace: ['engineering'],
+                service_name: 'OpenAI API',
+                service_category: 'Business',
+                service_url: 'https://api.openai.com',
+                service_keywords: ['ai', 'llm'],
+                availability_workspace: ['engineering'],
                 capabilities: [],
-                createdAt: '2024-01-15T10:00:00Z',
-                updatedAt: '2024-01-15T10:00:00Z'
+                created_at: '2024-01-15T10:00:00Z',
+                updated_at: '2024-01-15T10:00:00Z'
             };
 
             const result = ExternalServiceSchema.safeParse(validService);
@@ -55,17 +55,17 @@ describe('Resources Domain Schemas - Contract Tests', () => {
         it('should validate internal tool', () => {
             const validTool = {
                 id: '550e8400-e29b-41d4-a716-446655440000',
-                toolFunctionName: 'search_knowledge',
-                toolDisplayName: 'Search Knowledge',
-                toolDescription: 'Search the knowledge base',
-                toolCategory: 'AI_Utils',
-                toolKeywords: ['search', 'rag'],
-                toolInputSchema: { type: 'object', properties: {} },
-                toolOutputSchema: { type: 'object', properties: {} },
-                toolIsActive: true,
-                availabilityWorkspace: ['default'],
-                createdAt: '2024-01-15T10:00:00Z',
-                updatedAt: '2024-01-15T10:00:00Z'
+                tool_function_name: 'search_knowledge',
+                tool_display_name: 'Search Knowledge',
+                tool_description: 'Search the knowledge base',
+                tool_category: 'AI_Utils',
+                tool_keywords: ['search', 'rag'],
+                tool_input_schema: { type: 'object', properties: {} },
+                tool_output_schema: { type: 'object', properties: {} },
+                tool_is_active: true,
+                availability_workspace: ['default'],
+                created_at: '2024-01-15T10:00:00Z',
+                updated_at: '2024-01-15T10:00:00Z'
             };
 
             const result = InternalToolSchema.safeParse(validTool);
@@ -77,20 +77,19 @@ describe('Resources Domain Schemas - Contract Tests', () => {
         it('should validate automation', () => {
             const validAutomation = {
                 id: '550e8400-e29b-41d4-a716-446655440000',
-                automationName: 'Slack Notification',
-                automationDescription: 'Send notifications to Slack',
-                automationPlatform: 'Webhook',
-                automationWebhookUrl: 'https://hooks.slack.com/...',
-                automationHttpMethod: 'POST',
-                automationAuthConfig: { type: 'bearer' },
-                automationInputSchema: { type: 'object' },
-                automationOutputSchema: { type: 'object' },
-                automationValidationStatus: 'UNTESTED',
-                automationKeywords: ['slack', 'notification'],
-                availabilityWorkspace: ['default'],
-                executions: [],
-                createdAt: '2024-01-15T10:00:00Z',
-                updatedAt: '2024-01-15T10:00:00Z'
+                automation_name: 'Slack Notification',
+                automation_description: 'Send notifications to Slack',
+                automation_platform: 'Custom',
+                automation_webhook_url: 'https://hooks.slack.com/services/123',
+                automation_http_method: 'POST',
+                automation_auth_config: { type: 'bearer' },
+                automation_input_schema: { type: 'object' },
+                automation_output_schema: { type: 'object' },
+                automation_validation_status: 'Untested',
+                automation_keywords: ['slack', 'notification'],
+                availability_workspace: ['default'],
+                created_at: '2024-01-15T10:00:00Z',
+                updated_at: '2024-01-15T10:00:00Z'
             };
 
             const result = AutomationSchema.safeParse(validAutomation);

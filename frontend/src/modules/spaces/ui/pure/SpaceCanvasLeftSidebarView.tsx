@@ -185,6 +185,7 @@ export const SpaceCanvasLeftSidebarView: React.FC<SpaceCanvasLeftSidebarViewProp
                                                         onPress={() => onAddComponent?.(component.type, {
                                                             label: component.displayName,
                                                             type: component.type,
+                                                            zoneColor: component.zoneColor,
                                                         }, currentlySelectedWorkspaceIdentifier ?? "")}
                                                     >
                                                         <Plus size={14} strokeWidth={3} />

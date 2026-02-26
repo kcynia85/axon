@@ -1,0 +1,89 @@
+// frontend/src/modules/spaces/ui/inspectors/components/SpaceArtefactBlockNoteEditor.tsx
+
+import React, { useMemo } from "react";
+import { BlockNoteView } from "@blocknote/mantine";
+import { useCreateBlockNote } from "@blocknote/react";
+import "@blocknote/mantine/style.css";
+import "@blocknote/core/fonts/inter.css";
+
+type SpaceArtefactBlockNoteEditorProps = {
+    readonly initialContent?: string;
+    readonly onChange: (content: string) => void;
+};
+
+export const SpaceArtefactBlockNoteEditor = ({ 
+    initialContent, 
+    onChange 
+}: SpaceArtefactBlockNoteEditorProps) => {
+    const initialBlocks = useMemo(() => {
+        if (!initialContent) return undefined;
+        try {
+            return JSON.parse(initialContent);
+        } catch (e) {
+            console.error("Failed to parse BlockNote content for artefact", e);
+            return undefined;
+        }
+    }, [initialContent]);
+
+    const editor = useCreateBlockNote({
+        initialContent: initialBlocks,
+    });
+
+    const handleChange = () => {
+        const content = JSON.stringify(editor.document);
+        onChange(content);
+    };
+
+    return (
+        <div className="min-h-[300px] border border-zinc-800 rounded-xl bg-zinc-900/20 overflow-hidden">
+            <BlockNoteView 
+                editor={editor} 
+                theme="dark"
+                onChange={handleChange}
+                className="min-h-[280px]"
+                data-axon-editor="artefact"
+            />
+            <style jsx global>{`
+                /* Font Overrides */
+                [data-axon-editor="artefact"] .bn-editor,
+                [data-axon-editor="artefact"] .bn-block-content,
+                [data-axon-editor="artefact"] .bn-inline-content {
+                    font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+                }
+
+                /* Container tweaks */
+                [data-axon-editor="artefact"] .bn-editor {
+                    padding-inline: 16px !important;
+                    background: transparent !important;
+                }
+                
+                /* Typography overrides */
+                [data-axon-editor="artefact"] .bn-block-content[data-content-type="heading"] {
+                    font-weight: 900 !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: -0.025em !important;
+                    color: white !important;
+                }
+                
+                [data-axon-editor="artefact"] .bn-inline-content {
+                    font-size: 13px !important;
+                    line-height: 1.6 !important;
+                    color: #d4d4d8 !important; /* zinc-300 */
+                }
+
+                [data-axon-editor="artefact"] .bn-side-menu {
+                    opacity: 0.3;
+                    transition: opacity 0.2s;
+                }
+                
+                [data-axon-editor="artefact"] .bn-side-menu:hover {
+                    opacity: 1;
+                }
+
+                .bn-editor {
+                    box-shadow: none !important;
+                }
+            `}</style>
+        </div>
+    );
+};
