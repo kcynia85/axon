@@ -154,13 +154,13 @@
       cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
       transition: filter 0.2s ease !important;
       pointer-events: all !important;
-      z-index: 100 !important;
-      border-radius: 1rem; /* Match NodeVisualProperties rounded-2xl */
+      z-index: 10;
+      border-radius: 1rem;
     }
     
     .react-flow__node-zone {
-      z-index: 1 !important;
-      border-radius: 2rem; /* Match mapZoneToViewModel rounded-[2rem] */
+      z-index: 0;
+      border-radius: 2rem;
     }
     
     .react-flow__node:hover {
