@@ -4,7 +4,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, SelectionMode, useViewport } from '@xyflow/react';
 import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle, Maximize2, Minimize2 } from 'lucide-react';
 
 import { SpaceZoneCanvasNode } from '../nodes/SpaceZoneCanvasNode';
 import { SpaceAgentCanvasNode } from '../nodes/SpaceAgentCanvasNode';
@@ -91,6 +91,7 @@ export const SpaceCanvasPresentationView = ({
   const [menu, setMenu] = useState<{ id?: string; top: number; left: number; type: 'node' | 'pane' | 'selection' } | null>(null);
   const [analyzedBlueprint, setAnalyzedBlueprint] = useState<SpacePatternBlueprint | null>(null);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const { screenToFlowPosition, flowToScreenPosition, getNodes } = useReactFlow();
   const { x: vpX, y: vpY, zoom: vpZoom } = useViewport();
@@ -108,8 +109,15 @@ export const SpaceCanvasPresentationView = ({
             if (!isSpacePressed) {
                 setIsSpacePressed(true);
             }
-            // Prevent page scrolling when space is pressed
             e.preventDefault();
+        }
+
+        if (e.code === 'KeyF') {
+            setIsFullscreen(prev => !prev);
+        }
+
+        if (e.code === 'Escape' && isFullscreen) {
+            setIsFullscreen(false);
         }
     };
     
@@ -126,7 +134,7 @@ export const SpaceCanvasPresentationView = ({
         window.removeEventListener('keydown', handleGlobalKeyDown);
         window.removeEventListener('keyup', handleGlobalKeyUp);
     };
-  }, [isSpacePressed]);
+  }, [isSpacePressed, isFullscreen]);
 
   const selectedNodes = useMemo(() => canvasNodes.filter(n => n.selected), [canvasNodes]);
   const zonesInSelection = useMemo(() => selectedNodes.filter(n => n.type === 'zone'), [selectedNodes]);
@@ -312,11 +320,13 @@ export const SpaceCanvasPresentationView = ({
 
   return (
     <div className="w-full h-full relative bg-black font-mono text-white selection:bg-purple-500/30" onClick={onPaneClick}>
-      <SpaceCanvasHeader 
-        activeSpaceDisplayName="Project Phoenix" 
-        parentProjectDisplayName="Axon Redesign" 
-        parentProjectIdentifier="axon-redesign" 
-      />
+      {!isFullscreen && (
+        <SpaceCanvasHeader 
+          activeSpaceDisplayName="Project Phoenix" 
+          parentProjectDisplayName="Axon Redesign" 
+          parentProjectIdentifier="axon-redesign" 
+        />
+      )}
 
       <ReactFlow
         nodes={canvasNodes}
@@ -358,7 +368,7 @@ export const SpaceCanvasPresentationView = ({
 
         {/* Floating Selection Backdrop & FAB */}
         <AnimatePresence>
-            {selectionScreenBounds && isSuperPatternSelection && (
+            {selectionScreenBounds && isSuperPatternSelection && !isFullscreen && (
                 <>
                     {/* Gray Selection Backdrop - only for super pattern selection */}
                     <Panel position="top-left" style={{ 
@@ -400,26 +410,43 @@ export const SpaceCanvasPresentationView = ({
             )}
         </AnimatePresence>
 
-        <Panel position="bottom-right" className="z-50 pointer-events-auto m-4">
-          <Controls className="bg-zinc-900 border border-zinc-200 rounded-lg shadow-2xl p-1 fill-white stroke-white" />
-        </Panel>
+        {!isFullscreen && (
+          <Panel position="bottom-right" className="z-50 pointer-events-auto m-4">
+            <Controls className="bg-zinc-900 border border-zinc-200 rounded-lg shadow-2xl p-1 fill-white stroke-white" />
+          </Panel>
+        )}
 
-        <Panel position="top-left" className="m-0 z-50">
-          <SpaceCanvasLeftSidebar onAddComponent={addNewNodeToCanvas} />
-        </Panel>
+        {!isFullscreen && (
+          <Panel position="top-left" className="m-0 z-50">
+            <SpaceCanvasLeftSidebar onAddComponent={addNewNodeToCanvas} />
+          </Panel>
+        )}
 
-        <Panel position="top-right" className="m-0 z-50">
-          {selectedNodes.length === 1 && (
-            <SpaceCanvasRightSidebar 
-              currentlySelectedNodeInformation={currentlySelectedNode ? {
-                id: currentlySelectedNode.id,
-                type: currentlySelectedNode.type || 'unknown',
-                data: currentlySelectedNode.data
-              } : null} 
-              handleNodeDataPropertyChange={updateNodeDataOnCanvas} 
-              canvasNodes={canvasNodes}
-            />
-          )}
+        {!isFullscreen && (
+          <Panel position="top-right" className="m-0 z-50">
+            {selectedNodes.length === 1 && (
+              <SpaceCanvasRightSidebar 
+                currentlySelectedNodeInformation={currentlySelectedNode ? {
+                  id: currentlySelectedNode.id,
+                  type: currentlySelectedNode.type || 'unknown',
+                  data: currentlySelectedNode.data
+                } : null} 
+                handleNodeDataPropertyChange={updateNodeDataOnCanvas} 
+                canvasNodes={canvasNodes}
+              />
+            )}
+          </Panel>
+        )}
+
+        {/* Fullscreen Toggle Button - visible in corner or via shortcut */}
+        <Panel position="top-right" className={cn("z-[1000] m-4", isFullscreen ? "fixed" : "hidden")}>
+            <button 
+                onClick={() => setIsFullscreen(false)}
+                className="p-2 bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors"
+                title="Exit Fullscreen (Esc)"
+            >
+                <Minimize2 size={18} />
+            </button>
         </Panel>
 
         <AnimatePresence>
@@ -484,9 +511,11 @@ export const SpaceCanvasPresentationView = ({
       />
       
       {/* Footer Branding */}
-      <div className="absolute bottom-6 left-6 z-50 flex items-center gap-2 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all pointer-events-none">
-          <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-black text-white text-lg italic shadow-lg">N</div>
-      </div>
+      {!isFullscreen && (
+        <div className="absolute bottom-6 left-6 z-50 flex items-center gap-2 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all pointer-events-none">
+            <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-black text-white text-lg italic shadow-lg">N</div>
+        </div>
+      )}
     </div>
   );
 };
