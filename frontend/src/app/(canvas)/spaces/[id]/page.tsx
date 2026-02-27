@@ -37,7 +37,7 @@ const SpaceCanvasPage = () => {
   return (
       <main className="h-screen w-screen overflow-hidden bg-[#f9f9f9] dark:bg-[#0a0a0a]">
         <ReactFlowProvider>
-          <SpaceCanvasView initialCanvasConfiguration={initialCanvasInformation} />
+          <SpaceCanvasView initialConfiguration={initialCanvasInformation} />
         </ReactFlowProvider>
       </main>
   );

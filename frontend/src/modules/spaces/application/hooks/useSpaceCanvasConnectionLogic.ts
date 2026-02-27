@@ -19,9 +19,14 @@ export const useSpaceCanvasConnectionLogic = (
       const isConnectionBetweenTwoZones = 
         sourceNodeOfConnection?.type === 'zone' && targetNodeOfConnection?.type === 'zone';
       
+      const isBoundaryConnection = 
+        (sourceNodeOfConnection?.type === 'zone' && targetNodeOfConnection?.parentId === sourceNodeOfConnection?.id) ||
+        (targetNodeOfConnection?.type === 'zone' && sourceNodeOfConnection?.parentId === targetNodeOfConnection?.id);
+
       const visualStyleForNewEdge = { 
-        stroke: '#666', 
-        strokeWidth: isConnectionBetweenTwoZones ? 3 : 2 
+        stroke: isBoundaryConnection ? '#aaa' : '#666', 
+        strokeWidth: isConnectionBetweenTwoZones ? 3 : 2,
+        strokeDasharray: isBoundaryConnection ? '5,5' : 'none'
       };
 
       updateCanvasEdges((previousCanvasEdges) => 
@@ -36,6 +41,11 @@ export const useSpaceCanvasConnectionLogic = (
 
   const validateConnectionBetweenNodes = useCallback(
     (connectionParameters: Connection) => {
+      // 0. Prevent self-connections (Input to Output within the same Node)
+      if (connectionParameters.source === connectionParameters.target) {
+        return false;
+      }
+
       const currentCanvasNodes = getNodes();
       const sourceNodeOfConnection = currentCanvasNodes.find((node) => node.id === connectionParameters.source);
       const targetNodeOfConnection = currentCanvasNodes.find((node) => node.id === connectionParameters.target);
@@ -52,12 +62,23 @@ export const useSpaceCanvasConnectionLogic = (
         return true;
       }
 
-      // 2. Zone to Entity (or vice versa) is NOT allowed
-      if (isSourceNodeRepresentingAZone !== isTargetNodeRepresentingAZone) {
+      // 2. Boundary Connection: Child to Parent Zone
+      if (isSourceNodeRepresentingAZone && targetNodeOfConnection.parentId === sourceNodeOfConnection.id) {
+        // Parent Zone to its Child: Allowed if using internal handle
+        return connectionParameters.sourceHandle?.endsWith('-int') ?? false;
+      }
+
+      if (isTargetNodeRepresentingAZone && sourceNodeOfConnection.parentId === targetNodeOfConnection.id) {
+        // Child to its Parent Zone: Allowed if using internal handle
+        return connectionParameters.targetHandle?.endsWith('-int') ?? false;
+      }
+
+      // 3. Zone to OTHER Entity (not its child) is NOT allowed
+      if (isSourceNodeRepresentingAZone || isTargetNodeRepresentingAZone) {
         return false;
       }
 
-      // 3. Entity to Entity is allowed ONLY if they are in the same zone
+      // 4. Entity to Entity is allowed ONLY if they are in the same zone
       return sourceNodeOfConnection.parentId === targetNodeOfConnection.parentId;
     },
     [getNodes],

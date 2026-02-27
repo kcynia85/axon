@@ -13,7 +13,7 @@ export const SpaceCrewOrchestrationLayout = ({
     footer 
 }: SpaceCrewOrchestrationLayoutProps) => {
   return (
-    <div className="flex flex-col h-[calc(100vh-220px)]">
+    <div className="flex flex-col h-full">
       <ScrollShadow className="flex-1 p-8">
         {children}
       </ScrollShadow>

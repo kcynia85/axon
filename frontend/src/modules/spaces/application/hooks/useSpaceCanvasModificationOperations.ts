@@ -2,11 +2,13 @@
 
 import { useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
-import type { Node } from '@xyflow/react';
+import type { Node, Edge } from '@xyflow/react';
 import { mapTemplateWorkspaceConfigToNodeData } from '../../domain/defaults';
 
 export const useSpaceCanvasModificationOperations = (
-  updateCanvasNodes: React.Dispatch<React.SetStateAction<Node[]>>
+  updateCanvasNodes: React.Dispatch<React.SetStateAction<Node[]>>,
+  updateCanvasEdges: React.Dispatch<React.SetStateAction<Edge[]>>,
+  takeSnapshot: () => void
 ) => {
   const { getNodes } = useReactFlow();
 
@@ -15,6 +17,7 @@ export const useSpaceCanvasModificationOperations = (
     initialNodeData: Record<string, unknown>,
     targetWorkspaceId: string
   ) => {
+    takeSnapshot();
     const currentCanvasNodes = getNodes();
     const parentZoneForNewNode = currentCanvasNodes.find(
       (node) => node.type === 'zone' && node.data.type === targetWorkspaceId
@@ -55,7 +58,7 @@ export const useSpaceCanvasModificationOperations = (
     };
 
     updateCanvasNodes((previousCanvasNodes) => previousCanvasNodes.concat(newlyCreatedNode));
-  }, [getNodes, updateCanvasNodes]);
+  }, [getNodes, updateCanvasNodes, takeSnapshot]);
 
   const updateNodeDataOnCanvas = useCallback((nodeId: string, newNodeData: Record<string, unknown>) => {
     updateCanvasNodes((previousCanvasNodes) =>
@@ -66,6 +69,7 @@ export const useSpaceCanvasModificationOperations = (
   }, [updateCanvasNodes]);
 
   const duplicateNode = useCallback((node: Node) => {
+    takeSnapshot();
     const uniqueNodeIdentifier = `node_${Math.random().toString(36).substring(2, 11)}`;
     const duplicatedNode: Node = {
       ...node,
@@ -77,11 +81,15 @@ export const useSpaceCanvasModificationOperations = (
       selected: false,
     };
     updateCanvasNodes((nodes) => nodes.concat(duplicatedNode));
-  }, [updateCanvasNodes]);
+  }, [updateCanvasNodes, takeSnapshot]);
 
   const deleteNodes = useCallback((nodeIds: string[]) => {
+    takeSnapshot();
+    // 1. Remove nodes
     updateCanvasNodes((nodes) => nodes.filter((node) => !nodeIds.includes(node.id)));
-  }, [updateCanvasNodes]);
+    // 2. Remove associated edges
+    updateCanvasEdges((edges) => edges.filter((edge) => !nodeIds.includes(edge.source) && !nodeIds.includes(edge.target)));
+  }, [updateCanvasNodes, updateCanvasEdges, takeSnapshot]);
 
   const updateNodesStatus = useCallback((nodeIds: string[], status: string) => {
     updateCanvasNodes((nodes) =>

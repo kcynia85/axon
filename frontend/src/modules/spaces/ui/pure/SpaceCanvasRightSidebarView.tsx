@@ -21,6 +21,7 @@ import {
     SpaceTemplateDomainData,
     SpaceZoneDomainData
 } from "../../domain/types";
+import { Node } from "@xyflow/react";
 
 const GenericNodeInspector = ({ nodeInformation }: { readonly nodeInformation: SpaceCanvasNodeInformation }) => (
     <div className="p-8">
@@ -38,6 +39,7 @@ type SpaceCanvasRightSidebarViewProperties = {
     readonly handleStatusChange: (selection: unknown) => void;
     readonly handleArtifactStatusChange: (selection: unknown) => void;
     readonly handlePropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
+    readonly canvasNodes: Node[];
 };
 
 export const SpaceCanvasRightSidebarView = ({
@@ -47,6 +49,7 @@ export const SpaceCanvasRightSidebarView = ({
     handleStatusChange,
     handleArtifactStatusChange,
     handlePropertyChange,
+    canvasNodes,
 }: SpaceCanvasRightSidebarViewProperties) => {
 
     if (!currentlySelectedNodeInformation) {
@@ -61,6 +64,7 @@ export const SpaceCanvasRightSidebarView = ({
                         data={currentlySelectedNodeInformation.data as SpaceZoneDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={(name, value) => handlePropertyChange(name, value)}
+                        canvasNodes={canvasNodes}
                     />
                 ) : effectiveNodeType === 'agent' ? (
                     <SpaceAgentNodeInspector

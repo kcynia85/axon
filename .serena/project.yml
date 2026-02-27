@@ -25,7 +25,6 @@
 # Note that when using the JetBrains backend, language servers are not used and this list is correspondingly ignored.
 languages:
 - typescript
-- python
 
 # the encoding used by text files in the project
 # For a list of possible encodings, see https://docs.python.org/3.11/library/codecs.html#standard-encodings
@@ -49,6 +48,7 @@ ignored_paths:
 - "**/*.log"
 - "**/dist/**"
 - "out/**"
+- "**/__pycache__/**"
 # the name by which the project can be referenced within Serena
 project_name: "axon"
 
@@ -131,7 +131,7 @@ default_modes:
 # such as docstrings or parameter information.
 # This overrides the corresponding setting in the global configuration; see the documentation there.
 # If null or missing, use the setting from the global configuration.
-symbol_info_budget:
+symbol_info_budget: 2
 
 # whether the project is in read-only mode
 # If set to true, all editing tools will be disabled and attempts to use them will result in an error

@@ -17,7 +17,7 @@ export const SpaceCrewCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperti
             <Handle 
                 type="target" 
                 position={Position.Left} 
-                className="w-3 h-3 !border-zinc-800 !bg-zinc-500" 
+                className={viewModel.visual.handleClassName} 
             />
             
             <SpaceCrewNodeView viewModel={viewModel} />
@@ -25,7 +25,7 @@ export const SpaceCrewCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperti
             <Handle 
                 type="source" 
                 position={Position.Right} 
-                className="w-3 h-3 !border-zinc-800 !bg-zinc-500" 
+                className={viewModel.visual.handleClassName} 
             />
         </div>
     );

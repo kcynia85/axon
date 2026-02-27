@@ -3,7 +3,6 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import {
-    CardBody,
     ScrollShadow,
     Divider,
     Tabs,
@@ -29,6 +28,7 @@ import {
 } from "lucide-react";
 import { SpaceTemplateDomainData, TemplateAction, TemplateArtefact } from "../../domain/types";
 import { cn } from "@/shared/lib/utils";
+import { SpaceInspectorPanel } from "../inspectors/components/SpaceInspectorPanel";
 
 const SpaceTemplateCustomActionsEditor = dynamic(
     () => import("../inspectors/components/SpaceTemplateCustomActionsEditor").then(mod => mod.SpaceTemplateCustomActionsEditor),
@@ -68,7 +68,7 @@ export const SpaceTemplateNodeInspectorView = ({
     onArtefactOutputToggle,
 }: SpaceTemplateNodeInspectorViewProps) => {
     return (
-        <CardBody className="p-0 flex flex-col h-full bg-black">
+        <SpaceInspectorPanel>
             <Tabs
                 aria-label="Template Sections"
                 variant="underlined"
@@ -77,7 +77,7 @@ export const SpaceTemplateNodeInspectorView = ({
                     tabList: "px-6 w-full gap-6",
                     cursor: "w-full bg-zinc-200 h-[2px]",
                     tab: "max-w-fit px-0 h-12 text-[10px] font-black uppercase tracking-widest text-zinc-500 data-[selected=true]:text-white",
-                    tabContent: "group-data-[selected=true]:text-white transition-colors"
+                    tabContent: "group-data-[selected=true]:text-white transition-colors p-0"
                 }}
             >
                 <Tab
@@ -90,7 +90,7 @@ export const SpaceTemplateNodeInspectorView = ({
                         </div>
                     }
                 >
-                    <ScrollShadow className="h-[calc(100vh-220px)] p-8">
+                    <ScrollShadow className="h-[calc(100vh-192px)] p-8">
                         <div className="space-y-12">
                             {Object.entries(groupedActions).map(([sectionName, actions]) => (
                                 <div key={sectionName} className="space-y-5">
@@ -148,7 +148,7 @@ export const SpaceTemplateNodeInspectorView = ({
                         </div>
                     }
                 >
-                    <ScrollShadow className="h-[calc(100vh-220px)] p-8">
+                    <ScrollShadow className="h-[calc(100vh-192px)] p-8">
                         <div className="space-y-8">
                             {data.contexts?.map((context) => (
                                 <div key={context.id} className="space-y-3">
@@ -192,11 +192,15 @@ export const SpaceTemplateNodeInspectorView = ({
                         <div className="flex items-center gap-2">
                             <Archive size={12} />
                             Artefacts
-                            {isArtefactsDone && <CheckCircle2 size={10} className="text-green-500" />}
+                            {data.artefacts?.some(a => a.status === 'in_review') ? (
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                            ) : data.artefacts && data.artefacts.length > 0 ? (
+                                <CheckCircle2 size={10} className="text-green-500" />
+                            ) : null}
                         </div>
                     }
                 >
-                    <ScrollShadow className="h-[calc(100vh-220px)] p-8">
+                    <ScrollShadow className="h-[calc(100vh-192px)] p-8">
                         <div className="space-y-10">
                             {data.artefacts?.map((art) => (
                                 <div key={art.id} className="space-y-3.5">
@@ -276,13 +280,12 @@ export const SpaceTemplateNodeInspectorView = ({
                                                 isIconOnly
                                                 size="sm"
                                                 variant="bordered"
-                                                isDisabled={art.status !== 'approved'}
                                                 className={cn(
-                                                    "h-10 w-10 border-zinc-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed",
+                                                    "h-10 w-10 border-zinc-800 transition-all",
                                                     art.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
                                                 )}
                                                 onPress={() => onArtefactOutputToggle(art.id)}
-                                                title={art.status === 'approved' ? "Mark as Workflow Output" : "Approve artefact to mark as output"}
+                                                title="Mark as Workflow Output"
                                             >
                                                 <ArrowUpRight size={14} />
                                             </Button>
@@ -298,6 +301,6 @@ export const SpaceTemplateNodeInspectorView = ({
                     </ScrollShadow>
                 </Tab>
             </Tabs>
-        </CardBody>
+        </SpaceInspectorPanel>
     );
 };

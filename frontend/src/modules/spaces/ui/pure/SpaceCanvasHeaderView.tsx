@@ -26,13 +26,7 @@ export const SpaceCanvasHeaderView = ({
                 <Card className="bg-black border border-zinc-200 shadow-[0_0_30px_rgba(0,0,0,0.5)] rounded-2xl py-3 px-8 min-w-[340px]">
                     <CardBody className="p-0 flex-row justify-between items-center gap-8 overflow-visible">
                         <div className="flex flex-col gap-0.5">
-                            <div className="flex items-center gap-3">
-                                <h1 className="text-2xl font-black tracking-tight text-white">{activeSpaceDisplayName}</h1>
-                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                    <span className="text-[9px] font-black uppercase text-green-500 tracking-wider">Active</span>
-                                </div>
-                            </div>
+                            <h1 className="text-2xl font-black tracking-tight text-white">{activeSpaceDisplayName}</h1>
                             <span className="text-[11px] font-bold text-zinc-500 tracking-wide">
                                 Linked: <Link href={`/projects/${parentProjectIdentifier}`} className="text-zinc-300 hover:text-white underline decoration-zinc-700 underline-offset-4 transition-colors">{parentProjectDisplayName}</Link>
                             </span>

@@ -7,7 +7,7 @@ import { useSpaceCanvasOrchestrator } from '../application/hooks/useSpaceCanvasO
 import { SpaceCanvasPresentationView } from './pure/SpaceCanvasPresentationView';
 import { SpaceCanvasViewProperties } from '../domain/types';
 
-export const SpaceCanvasView = ({ initialCanvasConfiguration }: SpaceCanvasViewProperties) => {
+export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanvasViewProperties) => {
   const {
     canvasNodes,
     canvasEdges,
@@ -26,10 +26,14 @@ export const SpaceCanvasView = ({ initialCanvasConfiguration }: SpaceCanvasViewP
     copyNodes,
     cutNodes,
     pasteNodes,
-  } = useSpaceCanvasOrchestrator(initialCanvasConfiguration);
+    createPatternFromSelection,
+    instantiatePatternFromBlueprint,
+    handleKeyDown,
+  } = useSpaceCanvasOrchestrator(initialConfiguration);
 
   return (
     <SpaceCanvasPresentationView 
+        workspaceId={workspaceId}
         canvasNodes={canvasNodes}
         canvasEdges={canvasEdges}
         handleCanvasNodesChange={handleCanvasNodesChange}
@@ -47,6 +51,10 @@ export const SpaceCanvasView = ({ initialCanvasConfiguration }: SpaceCanvasViewP
         copyNodes={copyNodes}
         cutNodes={cutNodes}
         pasteNodes={pasteNodes}
+        createPatternFromSelection={createPatternFromSelection}
+        instantiatePatternFromBlueprint={instantiatePatternFromBlueprint}
+        handleKeyDown={handleKeyDown}
     />
   );
 };
+

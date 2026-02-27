@@ -77,7 +77,7 @@ export const SpaceCanvasLeftSidebarView: React.FC<SpaceCanvasLeftSidebarViewProp
             
             {/* Level 1: Workspaces Selection View */}
             {!currentlySelectedWorkspaceIdentifier && (
-                <Card className="bg-black border border-zinc-200 shadow-2xl w-72 h-full rounded-2xl flex flex-col overflow-hidden">
+                <Card className="bg-black border border-zinc-200 shadow-2xl w-64 h-full rounded-2xl flex flex-col overflow-hidden">
                      <div className="px-6 py-4 border-b border-zinc-200">
                          <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-zinc-400">Workspaces</h2>
                      </div>
@@ -102,7 +102,7 @@ export const SpaceCanvasLeftSidebarView: React.FC<SpaceCanvasLeftSidebarViewProp
 
             {/* Level 2: Components Catalog View */}
             {currentlySelectedWorkspaceIdentifier && (
-                <Card className="bg-black border border-zinc-200 shadow-2xl w-72 h-full rounded-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-right-4 duration-200">
+                <Card className="bg-black border border-zinc-200 shadow-2xl w-64 h-full rounded-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-right-4 duration-200">
                     <CardBody className="p-0 flex flex-col h-full">
                         <div className={`p-6 border-b border-zinc-200 ${activeWorkspaceHeaderClassName}`}>
                             <div className="flex items-center gap-2 mb-4">

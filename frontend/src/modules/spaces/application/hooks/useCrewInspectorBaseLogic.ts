@@ -1,7 +1,12 @@
 // frontend/src/modules/spaces/application/hooks/useCrewInspectorBaseLogic.ts
 
 import { useState, useCallback, useMemo } from "react";
-import { SpaceCrewDomainData, TemplateArtefact, CrewTask } from "../../domain/types";
+import { SpaceCrewDomainData, TemplateArtefact, TemplateContext } from "../../domain/types";
+
+const DEFAULT_CREW_CONTEXT: TemplateContext[] = [
+    { id: 'creq_1', label: 'market_research_data', expectedType: 'json' },
+    { id: 'creq_2', label: 'strategic_goals', expectedType: 'any' }
+];
 
 export const useCrewInspectorBaseLogic = (
     data: SpaceCrewDomainData,
@@ -38,6 +43,12 @@ export const useCrewInspectorBaseLogic = (
     const totalTasks = tasks.length;
     const progressValue = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
+    const contextRequirements = useMemo(() => {
+        return (data.context_requirements && data.context_requirements.length > 0) 
+            ? data.context_requirements 
+            : DEFAULT_CREW_CONTEXT;
+    }, [data.context_requirements]);
+
     const handleTaskLabelChange = useCallback((taskId: string, newLabel: string) => {
         const nextTasks = tasks.map(t => t.id === taskId ? { ...t, label: newLabel } : t);
         onPropertyChange({ tasks: nextTasks });
@@ -51,22 +62,20 @@ export const useCrewInspectorBaseLogic = (
     }, [data.artefacts, onPropertyChange]);
 
     const handleContextLinkChange = useCallback((contextId: string, link: string) => {
-        const contextRequirements = data.context_requirements || [];
         const newContexts = contextRequirements.map(c => 
             c.id === contextId ? { ...c, link, sourceNodeLabel: undefined, sourceArtifactLabel: undefined } : c
         );
         onPropertyChange('context_requirements', newContexts);
-    }, [data.context_requirements, onPropertyChange]);
+    }, [contextRequirements, onPropertyChange]);
 
     const handleLinkContextFromNode = useCallback((contextId: string, nodeLabel: string, artifactLabel: string) => {
-        const contextRequirements = data.context_requirements || [];
         const newContexts = contextRequirements.map(c => 
             c.id === contextId 
                 ? { ...c, link: `node://${nodeLabel}/${artifactLabel}`, sourceNodeLabel: nodeLabel, sourceArtifactLabel: artifactLabel } 
                 : c
         );
         onPropertyChange('context_requirements', newContexts);
-    }, [data.context_requirements, onPropertyChange]);
+    }, [contextRequirements, onPropertyChange]);
 
     const handleArtefactStatusChange = useCallback((artefactId: string, status: TemplateArtefact['status']) => {
         const newArtefacts = (data.artefacts || []).map(a => 
@@ -102,9 +111,13 @@ export const useCrewInspectorBaseLogic = (
         setConsultationAnswers(prev => ({ ...prev, [questionId]: answer }));
     }, []);
 
-    const contextRequirements = data.context_requirements || [];
-    const missingFields = contextRequirements.filter(r => !r.link && !r.sourceNodeLabel);
-    const isContextComplete = contextRequirements.length === 0 || missingFields.length === 0;
+    const missingFields = useMemo(() => 
+        contextRequirements.filter(r => !r.link && !r.sourceNodeLabel),
+    [contextRequirements]);
+
+    const isContextComplete = useMemo(() => 
+        missingFields.length === 0,
+    [missingFields]);
 
     return {
         consultationAnswers,
@@ -126,6 +139,7 @@ export const useCrewInspectorBaseLogic = (
         isConsultation,
         isBriefing,
         isDone,
+        isAborted,
         tasks,
         logs,
         sharedMemory,

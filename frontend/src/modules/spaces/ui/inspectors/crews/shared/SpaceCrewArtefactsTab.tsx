@@ -162,13 +162,12 @@ export const SpaceCrewArtefactsTab = ({
                                     isIconOnly
                                     size="sm"
                                     variant="bordered"
-                                    isDisabled={art.status !== 'approved'}
                                     className={cn(
-                                        "h-10 w-10 border-zinc-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed",
+                                        "h-10 w-10 border-zinc-800 transition-all",
                                         art.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
                                     )}
                                     onPress={() => handleArtefactOutputToggle(art.id)}
-                                    title={art.status === 'approved' ? "Mark as Workflow Output" : "Approve artefact to mark as output"}
+                                    title="Mark as Workflow Output"
                                 >
                                     <ArrowUpRight size={14} />
                                 </Button>

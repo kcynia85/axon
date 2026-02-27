@@ -9,7 +9,8 @@ import { SpaceCanvasRightSidebarView } from "./pure/SpaceCanvasRightSidebarView"
 
 export const SpaceCanvasRightSidebar = ({ 
     currentlySelectedNodeInformation, 
-    handleNodeDataPropertyChange 
+    handleNodeDataPropertyChange,
+    canvasNodes
 }: SpaceCanvasRightSidebarProperties) => {
     const {
         effectiveNodeType,
@@ -27,6 +28,7 @@ export const SpaceCanvasRightSidebar = ({
             handleStatusChange={handleStatusChange}
             handleArtifactStatusChange={handleArtifactStatusChange}
             handlePropertyChange={handlePropertyChange}
+            canvasNodes={canvasNodes}
         />
     );
 };

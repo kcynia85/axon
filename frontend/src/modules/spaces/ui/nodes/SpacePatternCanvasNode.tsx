@@ -17,7 +17,7 @@ export const SpacePatternCanvasNode = memo((nodeProperties: SpaceCanvasNodePrope
             <Handle 
                 type="target" 
                 position={Position.Left} 
-                className="w-3 h-3 !border-zinc-800 !bg-zinc-500" 
+                className={viewModel.visual.handleClassName} 
             />
             
             <SpacePatternNodeView viewModel={viewModel} />
@@ -25,7 +25,7 @@ export const SpacePatternCanvasNode = memo((nodeProperties: SpaceCanvasNodePrope
             <Handle 
                 type="source" 
                 position={Position.Right} 
-                className="w-3 h-3 !border-zinc-800 !bg-zinc-500" 
+                className={viewModel.visual.handleClassName} 
             />
         </div>
     );

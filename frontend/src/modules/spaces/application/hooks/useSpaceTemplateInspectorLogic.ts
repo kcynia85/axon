@@ -76,9 +76,7 @@ export const useSpaceTemplateInspectorLogic = (
 
     const isArtefactsDone = useMemo(() => {
         if (!data.artefacts || data.artefacts.length === 0) return false;
-        return data.artefacts.every(art => 
-            !!art.link && art.link.trim() !== "" && art.status === 'approved'
-        );
+        return data.artefacts.length > 0;
     }, [data.artefacts]);
 
     return {

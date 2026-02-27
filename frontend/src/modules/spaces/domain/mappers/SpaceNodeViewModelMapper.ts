@@ -36,14 +36,15 @@ const mapVisualProperties = (
     isSelected: boolean
 ): NodeVisualProperties => {
     const styles = getVisualStylesForZoneColor(colorIdentifier);
+    const handleBackgroundColor = isSelected ? styles.handleBackgroundClassName : '!bg-zinc-700';
 
     return {
         containerClassName: `w-[280px] bg-black border-2 transition-all rounded-2xl ${isSelected ? `${styles.borderClassName} ${styles.shadowClassName}` : 'border-zinc-700'}`,
         headerClassName: "p-4 flex items-start gap-3",
-        iconClassName: "p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400",
+        iconClassName: `p-2 rounded-lg bg-zinc-900 border border-zinc-800 ${styles.textClassName}`,
         titleClassName: "text-sm font-black text-white tracking-tight",
         subtitleClassName: "text-[9px] font-black text-zinc-500 uppercase tracking-widest",
-        handleClassName: "!w-2 !h-2 !border-zinc-800 !bg-zinc-500",
+        handleClassName: `!w-3 !h-3 !border-zinc-800 ${handleBackgroundColor} hover:!bg-zinc-200 transition-colors !z-50 !cursor-pointer`,
     };
 };
 
@@ -175,7 +176,7 @@ export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected
 };
 
 export const mapZoneToViewModel = (data: SpaceZoneDomainData, isSelected: boolean): SpaceZoneViewModel => {
-    const color = data.color || MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[data.type] || 'blue';
+    const color = data.color || 'blue';
     const styles = getVisualStylesForZoneColor(color);
 
     return {
@@ -185,7 +186,8 @@ export const mapZoneToViewModel = (data: SpaceZoneDomainData, isSelected: boolea
         labelClassName: `text-[10px] font-black uppercase tracking-[0.25em] ${styles.textClassName}`,
         resizerLineClassName: styles.resizerLineClassName || 'border-blue-500',
         resizerHandleClassName: styles.resizerHandleClassName || 'border-blue-500',
-        handleClassName: `!w-4 !h-4 !border-2 !border-zinc-800 ${styles.handleBackgroundClassName?.replace('border-', 'bg-')} !opacity-100 hover:scale-125 transition-all`,
+        handleClassName: `!w-6 !h-6 !border-2 !border-zinc-800 ${styles.handleBackgroundClassName?.replace('border-', 'bg-')} !opacity-100 hover:scale-110 transition-all !z-50 !cursor-pointer`,
+        ports: data.ports || [],
     };
 };
 

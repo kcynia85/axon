@@ -1,12 +1,14 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceCanvasOrchestrator.ts
 
 import { useState, useCallback } from 'react';
-import type { Node } from '@xyflow/react';
+import type { Node, Edge } from '@xyflow/react';
 import { useSpaceCanvasState } from './useSpaceCanvasState';
 import { useSpaceCanvasConnectionLogic } from './useSpaceCanvasConnectionLogic';
 import { useSpaceCanvasDragAndDropLogic } from './useSpaceCanvasDragAndDropLogic';
 import { useSpaceCanvasModificationOperations } from './useSpaceCanvasModificationOperations';
+import { useSpaceCanvasHistory } from './useSpaceCanvasHistory';
 import { SpaceCanvasOrchestrationLogic } from '../../domain/types';
+import { BlueprintEngine, SpacePatternBlueprint } from '../../domain/BlueprintEngine';
 
 export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown): SpaceCanvasOrchestrationLogic => {
   const {
@@ -18,6 +20,13 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
     handleCanvasEdgesChange,
     currentlySelectedNode,
   } = useSpaceCanvasState(initialCanvasConfiguration);
+
+  const { takeSnapshot, handleKeyDown } = useSpaceCanvasHistory(
+    canvasNodes,
+    canvasEdges,
+    updateCanvasNodes,
+    updateCanvasEdges
+  );
 
   const {
     handleNewConnectionCreated,
@@ -35,7 +44,7 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
     duplicateNode,
     deleteNodes,
     updateNodesStatus,
-  } = useSpaceCanvasModificationOperations(updateCanvasNodes);
+  } = useSpaceCanvasModificationOperations(updateCanvasNodes, updateCanvasEdges, takeSnapshot);
 
   const [clipboard, setClipboard] = useState<{ nodes: Node[]; isCut: boolean } | null>(null);
 
@@ -47,9 +56,23 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
     setClipboard({ nodes, isCut: true });
   }, []);
 
+  const createPatternFromSelection = useCallback((name: string, description: string, type?: 'pattern' | 'super-pattern') => {
+    const selectedNodes = canvasNodes.filter(n => n.selected);
+    const blueprint = BlueprintEngine.serializeSelection(selectedNodes, canvasNodes, canvasEdges, { name, description, type });
+    return blueprint;
+  }, [canvasNodes, canvasEdges]);
+
+  const instantiatePatternFromBlueprint = useCallback((blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => {
+    takeSnapshot();
+    const { nodes, edges } = BlueprintEngine.instantiatePattern(blueprint, position);
+    updateCanvasNodes(current => [...current, ...nodes]);
+    updateCanvasEdges(current => [...current, ...edges]);
+  }, [updateCanvasNodes, updateCanvasEdges, takeSnapshot]);
+
   const pasteNodes = useCallback((position?: { x: number; y: number }) => {
     if (!clipboard) return;
 
+    takeSnapshot();
     const { nodes, isCut } = clipboard;
     
     const newNodes = nodes.map((node) => {
@@ -71,7 +94,7 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
       updateCanvasNodes((currentNodes) => currentNodes.filter(n => !cutNodeIds.includes(n.id)));
       setClipboard(null);
     }
-  }, [clipboard, updateCanvasNodes]);
+  }, [clipboard, updateCanvasNodes, takeSnapshot]);
 
   return {
     canvasNodes,
@@ -91,5 +114,8 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
     copyNodes,
     cutNodes,
     pasteNodes,
+    createPatternFromSelection,
+    instantiatePatternFromBlueprint,
+    handleKeyDown,
   };
 };

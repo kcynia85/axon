@@ -4,7 +4,35 @@ import React from 'react';
 import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
 import { WorkspaceColor } from './constants';
 
-// --- Domain Models (Raw Business Data) ---
+export type PatternInterfacePort = {
+  readonly id: string;
+  readonly label: string;
+  readonly type: 'input' | 'output';
+  readonly dataType: string;
+  readonly sourceNodeId?: string; // Which node inside the pattern powers this output
+};
+
+export type PatternExternalDependency = {
+  readonly zoneId: string;
+  readonly zoneLabel: string;
+  readonly connectedNodeIds: readonly string[];
+};
+
+export type SpacePatternBlueprint = {
+  readonly name: string;
+  readonly description: string;
+  readonly version: string;
+  readonly type: 'pattern' | 'super-pattern';
+  readonly createdAt: string;
+  readonly structure: {
+    readonly nodes: readonly Node[];
+    readonly edges: readonly Edge[];
+  };
+  readonly interface: {
+    readonly ports: readonly PatternInterfacePort[];
+  };
+  readonly dependencies: readonly PatternExternalDependency[];
+};
 
 export type AgentPlanStep = {
   readonly id: string;
@@ -143,12 +171,27 @@ export type SpaceTemplateDomainData = {
   readonly customActionsContent?: string;
 };
 
+export type ZoneInterfacePort = {
+  readonly id: string;
+  readonly label: string;
+  readonly type: 'input' | 'output';
+  readonly dataType: string;
+  readonly status?: 'idle' | 'data_ready' | 'error';
+};
+
+export type PortMapping = {
+  readonly childNodeId: string;
+  readonly portId: string;
+};
+
 export type SpaceZoneDomainData = {
   readonly label: string;
   readonly type: string;
   readonly color?: WorkspaceColor;
   readonly requiredContext?: string;
   readonly outputArtifact?: string;
+  readonly ports?: readonly ZoneInterfacePort[];
+  readonly mappings?: readonly PortMapping[];
 };
 
 export type SpaceEntityNodeDomainData = {
@@ -163,6 +206,12 @@ export type SpaceCanvasNodeInformation = {
   readonly id: string;
   readonly type: string;
   readonly data: Record<string, unknown>;
+};
+
+export type SpaceCanvasNodeProperties = {
+    readonly id: string;
+    readonly data: Record<string, unknown>;
+    readonly selected?: boolean;
 };
 
 // --- View Models (Pure Presentation Data) ---
@@ -271,6 +320,7 @@ export type SpaceZoneViewModel = {
   readonly resizerLineClassName: string;
   readonly resizerHandleClassName: string;
   readonly handleClassName: string;
+  readonly ports: readonly ZoneInterfacePort[];
 };
 
 export type SpaceEntityViewModel = {
@@ -285,71 +335,20 @@ export type SpaceEntityViewModel = {
 
 // --- Component Property Types ---
 
-export type SpaceCanvasNodeProperties = Node;
+export type SpaceCanvasHeaderProperties = {
+    readonly activeSpaceDisplayName: string;
+    readonly parentProjectDisplayName: string;
+    readonly parentProjectIdentifier?: string;
+};
 
 export type SpaceCanvasViewProperties = {
+  readonly workspaceId: string;
   readonly initialConfiguration?: unknown;
 };
 
-export type SpaceCanvasHeaderProperties = {
-  readonly activeSpaceDisplayName: string;
-  readonly parentProjectDisplayName: string;
-  readonly parentProjectIdentifier?: string;
-};
-
-export type SpaceCanvasLeftSidebarProperties = {
-  readonly onAddComponent?: (type: string, data: Record<string, unknown>, workspace: string) => void;
-};
-
-export type SpaceCanvasRightSidebarProperties = {
-  readonly currentlySelectedNodeInformation: SpaceCanvasNodeInformation | null;
-  readonly handleNodeDataPropertyChange: (nodeId: string, properties: Record<string, unknown>) => void;
-};
-
-// --- Inspector Properties ---
-
-export type SelectionChangeHandler = (selection: unknown) => void;
-
-export type SpaceAgentInspectorProperties = {
-  readonly data: SpaceAgentDomainData;
-  readonly nodeId: string;
-  readonly onStatusChange: SelectionChangeHandler;
-  readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
-};
-
-export type SpaceAutomationInspectorProperties = {
-  readonly data: SpaceAutomationDomainData;
-  readonly nodeId: string;
-  readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
-};
-
-export type SpaceCrewInspectorProperties = {
-  readonly data: SpaceCrewDomainData;
-  readonly nodeId: string;
-  readonly onStatusChange: SelectionChangeHandler;
-  readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
-};
-
-export type SpaceTemplateInspectorProperties = {
-  readonly data: SpaceTemplateDomainData;
-  readonly nodeId: string;
-  readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
-};
-
-export type SpaceZoneInspectorProperties = {
-  readonly data: SpaceZoneDomainData;
-  readonly nodeId: string;
-  readonly onPropertyChange: (name: string, value: string) => void;
-};
-
-export type SpacePatternNodeInspectorProperties = {
-  readonly patternNodeInformation: SpaceCanvasNodeInformation;
-};
-export type SpaceServiceInspectorProperties = {
-  readonly data: SpaceServiceDomainData;
-  readonly nodeId: string;
-  readonly onArtifactStatusChange: SelectionChangeHandler;
-  readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
+export type SpaceCanvasConnectionManagementLogic = {
+  readonly handleNewConnectionCreated: (connection: Connection) => void;
+  readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
 };
 
 export type SpaceCanvasStateConfiguration = {
@@ -362,22 +361,95 @@ export type SpaceCanvasStateConfiguration = {
   readonly currentlySelectedNode: Node | null;
 };
 
+export type SpaceCanvasRightSidebarProperties = {
+    readonly currentlySelectedNodeInformation: SpaceCanvasNodeInformation | null;
+    readonly handleNodeDataPropertyChange: (nodeUniqueIdentifier: string, updatedProperties: Record<string, unknown>) => void;
+    readonly canvasNodes: Node[];
+};
+
+export type SpaceAgentInspectorProperties = {
+    readonly data: SpaceAgentDomainData;
+    readonly nodeId: string;
+    readonly onStatusChange: (selection: unknown) => void;
+    readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
+};
+
+export type SpaceCrewInspectorProperties = {
+    readonly data: SpaceCrewDomainData;
+    readonly nodeId: string;
+    readonly onStatusChange: (selection: unknown) => void;
+    readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
+};
+
+export type SpaceAutomationInspectorProperties = {
+    readonly data: SpaceAutomationDomainData;
+    readonly nodeId: string;
+    readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
+};
+
+export type SpaceServiceInspectorProperties = {
+    readonly data: SpaceServiceDomainData;
+    readonly nodeId: string;
+    readonly onArtifactStatusChange: (selection: unknown) => void;
+    readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
+};
+
+export type SpaceTemplateInspectorProperties = {
+    readonly data: SpaceTemplateDomainData;
+    readonly nodeId: string;
+    readonly onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
+};
+
+export type SpaceZoneInspectorProperties = {
+    readonly data: SpaceZoneDomainData;
+    readonly nodeId: string;
+    readonly onPropertyChange: (propertyName: string, propertyValue: unknown) => void;
+    readonly canvasNodes?: Node[];
+};
+
 export type SpaceCanvasOrchestrationLogic = {
-  readonly canvasNodes: Node[];
-  readonly canvasEdges: Edge[];
-  readonly handleCanvasNodesChange: OnNodesChange;
-  readonly handleCanvasEdgesChange: OnEdgesChange;
-  readonly handleNewConnectionCreated: (connection: Connection) => void;
-  readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
-  readonly handleDragOverEvent: (event: React.DragEvent) => void;
-  readonly handleDropEvent: (event: React.DragEvent) => void;
-  readonly addNewNodeToCanvas: (type: string, data: Record<string, unknown>, workspace: string) => void;
-  readonly updateNodeDataOnCanvas: (nodeId: string, data: Record<string, unknown>) => void;
-  readonly currentlySelectedNode: Node | null;
-  readonly duplicateNode: (node: Node) => void;
-  readonly deleteNodes: (nodeIds: string[]) => void;
-  readonly updateNodesStatus: (nodeIds: string[], status: string) => void;
-  readonly copyNodes: (nodes: Node[]) => void;
-  readonly cutNodes: (nodes: Node[]) => void;
-  readonly pasteNodes: (position?: { x: number; y: number }) => void;
+    readonly canvasNodes: Node[];
+    readonly canvasEdges: Edge[];
+    readonly handleCanvasNodesChange: OnNodesChange;
+    readonly handleCanvasEdgesChange: OnEdgesChange;
+    readonly handleNewConnectionCreated: (connection: Connection) => void;
+    readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
+    readonly handleDragOverEvent: (event: React.DragEvent) => void;
+    readonly handleDropEvent: (event: React.DragEvent) => void;
+    readonly addNewNodeToCanvas: (type: string, data: Record<string, unknown>, workspace: string) => void;
+    readonly updateNodeDataOnCanvas: (nodeId: string, data: Record<string, unknown>) => void;
+    readonly currentlySelectedNode: Node | null;
+    readonly duplicateNode: (node: Node) => void;
+    readonly deleteNodes: (nodeIds: string[]) => void;
+    readonly updateNodesStatus: (nodeIds: string[], status: string) => void;
+    readonly copyNodes: (nodes: Node[]) => void;
+    readonly cutNodes: (nodes: Node[]) => void;
+    readonly pasteNodes: (position?: { x: number; y: number }) => void;
+    readonly createPatternFromSelection: (name: string, description: string, type?: 'pattern' | 'super-pattern') => SpacePatternBlueprint;
+    readonly instantiatePatternFromBlueprint: (blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => void;
+    readonly handleKeyDown: (event: React.KeyboardEvent) => void;
+};
+
+export type SpaceCanvasPresentationViewProperties = {
+    readonly workspaceId: string;
+    readonly canvasNodes: Node[];
+    readonly canvasEdges: Edge[];
+    readonly handleCanvasNodesChange: OnNodesChange;
+    readonly handleCanvasEdgesChange: OnEdgesChange;
+    readonly handleNewConnectionCreated: (connection: Connection) => void;
+    readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
+    readonly handleDragOverEvent: (event: React.DragEvent) => void;
+    readonly handleDropEvent: (event: React.DragEvent) => void;
+    readonly addNewNodeToCanvas: (type: string, data: Record<string, unknown>, workspace: string) => void;
+    readonly updateNodeDataOnCanvas: (nodeId: string, data: Record<string, unknown>) => void;
+    readonly currentlySelectedNode: Node | null;
+    readonly duplicateNode: (node: Node) => void;
+    readonly deleteNodes: (nodeIds: string[]) => void;
+    readonly updateNodesStatus: (nodeIds: string[], status: string) => void;
+    readonly copyNodes: (nodes: Node[]) => void;
+    readonly cutNodes: (nodes: Node[]) => void;
+    readonly pasteNodes: (position?: { x: number; y: number }) => void;
+    readonly createPatternFromSelection: (name: string, description: string, type?: 'pattern' | 'super-pattern') => SpacePatternBlueprint;
+    readonly instantiatePatternFromBlueprint: (blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => void;
+    readonly handleKeyDown: (event: React.KeyboardEvent) => void;
 };

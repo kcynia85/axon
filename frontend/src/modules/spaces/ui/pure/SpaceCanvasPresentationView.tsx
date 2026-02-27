@@ -1,10 +1,10 @@
 // frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx
 
-import React, { useState, useCallback } from 'react';
-import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow } from '@xyflow/react';
+import React, { useState, useCallback, useMemo } from 'react';
+import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, SelectionMode, useViewport } from '@xyflow/react';
 import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Square, Info, Copy, Scissors, Trash2, Save } from 'lucide-react';
+import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
 
 import { SpaceZoneCanvasNode } from '../nodes/SpaceZoneCanvasNode';
 import { SpaceAgentCanvasNode } from '../nodes/SpaceAgentCanvasNode';
@@ -19,7 +19,10 @@ import SpaceCanvasCustomEdge from '../edges/SpaceCanvasCustomEdge';
 import { SpaceCanvasHeader } from '../SpaceCanvasHeader';
 import { SpaceCanvasLeftSidebar } from '../SpaceCanvasLeftSidebar';
 import { SpaceCanvasRightSidebar } from '../SpaceCanvasRightSidebar';
+import { SpaceCreatePatternModal } from './SpaceCreatePatternModal';
 import { cn } from "@/shared/lib/utils";
+import { SpacePatternBlueprint } from '../../domain/types';
+import { useCreatePattern } from '@/modules/workspaces/application/usePatterns';
 
 import "@xyflow/react/dist/style.css";
 
@@ -39,6 +42,7 @@ const canvasEdgeComponents = {
 };
 
 type SpaceCanvasPresentationViewProperties = {
+    readonly workspaceId: string;
     readonly canvasNodes: Node[];
     readonly canvasEdges: Edge[];
     readonly handleCanvasNodesChange: OnNodesChange;
@@ -56,9 +60,13 @@ type SpaceCanvasPresentationViewProperties = {
     readonly copyNodes: (nodes: Node[]) => void;
     readonly cutNodes: (nodes: Node[]) => void;
     readonly pasteNodes: (position?: { x: number; y: number }) => void;
+    readonly createPatternFromSelection: (name: string, description: string, type?: 'pattern' | 'super-pattern') => SpacePatternBlueprint;
+    readonly instantiatePatternFromBlueprint: (blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => void;
+    readonly handleKeyDown: (event: React.KeyboardEvent) => void;
 };
 
 export const SpaceCanvasPresentationView = ({
+    workspaceId,
     canvasNodes,
     canvasEdges,
     handleCanvasNodesChange,
@@ -76,16 +84,78 @@ export const SpaceCanvasPresentationView = ({
     copyNodes,
     cutNodes,
     pasteNodes,
+    createPatternFromSelection,
+    instantiatePatternFromBlueprint,
+    handleKeyDown,
 }: SpaceCanvasPresentationViewProperties) => {
   const [menu, setMenu] = useState<{ id?: string; top: number; left: number; type: 'node' | 'pane' | 'selection' } | null>(null);
-  const { screenToFlowPosition, getNodes } = useReactFlow();
+  const [analyzedBlueprint, setAnalyzedBlueprint] = useState<SpacePatternBlueprint | null>(null);
+  const { screenToFlowPosition, flowToScreenPosition, getNodes } = useReactFlow();
+  const { x: vpX, y: vpY, zoom: vpZoom } = useViewport();
+
+  const { mutateAsync: createPattern } = useCreatePattern(workspaceId);
+
+  const selectedNodes = useMemo(() => canvasNodes.filter(n => n.selected), [canvasNodes]);
+  const zonesInSelection = useMemo(() => selectedNodes.filter(n => n.type === 'zone'), [selectedNodes]);
+  const isSuperPatternSelection = zonesInSelection.length > 1;
+
+  const selectionScreenBounds = useMemo(() => {
+      if (selectedNodes.length === 0) return null;
+      
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      
+      selectedNodes.forEach(node => {
+          // Get absolute canvas position
+          let absX = node.position.x;
+          let absY = node.position.y;
+          
+          let parentId = node.parentId;
+          while (parentId) {
+              const parent = canvasNodes.find(n => n.id === parentId);
+              if (parent) {
+                  absX += parent.position.x;
+                  absY += parent.position.y;
+                  parentId = parent.parentId;
+              } else {
+                  break;
+              }
+          }
+
+          const w = node.measured?.width || (node.type === 'zone' ? 400 : 200);
+          const h = node.measured?.height || (node.type === 'zone' ? 300 : 100);
+          
+          if (absX < minX) minX = absX;
+          if (absY < minY) minY = absY;
+          if (absX + w > maxX) maxX = absX + w;
+          if (absY + h > maxY) maxY = absY + h;
+      });
+
+      if (minX === Infinity) return null;
+
+      // Add larger padding to the selection area
+      const PADDING = 40;
+      const minXPadded = minX - PADDING;
+      const minYPadded = minY - PADDING;
+      const maxXPadded = maxX + PADDING;
+      const maxYPadded = maxY + PADDING;
+
+      // Convert absolute canvas bounds to screen coordinates
+      const topLeft = flowToScreenPosition({ x: minXPadded, y: minYPadded });
+      const bottomRight = flowToScreenPosition({ x: maxXPadded, y: maxYPadded });
+
+      return {
+          x: topLeft.x,
+          y: topLeft.y,
+          width: bottomRight.x - topLeft.x,
+          height: bottomRight.y - topLeft.y
+      };
+  }, [selectedNodes, canvasNodes, flowToScreenPosition, vpX, vpY, vpZoom]);
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
       event.preventDefault();
-      
-      const selectedNodes = getNodes().filter(n => n.selected);
-      if (selectedNodes.length > 1 && selectedNodes.some(n => n.id === node.id)) {
+      const currentSelectedNodes = getNodes().filter(n => n.selected);
+      if (currentSelectedNodes.length > 1 && currentSelectedNodes.some(n => n.id === node.id)) {
           setMenu({ top: event.clientY, left: event.clientX, type: 'selection' });
       } else {
           setMenu({ id: node.id, top: event.clientY, left: event.clientX, type: 'node' });
@@ -97,7 +167,20 @@ export const SpaceCanvasPresentationView = ({
   const onPaneContextMenu = useCallback(
     (event: React.MouseEvent) => {
       event.preventDefault();
-      setMenu({ top: event.clientY, left: event.clientX, type: 'pane' });
+      const currentSelectedNodes = getNodes().filter(n => n.selected);
+      if (currentSelectedNodes.length > 1) {
+          setMenu({ top: event.clientY, left: event.clientX, type: 'selection' });
+      } else {
+          setMenu({ top: event.clientY, left: event.clientX, type: 'pane' });
+      }
+    },
+    [getNodes]
+  );
+
+  const onSelectionContextMenu = useCallback(
+    (event: React.MouseEvent, _nodes: Node[]) => {
+      event.preventDefault();
+      setMenu({ top: event.clientY, left: event.clientX, type: 'selection' });
     },
     []
   );
@@ -105,8 +188,8 @@ export const SpaceCanvasPresentationView = ({
   const onPaneClick = useCallback(() => setMenu(null), []);
 
   const handleAction = useCallback((action: string) => {
-      const selectedNodes = getNodes().filter(n => n.selected);
       const targetNode = menu?.id ? getNodes().find(n => n.id === menu.id) : null;
+      const currentSelectedNodes = getNodes().filter(n => n.selected);
       
       switch (action) {
           case 'run':
@@ -120,21 +203,21 @@ export const SpaceCanvasPresentationView = ({
               break;
           case 'delete':
               if (menu?.type === 'selection') {
-                  deleteNodes(selectedNodes.map(n => n.id));
+                  deleteNodes(currentSelectedNodes.map(n => n.id));
               } else if (targetNode) {
                   deleteNodes([targetNode.id]);
               }
               break;
           case 'copy':
               if (menu?.type === 'selection') {
-                  copyNodes(selectedNodes);
+                  copyNodes(currentSelectedNodes);
               } else if (targetNode) {
                   copyNodes([targetNode]);
               }
               break;
           case 'cut':
               if (menu?.type === 'selection') {
-                  cutNodes(selectedNodes);
+                  cutNodes(currentSelectedNodes);
               } else if (targetNode) {
                   cutNodes([targetNode]);
               }
@@ -147,17 +230,49 @@ export const SpaceCanvasPresentationView = ({
               break;
           case 'details':
               if (targetNode) {
-                  // In this architecture, selection triggers the sidebar
                   handleCanvasNodesChange([{ id: targetNode.id, type: 'select', selected: true }]);
               }
               break;
-          case 'save-pattern':
-              console.log('Save selection as pattern', selectedNodes);
-              // Modal implementation would go here
+          case 'save-pattern': {
+              const blueprint = createPatternFromSelection("New Pattern", "", 'pattern');
+              setAnalyzedBlueprint(blueprint);
               break;
+          }
+          case 'save-super-pattern': {
+              const blueprint = createPatternFromSelection("New Super Pattern", "", 'super-pattern');
+              setAnalyzedBlueprint(blueprint);
+              break;
+          }
       }
       setMenu(null);
-  }, [menu, getNodes, updateNodesStatus, duplicateNode, deleteNodes, copyNodes, cutNodes, pasteNodes, screenToFlowPosition, handleCanvasNodesChange]);
+  }, [menu, getNodes, updateNodesStatus, duplicateNode, deleteNodes, copyNodes, cutNodes, pasteNodes, screenToFlowPosition, handleCanvasNodesChange, createPatternFromSelection]);
+
+  const handleSavePattern = async (name: string, description: string) => {
+      if (!analyzedBlueprint) return;
+      
+      try {
+          const finalBlueprint = { ...analyzedBlueprint, name, description };
+          
+          await createPattern({
+              pattern_name: finalBlueprint.name,
+              pattern_type: finalBlueprint.type === 'super-pattern' ? "Pattern" : "Pattern", // Mapping to enum
+              pattern_okr_context: finalBlueprint.description,
+              pattern_graph_structure: {
+                  ...finalBlueprint.structure,
+                  interface: finalBlueprint.interface,
+                  dependencies: finalBlueprint.dependencies,
+                  blueprint_type: finalBlueprint.type
+              },
+              pattern_keywords: [finalBlueprint.type, "Intelligent Mapping"],
+              availability_workspace: [workspaceId]
+          });
+
+          console.log('Intelligent Pattern Detected & Saved Successfully');
+          setAnalyzedBlueprint(null);
+      } catch (error) {
+          console.error('Failed to save pattern:', error);
+      }
+  };
 
   const targetNode = menu?.id ? getNodes().find(n => n.id === menu.id) : null;
   const isWorking = targetNode ? (targetNode.type === 'service' ? targetNode.data.status === 'in_progress' : targetNode.data.state === 'working') : false;
@@ -183,9 +298,11 @@ export const SpaceCanvasPresentationView = ({
         onDrop={handleDropEvent}
         onNodeContextMenu={onNodeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
+        onSelectionContextMenu={onSelectionContextMenu}
+        onKeyDown={handleKeyDown}
         fitView
         attributionPosition="bottom-right"
-        className="bg-black"
+        className="bg-black !cursor-default"
         minZoom={0.05}
         maxZoom={2}
         onlyRenderVisibleElements={true}
@@ -193,12 +310,59 @@ export const SpaceCanvasPresentationView = ({
         selectNodesOnDrag={false}
         panOnScroll={true}
         selectionOnDrag={true}
+        panOnDrag={[1, 2]}
+        selectionMode={SelectionMode.Partial}
+        selectionKeyCode={null}
         defaultEdgeOptions={{
             type: 'CustomEdge',
             style: { stroke: '#666', strokeWidth: 2 }
         }}
       >
         <Background color="#1a1a1a" gap={20} size={1} variant={BackgroundVariant.Dots} />
+
+        {/* Floating Selection Backdrop & FAB */}
+        <AnimatePresence>
+            {selectionScreenBounds && isSuperPatternSelection && (
+                <>
+                    {/* Gray Selection Backdrop - only for super pattern selection */}
+                    <Panel position="top-left" style={{ 
+                        transform: `translate(${selectionScreenBounds.x}px, ${selectionScreenBounds.y}px)`,
+                        width: selectionScreenBounds.width,
+                        height: selectionScreenBounds.height,
+                        position: 'absolute',
+                        margin: 0
+                    }} className="z-[900] pointer-events-none">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.98 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.98 }}
+                            className="w-full h-full bg-zinc-800/20 border-2 border-dashed border-zinc-500/30 rounded-[2.5rem]"
+                        />
+                    </Panel>
+
+                    {/* FAB at top-right of the selection area */}
+                    <Panel position="top-left" style={{ 
+                        transform: `translate(${selectionScreenBounds.x + selectionScreenBounds.width + 16}px, ${selectionScreenBounds.y}px)`,
+                        position: 'absolute',
+                        margin: 0
+                    }} className="z-[1000] pointer-events-auto">
+                        <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                        >
+                            <button
+                                onClick={(e) => { e.stopPropagation(); handleAction('save-super-pattern'); }}
+                                className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full font-black text-[10px] uppercase tracking-widest shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 transition-all"
+                            >
+                                <PlusCircle size={14} />
+                                Add as Super Pattern
+                            </button>
+                        </motion.div>
+                    </Panel>
+                </>
+            )}
+        </AnimatePresence>
 
         <Panel position="bottom-right" className="z-50 pointer-events-auto m-4">
           <Controls className="bg-zinc-900 border border-zinc-200 rounded-lg shadow-2xl p-1 fill-white stroke-white" />
@@ -209,14 +373,17 @@ export const SpaceCanvasPresentationView = ({
         </Panel>
 
         <Panel position="top-right" className="m-0 z-50">
-          <SpaceCanvasRightSidebar 
-            currentlySelectedNodeInformation={currentlySelectedNode ? {
-              id: currentlySelectedNode.id,
-              type: currentlySelectedNode.type || 'unknown',
-              data: currentlySelectedNode.data
-            } : null} 
-            handleNodeDataPropertyChange={updateNodeDataOnCanvas} 
-          />
+          {selectedNodes.length === 1 && (
+            <SpaceCanvasRightSidebar 
+              currentlySelectedNodeInformation={currentlySelectedNode ? {
+                id: currentlySelectedNode.id,
+                type: currentlySelectedNode.type || 'unknown',
+                data: currentlySelectedNode.data
+              } : null} 
+              handleNodeDataPropertyChange={updateNodeDataOnCanvas} 
+              canvasNodes={canvasNodes}
+            />
+          )}
         </Panel>
 
         <AnimatePresence>
@@ -240,6 +407,12 @@ export const SpaceCanvasPresentationView = ({
                                 <div className="h-px bg-zinc-800 my-1" />
                                 <ContextMenuAction icon={<Scissors size={14} />} label="Cut" onClick={() => handleAction('cut')} />
                                 <ContextMenuAction icon={<Copy size={14} />} label="Copy" onClick={() => handleAction('copy')} />
+                                {targetNode?.type === 'zone' && (
+                                    <>
+                                        <div className="h-px bg-zinc-800 my-1" />
+                                        <ContextMenuAction icon={<Save size={14} />} label="Save as Pattern" onClick={() => handleAction('save-pattern')} />
+                                    </>
+                                )}
                                 <div className="h-px bg-zinc-800 my-1" />
                                 <ContextMenuAction icon={<Trash2 size={14} className="text-red-500" />} label="Delete" onClick={() => handleAction('delete')} className="text-red-500 hover:bg-red-500/10" />
                             </>
@@ -250,7 +423,11 @@ export const SpaceCanvasPresentationView = ({
                                 <ContextMenuAction icon={<Copy size={14} />} label="Copy" onClick={() => handleAction('copy')} />
                                 <ContextMenuAction icon={<Trash2 size={14} className="text-red-500" />} label="Delete" onClick={() => handleAction('delete')} className="text-red-500 hover:bg-red-500/10" />
                                 <div className="h-px bg-zinc-800 my-1" />
-                                <ContextMenuAction icon={<Save size={14} />} label="Save Selection as Pattern" onClick={() => handleAction('save-pattern')} />
+                                {isSuperPatternSelection ? (
+                                    <ContextMenuAction icon={<Save size={14} />} label="Save as Super Pattern" onClick={() => handleAction('save-super-pattern')} />
+                                ) : (
+                                    <ContextMenuAction icon={<Save size={14} />} label="Save Selection as Pattern" onClick={() => handleAction('save-pattern')} />
+                                )}
                             </>
                         )}
                         {menu.type === 'pane' && (
@@ -262,6 +439,13 @@ export const SpaceCanvasPresentationView = ({
         </AnimatePresence>
 
       </ReactFlow>
+
+      <SpaceCreatePatternModal 
+          isOpen={!!analyzedBlueprint}
+          onClose={() => setAnalyzedBlueprint(null)}
+          onSave={handleSavePattern}
+          blueprint={analyzedBlueprint}
+      />
       
       {/* Footer Branding */}
       <div className="absolute bottom-6 left-6 z-50 flex items-center gap-2 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all pointer-events-none">
