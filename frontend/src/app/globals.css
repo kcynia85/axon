@@ -130,7 +130,37 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-mono;
-    font-family: var(--font-jetbrains-mono);
-  }
-}
+        @apply bg-background text-foreground font-mono;
+        font-family: var(--font-jetbrains-mono);
+      }
+    }
+    
+    /* React Flow Figma-style Cursor Overrides */
+    .react-flow__pane {
+      cursor: crosshair !important;
+    }
+    
+    .react-flow__pane.grabbing {
+      cursor: grabbing !important;
+    }
+    
+    .react-flow__node {
+      cursor: crosshair !important;
+    }
+    
+    .react-flow__node.dragging {
+      cursor: move !important;
+    }
+    
+    .react-flow__edge {
+      cursor: crosshair !important;
+    }
+    
+    .react-flow__handle {
+      cursor: crosshair !important;
+    }
+    
+    .react-flow__controls button {
+      cursor: pointer !important;
+    }
+    
