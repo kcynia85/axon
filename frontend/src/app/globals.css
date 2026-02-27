@@ -152,11 +152,11 @@
     
     .react-flow__node {
       cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
-      transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, filter 0.2s ease !important;
+      transition: scale 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease, filter 0.2s ease !important;
     }
     
     .react-flow__node:hover {
-      transform: scale(1.005);
+      scale: 1.005;
       filter: brightness(1.05);
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 20px 40px -15px rgba(0, 0, 0, 0.7) !important;
       z-index: 1000 !important;
