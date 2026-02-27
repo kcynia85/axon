@@ -1,10 +1,16 @@
 import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 
 import { cn } from "@/shared/lib/utils"
 
-const Card: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) => {
+export interface CardProps extends React.ComponentProps<"div"> {
+  asChild?: boolean
+}
+
+const Card: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+  const Comp = asChild ? Slot : "div"
   return (
-    <div
+    <Comp
       data-slot="card"
       className={cn(
         "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
@@ -15,9 +21,10 @@ const Card: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) =>
   )
 }
 
-const CardHeader: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) => {
+const CardHeader: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+  const Comp = asChild ? Slot : "div"
   return (
-    <div
+    <Comp
       data-slot="card-header"
       className={cn(
         "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-2 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6",
@@ -28,9 +35,10 @@ const CardHeader: React.FC<React.ComponentProps<"div">> = ({ className, ...props
   )
 }
 
-const CardTitle: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) => {
+const CardTitle: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+  const Comp = asChild ? Slot : "div"
   return (
-    <div
+    <Comp
       data-slot="card-title"
       className={cn("leading-none font-semibold", className)}
       {...props}
@@ -38,9 +46,10 @@ const CardTitle: React.FC<React.ComponentProps<"div">> = ({ className, ...props 
   )
 }
 
-const CardDescription: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) => {
+const CardDescription: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+  const Comp = asChild ? Slot : "div"
   return (
-    <div
+    <Comp
       data-slot="card-description"
       className={cn("text-muted-foreground text-sm", className)}
       {...props}
@@ -48,9 +57,10 @@ const CardDescription: React.FC<React.ComponentProps<"div">> = ({ className, ...
   )
 }
 
-const CardAction: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) => {
+const CardAction: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+  const Comp = asChild ? Slot : "div"
   return (
-    <div
+    <Comp
       data-slot="card-action"
       className={cn(
         "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
@@ -61,9 +71,10 @@ const CardAction: React.FC<React.ComponentProps<"div">> = ({ className, ...props
   )
 }
 
-const CardContent: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) => {
+const CardContent: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+  const Comp = asChild ? Slot : "div"
   return (
-    <div
+    <Comp
       data-slot="card-content"
       className={cn("px-6", className)}
       {...props}
@@ -71,9 +82,10 @@ const CardContent: React.FC<React.ComponentProps<"div">> = ({ className, ...prop
   )
 }
 
-const CardFooter: React.FC<React.ComponentProps<"div">> = ({ className, ...props }) => {
+const CardFooter: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+  const Comp = asChild ? Slot : "div"
   return (
-    <div
+    <Comp
       data-slot="card-footer"
       className={cn("flex items-center px-6 [.border-t]:pt-6", className)}
       {...props}

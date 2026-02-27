@@ -12,7 +12,7 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
         "overflow-hidden",
         viewModel.isConsultation && "border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.15)]"
     )}>
-        <CardHeader className="pb-2 pt-4 px-4 flex items-start justify-between">
+        <CardHeader className="pb-2 pt-4 px-4 flex items-start justify-between node-header">
             <div className="flex items-start gap-3">
                 <div className={cn(
                     viewModel.visual.iconClassName,
@@ -32,7 +32,7 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
             </div>
         </CardHeader>
 
-        <CardBody className="px-4 py-3 space-y-4">
+        <CardBody className="px-4 py-3 space-y-4 node-body">
             {/* Progress Section */}
             <div className="space-y-2">
                 <div className="flex justify-end items-center px-0.5">

@@ -94,7 +94,7 @@ export const SpaceCanvasPresentationView = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   
   const { screenToFlowPosition, flowToScreenPosition, getNodes } = useReactFlow();
-  const { x: vpX, y: vpY, zoom: vpZoom } = useViewport();
+  const { zoom: vpZoom } = useViewport();
 
   const { mutateAsync: createPattern } = useCreatePattern(workspaceId);
 
@@ -190,7 +190,7 @@ export const SpaceCanvasPresentationView = ({
           width: bottomRight.x - topLeft.x,
           height: bottomRight.y - topLeft.y
       };
-  }, [selectedNodes, canvasNodes, flowToScreenPosition, vpX, vpY, vpZoom]);
+  }, [selectedNodes, canvasNodes, flowToScreenPosition]);
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -320,6 +320,70 @@ export const SpaceCanvasPresentationView = ({
 
   return (
     <div className="w-full h-full relative bg-black font-mono text-white selection:bg-purple-500/30" onClick={onPaneClick}>
+      <style>{`
+        /* LOD CSS - Level of Detail optimizations */
+        
+        /* Level 1: Hide body details at mid zoom (< 0.4) */
+        .canvas-lod-mid .node-body {
+          display: none !important;
+        }
+        
+        /* Level 2: Hide titles and simplify nodes at low zoom (< 0.15) */
+        .canvas-lod-low .node-title,
+        .canvas-lod-low .node-subtitle {
+          display: none !important;
+        }
+        
+        .canvas-lod-low .node-container {
+          width: 60px !important;
+          height: 60px !important;
+          min-width: 0 !important;
+          border-radius: 12px !important;
+          border-width: 2px !important;
+          padding: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+        
+        .canvas-lod-low .node-header {
+          padding: 0 !important;
+          margin: 0 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+        
+        /* Level 3: Icons only / Dots at very low zoom (< 0.08) */
+        .canvas-lod-very-low .node-container {
+          width: 24px !important;
+          height: 24px !important;
+          border-radius: 50% !important;
+          border-width: 4px !important;
+        }
+        
+        .canvas-lod-very-low .node-icon {
+          background: transparent !important;
+          border: none !important;
+          padding: 0 !important;
+        }
+        
+        .canvas-lod-very-low .node-icon svg {
+          width: 14px !important;
+          height: 14px !important;
+        }
+
+        /* Keep Zone labels visible until very low zoom to allow dragging */
+        .canvas-lod-very-low .node-zone-label {
+          display: none !important;
+        }
+
+        /* Smooth transitions for LOD */
+        .node-container, .node-body, .node-title, .node-subtitle, .node-zone-label {
+          transition: all 0.2s ease-in-out;
+        }
+      `}</style>
+
       {!isFullscreen && (
         <SpaceCanvasHeader 
           activeSpaceDisplayName="Project Phoenix" 
@@ -347,7 +411,10 @@ export const SpaceCanvasPresentationView = ({
         attributionPosition="bottom-right"
         className={cn(
             "bg-black",
-            isSpacePressed && "is-space-panning"
+            isSpacePressed && "is-space-panning",
+            vpZoom < 0.4 && "canvas-lod-mid",
+            vpZoom < 0.15 && "canvas-lod-low",
+            vpZoom < 0.08 && "canvas-lod-very-low"
         )}
         minZoom={0.05}
         maxZoom={2}
@@ -357,8 +424,8 @@ export const SpaceCanvasPresentationView = ({
         panOnScroll={true}
         selectionOnDrag={!isSpacePressed}
         panOnDrag={isSpacePressed ? [1, 2] : [2]}
-        selectionMode={SelectionMode.Partial}
-        selectionKeyCode={null}
+        selectionMode={SelectionMode.Full}
+        selectionKeyCode="Shift"
         defaultEdgeOptions={{
             type: 'CustomEdge',
             style: { stroke: '#666', strokeWidth: 2 }
@@ -464,19 +531,19 @@ export const SpaceCanvasPresentationView = ({
                             <>
                                 <ContextMenuAction icon={<Play size={14} />} label="Run" onClick={() => handleAction('run')} disabled={isWorking} />
                                 <ContextMenuAction icon={<Square size={14} />} label="Stop" onClick={() => handleAction('stop')} disabled={!isWorking} />
-                                <div className="h-px bg-zinc-800 my-1" />
+                                <div className="h-px bg-zinc-800/10 my-1" />
                                 <ContextMenuAction icon={<Info size={14} />} label="View Details" onClick={() => handleAction('details')} />
                                 <ContextMenuAction icon={<Copy size={14} />} label="Duplicate" onClick={() => handleAction('duplicate')} />
-                                <div className="h-px bg-zinc-800 my-1" />
+                                <div className="h-px bg-zinc-800/10 my-1" />
                                 <ContextMenuAction icon={<Scissors size={14} />} label="Cut" onClick={() => handleAction('cut')} />
                                 <ContextMenuAction icon={<Copy size={14} />} label="Copy" onClick={() => handleAction('copy')} />
                                 {targetNode?.type === 'zone' && (
                                     <>
-                                        <div className="h-px bg-zinc-800 my-1" />
+                                        <div className="h-px bg-zinc-800/10 my-1" />
                                         <ContextMenuAction icon={<Save size={14} />} label="Save as Pattern" onClick={() => handleAction('save-pattern')} />
                                     </>
                                 )}
-                                <div className="h-px bg-zinc-800 my-1" />
+                                <div className="h-px bg-zinc-800/10 my-1" />
                                 <ContextMenuAction icon={<Trash2 size={14} className="text-red-500" />} label="Delete" onClick={() => handleAction('delete')} className="text-red-500 hover:bg-red-500/10" />
                             </>
                         )}
@@ -485,7 +552,7 @@ export const SpaceCanvasPresentationView = ({
                                 <ContextMenuAction icon={<Scissors size={14} />} label="Cut" onClick={() => handleAction('cut')} />
                                 <ContextMenuAction icon={<Copy size={14} />} label="Copy" onClick={() => handleAction('copy')} />
                                 <ContextMenuAction icon={<Trash2 size={14} className="text-red-500" />} label="Delete" onClick={() => handleAction('delete')} className="text-red-500 hover:bg-red-500/10" />
-                                <div className="h-px bg-zinc-800 my-1" />
+                                <div className="h-px bg-zinc-800/10 my-1" />
                                 {isSuperPatternSelection ? (
                                     <ContextMenuAction icon={<Save size={14} />} label="Save as Super Pattern" onClick={() => handleAction('save-super-pattern')} />
                                 ) : (

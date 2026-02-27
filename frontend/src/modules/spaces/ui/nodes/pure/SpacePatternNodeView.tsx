@@ -7,7 +7,7 @@ import { SpacePatternViewModel } from '../../../domain/types';
 
 export const SpacePatternNodeView = ({ viewModel }: { readonly viewModel: SpacePatternViewModel }) => (
     <Card className={viewModel.visual.containerClassName}>
-        <CardBody className="p-3">
+        <CardBody className="p-3 node-body">
              <div className="flex items-center gap-2 mb-3">
                  <div className={`w-8 h-8 rounded-lg border border-default-100 dark:border-default-700 flex items-center justify-center ${viewModel.iconBackgroundClassName}`}>
                     <Box size={18} />

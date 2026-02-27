@@ -17,7 +17,7 @@ export const SpaceTemplateNodeView = ({ viewModel }: { readonly viewModel: Space
             </div>
         </CardHeader>
         
-        <CardBody className="px-4 pb-5 pt-0 flex flex-col gap-3">
+        <CardBody className="px-4 pb-5 pt-0 flex flex-col gap-3 node-body">
             <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-end">
                     <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Progress</span>

@@ -9,7 +9,7 @@ export const SpaceEntityNodeView = ({ viewModel }: { readonly viewModel: SpaceEn
     <Card 
         className={viewModel.visual.containerClassName}
     >
-        <CardBody className="p-3">
+        <CardBody className="p-3 node-body">
             <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                      <div className={viewModel.visual.iconClassName}>

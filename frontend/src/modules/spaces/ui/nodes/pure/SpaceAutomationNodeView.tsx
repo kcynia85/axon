@@ -26,7 +26,7 @@ export const SpaceAutomationNodeView = ({ viewModel }: { readonly viewModel: Spa
             </div>
         </CardHeader>
         
-        <CardBody className="px-4 pb-5 pt-0">
+        <CardBody className="px-4 pb-5 pt-0 node-body">
             {viewModel.hasArtifact && (
                 <div className="flex items-center gap-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
                     <FileCode size={16} className="text-zinc-500" />

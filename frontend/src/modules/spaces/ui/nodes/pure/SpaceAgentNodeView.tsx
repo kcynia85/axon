@@ -17,7 +17,7 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
             </div>
         </CardHeader>
         
-        <CardBody className="px-4 pb-5 pt-0 flex flex-col gap-3">
+        <CardBody className="px-4 pb-5 pt-0 flex flex-col gap-3 node-body">
             {viewModel.isMissingContext && (
                 <div className="flex items-center gap-2 py-1">
                     <AlertCircle size={14} className="text-zinc-500" />

@@ -16,7 +16,7 @@ const getStatusColorClass = (status: string) => {
 
 export const SpaceServiceNodeView = ({ viewModel }: { readonly viewModel: SpaceServiceViewModel }) => (
     <Card className={viewModel.visual.containerClassName}>
-        <CardHeader className={cn(viewModel.visual.headerClassName, "items-center !py-3")}>
+        <CardHeader className={cn(viewModel.visual.headerClassName, "items-center !py-3 node-header")}>
             <div className={viewModel.visual.iconClassName}>
                 <Globe size={18} />
             </div>
@@ -25,7 +25,7 @@ export const SpaceServiceNodeView = ({ viewModel }: { readonly viewModel: SpaceS
             </div>
         </CardHeader>
 
-        <CardBody className="px-4 pb-5 pt-0 flex flex-col gap-2">
+        <CardBody className="px-4 pb-5 pt-0 flex flex-col gap-2 node-body">
             {viewModel.artefacts && viewModel.artefacts.length > 0 ? (
                 <div className="flex flex-col gap-2">
                     {viewModel.artefacts.map(art => (

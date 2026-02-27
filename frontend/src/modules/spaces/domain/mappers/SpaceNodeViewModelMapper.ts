@@ -39,11 +39,11 @@ const mapVisualProperties = (
     const handleBackgroundColor = isSelected ? styles.handleBackgroundClassName : '!bg-zinc-700';
 
     return {
-        containerClassName: `w-[280px] bg-black border-2 transition-all rounded-2xl ${isSelected ? `${styles.borderClassName} ${styles.shadowClassName}` : 'border-zinc-700'}`,
-        headerClassName: "p-4 flex items-start gap-3",
-        iconClassName: `p-2 rounded-lg bg-zinc-900 border border-zinc-800 ${styles.textClassName}`,
-        titleClassName: "text-sm font-black text-white tracking-tight",
-        subtitleClassName: "text-[9px] font-black text-zinc-500 uppercase tracking-widest",
+        containerClassName: `w-[280px] bg-black border-2 transition-all rounded-2xl node-container ${isSelected ? `${styles.borderClassName} ${styles.shadowClassName}` : 'border-zinc-700'}`,
+        headerClassName: "p-4 flex items-start gap-3 node-header",
+        iconClassName: `p-2 rounded-lg bg-zinc-900 border border-zinc-800 node-icon ${styles.textClassName}`,
+        titleClassName: "text-sm font-black text-white tracking-tight node-title",
+        subtitleClassName: "text-[9px] font-black text-zinc-500 uppercase tracking-widest node-subtitle",
         handleClassName: `!w-3 !h-3 !border-zinc-800 ${handleBackgroundColor} hover:!bg-zinc-200 transition-colors !z-50 !cursor-pointer`,
     };
 };
