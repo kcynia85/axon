@@ -1,0 +1,814 @@
+[    2885ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2907ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2954ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2958ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2965ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    2966ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3026ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3030ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3052ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3059ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3069ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3074ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3170ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3182ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3214ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3220ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3233ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3237ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3253ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3258ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3279ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3280ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3288ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3289ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3893ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3894ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3895ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3896ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3897ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3897ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3898ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3899ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3899ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3900ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3901ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[    3902ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  451257ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  451262ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  451267ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  451267ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  451406ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  451406ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  451407ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  451408ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454148ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454150ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454157ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454157ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454164ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454164ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454170ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454171ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454179ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454180ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454186ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454187ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454236ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454236ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454242ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454243ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454249ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454250ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454256ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454257ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454265ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454266ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454271ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454271ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454449ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454450ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454450ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454451ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454452ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454452ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454453ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454453ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454454ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454454ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454455ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  454456ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  474874ms] [ERROR] ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[  488568ms] [ERROR] ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[  490037ms] [ERROR] ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[  490368ms] [ERROR] ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[  491212ms] [ERROR] ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[  491220ms] [ERROR] ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[  491598ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/spaces/1:0
+[  492094ms] Error: ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47)
+    at Object.getCompilationErrors (file:///Users/kamil/Documents/DEV/axon/axon/frontend/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:996:59)
+    at DevBundlerService.getCompilationError (file:///Users/kamil/Documents/DEV/axon/axon/frontend/node_modules/next/dist/server/lib/dev-bundler-service.js:39:55)
+    at DevServer.getCompilationError (file:///Users/kamil/Documents/DEV/axon/axon/frontend/node_modules/next/dist/server/dev/next-dev-server.js:701:42)
+    at DevServer.findPageComponents (file:///Users/kamil/Documents/DEV/axon/axon/frontend/node_modules/next/dist/server/dev/next-dev-server.js:671:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/kamil/Documents/DEV/axon/axon/frontend/node_modules/next/dist/server/base-server.js:1704:26)
+[  492103ms] [ERROR] ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4d2afce3._.js:1945
+[  492273ms] [ERROR] ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx:199:47
+Parsing ecmascript source code failed
+  197 |                         <div className="space-y-4">
+  198 |                             {mappings.map((mapping, index) => (
+> 199 |                                 <div key={`${${mapping.childNodeId}}-${mapping.portId}-${index}`} className="flex items-center gap-3 p-3 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+      |                                               ^
+  200 |                                     <div className="flex-1">
+  201 |                                         <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-1">Child ID</p>
+  202 |                                         <p className="text-[10px] font-mono text-zinc-300 truncate">{${mapping.childNodeId}}</p>
+
+Expected '</', got '{'
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/inspectors/SpaceZoneNodeInspector.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasRightSidebarView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/SpaceCanvasRightSidebar.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4d2afce3._.js:1945
+[  525276ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4d2afce3._.js:1231
+[  529425ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529428ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529451ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529454ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529472ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529484ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529493ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529494ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529511ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529524ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529534ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529535ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529589ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529590ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529595ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529596ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529604ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529604ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529611ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529612ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529620ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529621ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529626ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529626ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529814ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529814ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529815ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529816ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529816ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529817ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529817ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529818ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529818ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529819ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529820ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  529820ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  565129ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  565129ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  565234ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  565234ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973509ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973510ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973521ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973522ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973532ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973532ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973657ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973658ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973669ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973670ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973687ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973691ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973889ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973894ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973896ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973899ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973906ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973909ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973911ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973913ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973917ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973918ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973949ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[  973950ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887917ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887919ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887926ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887927ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887934ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887940ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887947ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887947ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887955ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887956ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887962ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1887962ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888005ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888006ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888011ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888012ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888018ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888018ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888024ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888025ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888033ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888034ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888039ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888040ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888235ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888236ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888237ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888237ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888238ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888238ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888239ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888240ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888241ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888241ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888242ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 1888242ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2246346ms] [ERROR] ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx:4:1
+Export getRectOfNodes doesn't exist in target module
+  2 |
+  3 | import React, { useState, useCallback, useMemo } from 'react';
+> 4 | import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, getRectOfNodes, getTransformForBounds } from '@xyflow/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
+  6 | import { motion, AnimatePresence } from 'framer-motion';
+  7 | import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+
+The export getRectOfNodes was not found in module [project]/frontend/node_modules/@xyflow/react/dist/esm/index.js [app-client] (ecmascript).
+Did you mean to import getOutgoers?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[ 2246346ms] [ERROR] ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx:4:1
+Export getRectOfNodes doesn't exist in target module
+  2 |
+  3 | import React, { useState, useCallback, useMemo } from 'react';
+> 4 | import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, getRectOfNodes, getTransformForBounds } from '@xyflow/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
+  6 | import { motion, AnimatePresence } from 'framer-motion';
+  7 | import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+
+The export getRectOfNodes was not found in module [project]/frontend/node_modules/@xyflow/react/dist/esm/index.js [app-ssr] (ecmascript).
+Did you mean to import getOutgoers?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[ 2292908ms] [ERROR] ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx:5:1
+Export getRectOfNodes doesn't exist in target module
+  3 | // ... (keep previous imports)
+  4 | import React, { useState, useCallback, useMemo } from 'react';
+> 5 | import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, getRectOfNodes } from '@xyflow/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
+  7 | import { motion, AnimatePresence } from 'framer-motion';
+  8 | import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+
+The export getRectOfNodes was not found in module [project]/frontend/node_modules/@xyflow/react/dist/esm/index.js [app-client] (ecmascript).
+Did you mean to import getOutgoers?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[ 2292909ms] [ERROR] ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx:5:1
+Export getRectOfNodes doesn't exist in target module
+  3 | // ... (keep previous imports)
+  4 | import React, { useState, useCallback, useMemo } from 'react';
+> 5 | import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, getRectOfNodes } from '@xyflow/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
+  7 | import { motion, AnimatePresence } from 'framer-motion';
+  8 | import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+
+The export getRectOfNodes was not found in module [project]/frontend/node_modules/@xyflow/react/dist/esm/index.js [app-ssr] (ecmascript).
+Did you mean to import getOutgoers?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[ 2319650ms] [ERROR] ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx:5:1
+Export getRectOfNodes doesn't exist in target module
+  3 | // ... (keep previous imports)
+  4 | import React, { useState, useCallback, useMemo } from 'react';
+> 5 | import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, getRectOfNodes } from '@xyflow/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
+  7 | import { motion, AnimatePresence } from 'framer-motion';
+  8 | import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+
+The export getRectOfNodes was not found in module [project]/frontend/node_modules/@xyflow/react/dist/esm/index.js [app-client] (ecmascript).
+Did you mean to import getOutgoers?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[ 2319651ms] [ERROR] ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx:5:1
+Export getRectOfNodes doesn't exist in target module
+  3 | // ... (keep previous imports)
+  4 | import React, { useState, useCallback, useMemo } from 'react';
+> 5 | import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, getRectOfNodes } from '@xyflow/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
+  7 | import { motion, AnimatePresence } from 'framer-motion';
+  8 | import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+
+The export getRectOfNodes was not found in module [project]/frontend/node_modules/@xyflow/react/dist/esm/index.js [app-ssr] (ecmascript).
+Did you mean to import getOutgoers?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[ 2388066ms] [ERROR] ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx:5:1
+Export getRectOfNodes doesn't exist in target module
+  3 | // ... (keep previous imports)
+  4 | import React, { useState, useCallback, useMemo } from 'react';
+> 5 | import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, getRectOfNodes } from '@xyflow/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
+  7 | import { motion, AnimatePresence } from 'framer-motion';
+  8 | import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+
+The export getRectOfNodes was not found in module [project]/frontend/node_modules/@xyflow/react/dist/esm/index.js [app-client] (ecmascript).
+Did you mean to import getOutgoers?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[ 2388067ms] [ERROR] ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx:5:1
+Export getRectOfNodes doesn't exist in target module
+  3 | // ... (keep previous imports)
+  4 | import React, { useState, useCallback, useMemo } from 'react';
+> 5 | import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, getRectOfNodes } from '@xyflow/react';
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  6 | import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
+  7 | import { motion, AnimatePresence } from 'framer-motion';
+  8 | import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle } from 'lucide-react';
+
+The export getRectOfNodes was not found in module [project]/frontend/node_modules/@xyflow/react/dist/esm/index.js [app-ssr] (ecmascript).
+Did you mean to import getOutgoers?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component Browser]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component Browser]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx [Client Component SSR]
+    ./frontend/src/modules/spaces/ui/View.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Client Component SSR]
+    ./frontend/src/app/(canvas)/spaces/[id]/page.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:3117
+[ 2470751ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470753ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470761ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470762ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470798ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470804ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470819ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470822ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470837ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470840ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470851ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2470852ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471649ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471651ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471654ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471656ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471659ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471660ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471661ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471664ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471671ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471673ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471677ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2471680ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476193ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476195ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476204ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476205ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476218ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476219ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476240ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476241ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476251ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476252ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476259ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476260ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476317ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476318ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476325ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476327ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476336ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476337ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476344ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476345ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476362ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476364ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476378ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476379ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476742ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476743ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476744ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476744ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476745ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476746ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476747ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476747ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476748ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476748ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476749ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2476750ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480930ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480932ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480939ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480940ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480947ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480948ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480955ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480956ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480965ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480966ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480983ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2480984ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481173ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481175ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481182ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481184ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481212ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481214ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481235ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481236ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481249ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481250ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481256ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481257ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481677ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481679ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481683ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481685ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481716ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481719ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481731ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481734ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481736ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481737ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481739ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2481740ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525025ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525026ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525032ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525032ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525094ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525095ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525137ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525137ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525138ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525138ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525200ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2525200ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581015ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581015ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581020ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581020ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581064ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581065ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581124ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581125ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581131ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581132ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581170ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2581171ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2582064ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2582064ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2582169ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2582170ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2640791ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2640792ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2640896ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2640896ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2643042ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2643042ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2643062ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2643062ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2643168ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2643169ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2648777ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2648778ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2648882ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2648883ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2658714ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2658715ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2658819ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2658820ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2659561ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2659561ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2659668ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
+[ 2659669ms] [WARNING] If you do not provide a visible label, you must specify an aria-label or aria-labelledby attribute for accessibility @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287
