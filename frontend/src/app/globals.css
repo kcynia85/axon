@@ -154,7 +154,7 @@
       cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
       transition: filter 0.2s ease !important;
       pointer-events: all !important;
-      z-index: 10 !important;
+      z-index: 100 !important;
       border-radius: 1rem; /* Match NodeVisualProperties rounded-2xl */
     }
     
