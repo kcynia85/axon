@@ -8,13 +8,15 @@ const DEFAULT_CREW_CONTEXT: TemplateContext[] = [
     { id: 'creq_2', label: 'strategic_goals', expectedType: 'any' }
 ];
 
+const DEFAULT_CREW_ROLES = ['Web Researcher', 'Content Writer'];
+
 export const useCrewInspectorBaseLogic = (
     data: SpaceCrewDomainData,
     onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void
 ) => {
     const [consultationAnswers, setConsultationAnswers] = useState<Record<string, string>>({});
     const [isLogsOpen, setIsLogsOpen] = useState(false);
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+    const [isDetailsOpen, setIsDetailsOpen] = useState(true);
     const [nodeSearch, setNodeSearch] = useState("");
     const [expandedVersionHistory, setExpandedVersions] = useState<Record<string, boolean>>({});
     const [editingArtefactId, setEditingArtefactId] = useState<string | null>(null);
@@ -27,14 +29,16 @@ export const useCrewInspectorBaseLogic = (
     const isDone = data.state === 'done';
     const isAborted = data.state === 'aborted';
 
+    const roles = data.roles || DEFAULT_CREW_ROLES;
+
     const tasks = useMemo(() => {
-        return (data.tasks && data.tasks.length > 0) ? data.tasks : data.roles.map((role, i) => ({
+        return (data.tasks && data.tasks.length > 0) ? data.tasks : roles.map((role, i) => ({
             id: `task_${i}`,
             label: `Perform analysis for ${role}`,
             status: 'pending' as const,
             assignedAgentTitle: role
         }));
-    }, [data.tasks, data.roles]);
+    }, [data.tasks, roles]);
 
     const logs = data.execution_logs || [];
     const sharedMemory = data.shared_memory || [];

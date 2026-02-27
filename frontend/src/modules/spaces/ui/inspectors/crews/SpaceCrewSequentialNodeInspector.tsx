@@ -123,7 +123,16 @@ export const SpaceCrewSequentialNodeInspector = ({
                     tabContent: "group-data-[selected=true]:text-white transition-colors p-0"
                 }}
             >
-                <Tab key="orchestration" title={<div className="flex items-center gap-2"><Zap size={12}/> Team</div>}>
+                <Tab 
+                    key="orchestration" 
+                    title={
+                        <div className="flex items-center gap-2">
+                            <Zap size={12}/> 
+                            Team 
+                            {isDone && <CheckCircle2 size={10} className="text-white"/>}
+                        </div>
+                    }
+                >
                     <div className="h-[calc(100vh-192px)] pb-40">
                         <SpaceCrewOrchestrationLayout>
                             <div className="flex flex-col space-y-10">
@@ -267,17 +276,51 @@ export const SpaceCrewSequentialNodeInspector = ({
                                 )}
 
                                 {(isDone || isAborted) && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, scale: 0.95 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="flex items-center gap-3 py-4 border-b border-zinc-900"
-                                    >
-                                        {isDone ? <CheckCircle2 size={24} className="text-white" /> : <CircleStop size={24} className="text-zinc-500" />}
-                                        <div>
-                                            <h3 className="text-sm font-black text-white tracking-tight uppercase">{isDone ? "Sekwencja Zakończona" : "Praca Przerwana"}</h3>
-                                            <p className="text-[10px] text-zinc-500 font-bold">{isDone ? "Wszystkie kroki zostały pomyślnie zrealizowane." : "Proces zakończony ręcznie."}</p>
-                                        </div>
-                                    </motion.div>
+                                    <div className="space-y-4">
+                                        <motion.div 
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="flex items-center gap-3 py-4 border-b border-zinc-900"
+                                        >
+                                            {isDone ? <CheckCircle2 size={24} className="text-white" /> : <CircleStop size={24} className="text-zinc-500" />}
+                                            <div>
+                                                <h3 className="text-sm font-black text-white tracking-tight uppercase">{isDone ? "Wszystko gotowe!" : "Praca zatrzymana"}</h3>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">{isDone ? "Twój zespół przygotował materiały do przeglądu." : "Zakończyliśmy zadanie przed czasem."}</p>
+                                            </div>
+                                        </motion.div>
+
+                                        {isDone && (
+                                            <div className="pt-4">
+                                                <button 
+                                                    onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+                                                    className="flex items-center justify-between w-full group py-1"
+                                                >
+                                                    <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Szczegóły:</h4>
+                                                    {isDetailsOpen ? <ChevronUp size={12} className="text-zinc-600" /> : <ChevronDown size={12} className="text-zinc-600" />}
+                                                </button>
+                                                
+                                                <AnimatePresence mode="wait">
+                                                    {isDetailsOpen && (
+                                                        <motion.div 
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                            className="space-y-3 mt-3 overflow-hidden"
+                                                        >
+                                                            <div className="text-[10px] text-zinc-400 space-y-1 font-mono">
+                                                                <p>• Zespół: {(data.roles || []).join(', ')}</p>
+                                                                <p>• Wykonano {tasks.length} zadań sekwencyjnie</p>
+                                                                <p>• Wszystkie artefakty zostały wygenerowane</p>
+                                                                <div className="pt-2 text-zinc-600 font-bold uppercase">
+                                                                    Całkowity czas: {data.metrics?.duration || '2 min 15s'} | Zużycie: {data.metrics?.tokens?.toLocaleString() || '3,200'} tokenów
+                                                                </div>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
 
                                 {!isMissingContext && (logs?.length || 0) > 0 && (

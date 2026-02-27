@@ -51,6 +51,7 @@ const mapVisualProperties = (
 export const mapAgentToViewModel = (data: SpaceAgentDomainData, isSelected: boolean): SpaceAgentViewModel => {
     return {
         visual: mapVisualProperties(data.zoneColor, isSelected),
+        zoneColor: data.zoneColor,
         displayName: data.label,
         statusText: data.state.replace('_', ' ').toUpperCase(),
         progressValue: data.progress,
@@ -106,6 +107,7 @@ export const mapCrewToViewModel = (data: SpaceCrewDomainData, isSelected: boolea
 
     return {
         visual: crewVisual,
+        zoneColor: data.zoneColor,
         displayName: data.label,
         statusText: statusMap[data.state] || data.state.replace('_', ' ').toUpperCase(),
         teamRoles: data.roles || ['Web Researcher', 'Content Writer'],

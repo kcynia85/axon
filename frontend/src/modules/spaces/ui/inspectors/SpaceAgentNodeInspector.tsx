@@ -20,6 +20,7 @@ import {
   AlertCircle,
   ShieldCheck,
   Zap,
+  CircleStop,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SpaceAgentInspectorProperties, TemplateArtefact, TemplateContext } from "../../domain/types";
@@ -48,7 +49,7 @@ export const SpaceAgentNodeInspector = ({
     onPropertyChange
 }: SpaceAgentInspectorProperties) => {
     const [nodeSearch, setNodeSearch] = useState("");
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+    const [isDetailsOpen, setIsDetailsOpen] = useState(true);
     const [consultationAnswers, setConsultationAnswers] = useState<Record<string, string>>({});
     const [selectedTab, setSelectedTab] = useState<string>("agent");
     const [editingArtefactId, setEditingArtefactId] = useState<string | null>(null);
@@ -58,6 +59,7 @@ export const SpaceAgentNodeInspector = ({
     const isBriefing = data.state === 'briefing';
     const isWorking = data.state === 'working';
     const isDone = data.state === 'done';
+    const isAborted = data.state === 'aborted';
     const isConsultation = data.state === 'conversation';
     const isAlignment = data.state === 'alignment';
     const isCritique = data.state === 'critique';
@@ -195,6 +197,11 @@ export const SpaceAgentNodeInspector = ({
     const hasInReview = artefactsList.some(a => a.status === 'in_review');
     const allApproved = artefactsList.length > 0 && artefactsList.every(a => a.status === 'approved');
 
+    // Logic to find current task label based on progress
+    const currentTaskLabel = workingLogs.find((log, i) => 
+        data.progress >= log.threshold && (i === workingLogs.length - 1 || data.progress < workingLogs[i+1].threshold)
+    )?.label;
+
     return (
         <SpaceInspectorPanel>
             <Tabs 
@@ -307,10 +314,19 @@ export const SpaceAgentNodeInspector = ({
                             {isWorking && (
                                 <div className="space-y-6">
                                     <div className="space-y-3">
-                                        <div className="flex justify-between items-end">
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-[10px] text-white font-medium">{workingLogs.find(l => data.progress >= l.threshold)?.label}</p>
-                                                <ThinkingIndicator />
+                                        <div className="flex justify-between items-end min-h-[24px]">
+                                            <div className="flex flex-col gap-1">
+                                                <AnimatePresence mode="wait">
+                                                    <motion.p 
+                                                        key={currentTaskLabel}
+                                                        initial={{ opacity: 0, y: 5 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        exit={{ opacity: 0, y: -5 }}
+                                                        className="text-[11px] text-white font-bold text-shimmer"
+                                                    >
+                                                        {currentTaskLabel}
+                                                    </motion.p>
+                                                </AnimatePresence>
                                             </div>
                                             <span className="text-[10px] font-mono text-white">{data.progress}%</span>
                                         </div>
@@ -403,12 +419,20 @@ export const SpaceAgentNodeInspector = ({
                                 </div>
                             )}
 
-                            {isDone && (
+                            {(isDone || isAborted) && (
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-white">
-                                        <CheckCircle2 size={16} className="text-white" />
-                                        <h3 className="text-xs font-black uppercase tracking-widest">Twój tekst jest gotowy</h3>
-                                    </div>
+                                    <motion.div 
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="flex items-center gap-3 py-4 border-b border-zinc-900"
+                                    >
+                                        {isDone ? <CheckCircle2 size={24} className="text-white" /> : <CircleStop size={24} className="text-zinc-500" />}
+                                        <div>
+                                            <h3 className="text-sm font-black text-white tracking-tight uppercase">{isDone ? "Wszystko gotowe!" : "Praca zatrzymana"}</h3>
+                                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">{isDone ? "Twój agent przygotował materiały do przeglądu." : "Zakończyliśmy zadanie przed czasem."}</p>
+                                        </div>
+                                    </motion.div>
+                                    
                                     <div className="pt-4 border-t border-zinc-900">
                                         <button 
                                             onClick={() => setIsDetailsOpen(!isDetailsOpen)}
@@ -571,7 +595,7 @@ export const SpaceAgentNodeInspector = ({
                     {isCritique && (
                         <Button size="sm" className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 shadow-xl" onPress={() => transitionTo('done', { progress: 100 })}>Finalize output</Button>
                     )}
-                    {isDone && (
+                    {(isDone || isAborted) && (
                         <div className="flex gap-3">
                             <Button size="sm" className="flex-1 bg-zinc-200 text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-white" onPress={() => transitionTo('missing_context', { progress: 0 })}>Nowe zadanie</Button>
                             <Button size="sm" variant="flat" className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] rounded-md h-10 hover:bg-zinc-800" onPress={() => setSelectedTab("artefacts")}>Historia Wersji</Button>

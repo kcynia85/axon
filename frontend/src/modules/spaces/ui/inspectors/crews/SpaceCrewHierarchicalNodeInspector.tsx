@@ -13,7 +13,9 @@ import {
   CheckCircle2,
   Layers,
   FileText,
-  CircleStop
+  CircleStop,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SpaceCrewInspectorProperties, SharedMemoryEntry } from "../../../domain/types";
@@ -53,7 +55,8 @@ export const SpaceCrewHierarchicalNodeInspector = ({
         toggleVersionHistory, handleRestoreVersion,
         handleArtefactContentChange,
         sharedMemory,
-        selectedTab, setSelectedTab
+        selectedTab, setSelectedTab,
+        isDetailsOpen, setIsDetailsOpen
     } = logic;
 
     const managerTitle = data.manager_title || "Lead Architect";
@@ -116,7 +119,16 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                     tabContent: "group-data-[selected=true]:text-white transition-colors p-0"
                 }}
             >
-                <Tab key="orchestration" title={<div className="flex items-center gap-2"><Zap size={12}/> Team</div>}>
+                <Tab 
+                    key="orchestration" 
+                    title={
+                        <div className="flex items-center gap-2">
+                            <Zap size={12}/> 
+                            Team 
+                            {isDone && <CheckCircle2 size={10} className="text-white"/>}
+                        </div>
+                    }
+                >
                     <div className="h-[calc(100vh-192px)] pb-40">
                         <SpaceCrewOrchestrationLayout>
                             <div className="space-y-10">
@@ -201,10 +213,51 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                                 )}
 
                                 {(isDone || isAborted) && (
-                                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-3 py-4 border-b border-zinc-900" >
-                                        {isDone ? <CheckCircle2 size={24} className="text-white" /> : <CircleStop size={24} className="text-zinc-500" />}
-                                        <h3 className="text-sm font-black text-white tracking-tight uppercase">{isDone ? "Hierarchy Done" : "Hierarchy Stopped"}</h3>
-                                    </motion.div>
+                                    <div className="space-y-4">
+                                        <motion.div 
+                                            initial={{ opacity: 0, scale: 0.95 }} 
+                                            animate={{ opacity: 1, scale: 1 }} 
+                                            className="flex items-center gap-3 py-4 border-b border-zinc-900" 
+                                        >
+                                            {isDone ? <CheckCircle2 size={24} className="text-white" /> : <CircleStop size={24} className="text-zinc-500" />}
+                                            <div>
+                                                <h3 className="text-sm font-black text-white tracking-tight uppercase">{isDone ? "Wszystko gotowe!" : "Praca zatrzymana"}</h3>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">{isDone ? "Twój zespół przygotował materiały do przeglądu." : "Zakończyliśmy zadanie przed czasem."}</p>
+                                            </div>
+                                        </motion.div>
+
+                                        {isDone && (
+                                            <div className="pt-4">
+                                                <button 
+                                                    onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+                                                    className="flex items-center justify-between w-full group py-1"
+                                                >
+                                                    <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Szczegóły:</h4>
+                                                    {isDetailsOpen ? <ChevronUp size={12} className="text-zinc-600" /> : <ChevronDown size={12} className="text-zinc-600" />}
+                                                </button>
+                                                
+                                                <AnimatePresence mode="wait">
+                                                    {isDetailsOpen && (
+                                                        <motion.div 
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                            className="space-y-3 mt-3 overflow-hidden"
+                                                        >
+                                                            <div className="text-[10px] text-zinc-400 space-y-1 font-mono">
+                                                                <p>• Menedżer: {managerTitle}</p>
+                                                                <p>• Wykonano {(tasks || []).length} zadań pod nadzorem</p>
+                                                                <p>• Wszystkie kroki zatwierdzone</p>
+                                                                <div className="pt-2 text-zinc-600 font-bold uppercase">
+                                                                    Całkowity czas: {data.metrics?.duration || '3 min 40s'} | Zużycie: {data.metrics?.tokens?.toLocaleString() || '4,500'} tokenów
+                                                                </div>
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </SpaceCrewOrchestrationLayout>
@@ -223,7 +276,7 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                         </div>
                     }
                 >
-                    <div className="h-[calc(100vh-192px)] pb-40">
+                    <div className="h-[calc(100vh-192px)]">
                         <SpaceCrewContextTab isContextComplete={isContextComplete} contextRequirements={contextRequirements} nodeSearch={nodeSearch} setNodeSearch={setNodeSearch} handleContextLinkChange={logic.handleContextLinkChange} handleLinkContextFromNode={logic.handleLinkContextFromNode} />
                     </div>
                 </Tab>
@@ -242,7 +295,7 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                         </div>
                     }
                 >
-                    <div className="h-[calc(100vh-192px)] pb-40">
+                    <div className="h-[calc(100vh-192px)]">
                         <SpaceCrewArtefactsTab isDone={isDone} artefacts={data.artefacts || []} progressValue={progressValue} isWorking={isWorking} editingArtefactId={editingArtefactId} setEditingArtefactId={setEditingArtefactId} expandedVersionHistory={logic.expandedVersionHistory} toggleVersionHistory={toggleVersionHistory} handleRestoreVersion={handleRestoreVersion} handleArtefactStatusChange={logic.handleArtefactStatusChange} handleArtefactOutputToggle={logic.handleArtefactOutputToggle} handleArtefactContentChange={handleArtefactContentChange} />
                     </div>
                 </Tab>
@@ -261,7 +314,10 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                     <Button size="sm" variant="flat" className="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] rounded-md h-10" onPress={() => transitionTo('briefing')}>Zatrzymaj pracę</Button>
                 )}
                 {(isDone || isAborted) && (
-                    <Button size="sm" className="w-full bg-zinc-200 text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-white" onPress={() => transitionTo('missing_context', { tasks: [] })}>Restart Team</Button>
+                    <div className="flex gap-3">
+                        <Button size="sm" className="flex-1 bg-zinc-200 text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-white" onPress={() => transitionTo('missing_context', { tasks: [] })}>Nowe zadanie</Button>
+                        <Button size="sm" variant="flat" className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] h-10 hover:bg-zinc-800" onPress={() => setSelectedTab("artefacts")}>Historia Wersji</Button>
+                    </div>
                 )}
             </SpaceInspectorFooter>
         </SpaceInspectorPanel>

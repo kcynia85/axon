@@ -378,9 +378,74 @@ export const SpaceCanvasPresentationView = ({
           display: none !important;
         }
 
+        /* AI Neural Shimmer - Layout Stable Version (No Accelerators) */
+        .ai-working-node {
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Border Glow using Box Shadow (Isolated) - Inherits --ai-zone-color */
+        .ai-working-node {
+          animation: ai-glow-pulse-safe 3s infinite ease-in-out !important;
+        }
+
+        @keyframes ai-glow-pulse-safe {
+          0%, 100% { 
+            border-color: rgba(var(--ai-zone-color), 0.3);
+            box-shadow: 0 0 0px rgba(var(--ai-zone-color), 0);
+          }
+          50% { 
+            border-color: rgba(var(--ai-zone-color), 0.8);
+            box-shadow: 0 0 20px rgba(var(--ai-zone-color), 0.15), inset 0 0 10px rgba(var(--ai-zone-color), 0.05);
+          }
+        }
+
+        /* Dedicated Shimmer Layer - Behind Content */
+        .ai-shimmer-layer {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+          background-image: linear-gradient(
+            110deg,
+            rgba(0,0,0,0) 0%,
+            rgba(0,0,0,0) 35%,
+            rgba(var(--ai-zone-color), 0.03) 45%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(var(--ai-zone-color), 0.03) 55%,
+            rgba(0,0,0,0) 65%,
+            rgba(0,0,0,0) 100%
+          );
+          background-size: 200% 100%;
+          animation: ai-shimmer-scan-safe 4s infinite linear;
+        }
+
+        @keyframes ai-shimmer-scan-safe {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+
+        /* Text Shimmer Effect */
+        .text-shimmer {
+          background: linear-gradient(
+            90deg,
+            #71717a 0%,
+            #ffffff 50%,
+            #71717a 100%
+          );
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: text-shimmer-anim 3s linear infinite;
+        }
+
+        @keyframes text-shimmer-anim {
+          to { background-position: 200% center; }
+        }
+
         /* Smooth transitions for LOD */
         .node-container, .node-body, .node-title, .node-subtitle, .node-zone-label {
-          transition: all 0.2s ease-in-out;
+          transition: transform 0.2s ease-out, opacity 0.2s ease-out;
         }
       `}</style>
 

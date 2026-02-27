@@ -242,6 +242,7 @@ export type NodeVisualProperties = {
 
 export type SpaceAgentViewModel = {
   readonly visual: NodeVisualProperties;
+  readonly zoneColor: string;
   readonly displayName: string;
   readonly statusText: string;
   readonly progressValue: number;
@@ -268,6 +269,7 @@ export type SpaceAutomationViewModel = {
 
 export type SpaceCrewViewModel = {
   readonly visual: NodeVisualProperties;
+  readonly zoneColor: string;
   readonly displayName: string;
   readonly statusText: string;
   readonly teamRoles: readonly string[];
