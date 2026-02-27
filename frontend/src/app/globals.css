@@ -140,12 +140,22 @@
       cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
     }
     
-    .react-flow__pane.grabbing {
+    .is-space-panning .react-flow__pane {
+      cursor: grab !important;
+    }
+    
+    .react-flow__pane.grabbing,
+    .is-space-panning .react-flow__pane.dragging,
+    .is-space-panning .react-flow__pane:active {
       cursor: grabbing !important;
     }
     
     .react-flow__node {
       cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
+    }
+    
+    .is-space-panning .react-flow__node {
+      cursor: grab !important;
     }
     
     .react-flow__node.dragging {

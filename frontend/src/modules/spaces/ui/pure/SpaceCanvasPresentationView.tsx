@@ -337,9 +337,7 @@ export const SpaceCanvasPresentationView = ({
         attributionPosition="bottom-right"
         className={cn(
             "bg-black",
-            isSpacePressed 
-                ? "[&_.react-flow__pane]:!cursor-grab [&_.react-flow__pane.dragging]:!cursor-grabbing" 
-                : "[&_.react-flow__pane]:!cursor-crosshair [&_.react-flow__pane.dragging]:!cursor-crosshair"
+            isSpacePressed && "is-space-panning"
         )}
         minZoom={0.05}
         maxZoom={2}
