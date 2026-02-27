@@ -302,7 +302,7 @@ export const SpaceCanvasPresentationView = ({
         onKeyDown={handleKeyDown}
         fitView
         attributionPosition="bottom-right"
-        className="bg-black !cursor-crosshair"
+        className="bg-black [&_.react-flow__pane]:!cursor-crosshair [&_.react-flow__pane.dragging]:!cursor-crosshair"
         minZoom={0.05}
         maxZoom={2}
         onlyRenderVisibleElements={true}
@@ -310,7 +310,7 @@ export const SpaceCanvasPresentationView = ({
         selectNodesOnDrag={false}
         panOnScroll={true}
         selectionOnDrag={true}
-        panOnDrag={[1, 2]}
+        panOnDrag={[2]}
         selectionMode={SelectionMode.Partial}
         selectionKeyCode={null}
         defaultEdgeOptions={{
