@@ -153,10 +153,18 @@
     .react-flow__node {
       cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
       transition: filter 0.2s ease !important;
+      pointer-events: all !important;
+      z-index: 10 !important;
+      border-radius: 1rem; /* Match NodeVisualProperties rounded-2xl */
+    }
+    
+    .react-flow__node-zone {
+      z-index: 1 !important;
+      border-radius: 2rem; /* Match mapZoneToViewModel rounded-[2rem] */
     }
     
     .react-flow__node:hover {
-      filter: brightness(1.15);
+      filter: brightness(1.1);
       z-index: 1000 !important;
     }
     
