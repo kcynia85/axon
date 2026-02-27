@@ -1,18 +1,17 @@
 // frontend/src/modules/spaces/ui/nodes/pure/SpaceCrewNodeView.tsx
 
 import React from 'react';
-import { Card, CardBody, CardHeader, Progress } from "@heroui/react";
 import { Users, MessageSquare, AlertCircle } from "lucide-react";
 import { SpaceCrewViewModel } from '../../../domain/types';
 import { cn } from '@/shared/lib/utils';
 
 export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrewViewModel }) => (
-    <Card className={cn(
+    <div className={cn(
         viewModel.visual.containerClassName, 
-        "overflow-hidden",
+        "overflow-hidden will-change-transform",
         viewModel.isConsultation && "border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.15)]"
     )}>
-        <CardHeader className="pb-2 pt-4 px-4 flex items-start justify-between node-header">
+        <div className="pb-2 pt-4 px-4 flex items-start justify-between node-header">
             <div className="flex items-start gap-3">
                 <div className={cn(
                     viewModel.visual.iconClassName,
@@ -30,22 +29,24 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
                     </span>
                 </div>
             </div>
-        </CardHeader>
+        </div>
 
-        <CardBody className="px-4 py-3 space-y-4 node-body">
+        <div className="px-4 py-3 space-y-4 node-body">
             {/* Progress Section */}
             <div className="space-y-2">
                 <div className="flex justify-end items-center px-0.5">
                     <span className="text-[10px] font-mono text-zinc-300">{viewModel.progressLabel}</span>
                 </div>
-                <Progress 
-                    size="sm" 
-                    value={viewModel.progressValue} 
-                    classNames={{ 
-                        indicator: cn("transition-all duration-1000", viewModel.isConsultation ? "bg-orange-500" : "bg-zinc-200"), 
-                        base: "bg-zinc-900 h-1.5 rounded-full" 
-                    }} 
-                />
+                {/* Lightweight Progress Bar */}
+                <div className="bg-zinc-900 h-1.5 rounded-full overflow-hidden">
+                    <div 
+                        className={cn(
+                            "h-full transition-all duration-1000",
+                            viewModel.isConsultation ? "bg-orange-500" : "bg-zinc-200"
+                        )}
+                        style={{ width: `${viewModel.progressValue}%` }}
+                    />
+                </div>
             </div>
 
             {/* Team List */}
@@ -88,6 +89,6 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
                     </div>
                 </div>
             )}
-        </CardBody>
-    </Card>
+        </div>
+    </div>
 );

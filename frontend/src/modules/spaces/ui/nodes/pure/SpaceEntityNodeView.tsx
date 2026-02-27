@@ -1,15 +1,18 @@
 // frontend/src/modules/spaces/ui/nodes/pure/SpaceEntityNodeView.tsx
 
 import React from 'react';
-import { Card, CardBody, Chip } from "@heroui/react";
 import { MoreHorizontal } from "lucide-react";
 import { SpaceEntityViewModel } from '../../../domain/types';
+import { cn } from "@/shared/lib/utils";
 
 export const SpaceEntityNodeView = ({ viewModel }: { readonly viewModel: SpaceEntityViewModel }) => (
-    <Card 
-        className={viewModel.visual.containerClassName}
+    <div 
+        className={cn(
+            viewModel.visual.containerClassName,
+            "will-change-transform"
+        )}
     >
-        <CardBody className="p-3 node-body">
+        <div className="p-3 node-body">
             <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                      <div className={viewModel.visual.iconClassName}>
@@ -17,25 +20,28 @@ export const SpaceEntityNodeView = ({ viewModel }: { readonly viewModel: SpaceEn
                      </div>
                      <div>
                         <h4 className="text-sm font-bold leading-tight">{viewModel.displayName}</h4>
-                        <span className="text-[10px] text-default-400 uppercase tracking-wider font-medium">{viewModel.componentType}</span>
+                        <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-medium">{viewModel.componentType}</span>
                      </div>
                 </div>
-                <MoreHorizontal size={16} className="text-default-300" />
+                <MoreHorizontal size={16} className="text-zinc-600" />
             </div>
             
             {viewModel.description && (
-                <p className="text-xs text-default-500 line-clamp-2 mb-3">
+                <p className="text-xs text-zinc-400 line-clamp-2 mb-3">
                     {viewModel.description}
                 </p>
             )}
 
             {viewModel.statusLabel && (
                  <div className="flex items-center gap-2 mt-1">
-                     <Chip size="sm" variant="flat" color={viewModel.isStatusActive ? 'success' : 'default'} className="h-5 text-[10px]">
+                     <div className={cn(
+                         "px-2 py-0.5 rounded-full text-[10px] font-bold",
+                         viewModel.isStatusActive ? "bg-green-500/10 text-green-500" : "bg-zinc-800 text-zinc-400"
+                     )}>
                         {viewModel.statusLabel}
-                     </Chip>
+                     </div>
                  </div>
             )}
-        </CardBody>
-    </Card>
+        </div>
+    </div>
 );

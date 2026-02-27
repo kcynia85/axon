@@ -14,7 +14,7 @@ export const SpaceZoneNodeView = ({ viewModel }: { readonly viewModel: SpaceZone
             handleClassName={`h-3 w-3 bg-black border-2 ${viewModel.resizerHandleClassName} rounded-sm`}
         />
         
-        <div className={`${viewModel.containerClassName} node-container`}>
+        <div className={`${viewModel.containerClassName} node-container will-change-transform`}>
             {/* 
                 Invisible 'nodrag' overlay to prevent accidental dragging of the entire zone 
                 when interacting with internal elements, while keeping the background clickable.

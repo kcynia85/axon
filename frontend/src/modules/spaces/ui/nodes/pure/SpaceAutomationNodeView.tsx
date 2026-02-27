@@ -1,7 +1,6 @@
 // frontend/src/modules/spaces/ui/nodes/pure/SpaceAutomationNodeView.tsx
 
 import React from 'react';
-import { Card, CardBody, CardHeader } from "@heroui/react";
 import { Zap, FileCode } from "lucide-react";
 import { SpaceAutomationViewModel } from '../../../domain/types';
 import { cn } from "@/shared/lib/utils";
@@ -15,8 +14,11 @@ const getStatusColorClass = (status: string) => {
 };
 
 export const SpaceAutomationNodeView = ({ viewModel }: { readonly viewModel: SpaceAutomationViewModel }) => (
-    <Card className={viewModel.visual.containerClassName}>
-        <CardHeader className={viewModel.visual.headerClassName}>
+    <div className={cn(
+        viewModel.visual.containerClassName,
+        "will-change-transform"
+    )}>
+        <div className={viewModel.visual.headerClassName}>
             <div className={viewModel.visual.iconClassName}>
                 <Zap size={18} />
             </div>
@@ -24,9 +26,9 @@ export const SpaceAutomationNodeView = ({ viewModel }: { readonly viewModel: Spa
                 <span className={viewModel.visual.titleClassName}>{viewModel.displayName}</span>
                 <span className={viewModel.visual.subtitleClassName}>{viewModel.statusText}</span>
             </div>
-        </CardHeader>
+        </div>
         
-        <CardBody className="px-4 pb-5 pt-0 node-body">
+        <div className="px-4 pb-5 pt-0 node-body">
             {viewModel.hasArtifact && (
                 <div className="flex items-center gap-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
                     <FileCode size={16} className="text-zinc-500" />
@@ -41,6 +43,6 @@ export const SpaceAutomationNodeView = ({ viewModel }: { readonly viewModel: Spa
                     </div>
                 </div>
             )}
-        </CardBody>
-    </Card>
+        </div>
+    </div>
 );

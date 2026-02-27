@@ -1,13 +1,16 @@
 // frontend/src/modules/spaces/ui/nodes/pure/SpaceAgentNodeView.tsx
 
 import React from 'react';
-import { Card, CardBody, CardHeader, Progress, Button } from "@heroui/react";
 import { Bot, AlertCircle } from "lucide-react";
 import { SpaceAgentViewModel } from '../../../domain/types';
+import { cn } from "@/shared/lib/utils";
 
 export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAgentViewModel }) => (
-    <Card className={viewModel.visual.containerClassName}>
-        <CardHeader className={viewModel.visual.headerClassName}>
+    <div className={cn(
+        viewModel.visual.containerClassName,
+        "will-change-transform" // Akceleracja GPU
+    )}>
+        <div className={viewModel.visual.headerClassName}>
             <div className={viewModel.visual.iconClassName}>
                 <Bot size={18} />
             </div>
@@ -15,9 +18,9 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
                 <span className={viewModel.visual.titleClassName}>{viewModel.displayName}</span>
                 <span className={viewModel.visual.subtitleClassName}>{viewModel.statusText}</span>
             </div>
-        </CardHeader>
+        </div>
         
-        <CardBody className="px-4 pb-5 pt-0 flex flex-col gap-3 node-body">
+        <div className="px-4 pb-5 pt-0 flex flex-col gap-3 node-body">
             {viewModel.isMissingContext && (
                 <div className="flex items-center gap-2 py-1">
                     <AlertCircle size={14} className="text-zinc-500" />
@@ -26,12 +29,11 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
             )}
 
             {viewModel.isBriefing && (
-                <Button 
-                    size="sm" 
-                    className="w-full h-8 bg-zinc-200 text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-white transition-all"
+                <button 
+                    className="w-full h-8 bg-zinc-200 text-black text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-white transition-all cursor-pointer border-none outline-none"
                 >
                     Start Briefing
-                </Button>
+                </button>
             )}
 
             {viewModel.isConsultation && (
@@ -49,16 +51,18 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
                         </span>
                         <span className="text-[10px] font-black text-white tabular-nums">{viewModel.progressLabel}</span>
                     </div>
-                    <Progress 
-                        size="sm" 
-                        value={viewModel.progressValue} 
-                        classNames={{
-                            base: "max-w-full h-1.5 bg-zinc-900 rounded-full",
-                            indicator: viewModel.isDone ? "bg-zinc-200" : "bg-zinc-400",
-                        }}
-                    />
+                    {/* Lightweight Progress Bar */}
+                    <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+                        <div 
+                            className={cn(
+                                "h-full transition-all duration-500",
+                                viewModel.isDone ? "bg-zinc-200" : "bg-zinc-400"
+                            )}
+                            style={{ width: `${viewModel.progressValue}%` }}
+                        />
+                    </div>
                 </div>
             )}
-        </CardBody>
-    </Card>
+        </div>
+    </div>
 );
