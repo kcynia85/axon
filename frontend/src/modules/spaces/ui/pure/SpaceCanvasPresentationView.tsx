@@ -302,7 +302,7 @@ export const SpaceCanvasPresentationView = ({
         onKeyDown={handleKeyDown}
         fitView
         attributionPosition="bottom-right"
-        className="bg-black !cursor-default"
+        className="bg-black !cursor-crosshair"
         minZoom={0.05}
         maxZoom={2}
         onlyRenderVisibleElements={true}
