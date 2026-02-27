@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/ui/pure/SpaceCanvasPresentationView.tsx
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, SelectionMode, useViewport } from '@xyflow/react';
 import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -90,10 +90,43 @@ export const SpaceCanvasPresentationView = ({
 }: SpaceCanvasPresentationViewProperties) => {
   const [menu, setMenu] = useState<{ id?: string; top: number; left: number; type: 'node' | 'pane' | 'selection' } | null>(null);
   const [analyzedBlueprint, setAnalyzedBlueprint] = useState<SpacePatternBlueprint | null>(null);
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
+  
   const { screenToFlowPosition, flowToScreenPosition, getNodes } = useReactFlow();
   const { x: vpX, y: vpY, zoom: vpZoom } = useViewport();
 
   const { mutateAsync: createPattern } = useCreatePattern(workspaceId);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+        // Don't trigger if user is typing in an input/textarea
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+            return;
+        }
+
+        if (e.code === 'Space') {
+            if (!isSpacePressed) {
+                setIsSpacePressed(true);
+            }
+            // Prevent page scrolling when space is pressed
+            e.preventDefault();
+        }
+    };
+    
+    const handleGlobalKeyUp = (e: KeyboardEvent) => {
+        if (e.code === 'Space') {
+            setIsSpacePressed(false);
+        }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    window.addEventListener('keyup', handleGlobalKeyUp);
+    
+    return () => {
+        window.removeEventListener('keydown', handleGlobalKeyDown);
+        window.removeEventListener('keyup', handleGlobalKeyUp);
+    };
+  }, [isSpacePressed]);
 
   const selectedNodes = useMemo(() => canvasNodes.filter(n => n.selected), [canvasNodes]);
   const zonesInSelection = useMemo(() => selectedNodes.filter(n => n.type === 'zone'), [selectedNodes]);
@@ -302,15 +335,20 @@ export const SpaceCanvasPresentationView = ({
         onKeyDown={handleKeyDown}
         fitView
         attributionPosition="bottom-right"
-        className="bg-black [&_.react-flow__pane]:!cursor-crosshair [&_.react-flow__pane.dragging]:!cursor-crosshair"
+        className={cn(
+            "bg-black",
+            isSpacePressed 
+                ? "[&_.react-flow__pane]:!cursor-grab [&_.react-flow__pane.dragging]:!cursor-grabbing" 
+                : "[&_.react-flow__pane]:!cursor-crosshair [&_.react-flow__pane.dragging]:!cursor-crosshair"
+        )}
         minZoom={0.05}
         maxZoom={2}
         onlyRenderVisibleElements={true}
         nodeDragThreshold={5}
         selectNodesOnDrag={false}
         panOnScroll={true}
-        selectionOnDrag={true}
-        panOnDrag={[2]}
+        selectionOnDrag={!isSpacePressed}
+        panOnDrag={isSpacePressed ? [1, 2] : [2]}
         selectionMode={SelectionMode.Partial}
         selectionKeyCode={null}
         defaultEdgeOptions={{
