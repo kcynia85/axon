@@ -4,7 +4,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { ReactFlow, Controls, Background, Panel, BackgroundVariant, useReactFlow, SelectionMode, useViewport } from '@xyflow/react';
 import type { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle, Maximize2, Minimize2 } from 'lucide-react';
+import { Play, Square, Info, Copy, Scissors, Trash2, Save, PlusCircle, Maximize2, Minimize2, X } from 'lucide-react';
 
 import { SpaceZoneCanvasNode } from '../nodes/SpaceZoneCanvasNode';
 import { SpaceAgentCanvasNode } from '../nodes/SpaceAgentCanvasNode';
@@ -92,11 +92,18 @@ export const SpaceCanvasPresentationView = ({
   const [analyzedBlueprint, setAnalyzedBlueprint] = useState<SpacePatternBlueprint | null>(null);
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreenInspectorOpen, setIsFullscreenInspectorOpen] = useState(false);
   
   const { screenToFlowPosition, flowToScreenPosition, getNodes } = useReactFlow();
-  const { zoom: vpZoom } = useViewport();
+  const viewport = useViewport();
 
   const { mutateAsync: createPattern } = useCreatePattern(workspaceId);
+
+  useEffect(() => {
+    if (!isFullscreen) {
+      setIsFullscreenInspectorOpen(false);
+    }
+  }, [isFullscreen]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -181,16 +188,15 @@ export const SpaceCanvasPresentationView = ({
       const maxYPadded = maxY + PADDING;
 
       // Convert absolute canvas bounds to screen coordinates
-      const topLeft = flowToScreenPosition({ x: minXPadded, y: minYPadded });
-      const bottomRight = flowToScreenPosition({ x: maxXPadded, y: maxYPadded });
-
+      const { x, y, zoom } = viewport;
+      
       return {
-          x: topLeft.x,
-          y: topLeft.y,
-          width: bottomRight.x - topLeft.x,
-          height: bottomRight.y - topLeft.y
+          x: minXPadded * zoom + x,
+          y: minYPadded * zoom + y,
+          width: (maxXPadded - minXPadded) * zoom,
+          height: (maxYPadded - minYPadded) * zoom
       };
-  }, [selectedNodes, canvasNodes, flowToScreenPosition]);
+  }, [selectedNodes, canvasNodes, viewport]);
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -226,7 +232,18 @@ export const SpaceCanvasPresentationView = ({
     []
   );
 
-  const onPaneClick = useCallback(() => setMenu(null), []);
+  const onPaneClick = useCallback(() => {
+    setMenu(null);
+    if (isFullscreen) {
+        setIsFullscreenInspectorOpen(false);
+    }
+  }, [isFullscreen]);
+
+  const onNodeClick = useCallback((_event: React.MouseEvent, _node: Node) => {
+    if (isFullscreen) {
+        setIsFullscreenInspectorOpen(true);
+    }
+  }, [isFullscreen]);
 
   const handleAction = useCallback((action: string) => {
       const targetNode = menu?.id ? getNodes().find(n => n.id === menu.id) : null;
@@ -468,6 +485,7 @@ export const SpaceCanvasPresentationView = ({
         edgeTypes={canvasEdgeComponents}
         onDragOver={handleDragOverEvent}
         onDrop={handleDropEvent}
+        onNodeClick={onNodeClick}
         onNodeContextMenu={onNodeContextMenu}
         onPaneContextMenu={onPaneContextMenu}
         onSelectionContextMenu={onSelectionContextMenu}
@@ -477,9 +495,9 @@ export const SpaceCanvasPresentationView = ({
         className={cn(
             "bg-black",
             isSpacePressed && "is-space-panning",
-            vpZoom < 0.4 && "canvas-lod-mid",
-            vpZoom < 0.15 && "canvas-lod-low",
-            vpZoom < 0.08 && "canvas-lod-very-low"
+            viewport.zoom < 0.4 && "canvas-lod-mid",
+            viewport.zoom < 0.15 && "canvas-lod-low",
+            viewport.zoom < 0.08 && "canvas-lod-very-low"
         )}
         minZoom={0.05}
         maxZoom={2}
@@ -489,7 +507,7 @@ export const SpaceCanvasPresentationView = ({
         panOnScroll={true}
         selectionOnDrag={!isSpacePressed}
         panOnDrag={isSpacePressed ? [1, 2] : [2]}
-        selectionMode={SelectionMode.Full}
+        selectionMode={SelectionMode.Partial}
         selectionKeyCode="Shift"
         defaultEdgeOptions={{
             type: 'CustomEdge',
@@ -500,7 +518,7 @@ export const SpaceCanvasPresentationView = ({
 
         {/* Floating Selection Backdrop & FAB */}
         <AnimatePresence>
-            {selectionScreenBounds && isSuperPatternSelection && !isFullscreen && (
+            {selectionScreenBounds && isSuperPatternSelection && (
                 <>
                     {/* Gray Selection Backdrop - only for super pattern selection */}
                     <Panel position="top-left" style={{ 
@@ -534,7 +552,7 @@ export const SpaceCanvasPresentationView = ({
                                 className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full font-black text-[10px] uppercase tracking-widest shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 active:scale-95 transition-all"
                             >
                                 <PlusCircle size={14} />
-                                Add as Super Pattern
+                                Save as Super Pattern
                             </button>
                         </motion.div>
                     </Panel>
@@ -566,6 +584,31 @@ export const SpaceCanvasPresentationView = ({
                 handleNodeDataPropertyChange={updateNodeDataOnCanvas} 
                 canvasNodes={canvasNodes}
               />
+            )}
+          </Panel>
+        )}
+
+        {/* Fullscreen Inspector Panel */}
+        {isFullscreen && isFullscreenInspectorOpen && (
+          <Panel position="top-right" className="m-0 z-50 pointer-events-auto">
+            {selectedNodes.length === 1 && (
+              <div className="relative group">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setIsFullscreenInspectorOpen(false); }}
+                  className="absolute top-[104px] right-[24px] z-[60] p-2 bg-zinc-900/90 border border-zinc-800 hover:bg-zinc-800 transition-all rounded-full text-white shadow-2xl opacity-0 group-hover:opacity-100"
+                >
+                  <X size={16} />
+                </button>
+                <SpaceCanvasRightSidebar 
+                  currentlySelectedNodeInformation={currentlySelectedNode ? {
+                    id: currentlySelectedNode.id,
+                    type: currentlySelectedNode.type || 'unknown',
+                    data: currentlySelectedNode.data
+                  } : null} 
+                  handleNodeDataPropertyChange={updateNodeDataOnCanvas} 
+                  canvasNodes={canvasNodes}
+                />
+              </div>
             )}
           </Panel>
         )}
