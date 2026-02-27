@@ -137,7 +137,7 @@
     
     /* React Flow Figma-style Cursor Overrides */
     .react-flow__pane {
-      cursor: crosshair !important;
+      cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
     }
     
     .react-flow__pane.grabbing {
@@ -145,7 +145,7 @@
     }
     
     .react-flow__node {
-      cursor: crosshair !important;
+      cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
     }
     
     .react-flow__node.dragging {
@@ -153,7 +153,7 @@
     }
     
     .react-flow__edge {
-      cursor: crosshair !important;
+      cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
     }
     
     .react-flow__handle {
