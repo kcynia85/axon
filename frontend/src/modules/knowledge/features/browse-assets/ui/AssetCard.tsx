@@ -37,7 +37,7 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
             </CardContent>
             <CardFooter className="pt-0 text-xs text-muted-foreground flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
-                {new Date(asset.created_at).toLocaleDateString()}
+                <span suppressHydrationWarning>{new Date(asset.created_at).toLocaleDateString()}</span>
             </CardFooter>
         </Card>
     );

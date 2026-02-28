@@ -1,24 +1,26 @@
+"use client";
+
 import { WorkspacesList } from "@/modules/workspaces/ui/WorkspacesList";
-import { PageHeader } from "@/shared/ui/layout/PageHeader";
-import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { PageContent } from "@/shared/ui/layout/PageContent";
-import { Button } from "@/shared/ui/ui/Button";
-import { Plus } from "lucide-react";
+import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { useWorkspaces } from "@/modules/workspaces/application/useWorkspaces";
+import { shouldShowPagination } from "@/shared/lib/pagination";
 
 export default function WorkspacesPage() {
+  const { data: workspaces } = useWorkspaces();
+  const showPagination = workspaces ? shouldShowPagination(workspaces.length) : false;
+
   return (
-    <PageContainer>
-      <PageHeader 
-        title="Workspaces" 
+    <ModulePageLayout
+        title="Workspaces"
         description="Manage your AI agents and crews in isolated environments."
-      >
-        <Button>
-          <Plus className="mr-2 h-4 w-4" /> New Workspace
-        </Button>
-      </PageHeader>
-      <PageContent>
+        breadcrumbs={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Workspaces" }
+        ]}
+        pagination={null}
+        showPagination={showPagination}
+    >
         <WorkspacesList />
-      </PageContent>
-    </PageContainer>
+    </ModulePageLayout>
   );
 }

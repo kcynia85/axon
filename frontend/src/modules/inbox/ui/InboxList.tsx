@@ -64,7 +64,7 @@ export const InboxList = () => {
                                         {item.item_source}
                                     </Badge>
                                 </div>
-                                <span className="text-[9px] text-muted-foreground font-mono">{new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                <span className="text-[9px] text-muted-foreground font-mono" suppressHydrationWarning>{new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
                             <p className="text-[11px] text-muted-foreground line-clamp-1">
                                 {item.item_content}

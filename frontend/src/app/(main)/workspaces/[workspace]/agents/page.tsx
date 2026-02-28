@@ -15,6 +15,8 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Suspense } from "react";
 import Link from "next/link";
 
+import { shouldShowPagination } from "@/shared/lib/pagination";
+
 /**
  * AgentsListPage - Dedicated list view for a workspace.
  * Based on Overview screen from axon_bb_workspace_agents.pdf
@@ -27,6 +29,8 @@ export default function AgentsListPage() {
   
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: agents, isLoading } = useAgents(workspaceId);
+
+  const showPagination = agents ? shouldShowPagination(agents.length) : false;
 
   const openNewAgentModal = () => {
     const urlSearchParams = new URLSearchParams(searchParams.toString());
@@ -94,9 +98,11 @@ export default function AgentsListPage() {
             </div>
         )}
 
-        <div className="mt-12 flex items-center justify-center text-sm text-muted-foreground">
-            Pagination: Agents (Placeholder)
-        </div>
+        {showPagination && (
+          <div className="mt-12 flex items-center justify-start text-sm text-muted-foreground">
+              Pagination: Agents (Placeholder)
+          </div>
+        )}
       </PageContent>
       
       <Suspense>

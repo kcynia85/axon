@@ -196,10 +196,9 @@ export const SpaceCrewParallelNodeInspector = ({
                                                                 <p>• Zespół: {(data.roles || []).join(', ')}</p>
                                                                 <p>• Wykonano {(tasks || []).length} zadań równolegle</p>
                                                                 <p>• Przetwarzanie wielowątkowe zakończone</p>
-                                                                <div className="pt-2 text-zinc-600 font-bold uppercase">
+                                                                <div className="pt-2 text-zinc-600 font-bold uppercase" suppressHydrationWarning>
                                                                     Całkowity czas: {data.metrics?.duration || '1 min 50s'} | Zużycie: {data.metrics?.tokens?.toLocaleString() || '2,800'} tokenów
-                                                                </div>
-                                                            </div>
+                                                                </div>                                                            </div>
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>

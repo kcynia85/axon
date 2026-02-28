@@ -311,10 +311,9 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                                 <p>• Zespół: {(data.roles || []).join(', ')}</p>
                                                                 <p>• Wykonano {tasks.length} zadań sekwencyjnie</p>
                                                                 <p>• Wszystkie artefakty zostały wygenerowane</p>
-                                                                <div className="pt-2 text-zinc-600 font-bold uppercase">
+                                                                <div className="pt-2 text-zinc-600 font-bold uppercase" suppressHydrationWarning>
                                                                     Całkowity czas: {data.metrics?.duration || '2 min 15s'} | Zużycie: {data.metrics?.tokens?.toLocaleString() || '3,200'} tokenów
-                                                                </div>
-                                                            </div>
+                                                                </div>                                                            </div>
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>
@@ -331,7 +330,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                                         </button>
                                         {isLogsOpen && (
                                             <div className="bg-zinc-950 rounded-xl p-4 border border-zinc-900 font-mono text-[10px] space-y-2 mt-3">
-                                                {logs.map((log, i) => <div key={i} className="flex gap-2"><span className="text-zinc-700">[{new Date().toLocaleTimeString()}]</span><span className="text-zinc-400">{log}</span></div>)}
+                                                {logs.map((log, i) => <div key={i} className="flex gap-2"><span className="text-zinc-700" suppressHydrationWarning>[{new Date().toLocaleTimeString()}]</span><span className="text-zinc-400">{log}</span></div>)}
                                             </div>
                                         )}
                                     </div>

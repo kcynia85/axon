@@ -64,7 +64,7 @@ export default function AutomationsListPage() {
                                 Trigger: {auto.trigger}
                             </CardDescription>
                             {auto.lastRun && (
-                                <div className="mt-4 text-[10px] text-muted-foreground italic">
+                                <div className="mt-4 text-[10px] text-muted-foreground italic" suppressHydrationWarning>
                                     Last run: {new Date(auto.lastRun).toLocaleString()}
                                 </div>
                             )}

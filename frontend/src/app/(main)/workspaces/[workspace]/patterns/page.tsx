@@ -11,6 +11,8 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Car
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 
+import { shouldShowPagination } from "@/shared/lib/pagination";
+
 /**
  * PatternsListPage - Dedicated list view for a workspace (Read-only).
  * Based on Overview screen from axon_bb_workspace_patterns.pdf
@@ -21,6 +23,8 @@ export default function PatternsListPage() {
   
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: patterns, isLoading } = usePatterns(workspaceId);
+
+  const showPagination = patterns ? shouldShowPagination(patterns.length) : false;
 
   return (
     <PageContainer>
@@ -67,9 +71,11 @@ export default function PatternsListPage() {
             </div>
         )}
 
-        <div className="mt-12 flex items-center justify-center text-sm text-muted-foreground">
-            Pagination: Patterns (Placeholder)
-        </div>
+        {showPagination && (
+          <div className="mt-12 flex items-center justify-start text-sm text-muted-foreground">
+              Pagination: Patterns (Placeholder)
+          </div>
+        )}
       </PageContent>
     </PageContainer>
   );

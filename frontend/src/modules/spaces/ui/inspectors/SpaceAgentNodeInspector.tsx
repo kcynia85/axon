@@ -377,7 +377,7 @@ export const SpaceAgentNodeInspector = ({
                                                     <div className="space-y-1 pt-3 border-t border-zinc-900/50">
                                                         <div className="flex justify-between text-[10px] font-mono">
                                                             <span className="text-zinc-600 uppercase font-black text-[9px] tracking-tighter">Zużyto:</span>
-                                                            <span className="text-zinc-300 tabular-nums">{simulatedTokens.toLocaleString()} tokenów</span>
+                                                            <span className="text-zinc-300 tabular-nums" suppressHydrationWarning>{simulatedTokens.toLocaleString()} tokenów</span>
                                                         </div>
                                                         <div className="flex justify-between text-[10px] font-mono pt-1">
                                                             <span className="text-zinc-600 uppercase font-black text-[9px] tracking-tighter">Czas:</span>
@@ -454,7 +454,7 @@ export const SpaceAgentNodeInspector = ({
                                                         <p>• Artykuł akademicki o AI w edukacji</p>
                                                         <p>• Ponad 2 tysiące słów</p>
                                                         <p>• Przejrzysta struktura z nagłówkami</p>
-                                                        <div className="pt-2 text-zinc-600 font-bold uppercase">
+                                                        <div className="pt-2 text-zinc-600 font-bold uppercase" suppressHydrationWarning>
                                                             Całkowity czas: {data.metrics?.duration || '4 min'} | Zużycie: {simulatedTokens.toLocaleString()} tokenów
                                                         </div>
                                                     </div>

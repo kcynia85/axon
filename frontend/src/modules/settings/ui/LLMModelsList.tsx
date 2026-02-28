@@ -71,7 +71,7 @@ export const LLMModelsList = () => {
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right text-[10px] font-mono">
-                                    {model.model_context_window.toLocaleString()}
+                                    <span suppressHydrationWarning>{model.model_context_window.toLocaleString()}</span>
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <div className="text-[10px] font-mono">

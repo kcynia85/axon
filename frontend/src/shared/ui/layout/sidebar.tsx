@@ -44,14 +44,31 @@ export const Sidebar = () => {
         variant={isActive ? "default" : "ghost"}
         asChild
         className={cn(
-          "w-full justify-start gap-3 px-2 transition-all duration-200",
+          "w-full justify-start gap-3 px-2 transition-all duration-200 relative group/item",
           !isActive && "text-muted-foreground hover:text-foreground",
           isCollapsed ? "justify-center px-0 h-10 w-10 mx-auto" : "px-2"
         )}
       >
         <Link href={item.href}>
-          <item.icon className="h-4 w-4 shrink-0" />
-          {!isCollapsed && <span className="truncate text-sm font-medium">{item.name}</span>}
+          <div className="relative">
+            <item.icon className="h-4 w-4 shrink-0" />
+            {item.name === "Inbox" && (
+              <span className={cn(
+                "absolute -top-1 -right-1 flex h-2 w-2 items-center justify-center rounded-full bg-blue-500 border border-white dark:border-zinc-950 transition-transform",
+                isCollapsed ? "scale-110" : "scale-100"
+              )} />
+            )}
+          </div>
+          {!isCollapsed && (
+            <>
+              <span className="truncate text-sm font-medium">{item.name}</span>
+              {item.name === "Inbox" && (
+                <span className="ml-auto bg-blue-500 text-white px-1.5 py-0.5 rounded-full text-[9px] font-black leading-none">
+                  3
+                </span>
+              )}
+            </>
+          )}
         </Link>
       </Button>
     );

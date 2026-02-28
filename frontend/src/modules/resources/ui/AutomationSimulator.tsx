@@ -47,7 +47,7 @@ export const AutomationSimulator = () => {
                                 log.includes("SUCCESS") ? "text-green-500" :
                                     log.includes("SYSTEM") ? "text-primary font-bold" : "text-muted-foreground"
                             )}>
-                                <span className="opacity-40">[{new Date().toLocaleTimeString()}]</span>
+                                <span className="opacity-40" suppressHydrationWarning>[{new Date().toLocaleTimeString()}]</span>
                                 <span>{log}</span>
                             </div>
                         ))}

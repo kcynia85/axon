@@ -41,7 +41,7 @@ export const WorkspacesList = () => {
               <CardDescription>{description}</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground" suppressHydrationWarning>
                 Updated: {updated_at ? new Date(updated_at).toLocaleDateString() : "—"}
               </p>
             </CardContent>

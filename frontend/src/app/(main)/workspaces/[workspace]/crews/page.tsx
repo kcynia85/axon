@@ -13,6 +13,8 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import Link from "next/link";
 
+import { shouldShowPagination } from "@/shared/lib/pagination";
+
 /**
  * CrewsListPage - Dedicated list view for a workspace.
  * Based on Overview screen from axon_bb_workspace_crews.pdf
@@ -23,6 +25,8 @@ export default function CrewsListPage() {
   
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: crews, isLoading } = useCrews(workspaceId);
+
+  const showPagination = crews ? shouldShowPagination(crews.length) : false;
 
   return (
     <PageContainer>
@@ -89,9 +93,11 @@ export default function CrewsListPage() {
             </div>
         )}
 
-        <div className="mt-12 flex items-center justify-center text-sm text-muted-foreground">
-            Pagination: Crews (Placeholder)
-        </div>
+        {showPagination && (
+          <div className="mt-12 flex items-center justify-start text-sm text-muted-foreground">
+              Pagination: Crews (Placeholder)
+          </div>
+        )}
       </PageContent>
     </PageContainer>
   );

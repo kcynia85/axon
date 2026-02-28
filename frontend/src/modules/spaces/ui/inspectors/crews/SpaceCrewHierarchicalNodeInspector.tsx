@@ -248,10 +248,9 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                                                                 <p>• Menedżer: {managerTitle}</p>
                                                                 <p>• Wykonano {(tasks || []).length} zadań pod nadzorem</p>
                                                                 <p>• Wszystkie kroki zatwierdzone</p>
-                                                                <div className="pt-2 text-zinc-600 font-bold uppercase">
+                                                                <div className="pt-2 text-zinc-600 font-bold uppercase" suppressHydrationWarning>
                                                                     Całkowity czas: {data.metrics?.duration || '3 min 40s'} | Zużycie: {data.metrics?.tokens?.toLocaleString() || '4,500'} tokenów
-                                                                </div>
-                                                            </div>
+                                                                </div>                                                            </div>
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>

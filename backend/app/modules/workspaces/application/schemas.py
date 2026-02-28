@@ -1,8 +1,16 @@
 from pydantic import BaseModel
 from typing import List, Optional, Any, Dict
 from uuid import UUID
+from datetime import datetime
 from app.modules.workspaces.domain.enums import PatternType, ProcessType
 from app.modules.workspaces.domain.models import Pattern, Template, Crew
+
+class WorkspaceResponse(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 class CreatePatternRequest(BaseModel):
     pattern_name: str

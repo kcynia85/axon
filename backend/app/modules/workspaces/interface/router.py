@@ -8,7 +8,8 @@ from app.modules.workspaces.dependencies import get_workspace_service
 from app.modules.workspaces.application.schemas import (
     PatternResponse, CreatePatternRequest, UpdatePatternRequest,
     TemplateResponse, CreateTemplateRequest, UpdateTemplateRequest,
-    CrewResponse, CreateCrewRequest, UpdateCrewRequest
+    CrewResponse, CreateCrewRequest, UpdateCrewRequest,
+    WorkspaceResponse
 )
 
 router = APIRouter(
@@ -17,12 +18,20 @@ router = APIRouter(
     dependencies=[Depends(get_current_user)]
 )
 
-@router.get("/", response_model=List[str])
+@router.get("/", response_model=List[WorkspaceResponse])
 async def list_workspaces(
     service: WorkspaceService = Depends(get_workspace_service)
 ):
     """List all unique workspace identifiers from patterns, templates, and crews."""
-    return await service.get_unique_workspaces()
+    workspace_names = await service.get_unique_workspaces()
+    # Map workspace names to WorkspaceResponse objects
+    return [
+        WorkspaceResponse(
+            id=name.lower().replace(" ", "-"),
+            name=name,
+            description=f"Automated workspace for {name}"
+        ) for name in workspace_names
+    ]
 
 # --- Patterns ---
 
