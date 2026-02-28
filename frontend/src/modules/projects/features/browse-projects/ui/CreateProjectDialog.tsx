@@ -54,11 +54,11 @@ export function CreateProjectDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const project = await createProject({
-        name: values.name,
-        description: values.description,
-        domain: values.domain as HubType,
-        status: ProjectStatus.IDEA
-      });
+        project_name: values.name,
+        project_summary: values.description,
+        project_status: ProjectStatus.IDEA,
+        project_keywords: [values.domain] // Initial keyword from domain
+      } as any);
       
       toast.success("Project created successfully!")
       setOpen(false)
@@ -74,9 +74,9 @@ export function CreateProjectDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="h-10 px-4 bg-black text-white hover:bg-zinc-800 transition-colors font-bold text-sm rounded-md">
             <Plus className="mr-2 h-4 w-4" />
-            New Project
+            Nowy Projekt
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
