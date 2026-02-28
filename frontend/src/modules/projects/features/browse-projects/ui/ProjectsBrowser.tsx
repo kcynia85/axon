@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from "react";
-import { Search, Filter, ArrowUpDown } from "lucide-react";
+import { Search, Filter, ArrowUpDown, LayoutGrid, List } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";
 import { Button } from "@/shared/ui/ui/Button";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
@@ -10,6 +10,7 @@ import { SortMenu } from "@/shared/ui/complex/SortMenu";
 import { FilterGroup, ActiveFilter, SortOption } from "@/shared/domain/filters";
 import { ProjectList } from "./ProjectList";
 import { Project } from "../../../domain";
+import { cn } from "@/shared/lib/utils";
 
 interface ProjectsBrowserProps {
   readonly initialProjects: readonly Project[];
@@ -25,31 +26,62 @@ const SORT_OPTIONS: readonly SortOption[] = [
 export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProjects }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date-desc");
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
-  // Active filters bar state
+  // Active filters bar state (Applied)
   const [activeFilters, setActiveFilters] = useState<readonly ActiveFilter[]>([
-    { id: "in-progress", label: "In Progress", category: "status" },
-    { id: "completed", label: "Completed", category: "status" }
+    { id: "in-progress", label: "In Progress", category: "status" }
   ]);
+
+  // Pending filters state (Preview while menu is open)
+  const [pendingFilterIds, setPendingFilterIds] = useState<string[]>(["in-progress"]);
 
   // Big menu filter groups state
   const [filterGroups, setFilterGroups] = useState<readonly FilterGroup[]>([
     {
+      id: "status",
+      title: "Status:",
+      type: "checkbox",
+      options: [
+        { id: "in-progress", label: "In Progress", isChecked: true },
+        { id: "completed", label: "Completed", isChecked: false },
+        { id: "idea", label: "Idea", isChecked: false },
+      ]
+    },
+    {
       id: "workspaces",
       title: "Workspaces:",
+      type: "checkbox",
       options: [
-        { id: "global", label: "Global", isChecked: true },
-        { id: "product-mgmt", label: "Product Management", isChecked: true },
+        { id: "global", label: "Global", isChecked: false },
+        { id: "product-mgmt", label: "Product Management", isChecked: false },
         { id: "discovery", label: "Discovery", isChecked: false },
-        { id: "design", label: "Design", isChecked: true },
+        { id: "design", label: "Design", isChecked: false },
         { id: "delivery", label: "Delivery", isChecked: false },
         { id: "growth-market", label: "Growth & Market", isChecked: false },
+      ]
+    },
+    {
+      id: "keywords",
+      title: "Keywords:",
+      type: "tags",
+      placeholder: "[Search tags...]",
+      options: [
+        { id: "research", label: "research", isChecked: false },
+        { id: "finanse", label: "finanse", isChecked: false },
+        { id: "b2b", label: "b2b", isChecked: false },
+        { id: "saas", label: "saas", isChecked: false },
+        { id: "design-system", label: "design-system", isChecked: false },
       ]
     }
   ]);
 
   const handleRemoveFilter = (id: string) => {
-    setActiveFilters(prev => prev.filter(f => f.id !== id));
+    const nextFilters = activeFilters.filter(f => f.id !== id);
+    setActiveFilters(nextFilters);
+    const nextIds = nextFilters.map(f => f.id);
+    setPendingFilterIds(nextIds);
+    
     setFilterGroups(prev => prev.map(group => ({
       ...group,
       options: group.options.map(opt => 
@@ -60,6 +92,7 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
 
   const handleClearAll = () => {
     setActiveFilters([]);
+    setPendingFilterIds([]);
     setFilterGroups(prev => prev.map(group => ({
       ...group,
       options: group.options.map(opt => ({ ...opt, isChecked: false }))
@@ -67,6 +100,7 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
   };
 
   const handleApplyFilters = (selectedIds: string[]) => {
+    setPendingFilterIds(selectedIds);
     setFilterGroups(prev => prev.map(group => ({
       ...group,
       options: group.options.map(opt => ({
@@ -86,14 +120,27 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
     setActiveFilters(newActiveFilters);
   };
 
-  const processedProjects = useMemo(() => {
-    // 1. Filter
-    let result = [...initialProjects].filter(project => {
-      const name = project.project_name || project.name || "";
-      return name.toLowerCase().includes(searchQuery.toLowerCase());
+  const getFilteredProjects = (projects: readonly Project[], query: string, filterIds: string[]) => {
+    return projects.filter(project => {
+      const name = (project.project_name || project.name || "").toLowerCase();
+      const matchesSearch = name.includes(query.toLowerCase());
+      if (!matchesSearch) return false;
+      if (filterIds.length === 0) return true;
+      const status = (project.project_status || project.status || "").toLowerCase();
+      const statusFilters = filterIds.filter(id => ["in-progress", "completed", "idea"].includes(id));
+      if (statusFilters.length > 0 && !statusFilters.includes(status)) return false;
+      return true;
     });
+  };
 
-    // 2. Sort
+  const previewResultsCount = useMemo(() => {
+    return getFilteredProjects(initialProjects, searchQuery, pendingFilterIds).length;
+  }, [initialProjects, searchQuery, pendingFilterIds]);
+
+  const processedProjects = useMemo(() => {
+    const appliedFilterIds = activeFilters.map(f => f.id);
+    let result = getFilteredProjects(initialProjects, searchQuery, appliedFilterIds);
+
     result.sort((a, b) => {
       const nameA = (a.project_name || a.name || "").toLowerCase();
       const nameB = (b.project_name || b.name || "").toLowerCase();
@@ -110,12 +157,13 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
     });
 
     return result;
-  }, [initialProjects, searchQuery, sortBy]);
+  }, [initialProjects, searchQuery, sortBy, activeFilters]);
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-8">
-        <div className="flex gap-4">
+    <div className="space-y-12">
+      <div className="flex flex-col space-y-8">
+        {/* Row 1: Search and Filters (Unified) */}
+        <div className="flex flex-col sm:flex-row gap-4 items-end">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
             <Input 
@@ -126,53 +174,83 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
             />
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex gap-6 pb-1 px-2">
             {/* Filters Menu */}
             <FilterBigMenu 
               groups={filterGroups}
+              resultsCount={previewResultsCount}
               onApply={handleApplyFilters}
               onClearAll={handleClearAll}
+              onSelectionChange={setPendingFilterIds}
               trigger={
-                <Button 
-                  variant="outline" 
-                  className="h-11 border-zinc-200 dark:border-zinc-800 flex gap-2"
-                >
-                  <Filter size={18} />
+                <button className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1">
+                  <Filter size={16} />
                   Filters
-                </Button>
-              }
-            />
-
-            {/* Sort Menu */}
-            <SortMenu 
-              options={SORT_OPTIONS}
-              activeOptionId={sortBy}
-              onSelect={setSortBy}
-              trigger={
-                <Button 
-                  variant="outline" 
-                  className="h-11 border-zinc-200 dark:border-zinc-800 flex gap-2"
-                >
-                  <ArrowUpDown size={18} />
-                  Sort
-                </Button>
+                </button>
               }
             />
           </div>
         </div>
 
-        <div className="flex flex-col space-y-3">
-          <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Aktywne Filtry</span>
-          <FilterBar 
-            activeFilters={activeFilters}
-            onRemove={handleRemoveFilter}
-            onClearAll={handleClearAll}
-          />
+        {/* Row 2: Active Filters */}
+        {activeFilters.length > 0 && (
+          <div className="flex flex-col space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Active Filters</span>
+            <FilterBar 
+              activeFilters={activeFilters}
+              onRemove={handleRemoveFilter}
+              onClearAll={handleClearAll}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Row 3: List Header with Sort and View Toggle */}
+      <div className="flex items-center justify-end gap-10 pb-2 border-b border-zinc-100 dark:border-zinc-900">
+        {/* Sort Menu */}
+        <SortMenu 
+          options={SORT_OPTIONS}
+          activeOptionId={sortBy}
+          onSelect={setSortBy}
+          trigger={
+            <button className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-2 mb-[-10px]">
+              <ArrowUpDown size={14} />
+              Sort
+            </button>
+          }
+        />
+
+        {/* View Mode Toggle */}
+        <div className="flex items-center gap-6 mb-[-10px]">
+          <button 
+            onClick={() => setViewMode('grid')}
+            className={cn(
+              "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 transition-all pb-2",
+              viewMode === 'grid' 
+                ? "border-black dark:border-white text-black dark:text-white" 
+                : "border-transparent text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700"
+            )}
+          >
+            <LayoutGrid size={14} />
+            Grid
+          </button>
+          <button 
+            onClick={() => setViewMode('list')}
+            className={cn(
+              "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 transition-all pb-2",
+              viewMode === 'list' 
+                ? "border-black dark:border-white text-black dark:text-white" 
+                : "border-transparent text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700"
+            )}
+          >
+            <List size={14} />
+            List
+          </button>
         </div>
       </div>
 
-      <div className="pt-4">
-        <ProjectList projects={processedProjects} />
+      <div className="pt-2">
+        <ProjectList projects={processedProjects} viewMode={viewMode} />
       </div>
     </div>
   );

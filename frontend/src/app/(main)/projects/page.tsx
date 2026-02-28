@@ -36,8 +36,7 @@ const ProjectsPage = async () => {
 
                     {/* Pagination Placeholder */}
                     <div className="pt-12 border-t border-zinc-100 dark:border-zinc-900">
-                        <div className="flex flex-col space-y-2">
-                            <h3 className="text-xl font-bold">Paginacja: Projects</h3>
+                        <div className="flex justify-end">
                             <div className="flex gap-2">
                                 {[1, 2, 3, 4, 5].map((i) => (
                                     <button 

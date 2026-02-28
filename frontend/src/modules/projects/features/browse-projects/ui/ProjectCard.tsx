@@ -1,23 +1,23 @@
 import React from "react";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/shared/ui/ui/Card";
-import { Badge } from "@/shared/ui/ui/Badge";
 import { Button } from "@/shared/ui/ui/Button";
 import { ExternalLink, Info, Layers } from "lucide-react";
 import { Project, ProjectStatus } from "../../../domain";
 
 interface ProjectCardProps {
-    project: Project;
+    readonly project: Project;
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
-    // Mock tags and artifacts count for demo/breadboard purposes if not present
-    const tags = (project as any).project_keywords || ["#design", "#growth&market"];
-    const artifactsCount = (project as any).artifacts?.length || 3;
-    const status = project.status || (project as any).project_status;
-    const name = project.name || (project as any).project_name;
+    // Standardizing data access based on domain model
+    const tags = project.project_keywords || [];
+    const artifactsCount = project.artifacts?.length || 0;
+    const status = project.project_status || project.status;
+    const name = project.project_name || project.name;
 
-    const getStatusLabel = (status: string) => {
+    const getStatusLabel = (status: string | undefined) => {
+        if (!status) return "Unknown";
         if (status === ProjectStatus.IN_PROGRESS || status === 'in_progress') return "In Progress";
         if (status === ProjectStatus.DONE || status === 'done' || status === 'completed') return "Completed";
         return status;

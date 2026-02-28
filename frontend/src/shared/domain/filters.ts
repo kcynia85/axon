@@ -6,6 +6,8 @@
 export type FilterOptionId = string;
 export type FilterGroupId = string;
 
+export type FilterGroupType = 'checkbox' | 'tags';
+
 export interface FilterOption {
   readonly id: FilterOptionId;
   readonly label: string;
@@ -16,7 +18,9 @@ export interface FilterOption {
 export interface FilterGroup {
   readonly id: FilterGroupId;
   readonly title: string;
+  readonly type: FilterGroupType;
   readonly options: readonly FilterOption[];
+  readonly placeholder?: string; // For 'tags' search input
 }
 
 export interface ActiveFilter {

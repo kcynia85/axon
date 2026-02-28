@@ -13,7 +13,7 @@ interface SortMenuProps {
 }
 
 /**
- * SortMenu - Pattern: Minimalist Sort Dropdown
+ * SortMenu - Pattern: Minimalist Sort Dropdown with Glassmorphism
  */
 export const SortMenu: React.FC<SortMenuProps> = ({
   options,
@@ -65,7 +65,7 @@ export const SortMenu: React.FC<SortMenuProps> = ({
         <DropdownMenuPrimitive.Content 
           sideOffset={8}
           align="end"
-          className="z-50 min-w-[200px] bg-[#0c0c0e] border border-zinc-800 rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in-95 duration-200"
+          className="z-50 min-w-[200px] bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         >
           <div className="py-2">
             {renderContent()}

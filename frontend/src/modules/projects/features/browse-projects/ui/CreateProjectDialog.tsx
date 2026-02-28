@@ -74,7 +74,7 @@ export function CreateProjectDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="h-10 px-4 bg-black text-white hover:bg-zinc-800 transition-colors font-bold text-sm rounded-md">
+        <Button className="h-10 px-4 bg-white text-black hover:bg-zinc-200 transition-colors font-bold text-sm rounded-md shadow-sm border border-zinc-200 dark:border-zinc-800">
             <Plus className="mr-2 h-4 w-4" />
             Nowy Projekt
         </Button>
