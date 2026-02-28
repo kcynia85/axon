@@ -6,9 +6,10 @@ import { Project, ProjectStatus } from "../../../domain";
 
 interface ProjectListItemProps {
     readonly project: Project;
+    readonly onViewDetails: (project: Project) => void;
 }
 
-export const ProjectListItem: React.FC<ProjectListItemProps> = ({ project }) => {
+export const ProjectListItem: React.FC<ProjectListItemProps> = ({ project, onViewDetails }) => {
     // Using domain model properties with fallback to legacy field names
     const tags = project.project_keywords || [];
     const artifactsCount = project.artifacts?.length || 0;
@@ -55,11 +56,16 @@ export const ProjectListItem: React.FC<ProjectListItemProps> = ({ project }) => 
                             Open Space
                         </Link>
                     </Button>
-                    <Button asChild variant="ghost" size="sm" className="h-8 px-3 text-[10px] font-bold hover:bg-zinc-100 dark:hover:bg-zinc-900 group/btn">
-                        <Link href={`/projects/${project.id}`} className="flex items-center gap-2">
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 px-3 text-[10px] font-bold hover:bg-zinc-100 dark:hover:bg-zinc-900 group/btn"
+                        onClick={() => onViewDetails(project)}
+                    >
+                        <span className="flex items-center gap-2">
                             <Info size={14} className="text-zinc-400 group-hover/btn:text-black dark:group-hover/btn:text-white" />
                             Details
-                        </Link>
+                        </span>
                     </Button>
                 </div>
             </div>

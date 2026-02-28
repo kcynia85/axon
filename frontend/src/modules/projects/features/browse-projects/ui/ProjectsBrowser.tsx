@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Search, Filter, ArrowUpDown, LayoutGrid, List } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";
 import { Button } from "@/shared/ui/ui/Button";
@@ -9,8 +9,17 @@ import { FilterBigMenu } from "@/shared/ui/complex/FilterBigMenu";
 import { SortMenu } from "@/shared/ui/complex/SortMenu";
 import { FilterGroup, ActiveFilter, SortOption } from "@/shared/domain/filters";
 import { ProjectList } from "./ProjectList";
-import { Project } from "../../../domain";
+import { Project, Artifact } from "../../../domain";
 import { cn } from "@/shared/lib/utils";
+import { 
+    Sheet, 
+    SheetContent, 
+    SheetHeader, 
+    SheetTitle,
+    SheetDescription 
+} from "@/shared/ui/ui/Sheet";
+import { ProjectDetailsView } from "../../project-details/ui/ProjectDetailsView";
+import { getProjectArtifacts } from "../../project-details/infrastructure/api";
 
 interface ProjectsBrowserProps {
   readonly initialProjects: readonly Project[];
@@ -28,6 +37,12 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
   const [sortBy, setSortBy] = useState("date-desc");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
+  // Sidebar State
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+
   // Active filters bar state (Applied)
   const [activeFilters, setActiveFilters] = useState<readonly ActiveFilter[]>([
     { id: "in-progress", label: "In Progress", category: "status" }
@@ -76,6 +91,13 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
     }
   ]);
 
+  // Fetch artifacts when a project is selected
+  useEffect(() => {
+    if (selectedProject) {
+        getProjectArtifacts(selectedProject.id).then(setArtifacts);
+    }
+  }, [selectedProject]);
+
   const handleRemoveFilter = (id: string) => {
     const nextFilters = activeFilters.filter(f => f.id !== id);
     setActiveFilters(nextFilters);
@@ -118,6 +140,12 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
       });
     });
     setActiveFilters(newActiveFilters);
+  };
+
+  const handleViewDetails = (project: Project) => {
+    setSelectedProject(project);
+    setActiveTab("overview");
+    setIsSidebarOpen(true);
   };
 
   const getFilteredProjects = (projects: readonly Project[], query: string, filterIds: string[]) => {
@@ -250,8 +278,24 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
       </div>
 
       <div className="pt-2">
-        <ProjectList projects={processedProjects} viewMode={viewMode} />
+        <ProjectList projects={processedProjects} viewMode={viewMode} onViewDetails={handleViewDetails} />
       </div>
+
+      {/* Project Details Sidebar */}
+      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <SheetContent className="sm:max-w-md border-l border-zinc-200 dark:border-zinc-800 p-0 overflow-y-auto">
+          <div className="p-6">
+            {selectedProject && (
+                <ProjectDetailsView 
+                    project={selectedProject} 
+                    artifacts={artifacts} 
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                />
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
