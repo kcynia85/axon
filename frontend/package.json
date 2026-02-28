@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest"
+    "test": "vitest",
+    "wasm-build": "cd wasm-engine && wasm-pack build --target web --out-dir ../src/modules/spaces/infrastructure/wasm"
   },
   "dependencies": {
     "@blocknote/core": "^0.47.0",

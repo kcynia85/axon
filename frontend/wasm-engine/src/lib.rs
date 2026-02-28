@@ -2,16 +2,21 @@ use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-// --- Core Data Structures (Optimized for WASM memory) ---
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+// --- Core Data Structures ---
 
 #[wasm_bindgen]
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub struct Vector2 {
     pub x: f32,
     pub y: f32,
 }
 
-#[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct WasmNode {
     pub id: String,
@@ -21,7 +26,6 @@ pub struct WasmNode {
     pub height: f32,
 }
 
-#[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct WasmEdge {
     pub id: String,
@@ -44,6 +48,7 @@ impl AxonCanvasEngine {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         console_error_panic_hook::set_once();
+        log("Axon WASM Engine Initialized");
         
         Self {
             nodes: HashMap::new(),
@@ -77,14 +82,9 @@ impl AxonCanvasEngine {
         self.zoom = zoom;
     }
 
-    // --- Performance: Spatial Queries (Figma-style) ---
-
-    /// Returns IDs of nodes currently visible in the viewport.
-    /// In a real implementation, this would use a QuadTree.
     pub fn get_visible_nodes(&self, screen_width: f32, screen_height: f32) -> JsValue {
         let mut visible = Vec::new();
         
-        // Simple bounding box check (O(n), to be optimized to O(log n))
         for (id, node) in &self.nodes {
             let canvas_x = (node.position.x * self.zoom) + self.viewport_offset.x;
             let canvas_y = (node.position.y * self.zoom) + self.viewport_offset.y;
@@ -105,14 +105,15 @@ impl AxonCanvasEngine {
     }
 }
 
-// Utility to catch Rust panics and show them in browser console
+// Utility to catch Rust panics
 mod console_error_panic_hook {
     use std::sync::Once;
     static SET_HOOK: Once = Once::new();
 
     pub fn set_once() {
         SET_HOOK.call_once(|| {
-            std::panic::set_hook(Box::new(wasm_bindgen_test::console_log));
+            #[cfg(feature = "console_error_panic_hook")]
+            console_error_panic_hook::set_once();
         });
     }
 }
