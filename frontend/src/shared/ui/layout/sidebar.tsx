@@ -51,7 +51,7 @@ export const Sidebar = () => {
       >
         <Link href={item.href}>
           <item.icon className="h-4 w-4 shrink-0" />
-          {!isCollapsed && <span className="truncate text-xs">{item.name}</span>}
+          {!isCollapsed && <span className="truncate text-sm font-medium">{item.name}</span>}
         </Link>
       </Button>
     );
@@ -140,7 +140,7 @@ export const Sidebar = () => {
           <SidebarGroup className="py-2">
             <button
               onClick={() => setAppsExpanded(!appsExpanded)}
-              className="flex items-center justify-between w-full px-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               <span className="flex items-center gap-3">
                 <AppWindow className="h-4 w-4" />
@@ -163,7 +163,7 @@ export const Sidebar = () => {
                       className="w-full justify-start gap-3 mb-1 px-2"
                     >
                       <a href={app.href} target="_blank" rel="noopener noreferrer">
-                        <span className="text-xs">{app.name}</span>
+                        <span className="text-sm font-medium">{app.name}</span>
                         <ExternalLink className="h-3 w-3 ml-auto text-muted-foreground" />
                       </a>
                     </Button>

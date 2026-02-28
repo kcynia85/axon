@@ -70,10 +70,10 @@ export function UserNav({ hideText }: { hideText?: boolean }) {
         </div>
         {!hideText && (
           <div className="flex flex-col text-left truncate min-w-0">
-            <span className="text-xs font-black text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 leading-none truncate">
+            <span className="text-sm font-black text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 leading-none truncate">
               Guest User
             </span>
-            <span className="text-[10px] font-bold text-zinc-400 mt-1.5 flex items-center gap-1">
+            <span className="text-xs font-bold text-zinc-400 mt-1.5 flex items-center gap-1">
               Sign in to Axon <LogIn className="h-2 w-2" />
             </span>
           </div>
@@ -102,10 +102,10 @@ export function UserNav({ hideText }: { hideText?: boolean }) {
           </Avatar>
           {!hideText && (
             <div className="flex flex-col text-left truncate min-w-0">
-              <span className="text-xs font-black text-zinc-900 dark:text-zinc-100 leading-none truncate capitalize">
+              <span className="text-sm font-black text-zinc-900 dark:text-zinc-100 leading-none truncate capitalize">
                 {userName}
               </span>
-              <span className="text-[10px] font-bold text-zinc-500 truncate mt-1.5">
+              <span className="text-xs font-bold text-zinc-500 truncate mt-1.5">
                 {email}
               </span>
             </div>

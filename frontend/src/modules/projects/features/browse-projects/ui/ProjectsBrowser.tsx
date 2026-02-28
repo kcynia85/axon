@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from "react";
-import { Search, Filter, ArrowUpDown, LayoutGrid, List } from "lucide-react";
+import { Search, Filter, ArrowUpDown, LayoutGrid, List, ChevronDown, Check } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";
 import { Button } from "@/shared/ui/ui/Button";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
@@ -14,10 +14,13 @@ import { cn } from "@/shared/lib/utils";
 import { 
     Sheet, 
     SheetContent, 
-    SheetHeader, 
-    SheetTitle,
-    SheetDescription 
 } from "@/shared/ui/ui/Sheet";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/shared/ui/ui/DropdownMenu";
 import { ProjectDetailsView } from "../../project-details/ui/ProjectDetailsView";
 import { getProjectArtifacts } from "../../project-details/infrastructure/api";
 
@@ -32,6 +35,72 @@ const SORT_OPTIONS: readonly SortOption[] = [
   { id: "date-asc", label: "Oldest first" },
 ];
 
+/**
+ * Quick Filter Pill Component
+ */
+const FilterPill: React.FC<{
+  label: string;
+  group: FilterGroup | undefined;
+  activeFilters: readonly ActiveFilter[];
+  onToggle: (id: string) => void;
+}> = ({ label, group, activeFilters, onToggle }) => {
+  if (!group) return null;
+
+  const activeInGroup = activeFilters.filter(f => f.category === group.id);
+  const isActive = activeInGroup.length > 0;
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className={cn(
+          "flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all border",
+          isActive 
+            ? "bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-black dark:border-white shadow-lg" 
+            : "bg-transparent text-zinc-500 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
+        )}>
+          {label}
+          {isActive && (
+            <span className="flex items-center justify-center bg-yellow-400 text-black rounded-full min-w-[14px] h-3.5 px-1 text-[8px] font-black">
+              {activeInGroup.length}
+            </span>
+          )}
+          <ChevronDown size={10} className={cn("transition-transform opacity-60", isActive ? "text-white dark:text-black" : "text-zinc-400")} />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-56 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl border-zinc-200 dark:border-zinc-800 rounded-xl p-2 shadow-2xl z-50">
+        {group.options.map((opt) => {
+          const isChecked = activeFilters.some(f => f.id === opt.id);
+          return (
+            <DropdownMenuItem
+              key={opt.id}
+              onClick={(e) => {
+                e.preventDefault();
+                onToggle(opt.id);
+              }}
+              className="flex items-center gap-3 py-2 px-3 cursor-pointer hover:bg-zinc-100/50 dark:hover:bg-white/5 rounded-lg transition-colors group/item"
+            >
+              <div className={cn(
+                "w-3.5 h-3.5 border border-zinc-600 rounded-sm flex items-center justify-center transition-all shrink-0",
+                isChecked 
+                  ? "bg-white border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.3)]" 
+                  : "group-hover/item:border-zinc-400"
+              )}>
+                {isChecked && <Check size={10} className="text-black stroke-[4]" />}
+              </div>
+              <span className={cn(
+                "text-[11px] font-mono transition-colors truncate",
+                isChecked ? "text-black dark:text-white font-bold" : "text-zinc-500 group-hover/item:text-zinc-800 dark:group-hover/item:text-zinc-300"
+              )}>
+                {opt.label}
+              </span>
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProjects }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date-desc");
@@ -44,12 +113,10 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
   const [activeTab, setActiveTab] = useState("overview");
 
   // Active filters bar state (Applied)
-  const [activeFilters, setActiveFilters] = useState<readonly ActiveFilter[]>([
-    { id: "in-progress", label: "In Progress", category: "status" }
-  ]);
+  const [activeFilters, setActiveFilters] = useState<readonly ActiveFilter[]>([]);
 
   // Pending filters state (Preview while menu is open)
-  const [pendingFilterIds, setPendingFilterIds] = useState<string[]>(["in-progress"]);
+  const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
 
   // Big menu filter groups state
   const [filterGroups, setFilterGroups] = useState<readonly FilterGroup[]>([
@@ -110,6 +177,29 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
         opt.id === id ? { ...opt, isChecked: false } : opt
       )
     })));
+  };
+
+  const handleToggleFilter = (id: string) => {
+    const isCurrentlyActive = activeFilters.some(f => f.id === id);
+    if (isCurrentlyActive) {
+      handleRemoveFilter(id);
+    } else {
+      // Find the option and its group
+      const group = filterGroups.find(g => g.id === 'status' || g.id === 'workspaces' ? g : undefined);
+      // More accurate group search
+      const actualGroup = filterGroups.find(g => g.options.some(o => o.id === id));
+      const option = actualGroup?.options.find(o => o.id === id);
+      
+      if (actualGroup && option) {
+        const newActiveFilters = [...activeFilters, { id: option.id, label: option.label, category: actualGroup.id }];
+        setActiveFilters(newActiveFilters);
+        setPendingFilterIds(newActiveFilters.map(f => f.id));
+        setFilterGroups(prev => prev.map(g => g.id === actualGroup.id ? {
+          ...g,
+          options: g.options.map(o => o.id === id ? { ...o, isChecked: true } : o)
+        } : g));
+      }
+    }
   };
 
   const handleClearAll = () => {
@@ -190,90 +280,111 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
   return (
     <div className="space-y-12">
       <div className="flex flex-col space-y-8">
-        {/* Row 1: Search and Filters (Unified) */}
-        <div className="flex flex-col sm:flex-row gap-4 items-end">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
-            <Input 
-              placeholder="Search Bar" 
-              className="pl-10 h-11 border-zinc-200 dark:border-zinc-800"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          
-          <div className="flex gap-6 pb-1 px-2">
-            {/* Filters Menu */}
-            <FilterBigMenu 
-              groups={filterGroups}
-              resultsCount={previewResultsCount}
-              onApply={handleApplyFilters}
-              onClearAll={handleClearAll}
-              onSelectionChange={setPendingFilterIds}
-              trigger={
-                <button className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1">
-                  <Filter size={16} />
-                  Filters
-                </button>
-              }
-            />
-          </div>
+        {/* Row 1: Search */}
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
+          <Input 
+            placeholder="Search Bar" 
+            className="pl-10 h-11 border-zinc-200 dark:border-zinc-800"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
         {/* Row 2: Active Filters */}
         {activeFilters.length > 0 && (
           <div className="flex flex-col space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
-            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Active Filters</span>
+            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest px-1">Active Filters</span>
             <FilterBar 
               activeFilters={activeFilters}
               onRemove={handleRemoveFilter}
               onClearAll={handleClearAll}
+              className="px-1"
             />
           </div>
         )}
       </div>
 
-      {/* Row 3: List Header with Sort and View Toggle */}
-      <div className="flex items-center justify-end gap-10 pb-2 border-b border-zinc-100 dark:border-zinc-900">
-        {/* Sort Menu */}
-        <SortMenu 
-          options={SORT_OPTIONS}
-          activeOptionId={sortBy}
-          onSelect={setSortBy}
-          trigger={
-            <button className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-2 mb-[-10px]">
-              <ArrowUpDown size={14} />
-              Sort
-            </button>
-          }
-        />
+      {/* Row 3: List Header with Filters (Left) and Sort/View (Right) */}
+      <div className="flex flex-wrap items-center justify-between gap-6 pb-2 border-b border-zinc-100 dark:border-zinc-900">
+        
+        {/* Filters Group (Left) */}
+        <div className="flex items-center gap-4 px-1">
+          <div className="flex items-center gap-3">
+            <FilterPill 
+              label="By Workspace" 
+              group={filterGroups.find(g => g.id === 'workspaces')} 
+              activeFilters={activeFilters}
+              onToggle={handleToggleFilter}
+            />
+            <FilterPill 
+              label="By Status" 
+              group={filterGroups.find(g => g.id === 'status')} 
+              activeFilters={activeFilters}
+              onToggle={handleToggleFilter}
+            />
+          </div>
 
-        {/* View Mode Toggle */}
-        <div className="flex items-center gap-6 mb-[-10px]">
-          <button 
-            onClick={() => setViewMode('grid')}
-            className={cn(
-              "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 transition-all pb-2",
-              viewMode === 'grid' 
-                ? "border-black dark:border-white text-black dark:text-white" 
-                : "border-transparent text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700"
-            )}
-          >
-            <LayoutGrid size={14} />
-            Grid
-          </button>
-          <button 
-            onClick={() => setViewMode('list')}
-            className={cn(
-              "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 transition-all pb-2",
-              viewMode === 'list' 
-                ? "border-black dark:border-white text-black dark:text-white" 
-                : "border-transparent text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700"
-            )}
-          >
-            <List size={14} />
-            List
-          </button>
+          <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 mx-1 hidden sm:block" />
+
+          {/* More Filters Link */}
+          <FilterBigMenu 
+            groups={filterGroups}
+            resultsCount={previewResultsCount}
+            onApply={handleApplyFilters}
+            onClearAll={handleClearAll}
+            onSelectionChange={setPendingFilterIds}
+            trigger={
+              <button className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-2 mb-[-10px] group">
+                <Filter size={14} className="group-hover:scale-110 transition-transform" />
+                More Filters
+              </button>
+            }
+          />
+        </div>
+
+        {/* Sort and View Toggle Group (Right) */}
+        <div className="flex items-center gap-10">
+          {/* Sort Menu */}
+          <SortMenu 
+            options={SORT_OPTIONS}
+            activeOptionId={sortBy}
+            onSelect={setSortBy}
+            trigger={
+              <button className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-2 mb-[-10px]">
+                <ArrowUpDown size={14} />
+                Sort
+              </button>
+            }
+          />
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-6 mb-[-10px]">
+            <button 
+              onClick={() => setViewMode('grid')}
+              className={cn(
+                "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 transition-all pb-2",
+                viewMode === 'grid' 
+                  ? "border-black dark:border-white text-black dark:text-white" 
+                  : "border-transparent text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700"
+              )}
+            >
+              <LayoutGrid size={14} />
+              Grid
+            </button>
+            <button 
+              onClick={() => setViewMode('list')}
+              className={cn(
+                "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 transition-all pb-2",
+                viewMode === 'list' 
+                  ? "border-black dark:border-white text-black dark:text-white" 
+                  : "border-transparent text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:border-zinc-300 dark:hover:border-zinc-700"
+              )}
+            >
+              <List size={14} />
+              List
+            </button>
+          </div>
         </div>
       </div>
 
@@ -283,7 +394,7 @@ export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProject
 
       {/* Project Details Sidebar */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetContent className="sm:max-w-md border-l border-zinc-200 dark:border-zinc-800 p-0 overflow-y-auto">
+        <SheetContent className="sm:max-w-md border-l border-zinc-200 dark:border-zinc-800 p-0 overflow-y-auto shadow-2xl">
           <div className="p-6">
             {selectedProject && (
                 <ProjectDetailsView 

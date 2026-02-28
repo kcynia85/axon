@@ -200,9 +200,9 @@ export const FilterBigMenu: React.FC<FilterBigMenuProps> = ({
       
       <DropdownMenuPrimitive.Portal>
         <DropdownMenuPrimitive.Content 
-          sideOffset={8}
-          align="end"
-          className="z-50 bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+          sideOffset={12}
+          align="start"
+          className="z-50 bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-zinc-200 dark:border-white/10 rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 shadow-2xl"
         >
           <div className="flex flex-col">
             {/* Horizontal Groups Container */}
