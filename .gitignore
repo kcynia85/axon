@@ -13,4 +13,9 @@ build/
 
 .gemini/
 gha-creds-*.json
-data/minio/*.log
+
+# Logs and temporary files
+*.log
+**/*.log
+temporary_plan.md
+.playwright-mcp/

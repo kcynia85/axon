@@ -1,9 +1,0 @@
-INFO:     Will watch for changes in these directories: ['/Users/kamil/Documents/DEV/axon/axon/backend']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [64086] using StatReload
-DEBUG:inngest._internal.client_lib.client:Dev Server mode enabled by client argument
-INFO:     Started server process [64088]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     127.0.0.1:51467 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51467 - "GET /favicon.ico HTTP/1.1" 404 Not Found
