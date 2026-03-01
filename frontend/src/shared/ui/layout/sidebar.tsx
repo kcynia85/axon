@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ModeToggle } from "@/shared/ui/ui/ModeToggle";
 import { UserNav } from "@/shared/ui/layout/UserNav";
 import { Button } from "@/shared/ui/ui/Button";
 import { Separator } from "@/shared/ui/ui/Separator";
@@ -24,8 +23,6 @@ import {
   SidebarGroup,
   SidebarMenu,
   SidebarFooter,
-  SidebarFooterRow,
-  SidebarVersion,
 } from "@/shared/ui/ui/Sidebar";
 import { mainNavigation, appsDropdown, bottomNavigation } from "@/shared/config/navigation";
 import { cn } from "@/shared/lib/utils";
@@ -89,11 +86,9 @@ export const Sidebar = () => {
 
     if (isCollapsed) {
       return (
-        <TooltipProvider>
-          <Tooltip content={item.name} placement="right">
-            {content}
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip content={item.name} side="right">
+          {content}
+        </Tooltip>
       );
     }
 
@@ -101,145 +96,153 @@ export const Sidebar = () => {
   };
 
   return (
-    <SidebarContainer className={cn(
-      "transition-all duration-300 ease-in-out z-[70]",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
-      <SidebarHeader className={cn(
-        "flex items-center justify-between transition-all duration-300 h-16",
-        isCollapsed ? "px-0 justify-center" : "pl-4 pr-5"
+    <TooltipProvider>
+      <SidebarContainer className={cn(
+        "transition-all duration-300 ease-in-out z-[70]",
+        isCollapsed ? "w-16" : "w-64"
       )}>
-        {!isCollapsed && (
-          <SidebarBrand>
-            <Link href="/dashboard" className="block transition-all hover:opacity-100 grayscale hover:grayscale-0 opacity-70">
-              <Image 
-                src="/logo-symbol-axon.svg" 
-                alt="Axon" 
-                width={32} 
-                height={32} 
-                className="h-8 w-8 dark:invert shrink-0"
-              />
-            </Link>
-          </SidebarBrand>
-        )}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={() => toggleSidebar()}
-          className={cn(
-            "h-8 w-8 text-muted-foreground group relative overflow-hidden transition-colors hover:text-foreground shrink-0", 
-            isCollapsed && "h-12 w-12 rounded-xl"
-          )}
-        >
-          {isCollapsed ? (
-            <>
-              <div className="absolute inset-0 flex items-center justify-center transition-all duration-300 group-hover:opacity-0 group-hover:scale-75 grayscale group-hover:grayscale-0">
+        <SidebarHeader className={cn(
+          "flex items-center justify-between transition-all duration-300 h-16",
+          isCollapsed ? "px-0 justify-center" : "pl-4 pr-5"
+        )}>
+          {!isCollapsed && (
+            <SidebarBrand>
+              <Link href="/dashboard" className="block transition-all hover:opacity-100 grayscale hover:grayscale-0 opacity-70">
                 <Image 
                   src="/logo-symbol-axon.svg" 
                   alt="Axon" 
-                  width={24} 
-                  height={24} 
-                  className="h-6 w-6 dark:invert"
+                  width={32} 
+                  height={32} 
+                  className="h-8 w-8 dark:invert shrink-0"
                 />
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100">
-                <PanelLeftOpen size={20} />
-              </div>
-            </>
-          ) : (
-            <PanelLeftClose size={18} />
+              </Link>
+            </SidebarBrand>
           )}
-        </Button>
-      </SidebarHeader>
-      
-      <Separator />
 
-      <SidebarContent>
-        {/* Primary Navigation (includes Inbox) */}
-        <SidebarGroup className={cn("py-4", isCollapsed && "px-2")}>
-          <SidebarMenu>
-            {mainNavigation.map((item) => (
-              <SidebarItem key={item.name} item={item} />
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-
+          <Tooltip content={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"} side="right" sideOffset={10}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => toggleSidebar()}
+              className={cn(
+                "h-8 w-8 text-muted-foreground group relative overflow-hidden transition-colors hover:text-foreground shrink-0", 
+                isCollapsed && "h-12 w-12 rounded-xl"
+              )}
+            >
+              {isCollapsed ? (
+                <>
+                  <div className="absolute inset-0 flex items-center justify-center transition-all duration-300 group-hover:opacity-0 group-hover:scale-75 grayscale group-hover:grayscale-0">
+                    <Image 
+                      src="/logo-symbol-axon.svg" 
+                      alt="Axon" 
+                      width={24} 
+                      height={24} 
+                      className="h-6 w-6 dark:invert"
+                    />
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 scale-75 transition-all duration-300 group-hover:opacity-100 group-hover:scale-100">
+                    <PanelLeftOpen size={20} />
+                  </div>
+                </>
+              ) : (
+                <PanelLeftClose size={18} />
+              )}
+            </Button>
+          </Tooltip>
+        </SidebarHeader>        
         <Separator />
 
-        {/* Apps Dropdown */}
-        {!isCollapsed ? (
-          <SidebarGroup className="py-2">
-            <button
-              onClick={() => setAppsExpanded(!appsExpanded)}
-              className="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <span className="flex items-center gap-3">
-                <AppWindow className="h-4 w-4" />
-                Apps
-              </span>
-              {appsExpanded ? (
-                <ChevronUp className="w-3 h-3" />
-              ) : (
-                <ChevronDown className="w-3 h-3" />
-              )}
-            </button>
-            {appsExpanded && (
-              <SidebarMenu className="mt-1 ml-2">
-                {appsDropdown.map((app) => {
-                  return (
-                    <Button
-                      key={app.name}
-                      variant="ghost"
-                      asChild
-                      className="w-full justify-start gap-3 mb-1 px-2"
-                    >
-                      <a href={app.href} target="_blank" rel="noopener noreferrer">
-                        <span className="text-sm font-medium">{app.name}</span>
-                        <ExternalLink className="h-3 w-3 ml-auto text-muted-foreground" />
-                      </a>
-                    </Button>
-                  );
-                })}
-              </SidebarMenu>
-            )}
+        <SidebarContent>
+          {/* Primary Navigation (includes Inbox) */}
+          <SidebarGroup className={cn("py-4", isCollapsed && "px-2")}>
+            <SidebarMenu>
+              {mainNavigation.map((item) => (
+                <SidebarItem key={item.name} item={item} />
+              ))}
+            </SidebarMenu>
           </SidebarGroup>
-        ) : (
-          <SidebarGroup className="py-4 px-2 text-center">
-             <TooltipProvider>
-                <Tooltip content="External Apps" placement="right">
+
+          <Separator />
+
+          {/* Apps Dropdown */}
+          {!isCollapsed ? (
+            <SidebarGroup className="py-2">
+              <button
+                onClick={() => setAppsExpanded(!appsExpanded)}
+                className="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <span className="flex items-center gap-3">
+                  <AppWindow className="h-4 w-4" />
+                  Apps
+                </span>
+                {appsExpanded ? (
+                  <ChevronUp className="w-3 h-3" />
+                ) : (
+                  <ChevronDown className="w-3 h-3" />
+                )}
+              </button>
+              {appsExpanded && (
+                <SidebarMenu className="mt-1 ml-2">
+                  {appsDropdown.map((app) => {
+                    return (
+                      <Button
+                        key={app.name}
+                        variant="ghost"
+                        asChild
+                        className="w-full justify-start gap-3 mb-1 px-2"
+                      >
+                        <a href={app.href} target="_blank" rel="noopener noreferrer">
+                          <span className="text-sm font-medium">{app.name}</span>
+                          <ExternalLink className="h-3 w-3 ml-auto text-muted-foreground" />
+                        </a>
+                      </Button>
+                    );
+                  })}
+                </SidebarMenu>
+              )}
+            </SidebarGroup>
+          ) : (
+            <SidebarGroup className="py-4 px-2 text-center">
+                <Tooltip content="External Apps" side="right">
                   <Button variant="ghost" size="icon" className="w-full h-10 text-muted-foreground hover:text-foreground">
                     <AppWindow className="h-4 w-4" />
                   </Button>
                 </Tooltip>
-             </TooltipProvider>
+            </SidebarGroup>
+          )}
+
+          <Separator />
+
+          <div className="flex-1" /> {/* Spacer to push bottom navigation lower */}
+        </SidebarContent>
+
+        <SidebarFooter>
+          {/* Settings & Docs */}
+          <SidebarGroup className={cn("py-2", isCollapsed && "px-2")}>
+            <SidebarMenu>
+              {bottomNavigation.map((item) => (
+                <SidebarItem key={item.name} item={item} />
+              ))}
+            </SidebarMenu>
           </SidebarGroup>
-        )}
 
-        <Separator />
+          <Separator />
 
-        <div className="flex-1" /> {/* Spacer to push bottom navigation lower */}
-      </SidebarContent>
-
-      <SidebarFooter>
-        {/* Settings & Docs */}
-        <SidebarGroup className={cn("py-2", isCollapsed && "px-2")}>
-          <SidebarMenu>
-            {bottomNavigation.map((item) => (
-              <SidebarItem key={item.name} item={item} />
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-
-        <Separator />
-
-        <SidebarGroup className={cn("p-2 transition-all duration-300", isCollapsed ? "p-2" : "p-2")}>
-          <UserNav hideText={isCollapsed} />
-        </SidebarGroup>
-        
-        <Separator />
-
-
-      </SidebarFooter>
-    </SidebarContainer>
+          <SidebarGroup className={cn("p-2 transition-all duration-300", isCollapsed ? "p-2" : "p-2")}>
+            {isCollapsed ? (
+              <Tooltip content="User Settings" side="right">
+                <div>
+                  <UserNav hideText={isCollapsed} />
+                </div>
+              </Tooltip>
+            ) : (
+              <UserNav hideText={isCollapsed} />
+            )}
+          </SidebarGroup>
+          
+          <Separator />
+        </SidebarFooter>
+      </SidebarContainer>
+    </TooltipProvider>
   );
 };
