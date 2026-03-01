@@ -2,39 +2,38 @@ import React from "react";
 import { Project } from "../../../domain";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectListItem } from "./ProjectListItem";
-
-export type ViewMode = 'grid' | 'list';
+import { ResourceList, ViewMode } from "@/shared/ui/complex/ResourceList";
 
 interface ProjectListProps {
     readonly projects: readonly Project[];
     readonly viewMode?: ViewMode;
+    readonly isLoading?: boolean;
+    readonly isError?: boolean;
     readonly onViewDetails: (project: Project) => void;
 }
 
-export const ProjectList: React.FC<ProjectListProps> = ({ projects, viewMode = 'grid', onViewDetails }) => {
-    if (projects.length === 0) {
-        return (
-            <div className="text-center py-10 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">
-                <p className="text-muted-foreground">No projects found. Create one to get started.</p>
-            </div>
-        );
-    }
-
-    if (viewMode === 'list') {
-        return (
-            <div className="flex flex-col gap-3">
-                {projects.map((project) => (
-                    <ProjectListItem key={project.id} project={project} onViewDetails={onViewDetails} />
-                ))}
-            </div>
-        );
-    }
-
+export const ProjectList: React.FC<ProjectListProps> = ({ 
+    projects, 
+    viewMode = 'grid', 
+    isLoading = false,
+    isError = false,
+    onViewDetails 
+}) => {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
-                <ProjectCard key={project.id} project={project} onViewDetails={onViewDetails} />
-            ))}
-        </div>
+        <ResourceList
+            items={projects}
+            isLoading={isLoading}
+            isError={isError}
+            viewMode={viewMode}
+            emptyTitle="No projects found"
+            emptyDescription="Create one to get started."
+            renderItem={(project) => (
+                viewMode === 'grid' ? (
+                    <ProjectCard project={project} onViewDetails={onViewDetails} />
+                ) : (
+                    <ProjectListItem project={project} onViewDetails={onViewDetails} />
+                )
+            )}
+        />
     );
 };

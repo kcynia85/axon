@@ -1,53 +1,53 @@
 "use client";
 
+import React from "react";
 import { useWorkspaces } from "../application/useWorkspaces";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
+import { ResourceList, ViewMode } from "@/shared/ui/complex/ResourceList";
+import { WorkspaceCard } from "./WorkspaceCard";
+import { Workspace } from "@/shared/domain/workspaces";
+import { Card, CardHeader } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import Link from "next/link";
 
-export const WorkspacesList = () => {
-  const { data: workspaces, isLoading, isError } = useWorkspaces();
+interface WorkspacesListProps {
+  readonly workspaces?: Workspace[];
+  readonly isLoading?: boolean;
+  readonly isError?: boolean;
+  readonly viewMode?: ViewMode;
+}
 
-  if (isLoading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[...Array(3)].map((_, index) => (
-          <Card key={index} className="h-40">
-            <CardHeader>
-              <Skeleton className="h-6 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-1/2" />
-            </CardHeader>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
-  if (isError || !workspaces) {
-    return <div className="text-red-500">Failed to load workspaces.</div>;
-  }
-
-  if (workspaces.length === 0) {
-    return <div className="text-muted-foreground">No workspaces found. Create one to get started.</div>;
-  }
+export const WorkspacesList: React.FC<WorkspacesListProps> = ({ 
+  workspaces: providedWorkspaces, 
+  isLoading: providedIsLoading,
+  isError: providedIsError,
+  viewMode = "grid" 
+}) => {
+  // Use provided props or fetch if not provided
+  const hookResult = useWorkspaces();
+  const workspaces = providedWorkspaces ?? hookResult.data;
+  const isLoading = providedIsLoading ?? hookResult.isLoading;
+  const isError = providedIsError ?? hookResult.isError;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {workspaces.map(({ id, name, description, updated_at }) => (
-        <Link key={id} href={`/workspaces/${id}`} className="block h-full">
-          <Card className="h-full hover:bg-muted/50 transition-colors">
-            <CardHeader>
-              <CardTitle>{name}</CardTitle>
-              <CardDescription>{description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-xs text-muted-foreground" suppressHydrationWarning>
-                Updated: {updated_at ? new Date(updated_at).toLocaleDateString() : "—"}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
-    </div>
+    <ResourceList
+      items={workspaces}
+      isLoading={isLoading}
+      isError={isError}
+      viewMode={viewMode}
+      emptyTitle="No workspaces found"
+      emptyDescription="Create one to get started."
+      renderItem={(workspace) => <WorkspaceCard workspace={workspace} />}
+      renderSkeleton={() => (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, index) => (
+            <Card key={index} className="h-40 border-zinc-200 dark:border-zinc-800">
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+      )}
+    />
   );
 };

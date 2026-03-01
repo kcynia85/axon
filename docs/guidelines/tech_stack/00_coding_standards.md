@@ -9,6 +9,11 @@ These standards apply to **humans and AI agents (LLMs)** equally.
 
 - **Readability over cleverness** — code must read like a book
 - **Explicit over implicit** — no magic, no hidden behavior
+- **KISS (Keep It Simple, Stupid)** — avoid unnecessary complexity
+- **DRY (Don't Repeat Yourself)** — abstract common patterns into reusable units
+- **First generic functions** — aim for generic, reusable functions before specific ones
+- **Modular-first** — organize code into self-contained, independent modules
+- **Component-first** — build UI as a collection of isolated, reusable components
 - **Functional-first** — functions before classes
 - **Immutability by default**
 - **DDD mindset** — Ubiquitous Language everywhere
