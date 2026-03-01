@@ -19,7 +19,7 @@ import {
   Globe,
   Quote
 } from "lucide-react";
-import { SidePeek } from "./SidePeek";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
 
 /** Mapping for related component IDs to readable names */

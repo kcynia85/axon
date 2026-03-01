@@ -24,10 +24,16 @@ export const SortMenu = forwardRef<HTMLDivElement, SortMenuProps>(({
 }, ref) => {
   return (
     <DropdownMenuPrimitive.Root>
-      <DropdownMenuPrimitive.Trigger className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-2 group w-fit outline-none">
-          <ArrowUpDown size={14} />
-          Sort
-      </DropdownMenuPrimitive.Trigger>
+      {trigger ? (
+        <DropdownMenuPrimitive.Trigger asChild>
+          {trigger}
+        </DropdownMenuPrimitive.Trigger>
+      ) : (
+        <DropdownMenuPrimitive.Trigger className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-2 group w-fit outline-none">
+            <ArrowUpDown size={14} />
+            Sort
+        </DropdownMenuPrimitive.Trigger>
+      )}
       
       <DropdownMenuPrimitive.Portal>
         <DropdownMenuPrimitive.Content 

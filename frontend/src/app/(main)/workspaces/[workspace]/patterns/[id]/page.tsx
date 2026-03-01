@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Button } from "@/shared/ui/ui/Button";
@@ -10,6 +10,7 @@ import { Box, Layers, ExternalLink, Globe } from "lucide-react";
 
 export default function PatternSidePeekPage() {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
   const patternId = params.id as string;
   
@@ -20,8 +21,10 @@ export default function PatternSidePeekPage() {
 
   return (
     <SidePeek 
-        title={pattern.name} 
-        subtitle="Pattern Details"
+        title={pattern.pattern_name} 
+        description="Pattern Details"
+        open={true}
+        onOpenChange={() => router.push(`/workspaces/${workspaceId}/patterns`)}
         footer={
             <Button className="w-full gap-2" variant="outline">
                 <ExternalLink className="h-4 w-4" /> Edit in Space
@@ -33,14 +36,14 @@ export default function PatternSidePeekPage() {
             <section className="space-y-4">
                 <div className="space-y-1">
                     <div className="text-[10px] uppercase text-muted-foreground font-bold">Type</div>
-                    <Badge variant="secondary" className="capitalize">{pattern.type}</Badge>
+                    <Badge variant="secondary" className="capitalize">{pattern.pattern_type}</Badge>
                 </div>
                 <div className="space-y-2">
                     <h3 className="text-sm font-semibold flex items-center gap-2">
-                        <Box className="h-4 w-4 text-primary" /> Description
+                        <Box className="h-4 w-4 text-primary" /> Description (OKR Context)
                     </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                        {pattern.description}
+                        {pattern.pattern_okr_context || "No OKR context defined."}
                     </p>
                 </div>
             </section>
@@ -65,11 +68,12 @@ export default function PatternSidePeekPage() {
             {/* Shared With */}
             <section className="space-y-3">
                 <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-primary" /> Shared with
+                    <Globe className="h-4 w-4 text-primary" /> Availability
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">Discovery</Badge>
-                    <Badge variant="outline">Product Management</Badge>
+                    {pattern.availability_workspace.map(ws => (
+                        <Badge key={ws} variant="outline" className="text-[10px]">{ws}</Badge>
+                    ))}
                 </div>
             </section>
         </div>

@@ -5,6 +5,8 @@ export function useInboxItems() {
     return useQuery({
         queryKey: ["inbox-items"],
         queryFn: () => inboxApi.getInboxItems(),
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        gcTime: 1000 * 60 * 30, // 30 minutes
     });
 }
 

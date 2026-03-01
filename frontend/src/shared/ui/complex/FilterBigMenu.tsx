@@ -130,17 +130,23 @@ export const FilterBigMenu = forwardRef<HTMLDivElement, FilterBigMenuProps>(({
     <DropdownMenuPrimitive.Root onOpenChange={(open) => {
         if (open) notifySelection(localOptions);
     }}>
-      <DropdownMenuPrimitive.Trigger className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-2 mb-[-10px] group w-fit">
-          <Filter size={14} className="group-hover:scale-110 transition-transform" />
-          More Filters
-      </DropdownMenuPrimitive.Trigger>
+      {trigger ? (
+        <DropdownMenuPrimitive.Trigger asChild>
+          {trigger}
+        </DropdownMenuPrimitive.Trigger>
+      ) : (
+        <DropdownMenuPrimitive.Trigger className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-2 mb-[-10px] group w-fit">
+            <Filter size={14} className="group-hover:scale-110 transition-transform" />
+            More Filters
+        </DropdownMenuPrimitive.Trigger>
+      )}
       
       <DropdownMenuPrimitive.Portal>
         <DropdownMenuPrimitive.Content 
           ref={ref}
           sideOffset={12}
           align="start"
-          className="z-50 bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-zinc-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+          className="z-[9999] bg-white/80 dark:bg-black/60 backdrop-blur-xl border border-zinc-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl"
         >
           <div className="flex flex-col">
             {/* Horizontal Groups Container */}

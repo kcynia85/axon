@@ -22,7 +22,9 @@ export default function AgentSidePeekPage() {
   return (
     <SidePeek 
         title={agent.role} 
-        subtitle="Agent Profile"
+        description="Agent Profile"
+        open={true}
+        onOpenChange={() => router.push(`/workspaces/${workspaceId}/agents`)}
         footer={
             <Button className="w-full" variant="outline" onClick={() => router.push(`/workspaces/${workspaceId}/agents/${agentId}/edit`)}>
                 Edytuj Agenta

@@ -4,8 +4,8 @@ import { Input } from "@/shared/ui/ui/Input";
 import { cn } from "@/lib/utils";
 
 interface BrowserLayoutProps {
-  readonly searchQuery: string;
-  readonly onSearchChange: (query: string) => void;
+  readonly searchQuery?: string;
+  readonly onSearchChange?: (query: string) => void;
   readonly searchPlaceholder?: string;
   readonly activeFilters?: React.ReactNode;
   readonly filters?: React.ReactNode; // Left side of the action bar
@@ -26,6 +26,8 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = ({
   children,
   className,
 }) => {
+  const showSearch = searchQuery !== undefined && onSearchChange !== undefined;
+
   return (
     <div className={cn("space-y-12", className)}>
       {/* Top Content (e.g. Recently Used) */}
@@ -35,28 +37,32 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = ({
         </div>
       )}
 
-      <div className="flex flex-col space-y-8">
-        {/* Search Row */}
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
-          <Input 
-            placeholder={searchPlaceholder} 
-            className="pl-10 h-11 border-zinc-200 dark:border-zinc-800"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
-        </div>
-
-        {/* Active Filters Row */}
-        {activeFilters && (
-          <div className="flex flex-col space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
-            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest px-1">Active Filters</span>
-            <div className="px-1">
-              {activeFilters}
+      {(showSearch || activeFilters) && (
+        <div className="flex flex-col space-y-8">
+          {/* Search Row */}
+          {showSearch && (
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
+              <Input 
+                placeholder={searchPlaceholder} 
+                className="pl-10 h-11 border-zinc-200 dark:border-zinc-800"
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+              />
             </div>
-          </div>
-        )}
-      </div>
+          )}
+
+          {/* Active Filters Row */}
+          {activeFilters && (
+            <div className="flex flex-col space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest px-1">Active Filters</span>
+              <div className="px-1">
+                {activeFilters}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Actions Row (Filters + Sort/View) */}
       {(filters || actions) && (

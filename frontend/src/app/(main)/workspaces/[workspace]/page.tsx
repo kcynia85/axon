@@ -12,9 +12,8 @@ import { PageContainer } from "@/shared/ui/layout/PageContainer";
 import { PageContent } from "@/shared/ui/layout/PageContent";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Button } from "@/shared/ui/ui/Button";
-import { ChevronRight, Search } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useParams } from "next/navigation";
-import { Input } from "@/shared/ui/ui/Input";
 import Link from "next/link";
 
 const SECTIONS = [
@@ -88,14 +87,6 @@ export default function WorkspaceOverviewPage() {
       />
       
       <PageContent className="max-w-5xl">
-        <div className="relative mb-10">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-                placeholder="Search in workspace..." 
-                className="pl-10 max-w-md h-10 bg-muted/50 border-none"
-            />
-        </div>
-
         <div className="grid gap-x-12">
             {SECTIONS.map((section) => (
                 <PreviewSection 

@@ -5,7 +5,7 @@ import { useAgentsSection } from "../application/useAgentsSection";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { SidePeek } from "./SidePeek";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { CostEstimator } from "./CostEstimator";
 import { Button } from "@/shared/ui/ui/Button";
 import {

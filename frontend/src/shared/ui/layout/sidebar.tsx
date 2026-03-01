@@ -31,45 +31,59 @@ import { mainNavigation, appsDropdown, bottomNavigation } from "@/shared/config/
 import { cn } from "@/shared/lib/utils";
 import { Tooltip, TooltipProvider } from "@/shared/ui/ui/Tooltip";
 
+import { useUiStore } from "@/shared/lib/store/useUiStore";
+
 export const Sidebar = () => {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [appsExpanded, setAppsExpanded] = useState(false);
+  const { toggleInbox, isInboxOpen, isSidebarCollapsed: isCollapsed, toggleSidebar } = useUiStore();
 
   const SidebarItem = ({ item }: { item: typeof mainNavigation[0] }) => {
     const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+    const isInbox = item.name === "Inbox";
     
     const content = (
       <Button
-        variant={isActive ? "default" : "ghost"}
-        asChild
+        variant={(isActive && !isInbox) ? "secondary" : "ghost"}
+        asChild={!isInbox}
+        onClick={isInbox ? (e) => {
+          e.preventDefault();
+          toggleInbox();
+        } : undefined}
         className={cn(
           "w-full justify-start gap-3 px-2 transition-all duration-200 relative group/item",
-          !isActive && "text-muted-foreground hover:text-foreground",
+          !(isActive || (isInbox && isInboxOpen)) ? "text-muted-foreground hover:text-foreground" : "text-foreground font-bold",
           isCollapsed ? "justify-center px-0 h-10 w-10 mx-auto" : "px-2"
         )}
       >
-        <Link href={item.href}>
-          <div className="relative">
-            <item.icon className="h-4 w-4 shrink-0" />
-            {item.name === "Inbox" && (
+        {isInbox ? (
+          <div className={cn("flex items-center gap-3 cursor-pointer", !isCollapsed && "w-full")}>
+            <div className="relative">
+              <item.icon className="h-4 w-4 shrink-0" />
               <span className={cn(
                 "absolute -top-1 -right-1 flex h-2 w-2 items-center justify-center rounded-full bg-blue-500 border border-white dark:border-zinc-950 transition-transform",
                 isCollapsed ? "scale-110" : "scale-100"
               )} />
-            )}
-          </div>
-          {!isCollapsed && (
-            <>
-              <span className="truncate text-sm font-medium">{item.name}</span>
-              {item.name === "Inbox" && (
+            </div>
+            {!isCollapsed && (
+              <>
+                <span className="truncate text-sm font-medium">{item.name}</span>
                 <span className="ml-auto bg-blue-500 text-white px-1.5 py-0.5 rounded-full text-[9px] font-black leading-none">
                   3
                 </span>
-              )}
-            </>
-          )}
-        </Link>
+              </>
+            )}
+          </div>
+        ) : (
+          <Link href={item.href}>
+            <div className="relative">
+              <item.icon className="h-4 w-4 shrink-0" />
+            </div>
+            {!isCollapsed && (
+              <span className="truncate text-sm font-medium">{item.name}</span>
+            )}
+          </Link>
+        )}
       </Button>
     );
 
@@ -88,7 +102,7 @@ export const Sidebar = () => {
 
   return (
     <SidebarContainer className={cn(
-      "transition-all duration-300 ease-in-out",
+      "transition-all duration-300 ease-in-out z-[70]",
       isCollapsed ? "w-16" : "w-64"
     )}>
       <SidebarHeader className={cn(
@@ -111,7 +125,7 @@ export const Sidebar = () => {
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => toggleSidebar()}
           className={cn(
             "h-8 w-8 text-muted-foreground group relative overflow-hidden transition-colors hover:text-foreground shrink-0", 
             isCollapsed && "h-12 w-12 rounded-xl"

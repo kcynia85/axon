@@ -20,12 +20,14 @@ export default function CrewSidePeekPage() {
 
   if (!crew) return null;
 
-    const crewAgents = agents?.filter((agentItem) => crew.agents.includes(agentItem.id)) || [];
+    const crewAgents = agents?.filter((agentItem) => crew.agent_member_ids.includes(agentItem.id)) || [];
 
   return (
     <SidePeek 
-        title={crew.name} 
-        subtitle="Crew Details"
+        title={crew.crew_name} 
+        description="Crew Details"
+        open={true}
+        onOpenChange={() => router.push(`/workspaces/${workspaceId}/crews`)}
         footer={
             <Button className="w-full" variant="outline" onClick={() => router.push(`/workspaces/${workspaceId}/crews/${crewId}/edit`)}>
                 Edit Crew
@@ -40,7 +42,7 @@ export default function CrewSidePeekPage() {
                 </h3>
                 <div className="space-y-1">
                     <div className="text-sm font-medium">Process Type</div>
-                    <Badge variant="secondary" className="capitalize">{crew.process}</Badge>
+                    <Badge variant="secondary" className="capitalize">{crew.crew_process_type}</Badge>
                 </div>
             </section>
 
@@ -54,7 +56,7 @@ export default function CrewSidePeekPage() {
                 <div className="space-y-2">
                     {crewAgents.map(agent => (
                         <div key={agent.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-dashed text-xs">
-                            <div className="font-medium">{agent.role}</div>
+                            <div className="font-medium">{agent.agent_name}</div>
                             <Badge variant="outline" className="text-[10px]">Active</Badge>
                         </div>
                     ))}
@@ -72,14 +74,14 @@ export default function CrewSidePeekPage() {
                     <LayoutPanelLeft className="h-4 w-4 text-primary" /> Context
                 </h3>
                 <div className="text-xs text-muted-foreground p-3 border rounded bg-muted/20">
-                    competitors_list.md
+                    research_brief.pdf
                 </div>
 
                 <h3 className="text-sm font-semibold flex items-center gap-2">
                     <Box className="h-4 w-4 text-primary" /> Artefact
                 </h3>
                 <div className="text-xs text-muted-foreground p-3 border rounded bg-muted/20">
-                    synteza.md
+                    synteza_results.md
                 </div>
             </section>
         </div>

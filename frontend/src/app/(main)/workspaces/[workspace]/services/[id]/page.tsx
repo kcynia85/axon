@@ -6,12 +6,8 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { Button } from "@/shared/ui/ui/Button";
 import { Separator } from "@/shared/ui/ui/Separator";
 import { useServices } from "@/modules/workspaces/application/useWorkspaces";
-import { Activity, Zap, Layers, Briefcase } from "lucide-react";
+import { Activity, Zap, Layers, Briefcase, Globe } from "lucide-react";
 
-/**
- * ServiceSidePeekPage - Dedicated detail view for External Services.
- * Following the structure from Resources spec provided by user.
- */
 export default function ServiceSidePeekPage() {
   const params = useParams();
   const router = useRouter();
@@ -25,10 +21,12 @@ export default function ServiceSidePeekPage() {
 
   return (
     <SidePeek 
-        title={service.name} 
-        subtitle={service.url}
+        title={service.service_name} 
+        description={service.service_category}
+        open={true}
+        onOpenChange={() => router.push(`/workspaces/${workspaceId}/services`)}
         footer={
-            <Button className="w-full gap-2" variant="outline" onClick={() => router.push(`/resources/services/${serviceId}/edit`)}>
+            <Button className="w-full gap-2" variant="outline" onClick={() => router.push(`/workspaces/${workspaceId}/services/${serviceId}/edit`)}>
                 Edytuj Service
             </Button>
         }
@@ -42,17 +40,19 @@ export default function ServiceSidePeekPage() {
                 
                 <div className="grid gap-4">
                     <div className="space-y-1">
-                        <div className="text-xs text-muted-foreground">Category</div>
-                        <div className="text-sm font-medium">{service.category || "GenAI"}</div>
+                        <div className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
+                            <Globe className="h-3 w-3" /> Endpoint
+                        </div>
+                        <div className="text-[10px] font-mono p-2 bg-muted/20 rounded border border-dashed truncate">
+                            {service.service_url}
+                        </div>
                     </div>
                     
                     <div className="space-y-2">
-                        <div className="text-xs text-muted-foreground">Keywords</div>
-                        <div className="flex flex-wrap gap-1.5">
-                                {service.keywords?.map((keyword) => (
-                                    <Badge key={keyword} variant="secondary" className="font-normal text-[10px]">#{keyword}</Badge>
-                            )) || <Badge variant="secondary" className="font-normal text-[10px]">#audio</Badge>}
-                        </div>
+                        <div className="text-xs text-muted-foreground">Description</div>
+                        <p className="text-sm text-muted-foreground leading-relaxed italic">
+                            {service.service_description}
+                        </p>
                     </div>
                 </div>
             </section>
@@ -65,23 +65,12 @@ export default function ServiceSidePeekPage() {
                     <Zap className="h-4 w-4 text-primary" /> Capabilities
                 </h3>
                 <div className="grid grid-cols-1 gap-2">
-                    {service.capabilities?.map((cap, i) => (
+                    {service.capabilities.map((cap, i) => (
                         <div key={i} className="flex items-center gap-2 text-xs p-2 bg-muted/30 rounded border border-dashed">
                             <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                             {cap}
                         </div>
-                    )) || (
-                        <>
-                            <div className="flex items-center gap-2 text-xs p-2 bg-muted/30 rounded border border-dashed">
-                                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                Text-to-Speech
-                            </div>
-                            <div className="flex items-center gap-2 text-xs p-2 bg-muted/30 rounded border border-dashed">
-                                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                Voice Cloning
-                            </div>
-                        </>
-                    )}
+                    ))}
                 </div>
             </section>
 
@@ -90,22 +79,22 @@ export default function ServiceSidePeekPage() {
             {/* Accessibility / Workspaces Section */}
             <section className="space-y-3">
                 <h3 className="text-sm font-semibold flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-primary" /> Dostępność (Workspaces)
+                    <Layers className="h-4 w-4 text-primary" /> Availability
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                    {service.workspaces?.map(ws => (
+                    {service.availability_workspace.map(ws => (
                         <Badge key={ws} variant="outline" className="text-[10px]">{ws}</Badge>
-                    )) || <Badge variant="outline" className="text-[10px]">Growth & Market</Badge>}
+                    ))}
                 </div>
             </section>
 
             {/* Status (Technical info kept small at the bottom) */}
             <section className="pt-4 flex items-center justify-between opacity-60">
                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-bold">
-                    <Activity className="h-3 w-3" /> Status: {service.status}
+                    <Activity className="h-3 w-3" /> Protocol Established
                 </div>
                 <div className="text-[10px] text-muted-foreground">
-                    Auth: {service.authType}
+                    ID: {service.id.slice(0, 8)}
                 </div>
             </section>
         </div>

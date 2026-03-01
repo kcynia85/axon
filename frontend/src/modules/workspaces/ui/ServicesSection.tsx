@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Car
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Globe, ShieldCheck, Box, ExternalLink, Trash2, Activity } from "lucide-react";
-import { SidePeek } from "./SidePeek";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
 
 export const ServicesSection = () => {

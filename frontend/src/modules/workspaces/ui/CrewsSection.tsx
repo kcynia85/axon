@@ -16,7 +16,7 @@ import {
   Globe,
   UserPlus,
 } from "lucide-react";
-import { SidePeek } from "./SidePeek";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
 
 /** Human-friendly names for Agents */

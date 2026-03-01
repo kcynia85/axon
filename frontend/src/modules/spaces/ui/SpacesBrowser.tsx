@@ -235,7 +235,10 @@ export const SpacesBrowser: React.FC<SpacesBrowserProps> = ({ initialSpaces }) =
   return (
     <div className="space-y-12">
       <div className="flex flex-col space-y-8">
-        {/* Row 1: Search */}
+        {/* Row 1: Recently Used */}
+        <RecentlyUsed spaces={initialSpaces} className="animate-in fade-in slide-in-from-top-2 duration-300" />
+
+        {/* Row 2: Search */}
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
           <Input 
@@ -246,10 +249,7 @@ export const SpacesBrowser: React.FC<SpacesBrowserProps> = ({ initialSpaces }) =
           />
         </div>
 
-        {/* Row 1.5: Recently Used */}
-        <RecentlyUsed spaces={initialSpaces} className="animate-in fade-in slide-in-from-top-2 duration-300" />
-
-        {/* Row 2: Active Filters */}
+        {/* Row 3: Active Filters */}
         {activeFilters.length > 0 && (
           <div className="flex flex-col space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
             <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest px-1">Active Filters</span>

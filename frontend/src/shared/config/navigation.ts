@@ -14,8 +14,8 @@ export const mainNavigation = [
   { name: "Home", href: "/dashboard", icon: Home },
   { name: "Inbox", href: "/inbox", icon: Inbox },
   { name: "Projects", href: "/projects", icon: Library },
-  { name: "Spaces", href: "/spaces", icon: MousePointer2 },
   { name: "Workspaces", href: "/workspaces", icon: SquareStack },
+  { name: "Spaces", href: "/spaces", icon: MousePointer2 },
 ];
 
 export const appsDropdown = [
