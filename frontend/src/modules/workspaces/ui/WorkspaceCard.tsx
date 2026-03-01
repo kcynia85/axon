@@ -30,52 +30,35 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({ workspace }) => {
     const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
     return (
-        <Link href={`/workspaces/${id}`} className="block h-full group">
+        <Link href={`/workspaces/${id}`} className="block h-full group transition-transform active:scale-[0.98]">
             <Card 
                 className={cn(
-                    "relative h-full overflow-hidden cursor-pointer flex flex-col pt-2 transition-[transform] duration-300 ease-out will-change-transform",
-                    "border-zinc-200/60 bg-white/70 dark:border-zinc-800/50 dark:bg-zinc-950/40",
-                    "group-hover:scale-[1.01]"
+                    "relative h-full overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200",
+                    "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
+                    "group-hover:shadow-md",
+                    // Hover border color based on workspace color
+                    `group-hover:${styles.borderClassName}`
                 )}
-                style={{ 
-                    borderColor: `rgba(${rgb}, 0.15)`
-                }}
             >
-                {/* Optimized Backdrop Blur (Separate layer to avoid expensive scaling of blur) */}
-                <div className="absolute inset-0 backdrop-blur-md pointer-events-none z-0" />
+                {/* Accent Top Bar (Remains as a subtle identifier) */}
+                <div 
+                    className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+                />
 
-                {/* Optimized Shadow Layer (Avoids animating box-shadow directly on the container) */}
-                <div className={cn(
-                    "absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none z-0 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] group-hover:opacity-100"
-                )} />
-
-                {/* Background Grid Pattern (Static) */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0" 
+                {/* Background Grid Pattern (Static, kept for subtle texture) */}
+                <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
                     style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
-                />
-
-                {/* Accent Top Bar */}
-                <div 
-                    className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-300 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
-                />
-
-                {/* Glow Effect on Hover (Opacity animation only) */}
-                <div 
-                    className="absolute inset-0 opacity-0 group-hover:opacity-10 dark:group-hover:opacity-20 transition-opacity duration-500 pointer-events-none z-0"
-                    style={{
-                        background: `radial-gradient(600px circle at 50% 50%, rgba(${rgb}, 0.1), transparent 40%)`
-                    }}
                 />
 
                 <CardHeader className="relative z-10 space-y-4 pb-2 pt-5">
                     <div className="space-y-1.5">
                         <CardTitle className={cn(
-                            "text-xl font-bold tracking-tight transition-colors duration-300",
+                            "text-xl font-bold tracking-tight transition-colors duration-200",
                             "text-zinc-800 group-hover:text-black dark:text-zinc-200 dark:group-hover:text-white"
                         )}>
                             {name}
                         </CardTitle>
-                        <CardDescription className="line-clamp-2 text-zinc-500 text-xs leading-relaxed min-h-[2.5rem] group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors duration-300">
+                        <CardDescription className="line-clamp-2 text-zinc-500 text-xs leading-relaxed min-h-[2.5rem] group-hover:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors duration-200">
                             {description}
                         </CardDescription>
                     </div>
@@ -83,8 +66,8 @@ export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({ workspace }) => {
 
                 <CardContent className="relative z-10 mt-auto pt-2 pb-6">
                     <div className="flex items-center gap-2.5">
-                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 transition-all duration-300 group-hover:bg-zinc-600 dark:group-hover:bg-zinc-400" />
-                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500 transition-colors duration-300 group-hover:text-zinc-600 dark:group-hover:text-zinc-400" suppressHydrationWarning>
+                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 transition-colors duration-200 group-hover:bg-zinc-600 dark:group-hover:bg-zinc-400" />
+                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500 transition-colors duration-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-400" suppressHydrationWarning>
                             <span className="text-zinc-400 dark:text-zinc-600 font-medium">Last update:</span> {updated_at ? new Date(updated_at).toLocaleDateString() : "—"}
                         </p>
                     </div>
