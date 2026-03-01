@@ -19,3 +19,9 @@ gha-creds-*.json
 **/*.log
 temporary_plan.md
 .playwright-mcp/
+*.png
+*.jpg
+*.jpeg
+*.svg
+!frontend/public/*.svg
+!frontend/src/**/*.svg
