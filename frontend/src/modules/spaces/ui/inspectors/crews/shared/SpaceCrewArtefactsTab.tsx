@@ -26,7 +26,7 @@ import {
     X,
     Edit3
 } from "lucide-react";
-import { TemplateArtefact } from "../../../../domain/types";
+import { TemplateArtefact } from "@/modules/spaces/domain/types";
 import { cn } from "@/shared/lib/utils";
 
 const ARTEFACT_STATUS_CONFIG = {

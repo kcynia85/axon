@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { NodeResizer } from '@xyflow/react';
-import { SpaceZoneViewModel } from '../../../domain/types';
+import { SpaceZoneViewModel } from '@/modules/spaces/domain/types';
 
 export const SpaceZoneNodeView = ({ viewModel }: { readonly viewModel: SpaceZoneViewModel }) => (
     <>

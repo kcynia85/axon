@@ -2,9 +2,10 @@
 
 import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { mapCrewToViewModel } from '../../domain/mappers/SpaceNodeViewModelMapper';
+import { mapCrewToViewModel } from '../mappers/SpaceNodeViewModelMapper';
 import { SpaceCrewNodeView } from './pure/SpaceCrewNodeView';
-import { SpaceCanvasNodeProperties, SpaceCrewDomainData } from '../../domain/types';
+import { SpaceCrewDomainData } from '../../domain/types';
+import { SpaceCanvasNodeProperties } from '../types';
 
 export const SpaceCrewCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
     const viewModel = mapCrewToViewModel(

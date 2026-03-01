@@ -17,7 +17,8 @@ import {
     Clock
 } from "lucide-react";
 import { useReactFlow } from "@xyflow/react";
-import { SpaceZoneInspectorProperties, TemplateArtefact } from "../../domain/types";
+import {  TemplateArtefact } from "../../domain/types";
+import { SpaceZoneInspectorProperties } from "../types";
 import { cn } from "@/shared/lib/utils";
 import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";
 
@@ -33,13 +34,15 @@ export const SpaceZoneNodeInspector = ({
         const artefacts: { nodeId: string; nodeLabel: string; artefact: TemplateArtefact }[] = [];
         
         canvasNodes.filter(n => n.parentId === nodeId).forEach(childNode => {
-            const nodeData = childNode.data as any;
-            if (nodeData.artefacts && Array.isArray(nodeData.artefacts)) {
-                nodeData.artefacts.forEach((art: TemplateArtefact) => {
+            const nodeData = childNode.data as Record<string, unknown>;
+            const artefacts = nodeData.artefacts as TemplateArtefact[] | undefined;
+            if (artefacts && Array.isArray(artefacts)) {
+                artefacts.forEach((art: TemplateArtefact) => {
                     if (art.isOutput) {
+                        const label = (nodeData.label as string) || childNode.id;
                         artefacts.push({
                             nodeId: childNode.id,
-                            nodeLabel: nodeData.label || childNode.id,
+                            nodeLabel: label,
                             artefact: art
                         });
                     }

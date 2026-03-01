@@ -18,28 +18,17 @@ import {
   ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SpaceCrewInspectorProperties, SharedMemoryEntry } from "../../../domain/types";
-import { useCrewInspectorBaseLogic } from "../../../application/hooks/useCrewInspectorBaseLogic";
+import {  SharedMemoryEntry } from "@/modules/spaces/domain/types";
+import { SpaceCrewInspectorProperties } from "../../types";
+import { useCrewInspectorBaseLogic } from "@/modules/spaces/application/hooks/useCrewInspectorBaseLogic";
 import { SpaceCrewContextTab } from "./shared/SpaceCrewContextTab";
 import { SpaceCrewArtefactsTab } from "./shared/SpaceCrewArtefactsTab";
 import { SpaceCrewProgressBar } from "./shared/SpaceCrewProgressBar";
 import { SpaceCrewOrchestrationLayout } from "./shared/SpaceCrewOrchestrationLayout";
 import { cn } from "@/shared/lib/utils";
-import { SpaceInspectorFooter } from "../components/SpaceInspectorFooter";
-import { SpaceInspectorPanel } from "../components/SpaceInspectorPanel";
+import { SpaceInspectorFooter } from "../../inspectors/components/SpaceInspectorFooter";
+import { SpaceInspectorPanel } from "../../inspectors/components/SpaceInspectorPanel";
 
-const ThinkingIndicator = () => (
-    <div className="flex gap-1 items-center h-2 ml-1">
-        {[0, 1, 2].map((i) => (
-            <motion.div
-                key={i}
-                className="w-1 h-1 rounded-full bg-blue-400"
-                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
-                transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
-            />
-        ))}
-    </div>
-);
 
 export const SpaceCrewHierarchicalNodeInspector = ({ 
     data, 
@@ -171,7 +160,7 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                                                 <Avatar name={managerTitle} size="sm" className="bg-blue-500/20 text-blue-400 font-black text-[10px]" />
                                                 <span className="text-[11px] font-black text-white">{managerTitle}</span>
                                             </div>
-                                            <p className="text-[10px] text-zinc-400 font-mono leading-relaxed italic">"Supervising task delegation..."</p>
+                                            <p className="text-[10px] text-zinc-400 font-mono leading-relaxed italic">&quot;Supervising task delegation...&quot;</p>
                                         </motion.div>
                                         <SpaceCrewProgressBar progress={progressValue}>
                                             <div className="space-y-8">

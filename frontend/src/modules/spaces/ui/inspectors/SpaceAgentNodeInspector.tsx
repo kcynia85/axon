@@ -7,7 +7,7 @@ import {
   Input,
   ScrollShadow,
   Button,
-  Progress,
+  
 } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { 
@@ -23,25 +23,14 @@ import {
   CircleStop,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SpaceAgentInspectorProperties, TemplateArtefact, TemplateContext } from "../../domain/types";
+import {  TemplateArtefact, TemplateContext } from "../../domain/types";
+import { SpaceAgentInspectorProperties } from "../types";
 import { cn } from "@/shared/lib/utils";
 import { SpaceCrewContextTab } from "./crews/shared/SpaceCrewContextTab";
 import { SpaceCrewArtefactsTab } from "./crews/shared/SpaceCrewArtefactsTab";
 import { SpaceInspectorFooter } from "./components/SpaceInspectorFooter";
 import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";
 
-const ThinkingIndicator = () => (
-    <div className="flex gap-1 items-center h-2 ml-1">
-        {[0, 1, 2].map((i) => (
-            <motion.div
-                key={i}
-                className="w-1 h-1 rounded-full bg-white"
-                animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
-                transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.2 }}
-            />
-        ))}
-    </div>
-);
 
 export const SpaceAgentNodeInspector = ({ 
     data, 
@@ -195,7 +184,6 @@ export const SpaceAgentNodeInspector = ({
 
     const artefactsList = getCurrentArtefacts();
     const hasInReview = artefactsList.some(a => a.status === 'in_review');
-    const allApproved = artefactsList.length > 0 && artefactsList.every(a => a.status === 'approved');
 
     // Logic to find current task label based on progress
     const currentTaskLabel = workingLogs.find((log, i) => 

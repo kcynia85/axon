@@ -1,20 +1,21 @@
 // frontend/src/modules/spaces/domain/BlueprintEngine.ts
 
-import type { Node, Edge } from '@xyflow/react';
-import { SpacePatternBlueprint, PatternInterfacePort, PatternExternalDependency } from './types';
+import { SpacePatternBlueprint, PatternInterfacePort, PatternExternalDependency, DomainNode, DomainEdge, ZoneInterfacePort } from './types';
 
 /**
  * BlueprintEngine handles the deep serialization and automatic interface mapping
  * for Patterns and Super Patterns.
+ * 
+ * PURE DOMAIN: This file must not import from UI libraries (like @xyflow/react).
  */
 export const BlueprintEngine = {
   /**
    * Analyzes a selection to create a blueprint with automatic interface detection.
    */
   serializeSelection: (
-    selectedNodes: readonly Node[],
-    allNodes: readonly Node[],
-    allEdges: readonly Edge[],
+    selectedNodes: readonly DomainNode[],
+    allNodes: readonly DomainNode[],
+    allEdges: readonly DomainEdge[],
     metadata: { name: string; description: string; type?: 'pattern' | 'super-pattern' }
   ): SpacePatternBlueprint => {
     const zonesInSelection = selectedNodes.filter(n => n.type === 'zone');
@@ -45,8 +46,9 @@ export const BlueprintEngine = {
         const targetNode = allNodes.find(n => n.id === edge.target);
         if (targetNode?.type === 'zone' && edge.targetHandle?.endsWith('-int')) {
           const zonePortId = edge.targetHandle.replace('-int', '');
-          const zoneData = targetNode.data as any;
-          const portDef = zoneData.ports?.find((p: any) => p.id === zonePortId);
+          const zoneData = targetNode.data as Record<string, unknown>;
+          const ports = (zoneData.ports as ZoneInterfacePort[]) || [];
+          const portDef = ports.find((p) => p.id === zonePortId);
 
           interfacePorts.push({
             id: zonePortId,
@@ -62,8 +64,9 @@ export const BlueprintEngine = {
         const sourceNode = allNodes.find(n => n.id === edge.source);
         if (sourceNode?.type === 'zone' && edge.sourceHandle?.endsWith('-int')) {
           const zonePortId = edge.sourceHandle.replace('-int', '');
-          const zoneData = sourceNode.data as any;
-          const portDef = zoneData.ports?.find((p: any) => p.id === zonePortId);
+          const zoneData = sourceNode.data as Record<string, unknown>;
+          const ports = (zoneData.ports as ZoneInterfacePort[]) || [];
+          const portDef = ports.find((p) => p.id === zonePortId);
 
           interfacePorts.push({
             id: zonePortId,
@@ -123,7 +126,7 @@ export const BlueprintEngine = {
   instantiatePattern: (
     blueprint: SpacePatternBlueprint,
     dropPosition: { x: number; y: number }
-  ): { nodes: Node[]; edges: Edge[] } => {
+  ): { nodes: DomainNode[]; edges: DomainEdge[] } => {
     const idMap = new Map<string, string>();
     blueprint.structure.nodes.forEach(node => {
       idMap.set(node.id, `node_${Math.random().toString(36).substring(2, 11)}`);

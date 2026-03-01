@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { LayoutTemplate } from "lucide-react";
-import { SpaceTemplateViewModel } from '../../../domain/types';
+import { SpaceTemplateViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
 
 export const SpaceTemplateNodeView = ({ viewModel }: { readonly viewModel: SpaceTemplateViewModel }) => (

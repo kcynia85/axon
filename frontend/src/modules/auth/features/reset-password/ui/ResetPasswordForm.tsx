@@ -15,7 +15,7 @@ export const ResetPasswordForm = () => {
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Check your email</CardTitle>
-          <CardDescription>We've sent you a password reset link.</CardDescription>
+          <CardDescription>We&apos;ve sent you a password reset link.</CardDescription>
         </CardHeader>
         <CardContent>
           <Button asChild className="w-full">

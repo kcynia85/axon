@@ -18,7 +18,7 @@ import {
     ExternalLink,
     ChevronDown
 } from "lucide-react";
-import { TemplateContext } from "../../../../domain/types";
+import { TemplateContext } from "@/modules/spaces/domain/types";
 import { cn } from "@/shared/lib/utils";
 
 const DETECTED_WORKSPACE_OUTPUTS = [

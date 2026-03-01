@@ -114,7 +114,7 @@ export const InboxBrowser: React.FC<InboxBrowserProps> = ({ initialItems }) => {
   });
 
   const processedItems = useMemo(() => {
-    let result = getFilteredItems(initialItems);
+    const result = getFilteredItems(initialItems);
 
     result.sort((a, b) => {
       switch (sortBy) {

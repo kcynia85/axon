@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MoreHorizontal } from "lucide-react";
-import { SpaceEntityViewModel } from '../../../domain/types';
+import { SpaceEntityViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
 
 export const SpaceEntityNodeView = ({ viewModel }: { readonly viewModel: SpaceEntityViewModel }) => (

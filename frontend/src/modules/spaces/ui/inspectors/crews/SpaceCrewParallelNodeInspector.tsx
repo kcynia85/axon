@@ -18,15 +18,16 @@ import {
   ChevronDown
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SpaceCrewInspectorProperties, SharedMemoryEntry } from "../../../domain/types";
-import { useCrewInspectorBaseLogic } from "../../../application/hooks/useCrewInspectorBaseLogic";
+import { SpaceCrewDomainData } from "@/modules/spaces/domain/types";
+import { SpaceCrewInspectorProperties } from "../../types";
+import { useCrewInspectorBaseLogic } from "@/modules/spaces/application/hooks/useCrewInspectorBaseLogic";
 import { SpaceCrewContextTab } from "./shared/SpaceCrewContextTab";
 import { SpaceCrewArtefactsTab } from "./shared/SpaceCrewArtefactsTab";
 import { SpaceCrewProgressBar } from "./shared/SpaceCrewProgressBar";
 import { SpaceCrewOrchestrationLayout } from "./shared/SpaceCrewOrchestrationLayout";
 import { cn } from "@/shared/lib/utils";
-import { SpaceInspectorFooter } from "../components/SpaceInspectorFooter";
-import { SpaceInspectorPanel } from "../components/SpaceInspectorPanel";
+import { SpaceInspectorFooter } from "../../inspectors/components/SpaceInspectorFooter";
+import { SpaceInspectorPanel } from "../../inspectors/components/SpaceInspectorPanel";
 
 export const SpaceCrewParallelNodeInspector = ({ 
     data, 

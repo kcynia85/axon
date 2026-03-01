@@ -13,7 +13,8 @@ const SpaceCanvasPage = () => {
   const { 
     isPageLoading, 
     pageErrorInformation, 
-    initialCanvasInformation 
+    initialCanvasInformation,
+    spaceIdentifier
   } = useSpacePageManagementLogic();
 
   if (isPageLoading) {
@@ -37,7 +38,10 @@ const SpaceCanvasPage = () => {
   return (
       <main className="h-screen w-screen overflow-hidden bg-[#f9f9f9] dark:bg-[#0a0a0a]">
         <ReactFlowProvider>
-          <SpaceCanvasView initialConfiguration={initialCanvasInformation} />
+          <SpaceCanvasView 
+            initialConfiguration={initialCanvasInformation} 
+            workspaceId={spaceIdentifier}
+          />
         </ReactFlowProvider>
       </main>
   );

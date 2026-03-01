@@ -15,7 +15,7 @@ export const SignupForm = () => {
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Check your email</CardTitle>
-          <CardDescription>We've sent you a confirmation link to your email address.</CardDescription>
+          <CardDescription>We&apos;ve sent you a confirmation link to your email address.</CardDescription>
         </CardHeader>
         <CardContent>
           <Button asChild className="w-full">

@@ -2,9 +2,10 @@
 
 import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { mapZoneToViewModel } from '../../domain/mappers/SpaceNodeViewModelMapper';
+import { mapZoneToViewModel } from '../mappers/SpaceNodeViewModelMapper';
 import { SpaceZoneNodeView } from './pure/SpaceZoneNodeView';
-import { SpaceCanvasNodeProperties, SpaceZoneDomainData } from '../../domain/types';
+import { SpaceZoneDomainData } from '../../domain/types';
+import { SpaceCanvasNodeProperties } from '../types';
 import { Tooltip } from '@heroui/react';
 
 export const SpaceZoneCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {

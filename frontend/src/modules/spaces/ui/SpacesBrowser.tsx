@@ -212,7 +212,7 @@ export const SpacesBrowser: React.FC<SpacesBrowserProps> = ({ initialSpaces }) =
 
   const processedSpaces = useMemo(() => {
     const appliedFilterIds = activeFilters.map(f => f.id);
-    let result = getFilteredSpaces(initialSpaces, searchQuery, appliedFilterIds);
+    const result = getFilteredSpaces(initialSpaces, searchQuery, appliedFilterIds);
 
     result.sort((a, b) => {
       const nameA = (a.name || "").toLowerCase();

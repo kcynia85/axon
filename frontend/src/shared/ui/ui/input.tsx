@@ -1,27 +1,16 @@
 import * as React from "react"
+
 import { cn } from "@/shared/lib/utils"
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+export type InputProps = React.ComponentProps<"input">;
 
-/**
- * Standard Axon Input component.
- * Stylized according to the Brutalist design system: 
- * Mono font, pitch black dark mode, high contrast borders.
- * Uses 16px (text-base) as the standard font size for input values and placeholders.
- */
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
       <input
         type={type}
         className={cn(
-          "flex h-14 w-full rounded-xl border border-zinc-200 bg-zinc-50/50 px-4 text-base font-mono transition-all outline-none",
-          "text-zinc-900 placeholder:text-zinc-400",
-          "focus:border-zinc-900 focus:ring-0",
-          "dark:border-zinc-700 dark:bg-black dark:text-zinc-100 dark:placeholder:text-zinc-700",
-          "dark:focus:border-zinc-200",
-          "disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-zinc-950 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:file:text-zinc-50 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300 md:text-sm",
           className
         )}
         ref={ref}

@@ -1,7 +1,8 @@
 // frontend/src/modules/spaces/ui/inspectors/SpaceAutomationNodeInspector.tsx
 
 import React from "react";
-import { SpaceAutomationInspectorProperties } from "../../domain/types";
+import { SpaceAutomationDomainData } from "../../domain/types";
+import { SpaceAutomationInspectorProperties } from "../types";
 import { useSpaceAutomationInspectorLogic } from "../../application/hooks/useSpaceAutomationInspectorLogic";
 import { SpaceAutomationNodeInspectorView } from "../pure/SpaceAutomationNodeInspectorView";
 

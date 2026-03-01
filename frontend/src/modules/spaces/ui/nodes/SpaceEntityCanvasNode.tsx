@@ -3,8 +3,9 @@
 import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { SpaceEntityNodeView } from './pure/SpaceEntityNodeView';
-import { mapEntityToViewModel } from '../../domain/mappers/SpaceNodeViewModelMapper';
-import { SpaceCanvasNodeProperties, SpaceEntityNodeDomainData } from '../../domain/types';
+import { mapEntityToViewModel } from '../mappers/SpaceNodeViewModelMapper';
+import { SpaceEntityNodeDomainData } from '../../domain/types';
+import { SpaceCanvasNodeProperties } from '../types';
 
 export const SpaceEntityCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
     const viewModel = mapEntityToViewModel(

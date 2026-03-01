@@ -1,7 +1,7 @@
 // frontend/src/modules/spaces/ui/inspectors/SpaceCrewNodeInspector.tsx
 
 import React from "react";
-import { SpaceCrewInspectorProperties } from "../../domain/types";
+import { SpaceCrewInspectorProperties } from "../types";
 import { SpaceCrewSequentialNodeInspector } from "./crews/SpaceCrewSequentialNodeInspector";
 import { SpaceCrewHierarchicalNodeInspector } from "./crews/SpaceCrewHierarchicalNodeInspector";
 import { SpaceCrewParallelNodeInspector } from "./crews/SpaceCrewParallelNodeInspector";

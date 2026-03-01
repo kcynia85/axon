@@ -14,23 +14,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Plus } from "lucide-react";
 import React from "react";
 
-const formSchema = z.object({
-    title: z.string().min(1, "Title is required"),
-    content: z.string().min(1, "Content is required"),
-    slug: z.string().min(1, "Slug is required"),
-});
-
-interface PromptEditorDialogProps {
-    prompt?: Prompt;
-    onSaved: () => void;
-    trigger?: React.ReactNode;
-}
+import { PromptFormSchema, PromptFormData } from "../application/schemas";
 
 export const PromptEditorDialog = ({ prompt, onSaved, trigger }: PromptEditorDialogProps) => {
     const [open, setOpen] = useState(false);
     
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<PromptFormData>({
+        resolver: zodResolver(PromptFormSchema),
         defaultValues: {
             title: "",
             content: "",
@@ -49,7 +39,7 @@ export const PromptEditorDialog = ({ prompt, onSaved, trigger }: PromptEditorDia
         }
     }, [prompt, open, form]);
 
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const onSubmit = async (values: PromptFormData) => {
         try {
             if (prompt) {
                 await updatePrompt(prompt.id, values);

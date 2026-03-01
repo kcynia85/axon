@@ -1,4 +1,4 @@
-import { getProjectDetails, getProjectArtifacts } from "@/modules/projects/features/project-details/infrastructure/api";
+import { getProjectDetails, getProjectArtifacts } from "@/modules/projects/features/browse-projects/infrastructure/api";
 import { ProjectDetailsView } from "@/modules/projects/features/project-details/ui/ProjectDetailsView";
 import { notFound } from "next/navigation";
 

@@ -1,7 +1,7 @@
 // frontend/src/modules/spaces/ui/SpaceCanvasLeftSidebar.tsx
 
 import React from "react";
-import { SpaceCanvasLeftSidebarProperties } from "../domain/types";
+import { SpaceCanvasLeftSidebarProperties } from "./types";
 import { useSpaceCanvasSidebarManagement } from "../application/hooks/useSpaceCanvasSidebarManagement";
 import { SpaceCanvasLeftSidebarView } from "./pure/SpaceCanvasLeftSidebarView";
 

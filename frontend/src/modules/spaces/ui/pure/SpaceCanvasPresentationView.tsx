@@ -22,6 +22,7 @@ import { SpaceCanvasRightSidebar } from '../SpaceCanvasRightSidebar';
 import { SpaceCreatePatternModal } from './SpaceCreatePatternModal';
 import { cn } from "@/shared/lib/utils";
 import { SpacePatternBlueprint } from '../../domain/types';
+import { SpaceCanvasPresentationViewProperties } from '../types';
 import { useCreatePattern } from '@/modules/workspaces/application/usePatterns';
 
 import "@xyflow/react/dist/style.css";
@@ -39,30 +40,6 @@ const canvasNodeComponents = {
 
 const canvasEdgeComponents = {
   'CustomEdge': SpaceCanvasCustomEdge,
-};
-
-type SpaceCanvasPresentationViewProperties = {
-    readonly workspaceId: string;
-    readonly canvasNodes: Node[];
-    readonly canvasEdges: Edge[];
-    readonly handleCanvasNodesChange: OnNodesChange;
-    readonly handleCanvasEdgesChange: OnEdgesChange;
-    readonly handleNewConnectionCreated: (connection: Connection) => void;
-    readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
-    readonly handleDragOverEvent: (event: React.DragEvent) => void;
-    readonly handleDropEvent: (event: React.DragEvent) => void;
-    readonly addNewNodeToCanvas: (type: string, data: Record<string, unknown>, workspace: string) => void;
-    readonly updateNodeDataOnCanvas: (nodeId: string, data: Record<string, unknown>) => void;
-    readonly currentlySelectedNode: Node | null;
-    readonly duplicateNode: (node: Node) => void;
-    readonly deleteNodes: (nodeIds: string[]) => void;
-    readonly updateNodesStatus: (nodeIds: string[], status: string) => void;
-    readonly copyNodes: (nodes: Node[]) => void;
-    readonly cutNodes: (nodes: Node[]) => void;
-    readonly pasteNodes: (position?: { x: number; y: number }) => void;
-    readonly createPatternFromSelection: (name: string, description: string, type?: 'pattern' | 'super-pattern') => SpacePatternBlueprint;
-    readonly instantiatePatternFromBlueprint: (blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => void;
-    readonly handleKeyDown: (event: React.KeyboardEvent) => void;
 };
 
 export const SpaceCanvasPresentationView = ({
@@ -99,11 +76,14 @@ export const SpaceCanvasPresentationView = ({
 
   const { mutateAsync: createPattern } = useCreatePattern(workspaceId);
 
-  useEffect(() => {
+  const [prevIsFullscreen, setPrevIsFullscreen] = useState(isFullscreen);
+
+  if (isFullscreen !== prevIsFullscreen) {
+    setPrevIsFullscreen(isFullscreen);
     if (!isFullscreen) {
       setIsFullscreenInspectorOpen(false);
     }
-  }, [isFullscreen]);
+  }
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {

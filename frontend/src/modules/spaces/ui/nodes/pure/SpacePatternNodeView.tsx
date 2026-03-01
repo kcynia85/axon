@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Box, CheckCircle2, Circle } from "lucide-react";
-import { SpacePatternViewModel } from '../../../domain/types';
+import { SpacePatternViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
 
 export const SpacePatternNodeView = ({ viewModel }: { readonly viewModel: SpacePatternViewModel }) => (

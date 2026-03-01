@@ -49,27 +49,21 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
-const CreateAgentFormSchema = AgentSchema.omit({
-  id: true,
-  created_at: true,
-  updated_at: true
-});
+// frontend/src/modules/workspaces/ui/modals/AgentModal.tsx
 
-type FormData = z.infer<typeof CreateAgentFormSchema>;
-
-type Step = "Identity" | "Memory" | "Engine";
+import { CreateAgentFormSchema, CreateAgentFormData, AgentModalStep } from "../../application/schemas";
 
 export const AgentModal = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const isOpen = searchParams.get("modal") === "new-agent";
-  const [step, setStep] = React.useState<Step>("Identity");
+  const [step, setStep] = React.useState<AgentModalStep>("Identity");
 
   const { mutateAsync: createAgent, isPending } = useCreateAgent();
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(CreateAgentFormSchema) as unknown as Resolver<FormData>,
+  const form = useForm<CreateAgentFormData>({
+    resolver: zodResolver(CreateAgentFormSchema) as unknown as Resolver<CreateAgentFormData>,
     defaultValues: {
       agent_name: "",
       agent_role_text: "",
@@ -95,7 +89,7 @@ export const AgentModal = () => {
     setStep("Identity");
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: CreateAgentFormData) => {
     try {
       await createAgent(data);
       closeModal();

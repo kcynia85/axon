@@ -6,7 +6,7 @@ import {
     MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY,
     MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS
 } from "../../domain/constants";
-import { getVisualStylesForZoneColor } from "../../domain/presentation_mappers";
+import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 
 type WorkspaceUnitDisplay = {
     readonly identifier: string;

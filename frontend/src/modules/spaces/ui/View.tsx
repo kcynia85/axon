@@ -5,7 +5,7 @@
 import React from 'react';
 import { useSpaceCanvasOrchestrator } from '../application/hooks/useSpaceCanvasOrchestrator';
 import { SpaceCanvasPresentationView } from './pure/SpaceCanvasPresentationView';
-import { SpaceCanvasViewProperties } from '../domain/types';
+import { SpaceCanvasViewProperties } from './types';
 
 export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanvasViewProperties) => {
   const {

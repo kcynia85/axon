@@ -3,7 +3,7 @@
 import React from "react";
 import { 
     SpaceCanvasRightSidebarProperties, 
-} from "../domain/types";
+} from "./types";
 import { useSpaceCanvasInspectorManagement } from "../application/hooks/useSpaceCanvasInspectorManagement";
 import { SpaceCanvasRightSidebarView } from "./pure/SpaceCanvasRightSidebarView";
 

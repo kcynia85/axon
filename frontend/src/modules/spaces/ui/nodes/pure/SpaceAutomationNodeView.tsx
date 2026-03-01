@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Zap, FileCode } from "lucide-react";
-import { SpaceAutomationViewModel } from '../../../domain/types';
+import { SpaceAutomationViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
 
 const getStatusColorClass = (status: string) => {

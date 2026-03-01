@@ -1,88 +1,95 @@
-import { API_BASE_URL, endpoints } from "@/shared/lib/api-client/config";
-import { Project, ProjectStatus } from "../../../domain";
-import { createClient } from "@/shared/infrastructure/supabase/client";
+import { Project, ProjectStatus } from "@/modules/projects/domain";
 
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
-
-const MOCK_PROJECTS: Project[] = [
+const MOCKED_PROJECTS: Project[] = [
     {
-        id: "p1",
-        project_name: "Phoenix Redesign",
+        id: "1",
+        project_name: "Deep Research Assistant",
         project_status: ProjectStatus.IN_PROGRESS,
-        project_keywords: ["design", "ui", "ux"],
-        project_summary: "Main redesign project for the core platform.",
-        created_at: "2026-01-10T09:00:00Z",
-        updated_at: "2026-02-24T12:00:00Z",
-        owner_id: "u1"
+        project_summary: "Automated research pipeline using multi-agent systems for deep market analysis.",
+        project_keywords: ["AI", "Research", "Agents"],
+        owner_id: "user-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        key_resources: [],
+        artifacts: [],
+        workspaces: ["AI Research", "Product Strategy"],
     },
     {
-        id: "p2",
-        project_name: "SEO Optimization",
+        id: "2",
+        project_name: "SEO Content Engine",
         project_status: ProjectStatus.IDEA,
-        project_keywords: ["seo", "marketing"],
-        project_summary: "Improving organic reach for the blog.",
-        created_at: "2026-01-15T09:00:00Z",
-        updated_at: "2026-02-22T10:00:00Z",
-        owner_id: "u1"
+        project_summary: "Content generation engine optimized for long-tail keywords and semantic search.",
+        project_keywords: ["SEO", "Marketing", "Content"],
+        owner_id: "user-1",
+        created_at: new Date(Date.now() - 86400000).toISOString(),
+        updated_at: new Date(Date.now() - 86400000).toISOString(),
+        key_resources: [],
+        artifacts: [],
+        workspaces: ["Marketing", "Growth"],
     },
     {
-        id: "p3",
-        project_name: "API Integration",
-        project_status: ProjectStatus.COMPLETED,
-        project_keywords: ["backend", "api"],
-        project_summary: "Integrating with 3rd party providers.",
-        created_at: "2026-01-20T09:00:00Z",
-        updated_at: "2026-02-23T14:00:00Z",
-        owner_id: "u1"
+        id: "3",
+        project_name: "Axon V2 Architecture",
+        project_status: ProjectStatus.REVIEW,
+        project_summary: "Redesigning the core modular monolith to support federated execution nodes.",
+        project_keywords: ["Architecture", "System Design", "Node.js"],
+        owner_id: "user-1",
+        created_at: new Date(Date.now() - 172800000).toISOString(),
+        updated_at: new Date(Date.now() - 172800000).toISOString(),
+        key_resources: [],
+        artifacts: [],
+        workspaces: ["Engineering", "DevOps"],
+    },
+    {
+        id: "4",
+        project_name: "Customer Feedback Loop",
+        project_status: ProjectStatus.DONE,
+        project_summary: "Integration of Zendesk and Slack to automatically categorize and route user feedback.",
+        project_keywords: ["Integration", "Customer Success"],
+        owner_id: "user-1",
+        created_at: new Date(Date.now() - 604800000).toISOString(),
+        updated_at: new Date(Date.now() - 604800000).toISOString(),
+        key_resources: [],
+        artifacts: [],
+        workspaces: ["Product", "Support"],
     }
 ];
 
 export const getProjects = async (): Promise<Project[]> => {
-    if (USE_MOCK) {
-        return new Promise(resolve => setTimeout(() => resolve(MOCK_PROJECTS), 500));
-    }
-
-    const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token || "test-token";
-
-    try {
-        const res = await fetch(`${API_BASE_URL}${endpoints.projects.list}`, {
-            cache: "no-store",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
-
-        if (!res.ok) {
-            console.error("Failed to fetch projects", res.status, await res.text());
-            return [];
-        }
-
-        return res.json();
-    } catch (error) {
-        console.error("Error fetching projects:", error);
-        return [];
-    }
+    // Simulating API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return MOCKED_PROJECTS;
 };
 
 export const createProject = async (data: Partial<Project>): Promise<Project> => {
-    const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token || "test-token";
+    const newProject: Project = {
+        id: Math.random().toString(36).substr(2, 9),
+        project_name: data.project_name || "New Project",
+        project_status: ProjectStatus.IDEA,
+        project_keywords: data.project_keywords || [],
+        owner_id: "user-1",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        key_resources: [],
+        artifacts: [],
+        workspaces: ["General"],
+    };
+    MOCKED_PROJECTS.unshift(newProject);
+    return newProject;
+};
 
-    const res = await fetch(`${API_BASE_URL}${endpoints.projects.list}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(data),
-    });
+export const getProjectDetails = async (id: string): Promise<Project | null> => {
+    const project = MOCKED_PROJECTS.find(p => p.id === id);
+    return project || null;
+};
 
-    if (!res.ok) {
-        throw new Error("Failed to create project");
+export const getProjectArtifacts = async (projectId: string): Promise<any[]> => {
+    return [];
+};
+
+export const deleteProject = async (id: string): Promise<void> => {
+    const index = MOCKED_PROJECTS.findIndex(p => p.id === id);
+    if (index !== -1) {
+        MOCKED_PROJECTS.splice(index, 1);
     }
-
-    return res.json();
 };

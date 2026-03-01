@@ -1,16 +1,8 @@
 import React from "react";
-import { Project } from "../../../domain";
 import { ProjectCard } from "./ProjectCard";
 import { ProjectListItem } from "./ProjectListItem";
-import { ResourceList, ViewMode } from "@/shared/ui/complex/ResourceList";
-
-interface ProjectListProps {
-    readonly projects: readonly Project[];
-    readonly viewMode?: ViewMode;
-    readonly isLoading?: boolean;
-    readonly isError?: boolean;
-    readonly onViewDetails: (project: Project) => void;
-}
+import { ResourceList } from "@/shared/ui/complex/ResourceList";
+import { ProjectListProps } from "./types";
 
 export const ProjectList: React.FC<ProjectListProps> = ({ 
     projects, 
@@ -27,11 +19,11 @@ export const ProjectList: React.FC<ProjectListProps> = ({
             viewMode={viewMode}
             emptyTitle="No projects found"
             emptyDescription="Create one to get started."
-            renderItem={(project) => (
+            renderItem={(projectViewModel) => (
                 viewMode === 'grid' ? (
-                    <ProjectCard project={project} onViewDetails={onViewDetails} />
+                    <ProjectCard viewModel={projectViewModel} onViewDetails={onViewDetails} />
                 ) : (
-                    <ProjectListItem project={project} onViewDetails={onViewDetails} />
+                    <ProjectListItem viewModel={projectViewModel} onViewDetails={onViewDetails} />
                 )
             )}
         />

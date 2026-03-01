@@ -6,7 +6,7 @@ import {
   CardBody,
 } from "@heroui/react";
 import Link from "next/link";
-import { SpaceCanvasHeaderProperties } from "../../domain/types";
+import { SpaceCanvasHeaderProperties } from "../types";
 
 export const SpaceCanvasHeaderView = ({ 
     activeSpaceDisplayName, 

@@ -21,6 +21,7 @@ import {
     SpaceTemplateDomainData,
     SpaceZoneDomainData
 } from "../../domain/types";
+import { SpaceCanvasRightSidebarProperties } from "../types";
 import { Node } from "@xyflow/react";
 
 const GenericNodeInspector = ({ nodeInformation }: { readonly nodeInformation: SpaceCanvasNodeInformation }) => (
@@ -31,16 +32,6 @@ const GenericNodeInspector = ({ nodeInformation }: { readonly nodeInformation: S
         <p className="text-xs text-zinc-400 italic">Select a specific component to view its detailed properties and runtime control.</p>
     </div>
 );
-
-type SpaceCanvasRightSidebarViewProperties = {
-    readonly currentlySelectedNodeInformation: SpaceCanvasNodeInformation | null;
-    readonly effectiveNodeType: string | null;
-    readonly isNodeSelectedRepresentingAZone: boolean;
-    readonly handleStatusChange: (selection: unknown) => void;
-    readonly handleArtifactStatusChange: (selection: unknown) => void;
-    readonly handlePropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void;
-    readonly canvasNodes: Node[];
-};
 
 export const SpaceCanvasRightSidebarView = ({
     currentlySelectedNodeInformation,

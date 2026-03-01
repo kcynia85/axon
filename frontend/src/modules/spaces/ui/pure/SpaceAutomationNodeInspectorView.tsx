@@ -12,6 +12,7 @@ import {
     DropdownMenu,
     DropdownItem,
     ScrollShadow,
+    Tooltip,
 } from "@heroui/react";
 import { 
     ExternalLink, 
@@ -26,7 +27,8 @@ import {
     CheckCircle,
     ArrowUpRight,
     Trash2,
-    Link as LinkIcon
+    Link as LinkIcon,
+    Archive
 } from "lucide-react";
 import { SpaceAutomationDomainData, TemplateArtefact } from "../../domain/types";
 import { cn } from "@/shared/lib/utils";
@@ -59,6 +61,7 @@ const ARTEFACT_STATUS_CONFIG = {
 export const SpaceAutomationNodeInspectorView = ({
     data,
     isTriggering,
+    validationError,
     hasTimeoutError,
     isContextDone,
     isArtefactsDone,
@@ -71,12 +74,10 @@ export const SpaceAutomationNodeInspectorView = ({
     onAddArtefact,
     onTriggerWorkflow,
 }: SpaceAutomationNodeInspectorViewProps) => {
-    const [selectedTab, setSelectedTab] = useState<string>("context");
+    const [selectedTab, setSelectedTab] = useState<string>("workflow");
     const [nodeSearch, setNodeSearch] = useState("");
 
     const artefacts = data.artefacts || [];
-    const hasInReview = artefacts.some(a => a.status === 'in_review');
-    const allApproved = artefacts.length > 0 && artefacts.every(a => a.status === 'approved');
 
     return (
         <SpaceInspectorPanel>
@@ -94,24 +95,91 @@ export const SpaceAutomationNodeInspectorView = ({
                     tabContent: "group-data-[selected=true]:text-white transition-colors p-0"
                 }}
             >
+                <Tab key="workflow" title={<div className="flex items-center gap-2"><Webhook size={12}/> Workflow</div>}>
+                    <ScrollShadow className="h-[calc(100vh-192px)] p-8">
+                        <div className="space-y-10 pb-40">
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Automation Target</h4>
+                                    <div className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[8px] font-black text-zinc-500 uppercase tracking-widest">n8n Instance</div>
+                                </div>
+                                <div className="p-5 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                                            <Webhook size={20} className="text-orange-500" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-black text-white">{data.label}</p>
+                                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">Active Trigger</p>
+                                        </div>
+                                    </div>
+                                    <div className="pt-2 border-t border-zinc-900 flex justify-between items-center">
+                                        <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Status:</span>
+                                        <span className="text-[10px] font-mono text-zinc-400 uppercase">{data.state}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Trigger Logic</h4>
+                                    <Button size="sm" variant="light" className="text-[9px] font-black text-blue-400 h-6 min-w-0 px-2" startContent={<ExternalLink size={10}/>}>Open n8n</Button>
+                                </div>
+                                <div className="p-4 bg-zinc-900/30 border border-zinc-800 rounded-xl">
+                                    <p className="text-[11px] text-zinc-400 font-mono leading-relaxed italic">
+                                        This automation is triggered via webhook when all required context links are provided.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="pt-10 border-t border-zinc-900 space-y-6">
+                                <Button 
+                                    className={cn(
+                                        "w-full h-14 font-black uppercase tracking-[0.2em] text-xs transition-all border shadow-xl",
+                                        isContextDone ? "bg-white text-black border-white hover:bg-zinc-100" : "bg-zinc-900 text-zinc-600 border-zinc-800 cursor-not-allowed opacity-50"
+                                    )}
+                                    isDisabled={!isContextDone || isTriggering}
+                                    onPress={onTriggerWorkflow}
+                                >
+                                    {isTriggering ? <Spinner size="sm" color="current" /> : "Run Workflow"}
+                                </Button>
+
+                                {validationError && (
+                                    <div className="flex items-center gap-2 p-3 bg-red-500/5 border border-red-500/20 rounded-lg text-red-400">
+                                        <AlertTriangle size={14} />
+                                        <p className="text-[10px] font-bold uppercase tracking-tight">{validationError}</p>
+                                    </div>
+                                )}
+
+                                {hasTimeoutError && (
+                                    <div className="flex items-center gap-2 p-3 bg-orange-500/5 border border-orange-500/20 rounded-lg text-orange-400">
+                                        <AlertTriangle size={14} />
+                                        <p className="text-[10px] font-bold uppercase tracking-tight italic">Backend processing... check back in a few seconds.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </ScrollShadow>
+                </Tab>
+
                 <Tab 
                     key="context" 
                     title={
                         <div className="flex items-center gap-2">
-                            <Layers size={12} /> 
+                            <Layers size={12}/> 
                             Context
-                            {isContextDone && <CheckCircle2 size={10} className="text-white" />}
+                            {isContextDone && <CheckCircle2 size={10} className="text-white"/>}
                         </div>
                     }
                 >
-                    <div className="h-[calc(100vh-192px)]">
+                    <div className="h-[calc(100vh-192px)] pb-40">
                         <SpaceCrewContextTab 
-                            isContextComplete={isContextDone} 
-                            contextRequirements={data.contexts || data.context_requirements || []} 
-                            nodeSearch={nodeSearch} 
-                            setNodeSearch={setNodeSearch} 
-                            handleContextLinkChange={onContextLinkChange} 
-                            handleLinkContextFromNode={onLinkContextFromNode} 
+                            isContextComplete={isContextDone}
+                            contextRequirements={data.contexts || []}
+                            nodeSearch={nodeSearch}
+                            setNodeSearch={setNodeSearch}
+                            handleContextLinkChange={onContextLinkChange}
+                            handleLinkContextFromNode={onLinkContextFromNode}
                         />
                     </div>
                 </Tab>
@@ -120,81 +188,82 @@ export const SpaceAutomationNodeInspectorView = ({
                     key="artefacts" 
                     title={
                         <div className="flex items-center gap-2">
-                            <FileText size={12} /> 
+                            <FileText size={12}/> 
                             Artefacts
-                            {hasInReview ? (
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-                            ) : allApproved ? (
-                                <CheckCircle2 size={10} className="text-white" />
-                            ) : null}
+                            {isArtefactsDone && artefacts.length > 0 && <CheckCircle2 size={10} className="text-white"/>}
                         </div>
                     }
                 >
-                    <div className="h-[calc(100vh-192px)]">
-                        <ScrollShadow className="p-8 h-full pb-48">
-                            <div className="space-y-10">
+                    <ScrollShadow className="h-[calc(100vh-192px)] p-8">
+                        <div className="space-y-10 pb-40">
+                            <div className="flex items-center justify-between">
+                                <h4 className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Workflow Outputs</h4>
+                                <Button 
+                                    size="sm" 
+                                    variant="flat" 
+                                    className="bg-zinc-900 border border-zinc-800 text-[10px] font-black text-zinc-400 rounded-md h-8"
+                                    onPress={onAddArtefact}
+                                    startContent={<Plus size={12} />}
+                                >
+                                    Add Manual
+                                </Button>
+                            </div>
+
+                            <div className="space-y-4">
                                 {artefacts.map((art) => {
                                     const isFilled = (art.link || "").trim().length > 0;
                                     return (
-                                        <div key={art.id} className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-3.5 transition-all">
-                                            <div className="flex items-center justify-between">
+                                        <div key={art.id} className="p-5 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-5 group relative transition-all hover:border-zinc-600">
+                                            <button 
+                                                onClick={() => onDeleteArtefact(art.id)}
+                                                className="absolute top-4 right-4 p-1.5 text-zinc-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
+
+                                            <div className="space-y-3">
+                                                <h4 className="text-xs font-black text-white pr-6 tracking-tight">{art.label}</h4>
                                                 <div className="flex items-center gap-2">
-                                                    <h4 className="text-xs font-black text-white tracking-tight">{art.label}</h4>
-                                                    {art.isOutput && (
-                                                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[8px] font-black text-orange-500 uppercase tracking-widest">
-                                                            Output <ArrowUpRight size={8} />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-3">
-                                                    {art.link && (
-                                                        <a
-                                                            href={art.link}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1"
+                                                    <div className="w-full flex gap-2 items-center">
+                                                        <Input 
+                                                            size="sm" 
+                                                            variant="bordered"
+                                                            placeholder="Paste Result URL"
+                                                            value={art.link || ""}
+                                                            onValueChange={(val) => onArtefactLinkChange(art.id, val)}
+                                                            startContent={<LinkIcon size={12} className={cn(isFilled ? "text-white" : "text-zinc-500")} />}
+                                                            endContent={isFilled && <CheckCircle2 size={14} className="text-white" />}
+                                                            classNames={{ 
+                                                                input: "text-[10px] font-bold text-zinc-200", 
+                                                                inputWrapper: cn(
+                                                                    "h-11 rounded-xl transition-all shadow-none border",
+                                                                    isFilled ? "bg-zinc-950/50 border-white border-2" : "bg-zinc-900/30 border-zinc-800 hover:border-zinc-700"
+                                                                )
+                                                            }} 
+                                                        />
+                                                        <Button 
+                                                            isIconOnly 
+                                                            as="a" 
+                                                            href={art.link || '#'} 
+                                                            target="_blank" 
+                                                            size="sm" 
+                                                            isDisabled={!art.link}
+                                                            className="w-11 h-11 min-w-11 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white shrink-0 disabled:opacity-30 rounded-xl"
                                                         >
-                                                            Open <ExternalLink size={10} />
-                                                        </a>
-                                                    )}
-                                                    <Button
-                                                        isIconOnly
-                                                        size="sm"
-                                                        variant="light"
-                                                        className="w-6 h-6 min-w-6 text-zinc-600 hover:text-red-500 transition-colors"
-                                                        onPress={() => onDeleteArtefact(art.id)}
-                                                    >
-                                                        <Trash2 size={12} />
-                                                    </Button>
+                                                            <ExternalLink size={14} />
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div className="flex flex-col gap-2.5">
-                                                <Input
-                                                    size="sm"
-                                                    variant="bordered"
-                                                    placeholder="Wklej link..."
-                                                    value={art.link || ""}
-                                                    onValueChange={(value) => onArtefactLinkChange(art.id, value)}
-                                                    startContent={<LinkIcon size={12} className={cn(isFilled ? "text-white" : "text-zinc-500")} />}
-                                                    endContent={isFilled && <CheckCircle2 size={14} className="text-white" />}
-                                                    classNames={{
-                                                        base: "w-full",
-                                                        input: "text-[10px] font-bold text-zinc-200",
-                                                        inputWrapper: cn(
-                                                            "h-11 rounded-xl transition-all shadow-none border",
-                                                            isFilled ? "bg-zinc-950/50 border-white border-2" : "bg-zinc-900/30 border-zinc-800 hover:border-zinc-700"
-                                                        ),
-                                                    }}
-                                                />
-
-                                                <div className="flex justify-start gap-1">
+                                            <div className="flex justify-between items-center pt-2 border-t border-zinc-900">
+                                                <div className="flex items-center gap-2">
                                                     <Dropdown>
                                                         <DropdownTrigger>
-                                                            <Button
-                                                                size="sm"
-                                                                variant="bordered"
-                                                                className="h-10 border-zinc-800 bg-zinc-900/30 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between rounded-lg"
+                                                            <Button 
+                                                                size="sm" 
+                                                                variant="bordered" 
+                                                                className="h-10 border-zinc-800 bg-zinc-900/80 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between rounded-lg"
                                                                 endContent={<ChevronDown size={12} />}
                                                             >
                                                                 <div className="flex items-center gap-1.5">
@@ -203,16 +272,16 @@ export const SpaceAutomationNodeInspectorView = ({
                                                                 </div>
                                                             </Button>
                                                         </DropdownTrigger>
-                                                        <DropdownMenu
-                                                            aria-label="Artefact Status"
+                                                        <DropdownMenu 
+                                                            aria-label="Artefact Status" 
                                                             onAction={(key) => onArtefactStatusChange(art.id, key as TemplateArtefact['status'])}
                                                             classNames={{
-                                                                base: "bg-zinc-950 border border-zinc-800 p-1",
+                                                                base: "bg-zinc-950 border border-zinc-800 p-1"
                                                             }}
                                                         >
                                                             {(['in_review', 'approved'] as const).map((key) => (
-                                                                <DropdownItem
-                                                                    key={key}
+                                                                <DropdownItem 
+                                                                    key={key} 
                                                                     startContent={React.createElement(ARTEFACT_STATUS_CONFIG[key].icon, { size: 12, className: ARTEFACT_STATUS_CONFIG[key].color })}
                                                                     className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white"
                                                                 >
@@ -222,75 +291,71 @@ export const SpaceAutomationNodeInspectorView = ({
                                                         </DropdownMenu>
                                                     </Dropdown>
 
-                                                    <Button
-                                                        isIconOnly
-                                                        size="sm"
-                                                        variant="bordered"
-                                                        className={cn(
-                                                            "h-10 w-10 border-zinc-800 transition-all rounded-lg",
-                                                            art.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
-                                                        )}
-                                                        onPress={() => onArtefactOutputToggle(art.id)}
-                                                        title="Mark as Workflow Output"
+                                                    <Tooltip 
+                                                        content={art.isOutput ? "Unmark as Workflow Output" : "Mark as Workflow Output"}
+                                                        placement="top"
+                                                        classNames={{
+                                                            content: "py-1 px-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-950 border border-zinc-800 shadow-md"
+                                                        }}
+                                                        closeDelay={0}
                                                     >
-                                                        <ArrowUpRight size={14} />
-                                                    </Button>
+                                                        <div className="inline-block relative">
+                                                            <Button 
+                                                                isIconOnly 
+                                                                size="sm" 
+                                                                variant="bordered" 
+                                                                className={cn(
+                                                                    "h-10 w-10 border-zinc-800 transition-all rounded-lg",
+                                                                    art.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
+                                                                )}
+                                                                onPress={() => onArtefactOutputToggle(art.id)}
+                                                            >
+                                                                <ArrowUpRight size={14} />
+                                                            </Button>
+                                                        </div>
+                                                    </Tooltip>
                                                 </div>
+
+                                                {art.isOutput && (
+                                                    <div className="shrink-0 flex items-center">
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-orange-500 px-2 py-1 rounded bg-orange-500/10 border border-orange-500/20">
+                                                            Active Output
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     );
                                 })}
 
-                                {(!artefacts || artefacts.length === 0) && !isTriggering && (
+                                {(!artefacts || artefacts.length === 0) && (
                                     <div className="flex flex-col items-center justify-center py-20 opacity-30">
-                                        <FileText size={40} className="text-zinc-700 mb-4" />
-                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">No results yet</p>
-                                    </div>
-                                )}
-
-                                {isTriggering && (
-                                    <div className="flex flex-col items-center justify-center py-10 gap-3">
-                                        <Spinner size="md" color="white" />
-                                        <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest animate-pulse">Executing workflow...</p>
+                                        <Archive size={40} className="text-zinc-700 mb-4" />
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">No artefacts generated</p>
                                     </div>
                                 )}
                             </div>
-                        </ScrollShadow>
-                    </div>
+                        </div>
+                    </ScrollShadow>
                 </Tab>
             </Tabs>
 
             <SpaceInspectorFooter>
                 <div className="space-y-3">
-                    <Button
-                        className={cn(
-                            "w-full font-black uppercase text-[10px] rounded-md transition-all h-10 shadow-lg",
-                            isTriggering ? "bg-zinc-800 text-zinc-500" : (hasTimeoutError ? "bg-orange-500 text-white hover:bg-orange-400" : "bg-white text-black hover:bg-zinc-100")
-                        )}
-                        startContent={isTriggering ? <Spinner size="sm" color="current" /> : (hasTimeoutError ? <AlertTriangle size={14} /> : <Webhook size={14} />)}
-                        onPress={onTriggerWorkflow}
-                        isDisabled={isTriggering}
+                    <Button 
+                        variant="bordered" 
+                        className="w-full border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 h-10 text-[10px] font-black uppercase tracking-widest rounded-md"
+                        startContent={<Plus size={14} />}
+                        onPress={onAddArtefact}
                     >
-                        {isTriggering ? "Executing Workflow..." : (hasTimeoutError ? "Retry Workflow" : "Trigger (Webhook)")}
+                        Dodaj Artefakt
                     </Button>
-                    <div className="flex gap-3">
-                        <Button
-                            variant="bordered"
-                            className="flex-1 border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 h-10 text-[10px] font-black uppercase tracking-widest rounded-md"
-                            startContent={<Plus size={14} />}
-                            onPress={onAddArtefact}
-                        >
-                            Add Manual
-                        </Button>
-                        <Button
-                            size="sm"
-                            variant="flat"
-                            className="flex-1 h-10 bg-zinc-900 text-zinc-300 font-black uppercase tracking-widest text-[10px] rounded-md hover:bg-zinc-800 border border-zinc-800 transition-colors"
-                            startContent={<ExternalLink size={14} />}
-                        >
-                            Open n8n
-                        </Button>
-                    </div>
+                    <Button 
+                        className="w-full font-black uppercase tracking-widest text-[10px] bg-zinc-200 text-black rounded-md hover:bg-white transition-all h-10 shadow-lg"
+                        startContent={<ExternalLink size={14} />}
+                    >
+                        Open {data.label}
+                    </Button>
                 </div>
             </SpaceInspectorFooter>
         </SpaceInspectorPanel>

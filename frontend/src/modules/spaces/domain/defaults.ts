@@ -1,7 +1,6 @@
 // frontend/src/modules/spaces/domain/defaults.ts
 
-import type { Node, Edge } from '@xyflow/react';
-import type { TemplateContext, TemplateArtefact } from './types';
+import { DomainNode, DomainEdge, TemplateContext, TemplateArtefact } from './types';
 
 /**
  * Mapuje dane Template z Workspaces (template_inputs / template_outputs)
@@ -30,7 +29,7 @@ export const mapTemplateWorkspaceConfigToNodeData = (
   return { contexts, artefacts };
 };
 
-export const DEFAULT_INITIAL_NODES: readonly Node[] = [
+export const DEFAULT_INITIAL_NODES: readonly DomainNode[] = [
   // --- DISCOVERY ZONE ---
   {
     id: 'zone-discovery',
@@ -48,7 +47,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'agent',
     position: { x: 50, y: 50 },
     parentId: 'zone-discovery',
-    extent: 'parent',
     data: {
       label: 'User Researcher',
       state: 'missing_context',
@@ -74,7 +72,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'crew',
     position: { x: 400, y: 50 },
     parentId: 'zone-discovery',
-    extent: 'parent',
     data: {
       label: 'Research Team',
       state: 'missing_context',
@@ -103,7 +100,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'crew',
     position: { x: 50, y: 400 },
     parentId: 'zone-discovery',
-    extent: 'parent',
     data: {
       label: 'Content Pipeline',
       state: 'missing_context',
@@ -124,7 +120,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'crew',
     position: { x: 400, y: 400 },
     parentId: 'zone-discovery',
-    extent: 'parent',
     data: {
       label: 'Marketing Content Crew',
       state: 'missing_context',
@@ -149,7 +144,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'crew',
     position: { x: 800, y: 50 },
     parentId: 'zone-discovery',
-    extent: 'parent',
     data: {
       label: 'Market Sentiment Team',
       state: 'missing_context',
@@ -186,7 +180,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'agent',
     position: { x: 50, y: 50 },
     parentId: 'zone-product',
-    extent: 'parent',
     data: {
       label: 'Product Analyst',
       state: 'done',
@@ -199,7 +192,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'template',
     position: { x: 400, y: 400 },
     parentId: 'zone-product',
-    extent: 'parent',
     data: {
       label: 'PRD v2.0',
       status: 'working',
@@ -238,7 +230,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'service',
     position: { x: 400, y: 400 },
     parentId: 'zone-design',
-    extent: 'parent',
     data: {
       label: 'Figma Sync',
       actionName: 'Export Assets',
@@ -251,7 +242,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'service',
     position: { x: 50, y: 400 },
     parentId: 'zone-design',
-    extent: 'parent',
     data: {
       label: 'ElevenLabs',
       actionName: 'Generate Intro Voiceover',
@@ -284,7 +274,6 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
     type: 'automation',
     position: { x: 50, y: 50 },
     parentId: 'zone-delivery',
-    extent: 'parent',
     data: {
       label: 'CI/CD Pipeline',
       state: 'idle',
@@ -311,7 +300,7 @@ export const DEFAULT_INITIAL_NODES: readonly Node[] = [
   },
 ];
 
-export const DEFAULT_INITIAL_EDGES: readonly Edge[] = [
+export const DEFAULT_INITIAL_EDGES: readonly DomainEdge[] = [
   // Discovery Internal
   { id: 'e-disc-1', source: 'agent-researcher', target: 'crew-hierarchical', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },
   { id: 'e-disc-2', source: 'crew-sequential', target: 'crew-parallel', type: 'CustomEdge', style: { stroke: '#666', strokeWidth: 2 } },

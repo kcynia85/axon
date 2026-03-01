@@ -2,9 +2,11 @@
 
 import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { mapAgentToViewModel } from '../../domain/mappers/SpaceNodeViewModelMapper';
+import { mapAgentToViewModel } from '../mappers/SpaceNodeViewModelMapper';
 import { SpaceAgentNodeView } from './pure/SpaceAgentNodeView';
-import { SpaceCanvasNodeProperties, SpaceAgentDomainData } from '../../domain/types';
+import { SpaceAgentDomainData } from '../../domain/types';
+import { SpaceCanvasNodeProperties } from '../types';
+
 
 export const SpaceAgentCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
     const viewModel = mapAgentToViewModel(

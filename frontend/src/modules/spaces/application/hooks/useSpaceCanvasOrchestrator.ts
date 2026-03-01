@@ -7,8 +7,9 @@ import { useSpaceCanvasConnectionLogic } from './useSpaceCanvasConnectionLogic';
 import { useSpaceCanvasDragAndDropLogic } from './useSpaceCanvasDragAndDropLogic';
 import { useSpaceCanvasModificationOperations } from './useSpaceCanvasModificationOperations';
 import { useSpaceCanvasHistory } from './useSpaceCanvasHistory';
-import { SpaceCanvasOrchestrationLogic } from '../../domain/types';
-import { BlueprintEngine, SpacePatternBlueprint } from '../../domain/BlueprintEngine';
+import { SpacePatternBlueprint } from '../../domain/types';
+import { SpaceCanvasOrchestrationLogic } from '../../ui/types';
+import { BlueprintEngine } from '../../domain/BlueprintEngine';
 
 export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown): SpaceCanvasOrchestrationLogic => {
   const {

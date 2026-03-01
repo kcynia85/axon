@@ -10,6 +10,7 @@ interface BrowserLayoutProps {
   readonly activeFilters?: React.ReactNode;
   readonly filters?: React.ReactNode; // Left side of the action bar
   readonly actions?: React.ReactNode; // Right side of the action bar (Sort, View toggle, etc.)
+  readonly topContent?: React.ReactNode; // Content above search bar
   readonly children: React.ReactNode;
   readonly className?: string;
 }
@@ -21,11 +22,19 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = ({
   activeFilters,
   filters,
   actions,
+  topContent,
   children,
   className,
 }) => {
   return (
     <div className={cn("space-y-12", className)}>
+      {/* Top Content (e.g. Recently Used) */}
+      {topContent && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-500">
+          {topContent}
+        </div>
+      )}
+
       <div className="flex flex-col space-y-8">
         {/* Search Row */}
         <div className="relative w-full">

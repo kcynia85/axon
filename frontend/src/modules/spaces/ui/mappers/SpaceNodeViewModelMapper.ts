@@ -1,26 +1,28 @@
-// frontend/src/modules/spaces/domain/mappers/SpaceNodeViewModelMapper.ts
+// frontend/src/modules/spaces/ui/mappers/SpaceNodeViewModelMapper.ts
 
 import { Bot, Box, Cpu, FileText, Zap, LucideIcon } from "lucide-react";
 import {
     SpaceAgentDomainData,
-    SpaceAgentViewModel,
     SpaceAutomationDomainData,
-    SpaceAutomationViewModel,
     SpaceCrewDomainData,
-    SpaceCrewViewModel,
     SpacePatternDomainData,
-    SpacePatternViewModel,
     SpaceServiceDomainData,
-    SpaceServiceViewModel,
     SpaceTemplateDomainData,
-    SpaceTemplateViewModel,
     SpaceZoneDomainData,
-    SpaceZoneViewModel,
     SpaceEntityNodeDomainData,
+} from "../../domain/types";
+import {
+    SpaceAgentViewModel,
+    SpaceAutomationViewModel,
+    SpaceCrewViewModel,
+    SpacePatternViewModel,
+    SpaceServiceViewModel,
+    SpaceTemplateViewModel,
+    SpaceZoneViewModel,
     SpaceEntityViewModel,
     NodeVisualProperties
 } from "../types";
-import { getVisualStylesForZoneColor } from "../presentation_mappers";
+import { getVisualStylesForZoneColor } from "../utils/presentation_mappers";
 
 const MAP_OF_NODE_TYPES_TO_VISUAL_ICONS: Record<string, LucideIcon> = {
     agent: Bot,

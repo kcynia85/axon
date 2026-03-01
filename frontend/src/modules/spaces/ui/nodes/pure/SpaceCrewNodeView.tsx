@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Users, MessageSquare, AlertCircle } from "lucide-react";
-import { SpaceCrewViewModel } from '../../../domain/types';
+import { SpaceCrewViewModel } from '@/modules/spaces/domain/types';
 import { cn } from '@/shared/lib/utils';
 
 const COLOR_MAP: Record<string, string> = {

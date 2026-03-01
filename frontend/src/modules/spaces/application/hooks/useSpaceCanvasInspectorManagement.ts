@@ -1,8 +1,8 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceCanvasInspectorManagement.ts
 
 import { useCallback, useMemo } from "react";
-import { SpaceCanvasNodeInformation } from "../../domain/types";
-import { getEffectiveNodeType, isNodeRepresentingAZone } from "../../domain/presentation_mappers";
+import { SpaceCanvasNodeInformation } from "../types";
+import { getEffectiveNodeType, isNodeRepresentingAZone } from "@/modules/spaces/ui/utils/presentation_mappers";
 
 export const useSpaceCanvasInspectorManagement = (
     currentlySelectedNodeInformation: SpaceCanvasNodeInformation | null,

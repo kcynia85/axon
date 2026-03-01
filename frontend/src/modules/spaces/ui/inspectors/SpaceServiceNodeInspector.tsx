@@ -1,7 +1,8 @@
 // frontend/src/modules/spaces/ui/inspectors/SpaceServiceNodeInspector.tsx
 
 import React from "react";
-import { SpaceServiceInspectorProperties } from "../../domain/types";
+import { SpaceServiceDomainData } from "../../domain/types";
+import { SpaceServiceInspectorProperties } from "../types";
 import { useSpaceServiceInspectorLogic } from "../../application/hooks/useSpaceServiceInspectorLogic";
 import { SpaceServiceNodeInspectorView } from "../pure/SpaceServiceNodeInspectorView";
 

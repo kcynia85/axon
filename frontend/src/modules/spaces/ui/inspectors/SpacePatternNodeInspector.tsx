@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Divider } from "@heroui/react";
-import { SpacePatternNodeInspectorProperties } from "../../domain/types";
+import { SpacePatternNodeInspectorProperties } from "../types";
 import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";
 
 export const SpacePatternNodeInspector = ({ patternNodeInformation }: SpacePatternNodeInspectorProperties) => {
