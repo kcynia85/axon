@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useMemo } from "react";
 import { useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { AgentsSection } from "@/modules/workspaces/ui/AgentsSection";
 import { CrewsSection } from "@/modules/workspaces/ui/CrewsSection";
@@ -7,14 +8,14 @@ import { PatternsSection } from "@/modules/workspaces/ui/PatternsSection";
 import { TemplatesSection } from "@/modules/workspaces/ui/TemplatesSection";
 import { ServicesSection } from "@/modules/workspaces/ui/ServicesSection";
 import { AutomationsSection } from "@/modules/workspaces/ui/AutomationsSection";
-import { PageHeader } from "@/shared/ui/layout/PageHeader";
-import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { PageContent } from "@/shared/ui/layout/PageContent";
+import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Button } from "@/shared/ui/ui/Button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Filter, ArrowUpDown } from "lucide-react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 
 const SECTIONS = [
   { id: "patterns", label: "Patterns", count: 3, href: "patterns", Component: PatternsSection },
@@ -40,22 +41,22 @@ const PreviewSection = ({
     workspaceId: string;
     children: React.ReactNode 
 }) => (
-  <section id={id} className="mb-12">
-    <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-            {label} {count !== undefined && <span className="text-muted-foreground font-normal text-sm">[{count}]</span>}
+  <section id={id} className="mb-16 animate-in fade-in slide-in-from-bottom-2 duration-500 text-left">
+    <div className="flex items-center justify-between mb-6 border-b border-zinc-100 dark:border-zinc-900 pb-2">
+        <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-zinc-400">
+            {label} {count !== undefined && <span className="opacity-40 tabular-nums">[{count}]</span>}
         </h3>
+        
+        <button className="h-auto p-0 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-black dark:hover:text-white transition-colors outline-none">
+            <Link href={`/workspaces/${workspaceId}/${href}`} className="flex items-center gap-1.5">
+                View All <ChevronRight className="h-3 w-3" />
+            </Link>
+        </button>
     </div>
     
-    <div className="mb-4">
+    <div className="relative">
         {children}
     </div>
-
-    <Button variant="link" asChild className="px-0 text-primary h-auto font-medium">
-        <Link href={`/workspaces/${workspaceId}/${href}`} className="flex items-center gap-1">
-            All → {label} Page <ChevronRight className="h-3 w-3" />
-        </Link>
-    </Button>
   </section>
 );
 
@@ -63,32 +64,63 @@ export default function WorkspaceOverviewPage() {
   const params = useParams();
   const workspaceId = params.workspace as string;
   const { data: workspace, isLoading } = useWorkspace(workspaceId);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const colorKey = workspaceId.replace("ws-", "");
+  const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
+
+  const filteredSections = useMemo(() => {
+    if (!searchQuery) return SECTIONS;
+    const query = searchQuery.toLowerCase();
+    return SECTIONS.filter(section => 
+      section.label.toLowerCase().includes(query) || 
+      section.id.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
 
   if (isLoading) {
     return (
-        <PageContainer>
-            <div className="p-6 space-y-6">
-                <Skeleton className="h-12 w-1/3" />
-                <Skeleton className="h-64 w-full" />
+        <ModulePageLayout
+            title="Loading..."
+            breadcrumbs={[{ label: "Workspaces", href: "/workspaces" }, { label: "..." }]}
+        >
+            <div className="space-y-12">
+                <Skeleton className="h-11 w-full rounded-xl" />
+                <div className="grid gap-8">
+                    <Skeleton className="h-64 w-full rounded-2xl" />
+                    <Skeleton className="h-64 w-full rounded-2xl" />
+                </div>
             </div>
-        </PageContainer>
+        </ModulePageLayout>
     );
   }
 
   if (!workspace) {
-    return <div className="p-6">Workspace not found</div>;
+    return (
+        <ModulePageLayout title="Not Found" breadcrumbs={[]}>
+            <div className="p-12 text-center text-muted-foreground">Workspace not found</div>
+        </ModulePageLayout>
+    );
   }
 
   return (
-    <PageContainer>
-      <PageHeader 
-        title={`${workspace.name} Workspace`} 
-        description={workspace.description}
-      />
-      
-      <PageContent className="max-w-5xl">
-        <div className="grid gap-x-12">
-            {SECTIONS.map((section) => (
+    <ModulePageLayout
+      title={workspace.name}
+      description={workspace.description}
+      breadcrumbs={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Workspaces", href: "/workspaces" },
+        { label: workspace.name }
+      ]}
+      showPagination={false}
+    >
+      <BrowserLayout
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder={`Search within ${workspace.name}...`}
+      >
+        <div className="max-w-5xl mx-auto pt-4">
+            {filteredSections.map((section) => (
                 <PreviewSection 
                     key={section.id} 
                     id={section.id} 
@@ -97,11 +129,16 @@ export default function WorkspaceOverviewPage() {
                     href={section.href}
                     workspaceId={workspaceId}
                 >
-                    <section.Component workspaceId={workspaceId} />
+                    <section.Component workspaceId={workspaceId} colorName={colorName} />
                 </PreviewSection>
             ))}
+            {filteredSections.length === 0 && (
+                <div className="py-24 text-center">
+                    <p className="text-zinc-500 font-medium italic">No sections found matching &quot;{searchQuery}&quot;</p>
+                </div>
+            )}
         </div>
-      </PageContent>
-    </PageContainer>
+      </BrowserLayout>
+    </ModulePageLayout>
   );
 }

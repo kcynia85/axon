@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/ui/Button";
 import { Plus } from "lucide-react";
 import { TemplatesBrowser } from "@/modules/workspaces/features/browse-templates/ui/TemplatesBrowser";
 import { shouldShowPagination } from "@/shared/lib/pagination";
-import Link from "next/link";
+import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 
 export default function TemplatesListPage() {
   const params = useParams();
@@ -16,20 +16,21 @@ export default function TemplatesListPage() {
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: templates, isLoading } = useTemplates(workspaceId);
 
+  const colorKey = workspaceId.replace("ws-", "");
+  const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
+
   return (
     <ModulePageLayout
       title="Templates"
-      description={`Agent & Process templates for ${workspace?.name || 'workspace'}.`}
+      description={`Standardized document structures for ${workspace?.name || 'workspace'}.`}
       breadcrumbs={[
           { label: "Workspaces", href: "/workspaces" },
           { label: workspace?.name || "...", href: `/workspaces/${workspaceId}` },
           { label: "Templates" }
       ]}
       actions={
-        <Button variant="primary" size="lg" asChild>
-          <Link href={`/workspaces/${workspaceId}/templates/new`}>
-            <Plus className="mr-2 h-4 w-4" /> Nowy Template
-          </Link>
+        <Button variant="primary" size="lg">
+          <Plus className="mr-2 h-4 w-4" /> Create Template
         </Button>
       }
       showPagination={shouldShowPagination(templates?.length || 0)}
@@ -37,12 +38,12 @@ export default function TemplatesListPage() {
     >
       {isLoading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2].map(i => (
-            <div key={i} className="h-40 w-full bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-xl" />
+          {[1, 2, 3].map((index) => (
+            <div key={index} className="h-40 w-full bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-xl" />
           ))}
         </div>
       ) : (
-        <TemplatesBrowser initialTemplates={templates || []} />
+        <TemplatesBrowser initialTemplates={templates || []} colorName={colorName} />
       )}
     </ModulePageLayout>
   );

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useCrews } from "../application/useCrews";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
+import { cn } from "@/shared/lib/utils";
+import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 
 /** Human-friendly names for Agents */
 const AGENT_NAMES: Record<string, string> = {
@@ -33,23 +35,37 @@ const AGENT_NAMES: Record<string, string> = {
 
 interface CrewsSectionProps {
   workspaceId: string;
+  colorName?: string;
 }
 
-export const CrewsSection = ({ workspaceId }: CrewsSectionProps) => {
+const COLOR_TO_RGB: Record<string, string> = {
+    blue: "59, 130, 246",
+    purple: "168, 85, 247",
+    pink: "236, 72, 153",
+    green: "34, 197, 94",
+    yellow: "234, 179, 8",
+    orange: "249, 115, 22",
+    default: "113, 113, 122"
+};
+
+export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectionProps) => {
   const { data: crews, isLoading } = useCrews(workspaceId);
   const [selectedCrewId, setSelectedCrewId] = React.useState<string | null>(null);
+
+  const styles = getVisualStylesForZoneColor(colorName);
+  const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
   if (isLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full" />)}
+        {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full shadow-sm rounded-xl" />)}
       </div>
     );
   }
 
   if (!crews || crews.length === 0) {
     return (
-      <Card className="border-dashed h-32 flex items-center justify-center text-muted-foreground text-sm italic">
+      <Card className="border-dashed h-32 flex items-center justify-center text-muted-foreground text-sm italic rounded-xl bg-muted/5">
         No crews assembled. Strategy requires team effort.
       </Card>
     );
@@ -72,51 +88,68 @@ export const CrewsSection = ({ workspaceId }: CrewsSectionProps) => {
         {crews.map((crew) => (
           <Card
             key={crew.id}
-            className="hover:border-primary/50 transition-all cursor-pointer group relative hover:shadow-lg h-full"
+            className={cn(
+                "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl h-full",
+                "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
+                "hover:shadow-md",
+                `hover:${styles.borderClassName}`
+            )}
             onClick={() => setSelectedCrewId(crew.id)}
           >
-            <CardHeader className="pb-3">
+            {/* Accent Top Bar */}
+            <div 
+                className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+            />
+
+            {/* Background Grid Pattern */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
+                style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
+            />
+
+            <CardHeader className="relative z-10 space-y-3 pb-3 pt-4">
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded bg-primary/10">
-                    <Users className="h-3 w-3 text-primary" />
+                  <div className="p-1.5 rounded bg-muted/30">
+                    <Users className="h-3 w-3 text-zinc-500" />
                   </div>
-                  <CardTitle className="text-sm font-bold font-display">{crew.crew_name}</CardTitle>
+                  <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{crew.crew_name}</CardTitle>
                 </div>
-                <Badge variant="outline" className="text-[9px] h-4 py-0 uppercase font-bold tracking-tighter">
+                <Badge variant="outline" className="text-[9px] h-4 py-0 uppercase font-bold tracking-tighter bg-muted/30 border-none">
                   {crew.crew_process_type}
                 </Badge>
               </div>
-              <CardDescription className="text-[11px] mt-2 line-clamp-2 leading-relaxed">
+              <CardDescription className="text-[11px] mt-1 line-clamp-2 leading-relaxed">
                 {crew.crew_description || "Dynamic tactical unit."}
               </CardDescription>
 
-              <div className="flex items-center gap-1 mt-3 flex-wrap">
+              <div className="flex items-center gap-1 mt-2 flex-wrap">
                 {crew.crew_keywords?.slice(0, 2).map((kw, i) => (
-                  <span key={i} className="text-[10px] text-muted-foreground/60 italic">#{kw}</span>
+                  <span key={i} className="text-[10px] text-muted-foreground/60 italic font-medium">#{kw}</span>
                 ))}
               </div>
+            </CardHeader>
 
-              <div className="mt-4 flex items-center justify-between">
+            <CardContent className="relative z-10 mt-auto pt-0 pb-4">
+              <div className="flex items-center justify-between">
                 <div className="flex -space-x-1.5">
                   {crew.agent_member_ids.slice(0, 4).map((id) => (
                     <div
                       key={id}
-                      className="w-6 h-6 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[8px] font-bold"
+                      className="w-6 h-6 rounded-full border-2 border-white dark:border-zinc-950 bg-muted flex items-center justify-center text-[8px] font-bold shadow-sm"
                       title={AGENT_NAMES[id] || "Agent"}
                     >
                       {getInitials(id)}
                     </div>
                   ))}
                   {crew.agent_member_ids.length > 4 && (
-                    <div className="w-6 h-6 rounded-full border-2 border-background bg-primary/20 flex items-center justify-center text-[8px] font-bold">
+                    <div className="w-6 h-6 rounded-full border-2 border-white dark:border-zinc-950 bg-blue-500/10 text-blue-600 flex items-center justify-center text-[8px] font-bold shadow-sm">
                       +{crew.agent_member_ids.length - 4}
                     </div>
                   )}
                 </div>
                 <span className="text-[9px] text-muted-foreground font-mono opacity-40">#{crew.id.slice(0, 4)}</span>
               </div>
-            </CardHeader>
+            </CardContent>
           </Card>
         ))}
       </div>

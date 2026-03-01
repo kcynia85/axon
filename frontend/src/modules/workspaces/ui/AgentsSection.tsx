@@ -2,12 +2,14 @@
 
 import * as React from "react";
 import { useAgentsSection } from "../application/useAgentsSection";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { CostEstimator } from "./CostEstimator";
 import { Button } from "@/shared/ui/ui/Button";
+import { cn } from "@/shared/lib/utils";
+import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 import {
   Edit2,
   Layout,
@@ -44,9 +46,20 @@ const LLM_MODEL_NAMES: Record<string, string> = {
 
 interface AgentsSectionProps {
   workspaceId: string;
+  colorName?: string;
 }
 
-export const AgentsSection = ({ workspaceId }: AgentsSectionProps) => {
+const COLOR_TO_RGB: Record<string, string> = {
+    blue: "59, 130, 246",
+    purple: "168, 85, 247",
+    pink: "236, 72, 153",
+    green: "34, 197, 94",
+    yellow: "234, 179, 8",
+    orange: "249, 115, 22",
+    default: "113, 113, 122"
+};
+
+export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSectionProps) => {
   const {
     agents,
     isAgentsLoading,
@@ -57,17 +70,20 @@ export const AgentsSection = ({ workspaceId }: AgentsSectionProps) => {
     handleClosePeek,
   } = useAgentsSection(workspaceId);
 
+  const styles = getVisualStylesForZoneColor(colorName);
+  const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
+
   if (isAgentsLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full" />)}
+        {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full shadow-sm rounded-xl" />)}
       </div>
     );
   }
 
   if (!agents || agents.length === 0) {
     return (
-      <Card className="border-dashed h-32 flex items-center justify-center text-muted-foreground text-sm italic">
+      <Card className="border-dashed h-32 flex items-center justify-center text-muted-foreground text-sm italic rounded-xl bg-muted/5">
         No agents defined yet. Bring in some talent.
       </Card>
     );
@@ -86,33 +102,50 @@ export const AgentsSection = ({ workspaceId }: AgentsSectionProps) => {
         {agents.map((agent) => (
           <Card
             key={agent.id}
-            className="hover:border-primary/50 transition-all cursor-pointer group relative hover:shadow-lg dark:hover:shadow-primary/5"
+            className={cn(
+                "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
+                "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
+                "hover:shadow-md",
+                `hover:${styles.borderClassName}`
+            )}
             onClick={() => handleSelectAgent(agent.id)}
           >
-            <CardHeader className="pb-4">
+            {/* Accent Top Bar */}
+            <div 
+                className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+            />
+
+            {/* Background Grid Pattern */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
+                style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
+            />
+
+            <CardHeader className="relative z-10 space-y-3 pb-3 pt-4">
               <div className="flex justify-between items-start">
-                <Badge variant="outline" className="text-[9px] uppercase tracking-widest font-bold">
+                <Badge variant="outline" className="text-[9px] uppercase tracking-widest font-bold bg-muted/30 border-none">
                   {agent.agent_role_text || "Specialist"}
                 </Badge>
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                   <Button variant="ghost" size="icon" className="h-6 w-6">
-                    <Edit2 className="w-3 h-3" />
+                    <Edit2 className="w-3 h-3 text-zinc-400" />
                   </Button>
                 </div>
               </div>
-              <CardTitle className="text-sm font-bold mt-2 font-display">
+              <CardTitle className="text-sm font-bold mt-1 font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
                 {agent.agent_name || "Untitled Agent"}
               </CardTitle>
-              <CardDescription className="line-clamp-2 text-[11px] leading-relaxed">
+              <CardDescription className="line-clamp-2 text-[11px] leading-relaxed min-h-[2.5rem]">
                 {agent.agent_goal || "No goal defined"}
               </CardDescription>
-
-              <div className="flex items-center gap-1 mt-3 flex-wrap">
-                {agent.agent_keywords?.slice(0, 2).map((kw, i) => (
-                  <span key={i} className="text-[10px] text-muted-foreground/60 italic">#{kw}</span>
-                ))}
-              </div>
             </CardHeader>
+
+            <CardContent className="relative z-10 mt-auto pt-0 pb-4">
+                <div className="flex items-center gap-1 flex-wrap">
+                    {agent.agent_keywords?.slice(0, 2).map((kw, i) => (
+                    <span key={i} className="text-[10px] text-muted-foreground/60 italic font-medium">#{kw}</span>
+                    ))}
+                </div>
+            </CardContent>
           </Card>
         ))}
       </div>

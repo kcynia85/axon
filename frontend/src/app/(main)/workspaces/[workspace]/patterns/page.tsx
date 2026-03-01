@@ -5,6 +5,7 @@ import { usePatterns, useWorkspace } from "@/modules/workspaces/application/useW
 import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
 import { PatternsBrowser } from "@/modules/workspaces/features/browse-patterns/ui/PatternsBrowser";
 import { shouldShowPagination } from "@/shared/lib/pagination";
+import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 
 export default function PatternsListPage() {
   const params = useParams();
@@ -12,6 +13,9 @@ export default function PatternsListPage() {
   
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: patterns, isLoading } = usePatterns(workspaceId);
+
+  const colorKey = workspaceId.replace("ws-", "");
+  const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
 
   return (
     <ModulePageLayout
@@ -32,7 +36,7 @@ export default function PatternsListPage() {
           ))}
         </div>
       ) : (
-        <PatternsBrowser initialPatterns={patterns || []} />
+        <PatternsBrowser initialPatterns={patterns || []} colorName={colorName} />
       )}
     </ModulePageLayout>
   );

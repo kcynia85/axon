@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, ForeignKey, DateTime, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID
 from app.shared.infrastructure.base import Base
 from app.shared.utils.time import now_utc
-from app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType
+from app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType, InboxItemPriority
 
 class InboxItemTable(Base):
     __tablename__ = "inbox_items"
@@ -10,6 +10,11 @@ class InboxItemTable(Base):
     id = Column(UUID(as_uuid=True), primary_key=True)
     item_status = Column(SAEnum(InboxItemStatus), default=InboxItemStatus.NEW, nullable=False)
     item_type = Column(SAEnum(InboxItemType), nullable=False)
+    item_priority = Column(SAEnum(InboxItemPriority), default=InboxItemPriority.NORMAL, nullable=False)
+    
+    item_title = Column(String, nullable=False)
+    item_content = Column(String, nullable=False)
+    item_source = Column(String, nullable=False)
     
     artifact_id = Column(UUID(as_uuid=True), ForeignKey("project_artifacts.id"), nullable=True)
     project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=True)

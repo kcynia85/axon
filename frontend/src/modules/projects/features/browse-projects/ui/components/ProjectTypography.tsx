@@ -9,7 +9,7 @@ export const ProjectTitle: React.FC<{ children: React.ReactNode; className?: str
 );
 
 export const ProjectCardTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <BaseHeading3 className="text-xl font-bold transition-colors group-hover:text-black dark:group-hover:text-white pt-1">
+    <BaseHeading3 className="text-xl font-bold transition-colors group-hover:text-black dark:group-hover:text-white line-clamp-2 leading-tight">
         {children}
     </BaseHeading3>
 );
@@ -21,7 +21,7 @@ export const ProjectStatusText: React.FC<{ children: React.ReactNode }> = ({ chi
 );
 
 export const ProjectTagText: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <BaseSpan className="text-[10px] text-zinc-500 font-medium lowercase">
+    <BaseSpan className="text-[14px] text-zinc-500 font-medium lowercase whitespace-nowrap truncate block">
         {children}
     </BaseSpan>
 );

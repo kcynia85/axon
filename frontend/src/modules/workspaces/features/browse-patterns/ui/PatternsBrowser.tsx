@@ -5,16 +5,17 @@ import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { usePatternsBrowser } from "../application/usePatternsBrowser";
 import { Pattern } from "@/shared/domain/workspaces";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Button } from "@/shared/ui/ui/Button";
-import { Box } from "lucide-react";
+import { Box, Workflow } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { SortOption } from "@/shared/domain/filters";
 import { FilterPill } from "@/shared/ui/complex/FilterPill";
 import { FilterBigMenu } from "@/shared/ui/complex/FilterBigMenu";
 import { SortMenu } from "@/shared/ui/complex/SortMenu";
 import { ViewModeSwitcher } from "@/shared/ui/complex/ViewModeSwitcher";
+import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -22,11 +23,22 @@ const SORT_OPTIONS: readonly SortOption[] = [
   { id: "newest", label: "Recently Added" },
 ];
 
+const COLOR_TO_RGB: Record<string, string> = {
+    blue: "59, 130, 246",
+    purple: "168, 85, 247",
+    pink: "236, 72, 153",
+    green: "34, 197, 94",
+    yellow: "234, 179, 8",
+    orange: "249, 115, 22",
+    default: "113, 113, 122"
+};
+
 interface PatternsBrowserProps {
   initialPatterns: Pattern[];
+  colorName?: string;
 }
 
-export const PatternsBrowser: React.FC<PatternsBrowserProps> = ({ initialPatterns }) => {
+export const PatternsBrowser: React.FC<PatternsBrowserProps> = ({ initialPatterns, colorName = "default" }) => {
   const {
     processedPatterns,
     viewMode,
@@ -48,6 +60,9 @@ export const PatternsBrowser: React.FC<PatternsBrowserProps> = ({ initialPattern
     getPreviewCount,
     setPendingFilterIds,
   } = filterConfig;
+
+  const styles = getVisualStylesForZoneColor(colorName);
+  const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
   return (
     <BrowserLayout
@@ -104,33 +119,65 @@ export const PatternsBrowser: React.FC<PatternsBrowserProps> = ({ initialPattern
         )}>
           {processedPatterns.map((pattern) => (
             <Card key={pattern.id} className={cn(
-              "group hover:border-primary/50 transition-all cursor-pointer h-full overflow-hidden flex flex-col",
-              viewMode === "list" && "flex-row items-center px-6 py-4"
+                "group transition-all cursor-pointer h-full overflow-hidden flex flex-col pt-2 relative rounded-xl",
+                "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
+                "hover:shadow-md",
+                `hover:${styles.borderClassName}`,
+                viewMode === "list" && "flex-row items-center px-6 py-4 pt-0"
             )}>
-              <CardHeader className={cn(viewMode === "list" ? "flex-1 p-0" : "pb-4")}>
+              {/* Accent Top Bar (Grid mode) */}
+              {viewMode === "grid" && (
+                  <div 
+                      className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+                  />
+              )}
+
+              {/* Accent Side Bar (List mode) */}
+              {viewMode === "list" && (
+                  <div 
+                      className={cn("absolute top-0 bottom-0 left-0 w-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+                  />
+              )}
+
+              {/* Background Grid Pattern */}
+              <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
+                  style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
+              />
+
+              <CardHeader className={cn("relative z-10", viewMode === "list" ? "flex-1 p-0" : "pb-4")}>
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                      <Box className="h-5 w-5 text-primary" />
+                    <div className="p-1.5 rounded bg-muted/30">
+                      <Workflow className="h-3 w-3 text-zinc-500" />
                     </div>
-                    <CardTitle className="text-lg font-bold font-display group-hover:text-primary transition-colors">
-                      {pattern.name}
+                    <CardTitle className="text-lg font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                      {pattern.name || pattern.pattern_name}
                     </CardTitle>
                   </div>
-                  <Badge variant="secondary" className="bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-none capitalize">
-                    {pattern.type}
+                  <Badge variant="secondary" className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-none capitalize text-[10px]">
+                    {pattern.type || pattern.domain || "Workflow"}
                   </Badge>
                 </div>
                 <CardDescription className={cn(
                   "mt-3 leading-relaxed",
                   viewMode === "grid" ? "line-clamp-3 min-h-[3rem]" : "line-clamp-1"
                 )}>
-                  {pattern.description}
+                  {pattern.description || pattern.pattern_description}
                 </CardDescription>
               </CardHeader>
               
+              {viewMode === "grid" && (
+                <CardContent className="relative z-10 mt-auto pt-0 pb-6">
+                    <div className="flex items-center gap-1 flex-wrap">
+                        {(pattern.keywords || pattern.pattern_keywords)?.slice(0, 2).map(kw => (
+                            <span key={kw} className="text-[10px] text-muted-foreground font-medium italic">#{kw}</span>
+                        ))}
+                    </div>
+                </CardContent>
+              )}
+
               {viewMode === "list" && (
-                <div className="border-l border-zinc-100 dark:border-zinc-900 pl-6 h-full flex items-center">
+                <div className="relative z-10 border-l border-zinc-100 dark:border-zinc-900 pl-6 h-full flex items-center">
                   <Button variant="ghost" size="sm" className="h-7 text-[10px] font-black uppercase tracking-widest">Open</Button>
                 </div>
               )}

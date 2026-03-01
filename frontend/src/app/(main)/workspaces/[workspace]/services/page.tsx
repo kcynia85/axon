@@ -2,82 +2,116 @@
 
 import { useParams } from "next/navigation";
 import { useServices, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
-import { PageHeader } from "@/shared/ui/layout/PageHeader";
-import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { PageContent } from "@/shared/ui/layout/PageContent";
+import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { Input } from "@/shared/ui/ui/Input";
-import { Search, Globe } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
+import { Search, Globe, Activity } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
+import { cn } from "@/shared/lib/utils";
+import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
+import { useState } from "react";
 
-/**
- * ServicesListPage - Dedicated list view for a workspace (Read-only).
- * External services assigned to this workspace.
- */
+const COLOR_TO_RGB: Record<string, string> = {
+    blue: "59, 130, 246",
+    purple: "168, 85, 247",
+    pink: "236, 72, 153",
+    green: "34, 197, 94",
+    yellow: "234, 179, 8",
+    orange: "249, 115, 22",
+    default: "113, 113, 122"
+};
+
 export default function ServicesListPage() {
   const params = useParams();
   const workspaceId = params.workspace as string;
   
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: services, isLoading } = useServices(workspaceId);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const colorKey = workspaceId.replace("ws-", "");
+  const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
+  const styles = getVisualStylesForZoneColor(colorName);
+  const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
+
+  const filteredServices = services?.filter(s => 
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.provider_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <PageContainer>
-      <PageHeader 
-        title="Services" 
-        description={`External services available in ${workspace?.name || 'workspace'}.`}
-        breadcrumbs={[
-            { label: "Workspaces", href: "/workspaces" },
-            { label: workspace?.name || "...", href: `/workspaces/${workspaceId}` },
-            { label: "Services", active: true }
-        ]}
-      />
-
-      <PageContent>
-        <div className="flex items-center gap-4 mb-8">
-            <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search services..." className="pl-10" />
-            </div>
-        </div>
-
+    <ModulePageLayout
+      title="Services" 
+      description={`External services available in ${workspace?.name || 'workspace'}.`}
+      breadcrumbs={[
+          { label: "Workspaces", href: "/workspaces" },
+          { label: workspace?.name || "...", href: `/workspaces/${workspaceId}` },
+          { label: "Services" }
+      ]}
+      showPagination={false}
+    >
+      <BrowserLayout
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search services..."
+      >
         {isLoading ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2].map((index) => <Skeleton key={index} className="h-32 w-full" />)}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
+                {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full rounded-xl shadow-sm" />)}
             </div>
         ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {services?.map((service) => (
-                    <Card key={service.id} className="group hover:border-primary/50 transition-colors">
-                        <CardHeader className="pb-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
+                {filteredServices?.map((service) => (
+                    <Card key={service.id} className={cn(
+                        "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
+                        "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
+                        "hover:shadow-md",
+                        `hover:${styles.borderClassName}`
+                    )}>
+                        {/* Accent Top Bar */}
+                        <div 
+                            className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+                        />
+
+                        {/* Background Grid Pattern */}
+                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
+                            style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
+                        />
+
+                        <CardHeader className="relative z-10 space-y-3 pb-3 pt-4">
                             <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-2">
-                                    <Globe className="h-5 w-5 text-primary" />
-                                    <CardTitle className="text-lg">{service.name}</CardTitle>
+                                    <div className="p-1.5 rounded bg-muted/30">
+                                        <Globe className="h-4 w-4 text-zinc-500" />
+                                    </div>
+                                    <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{service.name || service.service_name}</CardTitle>
                                 </div>
                                 <Badge 
-                                    variant={service.status === 'active' ? 'default' : service.status === 'error' ? 'destructive' : 'secondary'}
+                                    variant="outline" 
+                                    className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none bg-muted/30")}
                                 >
-                                    {service.status}
+                                    {service.status || service.connection_status}
                                 </Badge>
                             </div>
-                            <CardDescription className="mt-2 font-mono text-xs truncate">
-                                {service.url}
+                            <CardDescription className="text-[11px] mt-1 line-clamp-2 leading-relaxed">
+                                Integration with {service.provider_name || 'external'} platform.
                             </CardDescription>
-                            <div className="mt-4 text-xs text-muted-foreground">
-                                Auth Type: <span className="capitalize">{service.authType}</span>
-                            </div>
                         </CardHeader>
+
+                        <CardContent className="relative z-10 mt-auto pt-0 pb-4">
+                            <div className="flex items-center gap-2">
+                                <Activity className="h-3 w-3 text-muted-foreground opacity-40" />
+                                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">Connected</span>
+                            </div>
+                        </CardContent>
                     </Card>
                 ))}
             </div>
         )}
-
-        <div className="mt-12 flex items-center justify-center text-sm text-muted-foreground">
-            All → External Services (Global Link)
-        </div>
-      </PageContent>
-    </PageContainer>
+      </BrowserLayout>
+    </ModulePageLayout>
   );
 }

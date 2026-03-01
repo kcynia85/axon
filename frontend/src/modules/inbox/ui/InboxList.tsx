@@ -2,16 +2,7 @@
 
 import * as React from "react";
 import { useInboxItems, useResolveInboxItem } from "../application/useInbox";
-import { Card } from "@/shared/ui/ui/Card";
-import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Badge } from "@/shared/ui/ui/Badge";
 import {
-    Inbox as InboxIcon,
-    CheckCircle2,
-    AlertCircle,
-    Clock,
-    MessageSquare,
-    MoreVertical,
     Check
 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
@@ -30,53 +21,74 @@ const InboxItemComponent = React.memo(({
         new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     [item.created_at]);
 
+    const isNew = item.item_status === "NEW";
+    const isCritical = item.item_priority === "CRITICAL";
+
     return (
         <div
             className={cn(
-                "group relative flex p-4 gap-4 rounded-xl border border-zinc-100 dark:border-zinc-900 bg-white/50 dark:bg-zinc-950/50 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all",
-                item.item_status === "Pending" ? "border-l-2 border-l-blue-500" : "opacity-60"
+                "group relative flex py-5 px-6 gap-5 border-b border-zinc-50 dark:border-zinc-900/50 hover:bg-zinc-50/30 dark:hover:bg-zinc-900/10 transition-colors cursor-default",
+                !isNew && "opacity-40"
             )}
         >
-            <div className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center shrink-0 border",
-                item.item_priority === "Critical" 
-                    ? "bg-red-500/10 text-red-500 border-red-500/20" 
-                    : "bg-zinc-100 dark:bg-zinc-900 text-zinc-500 border-zinc-200 dark:border-zinc-800"
-            )}>
-                {getIconForType(item.item_type)}
+            {/* Minimal Status Dot */}
+            <div className="w-2 shrink-0 flex items-start justify-center pt-1.5">
+                {isNew && (
+                    <div className={cn(
+                        "w-2 h-2 rounded-full transition-all duration-500",
+                        isCritical 
+                            ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]" 
+                            : "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]"
+                    )} />
+                )}
             </div>
 
-            <div className="flex-1 min-w-0 space-y-1">
-                <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold leading-none text-zinc-900 dark:text-zinc-100">{item.item_title}</span>
-                        <Badge variant="outline" className="text-[9px] h-3.5 px-1 py-0 uppercase font-black tracking-tighter bg-zinc-100 dark:bg-zinc-900 border-none">
-                            {item.item_source}
-                        </Badge>
-                    </div>
-                    <span className="text-[9px] text-zinc-400 font-mono" suppressHydrationWarning>
+            <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                <div className="flex justify-between items-baseline gap-4">
+                    <span className={cn(
+                        "text-[13px] leading-tight tracking-tight truncate transition-colors",
+                        isNew ? "font-semibold text-zinc-900 dark:text-zinc-100" : "font-medium text-zinc-400"
+                    )}>
+                        {item.item_title}
+                    </span>
+                    <span className="text-[10px] tabular-nums text-zinc-400 font-medium tracking-tight">
                         {timeString}
                     </span>
                 </div>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-                    {item.item_content}
-                </p>
+                
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest shrink-0">
+                            {item.item_source}
+                        </span>
+                        {isCritical && (
+                            <span className="text-[9px] font-black text-red-500/80 uppercase tracking-tighter">
+                                • Priority
+                            </span>
+                        )}
+                    </div>
+                    <p className={cn(
+                        "text-[12px] line-clamp-2 leading-relaxed font-medium transition-colors",
+                        isNew ? "text-zinc-500 dark:text-zinc-400" : "text-zinc-400 dark:text-zinc-600"
+                    )}>
+                        {item.item_content}
+                    </p>
+                </div>
             </div>
 
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                {item.item_status === "Pending" && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 rounded-lg hover:bg-blue-500/10 hover:text-blue-600"
-                        onClick={() => onResolve(item.id)}
+            {/* Resolve Action - Matches New Project Modal "Done" style */}
+            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-start pt-0.5 shrink-0 ml-2 animate-in fade-in zoom-in">
+                {isNew && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onResolve(item.id);
+                        }}
+                        className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none"
                     >
-                        <Check className="w-4 h-4" />
-                    </Button>
+                        <Check className="h-5 w-5" />
+                    </button>
                 )}
-                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-lg">
-                    <MoreVertical className="w-4 h-4 text-zinc-400" />
-                </Button>
             </div>
         </div>
     );
@@ -99,9 +111,15 @@ export const InboxList = React.memo(({
 
     if (isLoading) {
         return (
-            <div className="space-y-3">
-                {[1, 2, 3].map((index) => (
-                    <div key={index} className="h-20 w-full bg-zinc-100/50 dark:bg-zinc-900/50 animate-pulse rounded-xl" />
+            <div className="space-y-0 px-0 py-2">
+                {[1, 2, 3, 4, 5].map((index) => (
+                    <div key={index} className="flex gap-4 py-5 px-6 border-b border-zinc-50 dark:border-zinc-900/50">
+                        <div className="w-2 h-2 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-full mt-1.5" />
+                        <div className="flex-1 space-y-3">
+                            <div className="h-4 w-1/2 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded" />
+                            <div className="h-3 w-full bg-zinc-50 dark:bg-zinc-900/50 animate-pulse rounded" />
+                        </div>
+                    </div>
                 ))}
             </div>
         );
@@ -112,7 +130,7 @@ export const InboxList = React.memo(({
     }
 
     return (
-        <div className="space-y-3">
+        <div className="pb-20">
             {items.map((item) => (
                 <InboxItemComponent 
                     key={item.id} 
@@ -125,13 +143,3 @@ export const InboxList = React.memo(({
 });
 
 InboxList.displayName = "InboxList";
-
-const getIconForType = (type: string) => {
-    switch (type) {
-        case "Approval": return <CheckCircle2 className="w-5 h-5" />;
-        case "Log": return <InboxIcon className="w-5 h-5" />;
-        case "Alert": return <AlertCircle className="w-5 h-5" />;
-        case "Task": return <Clock className="w-5 h-5" />;
-        default: return <MessageSquare className="w-5 h-5" />;
-    }
-};

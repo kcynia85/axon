@@ -2,7 +2,6 @@ import React from "react";
 import { CardHeader } from "@/shared/ui/ui/Card";
 import { StatusBadge } from "@/shared/ui/complex/StatusBadge";
 import { ProjectCardHeaderProps } from "../types";
-import { ProjectCardTitleGroup } from "./ProjectCardLayout";
 import { ProjectCardTitle } from "./ProjectTypography";
 
 export const ProjectCardHeader: React.FC<ProjectCardHeaderProps> = ({ 
@@ -11,11 +10,16 @@ export const ProjectCardHeader: React.FC<ProjectCardHeaderProps> = ({
     statusVariant 
 }) => {
     return (
-        <CardHeader className="pb-2">
-            <ProjectCardTitleGroup>
-                <StatusBadge status={statusLabel} variant={statusVariant} />
+        <CardHeader className="pb-4 pt-6 flex flex-col items-start gap-4">
+            {/* Title Block - Fixed height to ensure status alignment across cards */}
+            <div className="min-h-[56px] w-full flex items-start">
                 <ProjectCardTitle>{title}</ProjectCardTitle>
-            </ProjectCardTitleGroup>
+            </div>
+            
+            {/* Status Block - Dedicated container for consistent vertical positioning */}
+            <div className="flex items-center h-6">
+                <StatusBadge status={statusLabel} variant={statusVariant} />
+            </div>
         </CardHeader>
     );
 };

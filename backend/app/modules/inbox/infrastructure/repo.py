@@ -16,6 +16,10 @@ class InboxRepository:
             id=row.id,
             item_status=row.item_status,
             item_type=row.item_type,
+            item_priority=row.item_priority,
+            item_title=row.item_title,
+            item_content=row.item_content,
+            item_source=row.item_source,
             artifact_id=row.artifact_id,
             project_id=row.project_id,
             created_at=row.created_at,
@@ -24,18 +28,9 @@ class InboxRepository:
 
     async def list_for_user(self, user_id: UUID) -> List[InboxItem]:
         # Filter by projects owned by user
-        from app.modules.projects.infrastructure.tables import ProjectTable
-        
-        # We need items where project_id belongs to user OR linked artifact belongs to project belonging to user.
-        # But RLS should handle this automatically if we just select * from inbox_items!
-        # "Users access inbox of own projects" policy handles project_id check.
-        # However, listing everything might be slow if we rely purely on RLS for filtering large tables?
-        # No, usually we still add WHERE clause for performance/clarity.
-        
-        # Simple approach: RLS enforced. We select all visible items.
+        # In a real app we would join with projects or rely on RLS.
         stmt = select(InboxItemTable).order_by(InboxItemTable.created_at.desc())
         
-        # If RLS is ON, this returns only allowed items.
         result = await self.session.execute(stmt)
         return [self._to_domain(row) for row in result.scalars().all()]
 

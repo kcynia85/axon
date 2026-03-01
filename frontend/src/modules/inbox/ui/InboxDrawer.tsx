@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import { 
-    Inbox as InboxIcon,
+    X,
+    CheckCheck,
     Filter,
-    ArrowUpDown,
-    X
+    ArrowUpDown
 } from "lucide-react";
 import { 
     Sheet, 
@@ -16,15 +16,14 @@ import {
 } from "@/shared/ui/ui/Sheet";
 import { InboxList } from "./InboxList";
 import { useInboxItems } from "../application/useInbox";
-import { InboxEmptyState } from "./InboxEmptyState";
 import { Button } from "@/shared/ui/ui/Button";
 import { useUiStore } from "@/shared/lib/store/useUiStore";
 import { cn } from "@/shared/lib/utils";
+import { InboxItem } from "@/shared/domain/inbox";
 import { FilterBigMenu } from "@/shared/ui/complex/FilterBigMenu";
 import { SortMenu } from "@/shared/ui/complex/SortMenu";
 import { SortOption } from "@/shared/domain/filters";
 import { useResourceFilters } from "@/shared/lib/hooks/useResourceFilters";
-import { InboxItem } from "@/shared/domain/inbox";
 
 const SORT_OPTIONS: readonly SortOption[] = [
     { id: "newest", label: "Newest first" },
@@ -39,11 +38,10 @@ export const InboxDrawer = () => {
 
     const filterItems = React.useCallback((items: readonly InboxItem[], query: string, filterIds: string[]) => {
         return items.filter(item => {
-            // Basic filtering logic for the drawer items
             if (filterIds.length === 0) return true;
             
             const statusFilters = filterIds.filter(id => ["NEW", "RESOLVED", "ARCHIVED"].includes(id));
-            const typeFilters = filterIds.filter(id => ["ARTIFACT_READY", "ERROR_ALERT", "SYSTEM_MESSAGE", "ACTION_REQUIRED"].includes(id));
+            const typeFilters = filterIds.filter(id => ["ARTIFACT_READY", "ERROR_ALERT", "SYSTEM_MESSAGE", "ACTION_REQUIRED", "CONSULTATION", "APPROVAL_NEEDED"].includes(id));
 
             if (statusFilters.length > 0 && !statusFilters.includes(item.item_status)) return false;
             if (typeFilters.length > 0 && !typeFilters.includes(item.item_type)) return false;
@@ -82,6 +80,8 @@ export const InboxDrawer = () => {
                     { id: "ARTIFACT_READY", label: "Artifacts", isChecked: false },
                     { id: "ERROR_ALERT", label: "Errors", isChecked: false },
                     { id: "ACTION_REQUIRED", label: "Actions", isChecked: false },
+                    { id: "CONSULTATION", label: "Consultations", isChecked: false },
+                    { id: "APPROVAL_NEEDED", label: "Approvals", isChecked: false },
                 ]
             }
         ]
@@ -100,82 +100,94 @@ export const InboxDrawer = () => {
         return result;
     }, [items, getFilteredItems, sortBy]);
 
+    const unreadCount = React.useMemo(() => 
+        items?.filter(i => i.item_status === "NEW").length || 0
+    , [items]);
+
     return (
         <Sheet open={isInboxOpen} onOpenChange={setIsInboxOpen}>
             <SheetContent 
                 side="left" 
                 showCloseButton={false}
                 className={cn(
-                    "w-full sm:max-w-md p-0 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-r border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col focus:outline-none z-[60]",
-                    isSidebarCollapsed ? "left-16" : "left-64"
+                    "w-full sm:max-w-md p-0 bg-white dark:bg-zinc-950 flex flex-col focus:outline-none z-[60] border-r border-zinc-100 dark:border-zinc-900",
+                    isSidebarCollapsed ? "left-16" : "left-60"
                 )}
             >
-                <SheetHeader className="p-4 border-b border-zinc-100 dark:border-zinc-900 flex flex-row items-center justify-between space-y-0">
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-zinc-100 dark:bg-zinc-900 rounded-lg">
-                            <InboxIcon className="w-4 h-4 text-zinc-500" />
-                        </div>
-                        <SheetTitle className="text-sm font-bold tracking-tight">Inbox</SheetTitle>
+                {/* Clean Header */}
+                <SheetHeader className="px-6 pt-6 pb-4 flex flex-row items-center justify-between space-y-0">
+                    <div className="flex items-center gap-3">
+                        <SheetTitle className="text-[15px] font-bold text-zinc-900 dark:text-zinc-100">
+                            Inbox
+                        </SheetTitle>
+                        {unreadCount > 0 && (
+                            <span className="px-2 py-0.5 rounded-full bg-blue-500 text-white text-[10px] font-black leading-none shadow-lg shadow-blue-500/20">
+                                {unreadCount}
+                            </span>
+                        )}
                     </div>
                     
-                    <div className="flex items-center gap-4">
-                        <FilterBigMenu 
-                            groups={filterGroups}
-                            resultsCount={getPreviewCount(items || [])}
-                            onApply={handleApplyFilters}
-                            onClearAll={handleClearAll}
-                            onSelectionChange={setPendingFilterIds}
-                            trigger={
-                                <button className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-zinc-500 hover:text-black dark:hover:text-white transition-colors group outline-none">
-                                    <Filter size={14} className="group-hover:scale-110 transition-transform" />
-                                    Filters
-                                </button>
-                            }
-                        />
-                        <SortMenu 
-                            options={SORT_OPTIONS}
-                            activeOptionId={sortBy}
-                            onSelect={setSortBy}
-                            trigger={
-                                <button className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-black dark:hover:text-white transition-colors group outline-none">
-                                    <ArrowUpDown size={14} className="group-hover:scale-110 transition-transform" />
-                                    Sort
-                                </button>
-                            }
-                        />
-                        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-1" />
-                        <SheetClose className="ring-offset-background focus:ring-ring rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none outline-none">
-                            <X className="w-4 h-4 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors" />
-                            <span className="sr-only">Close</span>
+                    <div className="flex items-center gap-1">
+                        <SheetClose className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+                            <X className="w-4 h-4 text-zinc-400" />
                         </SheetClose>
                     </div>
                 </SheetHeader>
 
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                    {isInboxOpen && (
-                        <div className="p-4">
-                            <InboxList items={processedItems} isLoading={isLoading} />
+                {/* Actions Row - Moved up and search removed */}
+                <div className="px-6 pb-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-5">
+                            <FilterBigMenu 
+                                groups={filterGroups}
+                                resultsCount={getPreviewCount(items || [])}
+                                onApply={handleApplyFilters}
+                                onClearAll={handleClearAll}
+                                onSelectionChange={setPendingFilterIds}
+                                trigger={
+                                    <button className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none group">
+                                        <Filter size={12} />
+                                        Filters
+                                    </button>
+                                }
+                            />
+                            <SortMenu 
+                                options={SORT_OPTIONS}
+                                activeOptionId={sortBy}
+                                onSelect={setSortBy}
+                                trigger={
+                                    <button className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none group">
+                                        <ArrowUpDown size={12} />
+                                        Sort
+                                    </button>
+                                }
+                            />
                         </div>
+
+                        <button className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none group">
+                            <CheckCheck size={14} />
+                            Mark all read
+                        </button>
+                    </div>
+                </div>
+
+                {/* Items Area */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar border-t border-zinc-50 dark:border-zinc-900/50 mt-0">
+                    {isInboxOpen && (
+                        <InboxList items={processedItems} isLoading={isLoading} />
                     )}
                 </div>
 
-                {isInboxOpen && <InboxFooter count={processedItems.length} />}
+                {/* Subtle Footer */}
+                <div className="px-6 py-4 flex items-center justify-between opacity-40 hover:opacity-100 transition-opacity">
+                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                        {processedItems.length} total
+                    </span>
+                    <Button variant="ghost" size="sm" className="h-7 px-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-red-500">
+                        Settings
+                    </Button>
+                </div>
             </SheetContent>
         </Sheet>
-    );
-};
-
-const InboxFooter = ({ count }: { count: number }) => {
-    if (count === 0) return null;
-
-    return (
-        <div className="p-4 border-t border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between">
-            <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest">
-                {count} notifications pending
-            </span>
-            <Button variant="ghost" size="sm" className="h-7 text-[10px] font-black uppercase tracking-widest text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20">
-                Clear all
-            </Button>
-        </div>
     );
 };

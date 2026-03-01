@@ -9,6 +9,7 @@ import { AgentModal } from "@/modules/workspaces/ui/modals/AgentModal";
 import { AgentsBrowser } from "@/modules/workspaces/features/browse-agents/ui/AgentsBrowser";
 import { Suspense } from "react";
 import { shouldShowPagination } from "@/shared/lib/pagination";
+import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 
 export default function AgentsListPage() {
   const params = useParams();
@@ -18,6 +19,9 @@ export default function AgentsListPage() {
   
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: agents, isLoading } = useAgents(workspaceId);
+
+  const colorKey = workspaceId.replace("ws-", "");
+  const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
 
   const openNewAgentModal = () => {
     const urlSearchParams = new URLSearchParams(searchParams.toString());
@@ -49,7 +53,7 @@ export default function AgentsListPage() {
           ))}
         </div>
       ) : (
-        <AgentsBrowser initialAgents={agents || []} />
+        <AgentsBrowser initialAgents={agents || []} colorName={colorName} />
       )}
       
       <Suspense>

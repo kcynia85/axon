@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { HeroUIProvider } from "@heroui/react";
 import { useRouter } from "next/navigation";
+import { TooltipProvider } from "@/shared/ui/ui/Tooltip";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
@@ -18,7 +19,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     return (
         <QueryClientProvider client={queryClient}>
             <HeroUIProvider navigate={router.push}>
-                {children}
+                <TooltipProvider>
+                    {children}
+                </TooltipProvider>
             </HeroUIProvider>
         </QueryClientProvider>
     );
