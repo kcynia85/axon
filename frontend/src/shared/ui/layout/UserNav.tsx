@@ -16,7 +16,11 @@ import {
 } from "@/shared/ui/ui/DropdownMenu"
 import { cn } from "@/shared/lib/utils"
 
-export function UserNav({ hideText }: { hideText?: boolean }) {
+type UserNavProps = {
+  readonly hideText?: boolean;
+}
+
+export const UserNav = ({ hideText }: UserNavProps) => {
   const [email, setEmail] = useState<string | null>(null)
   const [userName, setUserName] = useState<string | null>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)

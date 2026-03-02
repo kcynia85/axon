@@ -4,7 +4,7 @@ import { ChevronRight as ChevronIcon } from "lucide-react";
 import { ProjectCardFooterProps } from "../types";
 import { ProjectCardViewDetailsLabel } from "./ProjectActionAtoms";
 
-export const ProjectCardFooter: React.FC<ProjectCardFooterProps> = () => {
+export const ProjectCardFooter = (_props: ProjectCardFooterProps) => {
     return (
         <CardFooter className="py-4 flex items-center justify-between border-t border-zinc-50 dark:border-zinc-900 mt-auto">
             <ProjectCardViewDetailsLabel />

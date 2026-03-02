@@ -7,8 +7,8 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { Plus, FileText, CheckCircle, AlertCircle, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-interface PageProps {
-    params: Promise<{ hubId: string }>;
+type PageProps = {
+    readonly params: Promise<{ hubId: string }>;
 }
 
 // Mock data - replace with actual API call

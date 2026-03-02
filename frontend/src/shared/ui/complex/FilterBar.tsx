@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { ActiveFilter } from "@/shared/domain/filters";
 
-interface FilterBarProps {
+type FilterBarProps = {
   readonly activeFilters: readonly ActiveFilter[];
   readonly onRemove: (filterId: string) => void;
   readonly onClearAll: () => void;
@@ -16,12 +16,12 @@ interface FilterBarProps {
  * FilterBar - Pattern 1 Implementation
  * Reusable horizontal active filters bar with "Clear all" action.
  */
-export const FilterBar: React.FC<FilterBarProps> = ({ 
+export const FilterBar = ({ 
   activeFilters, 
   onRemove, 
   onClearAll, 
   className 
-}) => {
+}: FilterBarProps) => {
   if (activeFilters.length === 0) return null;
 
   return (

@@ -1,18 +1,19 @@
-import { cn } from "@/lib/utils";
+import React from "react";
+import { cn } from "@/shared/lib/utils";
 
-interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  title: string;
-  description?: string;
-  children?: React.ReactNode;
-}
+type PageHeaderProps = {
+  readonly title: string;
+  readonly description?: string;
+  readonly children?: React.ReactNode;
+} & React.HTMLAttributes<HTMLDivElement>;
 
-export function PageHeader({
+export const PageHeader = ({
   title,
   description,
   className,
   children,
   ...props
-}: PageHeaderProps) {
+}: PageHeaderProps) => {
   return (
     <header className={cn("mb-8 flex items-center justify-between", className)} {...props}>
       <div className="space-y-1">

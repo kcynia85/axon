@@ -10,10 +10,10 @@ import {
 import { ProjectTagText } from "./ProjectTypography";
 import { Tooltip } from "@/shared/ui/ui/Tooltip";
 
-export const ProjectCardContent: React.FC<ProjectCardContentProps> = ({ 
+export const ProjectCardContent = ({ 
     tags = [], 
     artifactsCount 
-}) => {
+}: ProjectCardContentProps) => {
     return (
         <CardContent className="flex-1 pt-2 pb-6">
             <ProjectCardContentLayout>

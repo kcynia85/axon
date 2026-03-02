@@ -8,12 +8,12 @@ import { Card } from "@/shared/ui/ui/Card";
 
 export type ViewMode = 'grid' | 'list';
 
-interface SpaceListProps {
+type SpaceListProps = {
     readonly spaces: readonly Space[];
     readonly viewMode?: ViewMode;
 }
 
-export const SpaceList: React.FC<SpaceListProps> = ({ spaces, viewMode = 'grid' }) => {
+export const SpaceList = ({ spaces, viewMode = 'grid' }: SpaceListProps) => {
     if (spaces.length === 0) {
         return (
             <div className="text-center py-10 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">

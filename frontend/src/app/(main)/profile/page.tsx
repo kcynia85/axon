@@ -1,4 +1,4 @@
-import { EmptyState } from "@/components/ui/EmptyState";
+import { EmptyState } from "@/shared/ui/ui/EmptyState";
 import { User } from "lucide-react";
 import { PageHeader } from "@/shared/ui/layout/PageHeader";
 import { PageContainer } from "@/shared/ui/layout/PageContainer";

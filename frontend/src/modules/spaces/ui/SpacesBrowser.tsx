@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger 
 } from "@/shared/ui/ui/DropdownMenu";
 
-interface SpacesBrowserProps {
+type SpacesBrowserProps = {
   readonly initialSpaces: readonly Space[];
 }
 
@@ -29,15 +29,17 @@ const SORT_OPTIONS: readonly SortOption[] = [
   { id: "date-asc", label: "Oldest first" },
 ];
 
+type FilterPillProps = {
+  readonly label: string;
+  readonly group: FilterGroup | undefined;
+  readonly activeFilters: readonly ActiveFilter[];
+  readonly onToggle: (id: string) => void;
+}
+
 /**
  * Quick Filter Pill Component
  */
-const FilterPill: React.FC<{
-  label: string;
-  group: FilterGroup | undefined;
-  activeFilters: readonly ActiveFilter[];
-  onToggle: (id: string) => void;
-}> = ({ label, group, activeFilters, onToggle }) => {
+const FilterPill = ({ label, group, activeFilters, onToggle }: FilterPillProps) => {
   if (!group) return null;
 
   const activeInGroup = activeFilters.filter(f => f.category === group.id);
@@ -95,7 +97,7 @@ const FilterPill: React.FC<{
   );
 };
 
-export const SpacesBrowser: React.FC<SpacesBrowserProps> = ({ initialSpaces }) => {
+export const SpacesBrowser = ({ initialSpaces }: SpacesBrowserProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("date-desc");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');

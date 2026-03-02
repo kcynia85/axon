@@ -33,9 +33,9 @@ const AGENT_NAMES: Record<string, string> = {
   "a-copywriter": "Copywriter",
 };
 
-interface CrewsSectionProps {
-  workspaceId: string;
-  colorName?: string;
+type CrewsSectionProps = {
+  readonly workspaceId: string;
+  readonly colorName?: string;
 }
 
 const COLOR_TO_RGB: Record<string, string> = {

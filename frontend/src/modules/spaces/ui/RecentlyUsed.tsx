@@ -4,12 +4,12 @@ import Link from "next/link";
 import { Space } from "../domain";
 import { cn } from "@/shared/lib/utils";
 
-interface RecentlyUsedProps {
+type RecentlyUsedProps = {
   readonly spaces: readonly Space[];
   readonly className?: string;
 }
 
-export const RecentlyUsed: React.FC<RecentlyUsedProps> = ({ spaces, className }) => {
+export const RecentlyUsed = ({ spaces, className }: RecentlyUsedProps) => {
   if (spaces.length === 0) return null;
 
   return (

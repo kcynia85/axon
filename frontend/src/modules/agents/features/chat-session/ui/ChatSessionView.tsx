@@ -4,18 +4,18 @@ import { useState, useRef, useEffect } from "react";
 import { useUIState, useActions } from "ai/rsc";
 import type { AI } from "../../../infrastructure/AiProvider";
 import { SessionMessageBubble } from "./SessionMessageBubble";
-import { Button } from "@/components/ui/Button";
-import { Textarea } from "@/components/ui/Textarea";
-import { ScrollArea } from "@/components/ui/ScrollArea";
+import { Button } from "@/shared/ui/ui/Button";
+import { Textarea } from "@/shared/ui/ui/Textarea";
+import { ScrollArea } from "@/shared/ui/ui/ScrollArea";
 import { SendIcon } from "lucide-react";
 import { AgentRole } from "../../../domain";
 
-interface ChatSessionViewProps {
-    projectId: string;
-    agentRole: AgentRole;
+type ChatSessionViewProps = {
+    readonly projectId: string;
+    readonly agentRole: AgentRole;
 }
 
-export const ChatSessionView: React.FC<ChatSessionViewProps> = ({ projectId, agentRole }) => {
+export const ChatSessionView = ({ projectId, agentRole }: ChatSessionViewProps) => {
     const [messages, setMessages] = useUIState<typeof AI>();
     const { submitUserMessage } = useActions<typeof AI>();
     const [inputValue, setInputValue] = useState("");

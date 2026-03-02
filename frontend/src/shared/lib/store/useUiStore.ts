@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
-interface UiState {
-  isInboxOpen: boolean;
-  setIsInboxOpen: (open: boolean) => void;
-  toggleInbox: () => void;
+type UiState = {
+  readonly isInboxOpen: boolean;
+  readonly setIsInboxOpen: (open: boolean) => void;
+  readonly toggleInbox: () => void;
   
-  isSidebarCollapsed: boolean;
-  setIsSidebarCollapsed: (collapsed: boolean) => void;
-  toggleSidebar: () => void;
+  readonly isSidebarCollapsed: boolean;
+  readonly setIsSidebarCollapsed: (collapsed: boolean) => void;
+  readonly toggleSidebar: () => void;
 }
 
 export const useUiStore = create<UiState>((set) => ({

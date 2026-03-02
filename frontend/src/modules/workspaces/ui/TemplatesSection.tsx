@@ -7,14 +7,9 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
   FileText,
-  FileCode,
-  Layout,
-  Plus,
   Trash2,
-  Edit2,
   Copy,
-  ArrowRight,
-  ExternalLink,
+  Layout,
   Hash,
 } from "lucide-react";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
@@ -22,9 +17,9 @@ import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 
-interface TemplatesSectionProps {
-  workspaceId: string;
-  colorName?: string;
+type TemplatesSectionProps = {
+  readonly workspaceId: string;
+  readonly colorName?: string;
 }
 
 const COLOR_TO_RGB: Record<string, string> = {

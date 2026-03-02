@@ -2,11 +2,11 @@ import React from "react";
 import { cn } from "@/shared/lib/utils";
 import { Message } from "../../../domain";
 
-interface SessionMessageBubbleProps {
-    message: Message;
+type SessionMessageBubbleProps = {
+    readonly message: Message;
 }
 
-export const SessionMessageBubble: React.FC<SessionMessageBubbleProps> = ({ message }) => {
+export const SessionMessageBubble = ({ message }: SessionMessageBubbleProps) => {
     const isUser = message.role === "user";
     const isSystem = message.role === "system";
 

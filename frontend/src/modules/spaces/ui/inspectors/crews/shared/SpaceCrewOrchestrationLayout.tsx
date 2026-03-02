@@ -3,7 +3,7 @@
 import React from "react";
 import { ScrollShadow } from "@heroui/react";
 
-interface SpaceCrewOrchestrationLayoutProps {
+type SpaceCrewOrchestrationLayoutProps = {
   readonly children: React.ReactNode;
   readonly footer?: React.ReactNode;
 }

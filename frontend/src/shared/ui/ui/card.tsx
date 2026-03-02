@@ -3,11 +3,11 @@ import { Slot } from "@radix-ui/react-slot"
 
 import { cn } from "@/shared/lib/utils"
 
-export interface CardProps extends React.ComponentProps<"div"> {
-  asChild?: boolean
-}
+export type CardProps = {
+  readonly asChild?: boolean;
+} & React.ComponentProps<"div">;
 
-const Card: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+export const Card = ({ className, asChild = false, ...props }: CardProps) => {
   const Comp = asChild ? Slot : "div"
   return (
     <Comp
@@ -21,7 +21,7 @@ const Card: React.FC<CardProps> = ({ className, asChild = false, ...props }) => 
   )
 }
 
-const CardHeader: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+export const CardHeader = ({ className, asChild = false, ...props }: CardProps) => {
   const Comp = asChild ? Slot : "div"
   return (
     <Comp
@@ -35,7 +35,7 @@ const CardHeader: React.FC<CardProps> = ({ className, asChild = false, ...props 
   )
 }
 
-const CardTitle: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+export const CardTitle = ({ className, asChild = false, ...props }: CardProps) => {
   const Comp = asChild ? Slot : "div"
   return (
     <Comp
@@ -46,7 +46,7 @@ const CardTitle: React.FC<CardProps> = ({ className, asChild = false, ...props }
   )
 }
 
-const CardDescription: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+export const CardDescription = ({ className, asChild = false, ...props }: CardProps) => {
   const Comp = asChild ? Slot : "div"
   return (
     <Comp
@@ -57,7 +57,7 @@ const CardDescription: React.FC<CardProps> = ({ className, asChild = false, ...p
   )
 }
 
-const CardAction: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+export const CardAction = ({ className, asChild = false, ...props }: CardProps) => {
   const Comp = asChild ? Slot : "div"
   return (
     <Comp
@@ -71,7 +71,7 @@ const CardAction: React.FC<CardProps> = ({ className, asChild = false, ...props 
   )
 }
 
-const CardContent: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+export const CardContent = ({ className, asChild = false, ...props }: CardProps) => {
   const Comp = asChild ? Slot : "div"
   return (
     <Comp
@@ -82,7 +82,7 @@ const CardContent: React.FC<CardProps> = ({ className, asChild = false, ...props
   )
 }
 
-const CardFooter: React.FC<CardProps> = ({ className, asChild = false, ...props }) => {
+export const CardFooter = ({ className, asChild = false, ...props }: CardProps) => {
   const Comp = asChild ? Slot : "div"
   return (
     <Comp
@@ -91,14 +91,4 @@ const CardFooter: React.FC<CardProps> = ({ className, asChild = false, ...props 
       {...props}
     />
   )
-}
-
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardAction,
-  CardDescription,
-  CardContent,
 }

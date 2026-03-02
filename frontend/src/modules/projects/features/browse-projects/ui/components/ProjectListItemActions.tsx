@@ -3,14 +3,14 @@ import { ProjectListItemActionsProps } from "../types";
 import { ProjectListItemActionsDiv } from "./ProjectListLayout";
 import { ProjectActionOpenSpace, ProjectActionDetails } from "./ProjectActionAtoms";
 
-export const ProjectListItemActions: React.FC<ProjectListItemActionsProps> = ({ 
-    projectId, 
+export const ProjectListItemActions = ({ 
+    spaceUrl, 
     onViewDetails 
-}) => {
+}: ProjectListItemActionsProps) => {
     return (
         <ProjectListItemActionsDiv>
-            <ProjectActionOpenSpace href={`/projects/${projectId}/space`} />
-            <ProjectActionDetails onClick={() => onViewDetails(projectId)} />
+            <ProjectActionOpenSpace href={spaceUrl} />
+            <ProjectActionDetails onClick={onViewDetails} />
         </ProjectListItemActionsDiv>
     );
 };

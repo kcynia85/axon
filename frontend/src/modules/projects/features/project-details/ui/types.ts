@@ -1,7 +1,7 @@
 import { Project, Artifact, KeyResource } from "@/modules/projects/domain";
 import { ProjectViewModel, ArtifactViewModel } from "../../browse-projects/ui/types";
 
-export interface ProjectDetailsViewProps {
+export type ProjectDetailsViewProps = {
     readonly project: Project;
     readonly artifacts: readonly Artifact[];
     readonly activeTab?: string;
@@ -11,17 +11,17 @@ export interface ProjectDetailsViewProps {
 
 // --- Tab Components Props ---
 
-export interface ProjectOverviewTabProps {
+export type ProjectOverviewTabProps = {
     readonly viewModel: ProjectViewModel;
     readonly onDelete: () => void;
     readonly isDeleting: boolean;
 }
 
-export interface ProjectResourcesTabProps {
+export type ProjectResourcesTabProps = {
     readonly keyResources: readonly KeyResource[];
 }
 
-export interface ProjectArtifactsTabProps {
+export type ProjectArtifactsTabProps = {
     readonly artifacts: readonly ArtifactViewModel[];
     readonly isLoading: boolean;
 }
@@ -30,16 +30,16 @@ export type ProjectActivityTabProps = object;
 
 // --- Layout & Atom Props ---
 
-export interface ProjectDetailsContainerProps {
+export type ProjectDetailsContainerProps = {
     readonly children: React.ReactNode;
 }
 
-export interface ProjectDetailsSectionProps {
+export type ProjectDetailsSectionProps = {
     readonly label: string;
     readonly children: React.ReactNode;
 }
 
-export interface ProjectDetailsLinkProps {
+export type ProjectDetailsLinkProps = {
     readonly href: string;
     readonly children: React.ReactNode;
 }

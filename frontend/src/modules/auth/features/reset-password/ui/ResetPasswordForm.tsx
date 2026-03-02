@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/ui/ui/Card";
+import { Button } from "@/shared/ui/ui/Button";
+import { Input } from "@/shared/ui/ui/Input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/ui/Form";
 import { useResetPassword } from "../application/useResetPassword";
 
 export const ResetPasswordForm = () => {

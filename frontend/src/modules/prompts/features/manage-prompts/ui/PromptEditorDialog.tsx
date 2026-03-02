@@ -6,11 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Prompt } from "../../../domain";
 import { createPrompt, updatePrompt } from "../infrastructure/api";
-import { Button } from "@/components/ui/Button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/Dialog";
-import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/Textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import { Button } from "@/shared/ui/ui/Button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/shared/ui/ui/Dialog";
+import { Input } from "@/shared/ui/ui/Input";
+import { Textarea } from "@/shared/ui/ui/Textarea";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/ui/Form";
 import { Plus } from "lucide-react";
 import React from "react";
 

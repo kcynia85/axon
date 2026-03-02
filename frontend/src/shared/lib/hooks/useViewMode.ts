@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ViewMode } from "@/shared/ui/complex/ResourceList";
+import { ViewMode } from "@/shared/ui/complex/ViewModeSwitcher";
 
-export function useViewMode(key: string, defaultMode: ViewMode = "grid") {
+export const useViewMode = (key: string, defaultMode: ViewMode = "grid") => {
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     if (typeof window === "undefined") return defaultMode;
     

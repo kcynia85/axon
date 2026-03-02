@@ -1,9 +1,9 @@
 import React from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 
-interface BrowserLayoutProps {
+type BrowserLayoutProps = {
   readonly searchQuery?: string;
   readonly onSearchChange?: (query: string) => void;
   readonly searchPlaceholder?: string;
@@ -15,7 +15,7 @@ interface BrowserLayoutProps {
   readonly className?: string;
 }
 
-export const BrowserLayout: React.FC<BrowserLayoutProps> = ({
+export const BrowserLayout = ({
   searchQuery,
   onSearchChange,
   searchPlaceholder = "Search...",
@@ -25,7 +25,7 @@ export const BrowserLayout: React.FC<BrowserLayoutProps> = ({
   topContent,
   children,
   className,
-}) => {
+}: BrowserLayoutProps) => {
   const showSearch = searchQuery !== undefined && onSearchChange !== undefined;
 
   return (

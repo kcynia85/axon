@@ -1,27 +1,27 @@
 import fs from "fs";
 import path from "path";
 
-export interface BacklogItem {
-  title: string;
-  description: string[]; // Array of strings for multiline description
-  role?: string; // Optional role field
-  priority?: 'high' | 'medium' | 'low'; // Add priority field
+export type BacklogItem = {
+  readonly title: string;
+  readonly description: readonly string[]; // Array of strings for multiline description
+  readonly role?: string; // Optional role field
+  readonly priority?: 'high' | 'medium' | 'low'; // Add priority field
 }
 
-export interface BacklogSectionItems {
-  high: BacklogItem[];
-  medium: BacklogItem[];
-  low: BacklogItem[];
+export type BacklogSectionItems = {
+  readonly high: readonly BacklogItem[];
+  readonly medium: readonly BacklogItem[];
+  readonly low: readonly BacklogItem[];
 }
 
-export interface MajorBacklogSection {
-  title: string; // e.g., "Core & Infrastructure (Kernel)"
-  items: BacklogSectionItems;
+export type MajorBacklogSection = {
+  readonly title: string; // e.g., "Core & Infrastructure (Kernel)"
+  readonly items: BacklogSectionItems;
 }
 
-export interface StructuredBacklog {
-  mainTitle: string;
-  sections: MajorBacklogSection[];
+export type StructuredBacklog = {
+  readonly mainTitle: string;
+  readonly sections: readonly MajorBacklogSection[];
 }
 
 export const getBacklogContent = async (): Promise<StructuredBacklog> => {

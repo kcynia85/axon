@@ -3,7 +3,7 @@ import { cn } from "@/shared/lib/utils";
 
 export type StatusVariant = "default" | "success" | "warning" | "error" | "info";
 
-interface StatusBadgeProps {
+type StatusBadgeProps = {
   readonly status: string;
   readonly variant?: StatusVariant;
   readonly className?: string;
@@ -17,11 +17,11 @@ const variantStyles: Record<StatusVariant, string> = {
   info: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-100 dark:border-blue-800",
 };
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ 
+export const StatusBadge = ({ 
   status, 
   variant = "default",
   className 
-}) => {
+}: StatusBadgeProps) => {
   return (
     <span className={cn(
       "inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border",

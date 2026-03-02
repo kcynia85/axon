@@ -7,11 +7,6 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
   Cloud,
-  Link as LinkIcon,
-  Shield,
-  Trash2,
-  Edit2,
-  ExternalLink,
   Activity,
   Zap,
 } from "lucide-react";
@@ -20,9 +15,9 @@ import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 
-interface ServicesSectionProps {
-  workspaceId: string;
-  colorName?: string;
+type ServicesSectionProps = {
+  readonly workspaceId: string;
+  readonly colorName?: string;
 }
 
 const COLOR_TO_RGB: Record<string, string> = {

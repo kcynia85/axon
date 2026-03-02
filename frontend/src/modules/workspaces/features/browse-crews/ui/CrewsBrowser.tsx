@@ -35,12 +35,12 @@ const COLOR_TO_RGB: Record<string, string> = {
     default: "113, 113, 122"
 };
 
-interface CrewsBrowserProps {
-  initialCrews: Crew[];
-  colorName?: string;
+type CrewsBrowserProps = {
+  readonly initialCrews: Crew[];
+  readonly colorName?: string;
 }
 
-export const CrewsBrowser: React.FC<CrewsBrowserProps> = ({ initialCrews, colorName = "default" }) => {
+export const CrewsBrowser = ({ initialCrews, colorName = "default" }: CrewsBrowserProps) => {
   const params = useParams();
   const workspaceId = params.workspace as string;
   const {

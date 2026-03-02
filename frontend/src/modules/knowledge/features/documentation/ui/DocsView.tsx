@@ -1,13 +1,13 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/Accordion";
-import { StructuredBacklog, BacklogItem } from "@/lib/docsReader";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/Tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/ui/ui/Accordion";
+import { StructuredBacklog, BacklogItem } from "@/shared/lib/docsReader";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Badge } from "@/components/ui/Badge";
+import { Badge } from "@/shared/ui/ui/Badge";
 
-interface DocsViewProps {
-    backlog: StructuredBacklog;
-    changelogContent: string;
+type DocsViewProps = {
+    readonly backlog: StructuredBacklog;
+    readonly changelogContent: string;
 }
 
 const getPriorityBadgeClasses = (priority: BacklogItem['priority']) => {

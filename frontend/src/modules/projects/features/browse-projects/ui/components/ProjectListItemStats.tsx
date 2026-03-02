@@ -4,9 +4,9 @@ import { ProjectListItemStatsProps } from "../types";
 import { ProjectListItemStatsDiv } from "./ProjectListLayout";
 import { ProjectStatLabel } from "./ProjectTypography";
 
-export const ProjectListItemStats: React.FC<ProjectListItemStatsProps> = ({ 
+export const ProjectListItemStats = ({ 
     artifactsCount 
-}) => {
+}: ProjectListItemStatsProps) => {
     return (
         <ProjectListItemStatsDiv>
             <Layers size={14} />

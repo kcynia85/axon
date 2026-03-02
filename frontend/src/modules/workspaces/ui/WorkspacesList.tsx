@@ -8,19 +8,19 @@ import { Workspace } from "@/shared/domain/workspaces";
 import { Card, CardHeader } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 
-interface WorkspacesListProps {
+type WorkspacesListProps = {
   readonly workspaces?: Workspace[];
   readonly isLoading?: boolean;
   readonly isError?: boolean;
   readonly viewMode?: ViewMode;
 }
 
-export const WorkspacesList: React.FC<WorkspacesListProps> = ({ 
+export const WorkspacesList = ({ 
   workspaces: providedWorkspaces, 
   isLoading: providedIsLoading,
   isError: providedIsError,
   viewMode = "grid" 
-}) => {
+}: WorkspacesListProps) => {
   // Use provided props or fetch if not provided
   const hookResult = useWorkspaces();
   const workspaces = providedWorkspaces ?? hookResult.data;

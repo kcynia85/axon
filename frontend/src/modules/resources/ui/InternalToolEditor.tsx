@@ -14,9 +14,9 @@ import Link from "next/link";
 import { InternalTool } from "@/shared/domain/resources";
 import React from "react";
 
-interface InternalToolEditorProps {
-    tool?: InternalTool;
-    onSave?: (tool: Partial<InternalTool>) => void;
+type InternalToolEditorProps = {
+    readonly tool?: InternalTool;
+    readonly onSave?: (tool: Partial<InternalTool>) => void;
 }
 
 export const InternalToolEditor = ({ tool, onSave }: InternalToolEditorProps) => {

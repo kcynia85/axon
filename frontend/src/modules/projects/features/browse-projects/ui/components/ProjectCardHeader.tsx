@@ -4,11 +4,11 @@ import { StatusBadge } from "@/shared/ui/complex/StatusBadge";
 import { ProjectCardHeaderProps } from "../types";
 import { ProjectCardTitle } from "./ProjectTypography";
 
-export const ProjectCardHeader: React.FC<ProjectCardHeaderProps> = ({ 
+export const ProjectCardHeader = ({ 
     title, 
     statusLabel, 
     statusVariant 
-}) => {
+}: ProjectCardHeaderProps) => {
     return (
         <CardHeader className="pb-4 pt-6 flex flex-col items-start gap-4">
             {/* Title Block - Fixed height to ensure status alignment across cards */}

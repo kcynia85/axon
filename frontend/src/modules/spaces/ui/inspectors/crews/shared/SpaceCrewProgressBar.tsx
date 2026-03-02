@@ -4,7 +4,7 @@ import React from "react";
 import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 
-interface SpaceCrewProgressBarProps {
+type SpaceCrewProgressBarProps = {
   readonly progress: number;
   readonly children: React.ReactNode;
   readonly className?: string;

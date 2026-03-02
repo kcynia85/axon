@@ -7,23 +7,23 @@ import { PageContainer } from "./PageContainer";
 import { PageContent } from "./PageContent";
 import { cn } from "@/shared/lib/utils";
 
-interface Breadcrumb {
-  label: string;
-  href?: string;
+type Breadcrumb = {
+  readonly label: string;
+  readonly href?: string;
 }
 
-interface ModulePageLayoutProps {
-  title: string;
-  description?: string;
-  breadcrumbs: Breadcrumb[];
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-  pagination?: React.ReactNode;
-  showPagination?: boolean;
-  className?: string;
+type ModulePageLayoutProps = {
+  readonly title: string;
+  readonly description?: string;
+  readonly breadcrumbs: readonly Breadcrumb[];
+  readonly actions?: React.ReactNode;
+  readonly children: React.ReactNode;
+  readonly pagination?: React.ReactNode;
+  readonly showPagination?: boolean;
+  readonly className?: string;
 }
 
-export const ModulePageLayout: React.FC<ModulePageLayoutProps> = ({
+export const ModulePageLayout = ({
   title,
   description,
   breadcrumbs,
@@ -32,7 +32,7 @@ export const ModulePageLayout: React.FC<ModulePageLayoutProps> = ({
   pagination,
   showPagination = true,
   className,
-}) => {
+}: ModulePageLayoutProps) => {
   return (
     <PageContainer>
       <PageContent>

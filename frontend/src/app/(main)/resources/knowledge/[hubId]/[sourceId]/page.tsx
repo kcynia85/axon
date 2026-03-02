@@ -8,8 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/Tabs";
 import { ArrowLeft, FileText, Settings, Database } from "lucide-react";
 import Link from "next/link";
 
-interface PageProps {
-    params: Promise<{ hubId: string; sourceId: string }>;
+type PageProps = {
+    readonly params: Promise<{ hubId: string; sourceId: string }>;
 }
 
 const KnowledgeSourcePage = async ({ params }: PageProps) => {

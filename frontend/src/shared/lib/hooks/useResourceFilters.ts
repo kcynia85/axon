@@ -3,17 +3,17 @@
 import { useState, useMemo, useCallback } from "react";
 import { ActiveFilter, FilterGroup } from "@/shared/domain/filters";
 
-interface UseResourceFiltersOptions<T> {
+type UseResourceFiltersOptions<T> = {
   readonly initialSortBy?: string;
   readonly filterItems: (items: readonly T[], query: string, filterIds: string[]) => T[];
   readonly initialFilterGroups?: readonly FilterGroup[];
 }
 
-export function useResourceFilters<T>({
+export const useResourceFilters = <T>({
   initialSortBy = "date-desc",
   filterItems,
   initialFilterGroups = [],
-}: UseResourceFiltersOptions<T>) {
+}: UseResourceFiltersOptions<T>) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState(initialSortBy);
   const [activeFilters, setActiveFilters] = useState<readonly ActiveFilter[]>([]);

@@ -31,16 +31,16 @@ const TooltipContent = React.forwardRef<
 ))
 TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
-interface TooltipProps {
-  children: React.ReactNode;
-  content: React.ReactNode;
-  side?: "top" | "right" | "bottom" | "left";
-  align?: "start" | "center" | "end";
-  sideOffset?: number;
-  className?: string;
+type TooltipProps = {
+  readonly children: React.ReactNode;
+  readonly content: React.ReactNode;
+  readonly side?: "top" | "right" | "bottom" | "left";
+  readonly align?: "start" | "center" | "end";
+  readonly sideOffset?: number;
+  readonly className?: string;
 }
 
-const Tooltip = ({ 
+export const Tooltip = ({ 
   children, 
   content, 
   side = "top", 
@@ -66,7 +66,6 @@ const Tooltip = ({
 };
 
 export { 
-  Tooltip, 
   TooltipTrigger, 
   TooltipContent, 
   TooltipProvider,

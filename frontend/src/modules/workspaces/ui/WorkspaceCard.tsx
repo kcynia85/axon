@@ -6,7 +6,7 @@ import { cn } from "@/shared/lib/utils";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 
-interface WorkspaceCardProps {
+type WorkspaceCardProps = {
     readonly workspace: Workspace;
 }
 
@@ -20,7 +20,7 @@ const COLOR_TO_RGB: Record<string, string> = {
     default: "113, 113, 122"
 };
 
-export const WorkspaceCard: React.FC<WorkspaceCardProps> = ({ workspace }) => {
+export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
     const { id, name, description, updated_at } = workspace;
 
     // Extract color identifier from ID (e.g., ws-product -> product)

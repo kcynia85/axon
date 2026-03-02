@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
  * @param sectionIds Array of section IDs to observe.
  * @param offset Pixel offset from the top to trigger activation.
  */
-export function useScrollSpy(sectionIds: string[], offset: number = 100) {
+export const useScrollSpy = (sectionIds: string[], offset: number = 100) => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {

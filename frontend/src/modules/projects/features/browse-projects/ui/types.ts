@@ -32,17 +32,17 @@ export type ArtifactViewModel = {
 
 // --- Component Props ---
 
-export interface ProjectCardProps {
+export type ProjectCardProps = {
     readonly viewModel: ProjectViewModel;
     readonly onViewDetails: (id: string) => void;
 }
 
-export interface ProjectListItemProps {
+export type ProjectListItemProps = {
     readonly viewModel: ProjectViewModel;
     readonly onViewDetails: (id: string) => void;
 }
 
-export interface ProjectListProps {
+export type ProjectListProps = {
     readonly projects: readonly ProjectViewModel[];
     readonly viewMode?: ViewMode;
     readonly isLoading?: boolean;
@@ -50,13 +50,13 @@ export interface ProjectListProps {
     readonly onViewDetails: (id: string) => void;
 }
 
-export interface RecentlyUsedProjectsProps {
+export type RecentlyUsedProjectsProps = {
   readonly projects: readonly ProjectViewModel[];
   readonly onSelect: (id: string) => void;
   readonly className?: string;
 }
 
-export interface ProjectsBrowserProps {
+export type ProjectsBrowserProps = {
   readonly initialProjects?: readonly Project[];
 }
 
@@ -64,18 +64,18 @@ export type CreateProjectDialogProps = object;
 
 // --- Form Component Props ---
 
-export interface ProjectNameFieldProps {
+export type ProjectNameFieldProps = {
     readonly form: UseFormReturn<CreateProjectFormData>;
 }
 
-export interface ProjectResourcesFieldProps {
+export type ProjectResourcesFieldProps = {
     readonly form: UseFormReturn<CreateProjectFormData>;
     readonly linkFields: FieldArrayWithId<CreateProjectFormData, "links", "id">[];
     readonly onAppend: (value: { url: string }) => void;
     readonly onRemove: (index: number) => void;
 }
 
-export interface ProjectKeywordsFieldProps {
+export type ProjectKeywordsFieldProps = {
     readonly form: UseFormReturn<CreateProjectFormData>;
     readonly currentKeywords: readonly string[];
     readonly keywordInput: string;
@@ -84,7 +84,7 @@ export interface ProjectKeywordsFieldProps {
     readonly onRemoveKeyword: (keyword: string) => void;
 }
 
-export interface ProjectSpaceSelectorProps {
+export type ProjectSpaceSelectorProps = {
     readonly form: UseFormReturn<CreateProjectFormData>;
     readonly spaceMode: "new" | "existing";
     readonly projectName: string;
@@ -92,13 +92,13 @@ export interface ProjectSpaceSelectorProps {
 
 // --- Project Card Atom Props ---
 
-export interface ProjectCardHeaderProps {
+export type ProjectCardHeaderProps = {
     readonly title: string;
     readonly statusLabel: string;
     readonly statusVariant: StatusVariant;
 }
 
-export interface ProjectCardContentProps {
+export type ProjectCardContentProps = {
     readonly tags: readonly string[];
     readonly artifactsCount: number;
 }
@@ -107,7 +107,7 @@ export type ProjectCardFooterProps = object;
 
 // --- Project List Item Atom Props ---
 
-export interface ProjectListItemInfoProps {
+export type ProjectListItemInfoProps = {
     readonly title: string;
     readonly statusLabel: string;
     readonly tags: readonly string[];
@@ -115,26 +115,26 @@ export interface ProjectListItemInfoProps {
     readonly remainingTagsCount: number;
 }
 
-export interface ProjectListItemStatsProps {
+export type ProjectListItemStatsProps = {
     readonly artifactsCount: number;
 }
 
-export interface ProjectListItemActionsProps {
+export type ProjectListItemActionsProps = {
     readonly spaceUrl: string;
     readonly onViewDetails: () => void;
 }
 
-export interface ProjectListItemContainerProps {
+export type ProjectListItemContainerProps = {
     readonly children: React.ReactNode;
 }
 
-export interface ProjectListItemActionsGroupProps {
+export type ProjectListItemActionsGroupProps = {
     readonly children: React.ReactNode;
 }
 
 // --- Projects Browser Section Props ---
 
-export interface ProjectsFilterSectionProps {
+export type ProjectsFilterSectionProps = {
     readonly filterGroups: readonly FilterGroup[];
     readonly activeFilters: readonly FilterOption[];
     readonly onToggleFilter: (groupId: string, optionId: string) => void;
@@ -144,7 +144,7 @@ export interface ProjectsFilterSectionProps {
     readonly resultsCount: number;
 }
 
-export interface ProjectsActionsSectionProps {
+export type ProjectsActionsSectionProps = {
     readonly sortBy: string;
     readonly onSortByChange: (id: string) => void;
     readonly viewMode: ViewMode;
@@ -152,7 +152,7 @@ export interface ProjectsActionsSectionProps {
     readonly sortOptions: readonly SortOption[];
 }
 
-export interface ProjectsBrowserContentProps {
+export type ProjectsBrowserContentProps = {
     readonly recentlyUsedProjects: readonly ProjectViewModel[];
     readonly projects: readonly ProjectViewModel[];
     readonly viewMode: ViewMode;
@@ -163,15 +163,15 @@ export interface ProjectsBrowserContentProps {
 
 // --- Recently Used Atom Props ---
 
-export interface RecentlyUsedHeaderProps {
+export type RecentlyUsedHeaderProps = {
     readonly title: string;
 }
 
-export interface RecentlyUsedItemProps {
+export type RecentlyUsedItemProps = {
     readonly viewModel: ProjectViewModel;
     readonly onClick: (id: string) => void;
 }
 
-export interface RecentlyUsedGridProps {
+export type RecentlyUsedGridProps = {
     readonly children: React.ReactNode;
 }

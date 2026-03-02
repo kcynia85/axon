@@ -33,12 +33,12 @@ const COLOR_TO_RGB: Record<string, string> = {
     default: "113, 113, 122"
 };
 
-interface PatternsBrowserProps {
-  initialPatterns: Pattern[];
-  colorName?: string;
+type PatternsBrowserProps = {
+  readonly initialPatterns: Pattern[];
+  readonly colorName?: string;
 }
 
-export const PatternsBrowser: React.FC<PatternsBrowserProps> = ({ initialPatterns, colorName = "default" }) => {
+export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: PatternsBrowserProps) => {
   const {
     processedPatterns,
     viewMode,

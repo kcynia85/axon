@@ -5,7 +5,7 @@ import { ProjectCardHeader } from "./components/ProjectCardHeader";
 import { ProjectCardContent } from "./components/ProjectCardContent";
 import { ProjectCardFooter } from "./components/ProjectCardFooter";
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ viewModel, onViewDetails }) => {
+export const ProjectCard = ({ viewModel, onViewDetails }: ProjectCardProps) => {
     return (
         <button 
             className="text-left w-full h-full block group transition-transform active:scale-[0.98]"

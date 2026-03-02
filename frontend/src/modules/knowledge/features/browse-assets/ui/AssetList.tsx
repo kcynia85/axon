@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAssets } from "../infrastructure";
 import { AssetCard } from "./AssetCard";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/shared/ui/ui/Skeleton";
 
 export const AssetList = () => {
     const { data: assets = [], isLoading } = useQuery({

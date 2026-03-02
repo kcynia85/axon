@@ -35,12 +35,12 @@ const COLOR_TO_RGB: Record<string, string> = {
     default: "113, 113, 122"
 };
 
-interface AgentsBrowserProps {
-  initialAgents: Agent[];
-  colorName?: string;
+type AgentsBrowserProps = {
+  readonly initialAgents: Agent[];
+  readonly colorName?: string;
 }
 
-export const AgentsBrowser: React.FC<AgentsBrowserProps> = ({ initialAgents, colorName = "default" }) => {
+export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBrowserProps) => {
   const params = useParams();
   const workspaceId = params.workspace as string;
   const {

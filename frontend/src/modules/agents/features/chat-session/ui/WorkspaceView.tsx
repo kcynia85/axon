@@ -2,8 +2,8 @@
 
 import { ChatSessionView, AgentRole } from "@/modules/agents";
 
-interface WorkspaceViewProps {
-    projectId: string;
+type WorkspaceViewProps = {
+    readonly projectId: string;
 }
 
 export const WorkspaceView = ({ projectId }: WorkspaceViewProps) => {

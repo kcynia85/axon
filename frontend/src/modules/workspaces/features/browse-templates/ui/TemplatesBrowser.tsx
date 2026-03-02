@@ -35,12 +35,12 @@ const COLOR_TO_RGB: Record<string, string> = {
     default: "113, 113, 122"
 };
 
-interface TemplatesBrowserProps {
-  initialTemplates: Template[];
-  colorName?: string;
+type TemplatesBrowserProps = {
+  readonly initialTemplates: Template[];
+  readonly colorName?: string;
 }
 
-export const TemplatesBrowser: React.FC<TemplatesBrowserProps> = ({ initialTemplates, colorName = "default" }) => {
+export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: TemplatesBrowserProps) => {
   const params = useParams();
   const workspaceId = params.workspace as string;
   const {

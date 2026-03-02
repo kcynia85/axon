@@ -2,11 +2,11 @@ import React from "react";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { EmptyState } from "@/shared/ui/ui/EmptyState";
 import { LucideIcon, SearchX, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 
 export type ViewMode = "grid" | "list";
 
-interface ResourceListProps<T> {
+type ResourceListProps<T> = {
   readonly items: readonly T[] | undefined;
   readonly isLoading: boolean;
   readonly isError?: boolean;
@@ -24,7 +24,7 @@ interface ResourceListProps<T> {
   readonly containerClassName?: string;
 }
 
-export function ResourceList<T>({
+export const ResourceList = <T,>({
   items,
   isLoading,
   isError = false,
@@ -40,7 +40,7 @@ export function ResourceList<T>({
   gridClassName = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
   listClassName = "flex flex-col gap-3",
   containerClassName,
-}: ResourceListProps<T>) {
+}: ResourceListProps<T>) => {
   if (isLoading) {
     if (renderSkeleton) {
       return <div className={containerClassName}>{renderSkeleton()}</div>;

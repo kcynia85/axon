@@ -1,7 +1,7 @@
 import { Tool } from "../../../domain";
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/ui/Card";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Button } from "@/shared/ui/ui/Button";
 import { Wrench, Database, Code2, Server } from "lucide-react";
 import React from "react";
 
@@ -14,8 +14,8 @@ const getIcon = (type: string) => {
     }
 };
 
-interface ToolCatalogProps {
-    tools: Tool[];
+type ToolCatalogProps = {
+    readonly tools: readonly Tool[];
 }
 
 export const ToolCatalog = ({ tools }: ToolCatalogProps) => {

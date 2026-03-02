@@ -4,8 +4,8 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { FileText, Calendar, Code, CheckSquare } from "lucide-react";
 import React from "react";
 
-interface AssetCardProps {
-    asset: Asset;
+type AssetCardProps = {
+    readonly asset: Asset;
 }
 
 const getIcon = (type: string) => {
@@ -17,7 +17,7 @@ const getIcon = (type: string) => {
     }
 }
 
-export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
+export const AssetCard = ({ asset }: AssetCardProps) => {
     return (
         <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader className="pb-3">

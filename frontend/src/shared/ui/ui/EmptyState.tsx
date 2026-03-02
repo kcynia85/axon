@@ -1,13 +1,19 @@
+import React from "react";
 import { LucideIcon } from "lucide-react";
 
-interface EmptyStateProps {
-    icon: LucideIcon;
-    title: string;
-    description: string;
-    action?: React.ReactNode;
+type EmptyStateProps = {
+    readonly icon: LucideIcon;
+    readonly title: string;
+    readonly description: string;
+    readonly action?: React.ReactNode;
 }
 
-export const EmptyState: React.FC<EmptyStateProps> = ({ icon: Icon, title, description, action }) => {
+export const EmptyState = ({ 
+    icon: Icon, 
+    title, 
+    description, 
+    action 
+}: EmptyStateProps) => {
     return (
         <div className="flex flex-col items-center justify-center h-[50vh] text-center p-8 border-2 border-dashed rounded-xl bg-slate-50/50">
             <div className="bg-slate-100 p-4 rounded-full mb-4">

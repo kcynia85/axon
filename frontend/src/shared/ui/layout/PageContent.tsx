@@ -1,8 +1,9 @@
-import { cn } from "@/lib/utils";
+import React from "react";
+import { cn } from "@/shared/lib/utils";
 
-interface PageContentProps extends React.HTMLAttributes<HTMLElement> {
-  children: React.ReactNode;
-}
+type PageContentProps = {
+  readonly children: React.ReactNode;
+} & React.HTMLAttributes<HTMLElement>;
 
 export const PageContent = ({
   children,

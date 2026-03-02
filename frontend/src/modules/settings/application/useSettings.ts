@@ -1,35 +1,35 @@
 import { useQuery } from "@tanstack/react-query";
 import { settingsApi } from "../infrastructure/api";
 
-export function useLLMModels() {
+export const useLLMModels = () => {
     return useQuery({
         queryKey: ["llm-models"],
         queryFn: () => settingsApi.getLLMModels(),
     });
 }
 
-export function useLLMRouters() {
+export const useLLMRouters = () => {
     return useQuery({
         queryKey: ["llm-routers"],
         queryFn: () => settingsApi.getLLMRouters(),
     });
 }
 
-export function useEmbeddingModels() {
+export const useEmbeddingModels = () => {
     return useQuery({
         queryKey: ["embedding-models"],
         queryFn: () => settingsApi.getEmbeddingModels(),
     });
 }
 
-export function useChunkingStrategies() {
+export const useChunkingStrategies = () => {
     return useQuery({
         queryKey: ["chunking-strategies"],
         queryFn: () => settingsApi.getChunkingStrategies(),
     });
 }
 
-export function useVectorDatabases() {
+export const useVectorDatabases = () => {
     return useQuery({
         queryKey: ["vector-databases"],
         queryFn: () => settingsApi.getVectorDatabases(),

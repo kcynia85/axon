@@ -4,13 +4,13 @@ import { ProjectListItem } from "./ProjectListItem";
 import { ResourceList } from "@/shared/ui/complex/ResourceList";
 import { ProjectListProps } from "./types";
 
-export const ProjectList: React.FC<ProjectListProps> = ({ 
+export const ProjectList = ({ 
     projects, 
     viewMode = 'grid', 
     isLoading = false,
     isError = false,
     onViewDetails 
-}) => {
+}: ProjectListProps) => {
     return (
         <ResourceList
             items={projects}

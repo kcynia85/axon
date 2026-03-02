@@ -10,13 +10,15 @@ import { cn } from "@/shared/lib/utils";
 import { InboxItem } from "@/shared/domain/inbox";
 import { InboxEmptyState } from "./InboxEmptyState";
 
+type InboxItemProps = {
+    readonly item: InboxItem;
+    readonly onResolve: (id: string) => void;
+}
+
 const InboxItemComponent = React.memo(({ 
     item, 
     onResolve 
-}: { 
-    item: InboxItem; 
-    onResolve: (id: string) => void 
-}) => {
+}: InboxItemProps) => {
     const timeString = React.useMemo(() => 
         new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     [item.created_at]);
@@ -96,13 +98,15 @@ const InboxItemComponent = React.memo(({
 
 InboxItemComponent.displayName = "InboxItemComponent";
 
+type InboxListProps = {
+    readonly items: readonly InboxItem[];
+    readonly isLoading: boolean;
+}
+
 export const InboxList = React.memo(({ 
     items, 
     isLoading 
-}: { 
-    items: readonly InboxItem[]; 
-    isLoading: boolean 
-}) => {
+}: InboxListProps) => {
     const { mutate: resolveItem } = useResolveInboxItem();
 
     const handleResolve = React.useCallback((id: string) => {

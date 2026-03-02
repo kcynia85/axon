@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { inboxApi } from "../infrastructure/api";
 
-export function useInboxItems() {
+export const useInboxItems = () => {
     return useQuery({
         queryKey: ["inbox-items"],
         queryFn: () => inboxApi.getInboxItems(),
@@ -10,7 +10,7 @@ export function useInboxItems() {
     });
 }
 
-export function useResolveInboxItem() {
+export const useResolveInboxItem = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (id: string) => inboxApi.resolveItem(id),
@@ -20,7 +20,7 @@ export function useResolveInboxItem() {
     });
 }
 
-export function useBulkResolveInboxItems() {
+export const useBulkResolveInboxItems = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (ids: string[]) => inboxApi.bulkResolve(ids),

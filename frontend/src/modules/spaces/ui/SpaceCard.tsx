@@ -5,11 +5,11 @@ import { Button } from "@/shared/ui/ui/Button";
 import { Layout } from "lucide-react";
 import Link from "next/link";
 
-interface SpaceCardProps {
+type SpaceCardProps = {
     readonly space: Space;
 }
 
-export const SpaceCard: React.FC<SpaceCardProps> = ({ space }) => {
+export const SpaceCard = ({ space }: SpaceCardProps) => {
     return (
         <Card className="h-full border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col transition-all hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md cursor-pointer">
           <CardHeader>

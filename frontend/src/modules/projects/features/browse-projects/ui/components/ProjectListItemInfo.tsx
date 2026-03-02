@@ -3,13 +3,13 @@ import { ProjectListItemInfoProps } from "../types";
 import { ProjectListItemInfoLayout, ProjectListItemTitleRow, ProjectListItemTagsRow } from "./ProjectListItemLayout";
 import { ProjectTitle, ProjectStatusText, ProjectTagText } from "./ProjectTypography";
 
-export const ProjectListItemInfo: React.FC<ProjectListItemInfoProps> = ({ 
+export const ProjectListItemInfo = ({ 
     title, 
     statusLabel, 
     tags,
     hasMoreTags,
     remainingTagsCount
-}) => {
+}: ProjectListItemInfoProps) => {
     return (
         <ProjectListItemInfoLayout>
             <ProjectListItemTitleRow>

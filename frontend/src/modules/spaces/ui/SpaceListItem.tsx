@@ -5,11 +5,11 @@ import { Button } from "@/shared/ui/ui/Button";
 import { Layout } from "lucide-react";
 import Link from "next/link";
 
-interface SpaceListItemProps {
+type SpaceListItemProps = {
     readonly space: Space;
 }
 
-export const SpaceListItem: React.FC<SpaceListItemProps> = ({ space }) => {
+export const SpaceListItem = ({ space }: SpaceListItemProps) => {
     return (
         <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:shadow-sm transition-all group">
           <div className="flex items-center justify-between p-4">

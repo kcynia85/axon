@@ -11,7 +11,7 @@ import {
 } from "@/shared/ui/ui/Sheet";
 import { cn } from "@/shared/lib/utils";
 
-interface SidePeekProps {
+type SidePeekProps = {
   readonly title: string;
   readonly description?: string;
   readonly open: boolean;
@@ -26,7 +26,7 @@ interface SidePeekProps {
  * SidePeek - A standardized side panel for detailed views across the application.
  * Built on top of Radix UI Sheet.
  */
-export const SidePeek: React.FC<SidePeekProps> = ({
+export const SidePeek = ({
   title,
   description,
   open,
@@ -35,7 +35,7 @@ export const SidePeek: React.FC<SidePeekProps> = ({
   footer,
   className,
   maxWidth = "sm:max-w-md",
-}) => {
+}: SidePeekProps) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className={cn("flex flex-col p-0 overflow-y-auto", maxWidth, className)}>

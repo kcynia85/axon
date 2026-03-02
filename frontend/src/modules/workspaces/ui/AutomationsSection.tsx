@@ -7,22 +7,19 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
   Zap,
-  Play,
   Settings,
   Trash2,
-  Edit2,
   Clock,
   History,
-  AlertCircle,
 } from "lucide-react";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 
-interface AutomationsSectionProps {
-  workspaceId: string;
-  colorName?: string;
+type AutomationsSectionProps = {
+  readonly workspaceId: string;
+  readonly colorName?: string;
 }
 
 const COLOR_TO_RGB: Record<string, string> = {
@@ -92,19 +89,19 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
                   </div>
                   <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{automation.automation_name}</CardTitle>
                 </div>
-                <Badge variant={automation.is_active ? "default" : "outline"} className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none", automation.is_active ? "bg-blue-500/10 text-blue-600" : "bg-muted/30")}>
-                  {automation.is_active ? "active" : "paused"}
+                <Badge variant={automation.automation_status === "Active" ? "default" : "outline"} className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none", automation.automation_status === "Active" ? "bg-blue-500/10 text-blue-600" : "bg-muted/30")}>
+                  {automation.automation_status.toLowerCase()}
                 </Badge>
               </div>
               <CardDescription className="text-[11px] mt-1 line-clamp-2 leading-relaxed">
-                {automation.trigger_type} → {automation.action_type}
+                {automation.automation_platform} Integration
               </CardDescription>
             </CardHeader>
 
             <CardContent className="relative z-10 mt-auto pt-0 pb-4">
               <div className="flex items-center gap-2">
                 <Clock className="h-3 w-3 text-muted-foreground opacity-40" />
-                <span className="text-[10px] text-muted-foreground font-medium">Last run: 2h ago</span>
+                <span className="text-[10px] text-muted-foreground font-medium">Monitoring active</span>
               </div>
             </CardContent>
           </Card>
@@ -115,7 +112,7 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
         open={!!selectedAutomationId}
         onOpenChange={(open) => !open && setSelectedAutomationId(null)}
         title={selectedAutomation?.automation_name || "Automation Details"}
-        description={`${selectedAutomation?.trigger_type} Trigger`}
+        description={`${selectedAutomation?.automation_platform} Trigger`}
       >
         {selectedAutomation && (
           <div className="space-y-6">
@@ -125,12 +122,12 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
               </h4>
               <div className="bg-muted/30 p-4 rounded-lg border border-primary/5 space-y-2.5">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-muted-foreground">Trigger</span>
-                  <span className="font-bold">{selectedAutomation.trigger_type}</span>
+                  <span className="text-muted-foreground">Platform</span>
+                  <span className="font-bold">{selectedAutomation.automation_platform}</span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-muted-foreground">Action</span>
-                  <span className="font-bold">{selectedAutomation.action_type}</span>
+                  <span className="text-muted-foreground">Status</span>
+                  <span className="font-bold">{selectedAutomation.automation_status}</span>
                 </div>
               </div>
             </section>

@@ -20,7 +20,7 @@ const SORT_OPTIONS: readonly SortOption[] = [
   { id: "date-asc", label: "Oldest first" },
 ];
 
-export const ProjectsBrowser: React.FC<ProjectsBrowserProps> = ({ initialProjects = [] }) => {
+export const ProjectsBrowser = ({ initialProjects = [] }: ProjectsBrowserProps) => {
   const {
     projects,
     processedProjectViewModels,

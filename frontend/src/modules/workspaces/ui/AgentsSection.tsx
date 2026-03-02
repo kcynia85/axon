@@ -44,9 +44,9 @@ const LLM_MODEL_NAMES: Record<string, string> = {
   "model-claude-sonnet": "Claude 3.5 Sonnet",
 };
 
-interface AgentsSectionProps {
-  workspaceId: string;
-  colorName?: string;
+type AgentsSectionProps = {
+  readonly workspaceId: string;
+  readonly colorName?: string;
 }
 
 const COLOR_TO_RGB: Record<string, string> = {

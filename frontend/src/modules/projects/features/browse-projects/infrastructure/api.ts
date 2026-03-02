@@ -1,6 +1,6 @@
-import { Project, ProjectStatus } from "@/modules/projects/domain";
+import { Project, ProjectStatus, Artifact } from "@/modules/projects/domain";
 
-const MOCKED_PROJECTS: Project[] = [
+let mockedProjects: readonly Project[] = [
     {
         id: "1",
         project_name: "Deep Research Assistant",
@@ -55,10 +55,10 @@ const MOCKED_PROJECTS: Project[] = [
     }
 ];
 
-export const getProjects = async (): Promise<Project[]> => {
+export const getProjects = async (): Promise<readonly Project[]> => {
     // Simulating API delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    return MOCKED_PROJECTS;
+    return mockedProjects;
 };
 
 export const createProject = async (data: Partial<Project>): Promise<Project> => {
@@ -74,22 +74,19 @@ export const createProject = async (data: Partial<Project>): Promise<Project> =>
         artifacts: [],
         workspaces: ["General"],
     };
-    MOCKED_PROJECTS.unshift(newProject);
+    mockedProjects = [newProject, ...mockedProjects];
     return newProject;
 };
 
 export const getProjectDetails = async (id: string): Promise<Project | null> => {
-    const project = MOCKED_PROJECTS.find(p => p.id === id);
+    const project = mockedProjects.find(p => p.id === id);
     return project || null;
 };
 
-export const getProjectArtifacts = async (projectId: string): Promise<any[]> => {
+export const getProjectArtifacts = async (_projectId: string): Promise<readonly Artifact[]> => {
     return [];
 };
 
 export const deleteProject = async (id: string): Promise<void> => {
-    const index = MOCKED_PROJECTS.findIndex(p => p.id === id);
-    if (index !== -1) {
-        MOCKED_PROJECTS.splice(index, 1);
-    }
+    mockedProjects = mockedProjects.filter(p => p.id !== id);
 };

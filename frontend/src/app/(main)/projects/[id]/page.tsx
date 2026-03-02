@@ -2,9 +2,9 @@ import { getProjectDetails, getProjectArtifacts } from "@/modules/projects/featu
 import { ProjectDetailsView } from "@/modules/projects/features/project-details/ui/ProjectDetailsView";
 import { notFound } from "next/navigation";
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-    searchParams: Promise<{ tab?: string }>;
+type PageProps = {
+    readonly params: Promise<{ id: string }>;
+    readonly searchParams: Promise<{ tab?: string }>;
 }
 
 export default async function ProjectPage({ params, searchParams }: PageProps) {

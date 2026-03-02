@@ -1,11 +1,11 @@
 import { AgentConfig } from "../../../domain";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/ui/Card";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { Button } from "@/shared/ui/ui/Button";
 import { Settings2, Bot } from "lucide-react";
 
-interface AgentListProps {
-    agents: AgentConfig[];
+type AgentListProps = {
+    readonly agents: readonly AgentConfig[];
 }
 
 export const AgentList = ({ agents }: AgentListProps) => {
