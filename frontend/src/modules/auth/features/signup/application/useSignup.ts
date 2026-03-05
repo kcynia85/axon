@@ -32,7 +32,7 @@ export const useSignup = () => {
         data: {
           full_name: values.full_name,
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/home`,
       },
     });
 

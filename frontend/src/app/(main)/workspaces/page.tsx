@@ -17,7 +17,7 @@ export default function WorkspacesPage() {
         title="Workspaces"
         description="Manage your AI agents and crews in isolated environments."
         breadcrumbs={[
-            { label: "Dashboard", href: "/dashboard" },
+            { label: "Home", href: "/home" },
             { label: "Workspaces" }
         ]}
         pagination={null}

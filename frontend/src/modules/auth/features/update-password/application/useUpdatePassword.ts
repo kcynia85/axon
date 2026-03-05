@@ -35,7 +35,7 @@ export const useUpdatePassword = () => {
       setSuccess(true);
       setLoading(false);
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/home");
       }, 2000);
     }
   };

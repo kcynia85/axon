@@ -1,17 +1,15 @@
 import {
   Library,
-  Layout,
   SquareStack,
   Database,
-  FileText,
   Inbox,
-  Settings,
   Home,
   MousePointer2,
+  ChartNoAxesColumn,
 } from "lucide-react";
 
 export const mainNavigation = [
-  { name: "Home", href: "/dashboard", icon: Home },
+  { name: "Home", href: "/home", icon: Home },
   { name: "Spaces", href: "/spaces", icon: MousePointer2 },
   { name: "Inbox", href: "/inbox", icon: Inbox },
   { name: "Projects", href: "/projects", icon: Library },
@@ -26,6 +24,6 @@ export const appsDropdown = [
 ];
 
 export const bottomNavigation = [
+  { name: "Analytics", href: "/analytics", icon: ChartNoAxesColumn },
   { name: "Resources", href: "/resources", icon: Database },
-  { name: "Docs", href: "/docs", icon: FileText },
 ];

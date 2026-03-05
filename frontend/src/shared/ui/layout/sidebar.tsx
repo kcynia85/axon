@@ -38,6 +38,7 @@ type SidebarItemProps = {
   readonly isCollapsed: boolean;
   readonly onToggle: () => void;
   readonly pathname: string;
+  readonly variant?: "default" | "compact";
 };
 
 const SidebarItem = ({
@@ -45,16 +46,19 @@ const SidebarItem = ({
   isCollapsed,
   onToggle,
   pathname,
+  variant = "default",
 }: SidebarItemProps): React.ReactNode => {
   const { name, href, icon: Icon, badge, onClick, hasCollapseToggle } = item;
   const isActive = pathname === href || pathname?.startsWith(`${href}/`);
   const isItemSelected = isActive;
+  const isCompact = variant === "compact";
 
   const renderIcon = (): React.ReactNode => (
     <div className="relative flex items-center justify-center shrink-0">
       <Icon
         className={cn(
-          "h-[18px] w-[18px] shrink-0 transition-transform",
+          isCompact ? "h-4 w-4" : "h-[18px] w-[18px]",
+          "shrink-0 transition-transform",
           isItemSelected && "scale-110"
         )}
       />
@@ -72,7 +76,10 @@ const SidebarItem = ({
   const renderLabel = (): React.ReactNode =>
     !isCollapsed && (
       <>
-        <span className="truncate text-sm font-semibold tracking-tight">
+        <span className={cn(
+          "truncate font-semibold tracking-tight",
+          isCompact ? "text-xs" : "text-sm"
+        )}>
           {name}
         </span>
         {badge !== undefined && badge > 0 && (
@@ -89,7 +96,8 @@ const SidebarItem = ({
       asChild={!onClick}
       onClick={onClick}
       className={cn(
-        "w-full justify-start transition-all duration-200 relative group/item rounded-xl h-11 px-3 gap-4",
+        "w-full justify-start transition-all duration-200 relative group/item rounded-xl px-3",
+        isCompact ? "h-9 gap-3 px-2.5" : "h-11 gap-4 px-3",
         isItemSelected
           ? "text-zinc-900 dark:text-zinc-100 bg-zinc-100/80 dark:bg-zinc-900/80 font-bold shadow-sm ring-1 ring-zinc-200/50 dark:ring-zinc-800/50"
           : "text-muted-foreground hover:text-foreground hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40",
@@ -106,7 +114,10 @@ const SidebarItem = ({
         <Link href={href}>
           {renderIcon()}
           {!isCollapsed && (
-            <span className="truncate text-sm font-semibold tracking-tight">
+            <span className={cn(
+              "truncate font-semibold tracking-tight",
+              isCompact ? "text-xs" : "text-sm"
+            )}>
               {name}
             </span>
           )}
@@ -150,7 +161,7 @@ const SidebarItem = ({
     );
   }
 
-  return <div className="py-1">{contentWithToggle}</div>;
+  return <div className={isCompact ? "py-0.5" : "py-1"}>{contentWithToggle}</div>;
 };
 
 export const Sidebar = ({
@@ -230,6 +241,7 @@ export const Sidebar = ({
                   isCollapsed={isCollapsed}
                   onToggle={onToggle}
                   pathname={pathname}
+                  variant="compact"
                 />
               ))}
             </SidebarMenu>

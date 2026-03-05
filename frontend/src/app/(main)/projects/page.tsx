@@ -12,7 +12,7 @@ const ProjectsPage = async () => {
             title="Projekty"
             description="Browse and manage all your ongoing initiatives."
             breadcrumbs={[
-                { label: "Dashboard", href: "/dashboard" },
+                { label: "Home", href: "/home" },
                 { label: "Projects" }
             ]}
             actions={<CreateProjectDialog />}

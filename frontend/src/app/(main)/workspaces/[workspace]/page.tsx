@@ -108,7 +108,7 @@ export default function WorkspaceOverviewPage() {
       title={workspace.name}
       description={workspace.description}
       breadcrumbs={[
-        { label: "Dashboard", href: "/dashboard" },
+        { label: "Home", href: "/home" },
         { label: "Workspaces", href: "/workspaces" },
         { label: workspace.name }
       ]}

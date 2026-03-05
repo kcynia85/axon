@@ -38,7 +38,7 @@ export default function SpacesPage() {
       title="Spaces"
       description="Manage your workspaces and canvas environments."
       breadcrumbs={[
-        { label: "Dashboard", href: "/dashboard" },
+        { label: "Home", href: "/home" },
         { label: "Spaces" }
       ]}
       actions={

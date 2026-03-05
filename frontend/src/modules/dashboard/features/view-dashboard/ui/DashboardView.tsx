@@ -40,7 +40,7 @@ export const DashboardView = ({
 }: DashboardViewProps): React.ReactNode => {
     return (
         <PageContent>
-            <div className="flex flex-col space-y-12 py-10 max-w-5xl mx-auto w-full px-6 lg:px-10">
+            <div className="flex flex-col space-y-10 py-8 max-w-5xl mx-auto w-full px-6 lg:px-10">
                 
                 {/* --- HEADER --- */}
                 <div className="flex flex-col space-y-1">
@@ -57,56 +57,56 @@ export const DashboardView = ({
 
                 {/* --- AI INPUT AREA --- */}
                 <div className="w-full">
-                    <div className="relative flex items-center bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.04)] dark:shadow-none focus-within:ring-2 focus-within:ring-zinc-900/5 dark:focus-within:ring-white/5 transition-all duration-300 group">
-                        <div className="pl-6 text-zinc-400">
-                            <Sparkles className="w-5 h-5" />
+                    <div className="relative flex items-center bg-white dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-none focus-within:ring-2 focus-within:ring-zinc-900/5 dark:focus-within:ring-white/5 transition-all duration-300 group">
+                        <div className="pl-5 text-zinc-400">
+                            <Sparkles className="w-4 h-4" />
                         </div>
                         <input
                             value={inputValue}
                             onChange={(event) => onInputChange(event.target.value)}
                             onKeyDown={onKeyDown}
                             placeholder="Ask AI anything... What do you want to accomplish today?"
-                            className="w-full bg-transparent border-none py-5 px-4 text-lg font-medium focus:outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                            className="w-full bg-transparent border-none py-3.5 px-4 text-base font-medium focus:outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                         />
-                        <div className="pr-3">
+                        <div className="pr-2">
                             <Button
                                 onClick={() => onSubmission()}
                                 disabled={!inputValue.trim()}
                                 size="icon"
-                                className="h-11 w-11 rounded-2xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-90 transition-all active:scale-95 disabled:opacity-30 shadow-lg"
+                                className="h-9 w-9 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-90 transition-all active:scale-95 disabled:opacity-30 shadow-md"
                             >
-                                <ArrowRight className="w-5 h-5" />
+                                <ArrowRight className="w-4 h-4" />
                             </Button>
                         </div>
                     </div>
                 </div>
 
                 {/* --- RECENTLY USED --- */}
-                <div className="space-y-6 pt-4">
-                    <div className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-3">
+                <div className="space-y-5 pt-2">
+                    <div className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">
                         <Clock className="w-3.5 h-3.5" />
                         Recently Used
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {recentlyUsed.map((item) => (
-                            <Card key={item.title} className="border-zinc-200/60 dark:border-zinc-800/60 bg-white dark:bg-black rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-950 transition-all cursor-pointer shadow-sm group">
-                                <CardContent className="p-3 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                            <Card key={item.title} className="border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-sm rounded-xl hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer shadow-sm group">
+                                <CardContent className="p-3.5 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 group-hover:text-primary transition-colors shrink-0">
                                             <item.icon className="w-4 h-4" />
                                         </div>
-                                        <div className="overflow-hidden">
-                                            <div className="flex items-center gap-2 mb-0.5">
-                                                <Badge variant="outline" className="text-[12px] px-1.5 h-4 uppercase font-black tracking-widest bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400 leading-none">
+                                        <div className="flex flex-col min-w-0 gap-1.5">
+                                            <div className="flex items-center leading-none">
+                                                <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 uppercase font-black tracking-widest bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400 h-auto rounded-sm border-none shadow-none">
                                                     {item.type}
                                                 </Badge>
                                             </div>
-                                            <p className="font-bold text-base text-zinc-900 dark:text-zinc-100 tracking-tight truncate">{item.title}</p>
-                                            <p className="text-[12px] font-medium text-zinc-400 mt-1">{item.time}</p>
+                                            <p className="font-bold text-[16px] text-zinc-900 dark:text-zinc-100 tracking-tight truncate leading-tight group-hover:text-primary transition-colors">{item.title}</p>
+                                            <p className="text-[12px] font-medium text-zinc-400 leading-none">{item.time}</p>
                                         </div>
                                     </div>
-                                    <ChevronRight className="w-3.5 h-3.5 text-zinc-200 group-hover:text-zinc-400 transition-all shrink-0" />
+                                    <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-500 transition-all shrink-0 ml-3" />
                                 </CardContent>
                             </Card>
                         ))}
