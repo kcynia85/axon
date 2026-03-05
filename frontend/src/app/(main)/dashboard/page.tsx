@@ -5,7 +5,7 @@ import { DashboardView } from "@/modules/dashboard/features/view-dashboard/ui/Da
 import { useDashboardLogic } from "@/modules/dashboard/features/view-dashboard/application/useDashboardLogic";
 import React from "react";
 
-const DashboardPage = () => {
+const DashboardPage = (): React.ReactNode => {
     const {
         messages,
         inputValue,
@@ -15,7 +15,7 @@ const DashboardPage = () => {
     } = useDashboardLogic();
 
     return (
-        <PageContainer className="max-w-5xl mx-auto">
+        <PageContainer>
             <DashboardView 
                 messages={messages}
                 inputValue={inputValue}

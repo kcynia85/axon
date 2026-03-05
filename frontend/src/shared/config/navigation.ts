@@ -12,10 +12,10 @@ import {
 
 export const mainNavigation = [
   { name: "Home", href: "/dashboard", icon: Home },
+  { name: "Spaces", href: "/spaces", icon: MousePointer2 },
   { name: "Inbox", href: "/inbox", icon: Inbox },
   { name: "Projects", href: "/projects", icon: Library },
   { name: "Workspaces", href: "/workspaces", icon: SquareStack },
-  { name: "Spaces", href: "/spaces", icon: MousePointer2 },
 ];
 
 export const appsDropdown = [
@@ -27,6 +27,5 @@ export const appsDropdown = [
 
 export const bottomNavigation = [
   { name: "Resources", href: "/resources", icon: Database },
-  { name: "Settings", href: "/settings", icon: Settings },
   { name: "Docs", href: "/docs", icon: FileText },
 ];

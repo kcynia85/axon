@@ -65,8 +65,8 @@ export const UserNav = ({ hideText }: UserNavProps) => {
         variant="ghost" 
         onClick={handleSignIn}
         className={cn(
-          "relative h-14 w-full justify-start gap-3 px-2 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl group",
-          hideText && "justify-center px-0"
+          "relative h-14 justify-start gap-3 px-2 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl group",
+          hideText ? "w-10 h-10 px-0 justify-center" : "w-full",
         )}
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-dashed border-zinc-300 dark:border-zinc-700 rounded-full bg-zinc-50 dark:bg-zinc-950">
@@ -92,8 +92,8 @@ export const UserNav = ({ hideText }: UserNavProps) => {
         <Button 
           variant="ghost" 
           className={cn(
-            "relative h-14 w-full justify-start gap-3 px-2 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl",
-            hideText && "justify-center px-0"
+            "relative h-14 justify-start gap-3 px-2 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl",
+            hideText ? "w-10 h-10 px-0 justify-center" : "w-full",
           )}
         >
           <Avatar className="h-10 w-10 shrink-0 border border-zinc-200 dark:border-zinc-800 rounded-full">

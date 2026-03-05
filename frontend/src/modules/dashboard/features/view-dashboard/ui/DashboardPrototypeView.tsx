@@ -165,7 +165,7 @@ export const DashboardPrototypeView = ({
                         <div className="space-y-3">
                             <div className="flex items-center gap-2 px-1 text-zinc-400 opacity-60">
                                 <Clock className="w-3.5 h-3.5" />
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">Recent Projects</h2>
+                                <h2 className="text-[12px] font-black uppercase tracking-[0.2em]">Recent Projects</h2>
                             </div>
                             <div className="grid gap-2">
                                 {recentProjects.map((item) => (
@@ -175,8 +175,8 @@ export const DashboardPrototypeView = ({
                                                 <Box className="w-4 h-4" />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight leading-none">{item.title}</p>
-                                                <p className="text-[9px] font-medium text-zinc-400 uppercase tracking-widest mt-1.5 leading-none">{item.workspace}</p>
+                                                <p className="text-base font-bold text-zinc-800 dark:text-zinc-200 tracking-tight leading-none">{item.title}</p>
+                                                <p className="text-[12px] font-medium text-zinc-400 uppercase tracking-widest mt-1.5 leading-none">{item.workspace}</p>
                                             </div>
                                         </div>
                                         <ChevronRight className="w-3.5 h-3.5 text-zinc-200 group-hover:text-zinc-400 transition-all" />
@@ -189,7 +189,7 @@ export const DashboardPrototypeView = ({
                         <div className="space-y-3">
                             <div className="flex items-center gap-2 px-1 text-zinc-400 opacity-60">
                                 <HistoryIcon className="w-3.5 h-3.5" />
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">Recent Spaces</h2>
+                                <h2 className="text-[12px] font-black uppercase tracking-[0.2em]">Recent Spaces</h2>
                             </div>
                             <div className="grid gap-2">
                                 {recentSpaces.map((item) => (
@@ -199,8 +199,8 @@ export const DashboardPrototypeView = ({
                                                 <FolderOpen className="w-4 h-4" />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 tracking-tight leading-none">{item.title}</p>
-                                                <p className="text-[9px] font-medium text-zinc-400 uppercase tracking-widest mt-1.5 leading-none">{item.workspace}</p>
+                                                <p className="text-base font-bold text-zinc-800 dark:text-zinc-200 tracking-tight leading-none">{item.title}</p>
+                                                <p className="text-[12px] font-medium text-zinc-400 uppercase tracking-widest mt-1.5 leading-none">{item.workspace}</p>
                                             </div>
                                         </div>
                                         <ChevronRight className="w-3.5 h-3.5 text-zinc-200 group-hover:text-zinc-400 transition-all" />

@@ -33,7 +33,6 @@ const SORT_OPTIONS: readonly SortOption[] = [
 export const InboxDrawer = () => {
     const isInboxOpen = useUiStore(state => state.isInboxOpen);
     const setIsInboxOpen = useUiStore(state => state.setIsInboxOpen);
-    const isSidebarCollapsed = useUiStore(state => state.isSidebarCollapsed);
     const { data: items, isLoading } = useInboxItems();
 
     const filterItems = React.useCallback((items: readonly InboxItem[], query: string, filterIds: string[]) => {
@@ -107,11 +106,10 @@ export const InboxDrawer = () => {
     return (
         <Sheet open={isInboxOpen} onOpenChange={setIsInboxOpen}>
             <SheetContent 
-                side="left" 
+                side="right" 
                 showCloseButton={false}
                 className={cn(
-                    "w-full sm:max-w-md p-0 bg-white dark:bg-zinc-950 flex flex-col focus:outline-none z-[60] border-r border-zinc-100 dark:border-zinc-900",
-                    isSidebarCollapsed ? "left-16" : "left-60"
+                    "fixed top-4 bottom-4 right-4 w-[28rem] p-0 flex flex-col focus:outline-none z-[60] border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-2xl transition-all duration-500 ease-in-out bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl"
                 )}
             >
                 {/* Clean Header */}
@@ -128,7 +126,7 @@ export const InboxDrawer = () => {
                     </div>
                     
                     <div className="flex items-center gap-1">
-                        <SheetClose className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
+                        <SheetClose className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-zinc-100/60 dark:hover:bg-zinc-900/40 transition-colors">
                             <X className="w-4 h-4 text-zinc-400" />
                         </SheetClose>
                     </div>
@@ -172,14 +170,14 @@ export const InboxDrawer = () => {
                 </div>
 
                 {/* Items Area */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar border-t border-zinc-50 dark:border-zinc-900/50 mt-0">
+                <div className="flex-1 overflow-y-auto custom-scrollbar border-t border-zinc-100 dark:border-zinc-900/50 mt-0">
                     {isInboxOpen && (
                         <InboxList items={processedItems} isLoading={isLoading} />
                     )}
                 </div>
 
                 {/* Subtle Footer */}
-                <div className="px-6 py-4 flex items-center justify-between opacity-40 hover:opacity-100 transition-opacity">
+                <div className="px-6 py-4 flex items-center justify-between opacity-40 hover:opacity-100 transition-opacity mt-auto">
                     <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
                         {processedItems.length} total
                     </span>
