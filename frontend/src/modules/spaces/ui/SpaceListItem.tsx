@@ -19,12 +19,12 @@ export const SpaceListItem = ({ space }: SpaceListItemProps) => {
               </div>
               <div className="flex flex-col">
                 <h3 className="text-sm font-bold group-hover:text-black dark:group-hover:text-white transition-colors">{space.name}</h3>
-                <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter">{space.lastEdited}</p>
+                <p className="text-[12px] text-zinc-400 font-bold uppercase tracking-normal">{space.lastEdited}</p>
               </div>
             </div>
             
             <div className="flex-1 px-12 hidden md:block">
-              <p className="text-xs text-zinc-500 line-clamp-1">{space.description}</p>
+              <p className="text-xs text-zinc-500 line-clamp-1 font-medium">{space.description}</p>
             </div>
 
             <Button variant="ghost" size="sm" asChild className="h-8 px-3 text-[10px] font-bold hover:bg-zinc-100 dark:hover:bg-zinc-900">

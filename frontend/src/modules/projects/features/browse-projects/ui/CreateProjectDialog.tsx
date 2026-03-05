@@ -18,7 +18,7 @@ import { ProjectSpaceSelector } from "./components/ProjectSpaceSelector";
 import { CreateProjectDialogProps } from "./types";
 import { CreateProjectFormScrollArea } from "./components/CreateProjectFormLayout";
 
-export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = () => {
+export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ trigger }) => {
   const [open, setOpen] = useState(false);
   
   const {
@@ -40,10 +40,12 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="primary" size="lg">
-            <Plus className="mr-2 h-4 w-4" />
-            Nowy projekt
-        </Button>
+        {trigger || (
+          <Button variant="primary" size="lg">
+              <Plus className="mr-2 h-4 w-4" />
+              Nowy projekt
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[95vh] p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black shadow-2xl rounded-2xl flex flex-col">
         <Form {...form}>

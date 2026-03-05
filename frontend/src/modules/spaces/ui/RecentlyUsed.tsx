@@ -30,7 +30,7 @@ export const RecentlyUsed = ({ spaces, className }: RecentlyUsedProps) => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold truncate group-hover:text-primary transition-colors">{space.name}</p>
-                <p className="text-[10px] text-zinc-400 truncate uppercase tracking-tighter">{space.lastEdited}</p>
+                <p className="text-[10px] text-zinc-400 truncate capitalize tracking-normal">{space.lastEdited}</p>
               </div>
               <ArrowRight size={12} className="text-zinc-300 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
             </div>

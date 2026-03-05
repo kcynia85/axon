@@ -1,27 +1,13 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageContainer } from "./PageContainer";
 import { PageContent } from "./PageContent";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { ModuleHeader } from "./ModuleHeader";
+import { ModulePagination } from "./ModulePagination";
 import { cn } from "@/shared/lib/utils";
-
-type Breadcrumb = {
-  readonly label: string;
-  readonly href?: string;
-}
-
-type ModulePageLayoutProps = {
-  readonly title: string;
-  readonly description?: string;
-  readonly breadcrumbs: readonly Breadcrumb[];
-  readonly actions?: React.ReactNode;
-  readonly children: React.ReactNode;
-  readonly pagination?: React.ReactNode;
-  readonly showPagination?: boolean;
-  readonly className?: string;
-}
+import type { ModulePageLayoutProps } from "@/shared/lib/types/module-page-layout";
 
 export const ModulePageLayout = ({
   title,
@@ -37,73 +23,25 @@ export const ModulePageLayout = ({
     <PageContainer>
       <PageContent>
         <div className={cn("flex flex-col space-y-8 py-6 max-w-5xl mx-auto", className)}>
-          {/* Breadcrumbs */}
-          <nav className="flex items-center gap-2 text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em]">
-            {breadcrumbs.map((crumb, index) => (
-              <React.Fragment key={crumb.label}>
-                {crumb.href ? (
-                  <Link 
-                    href={crumb.href} 
-                    className="hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors"
-                  >
-                    {crumb.label}
-                  </Link>
-                ) : (
-                  <span className="text-zinc-800 dark:text-zinc-200">{crumb.label}</span>
-                )}
-                {index < breadcrumbs.length - 1 && (
-                  <ChevronRight size={10} className="text-zinc-300" />
-                )}
-              </React.Fragment>
-            ))}
-          </nav>
+          {/* Breadcrumbs Section */}
+          <Breadcrumbs items={breadcrumbs} />
 
-          {/* Header */}
-          <div className="flex flex-col space-y-4">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-                {description && (
-                  <p className="text-muted-foreground">{description}</p>
-                )}
-              </div>
-              {actions && <div>{actions}</div>}
-            </div>
-          </div>
+          {/* Header Section */}
+          <ModuleHeader 
+            title={title} 
+            description={description} 
+            actions={actions} 
+          />
 
           {/* Browser / Content Area */}
           <div className="flex-1">
             {children}
           </div>
 
-          {/* Pagination Placeholder (if provided) */}
-          {showPagination && pagination !== undefined ? (
-            <div className="pt-12 border-t border-zinc-100 dark:border-zinc-900">
-               {pagination || (
-                <div className="flex justify-start items-center gap-4">
-                  <button className="h-8 w-8 flex items-center justify-center border border-zinc-200 dark:border-zinc-800 rounded-md text-zinc-500 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all disabled:opacity-30" disabled>
-                    <ChevronLeft size={14} />
-                  </button>
-                  <div className="flex gap-2">
-                    {[1, 2, 3].map((i) => (
-                      <button 
-                        key={i}
-                        className={cn(
-                          "w-8 h-8 flex items-center justify-center rounded-md border text-sm transition-colors font-bold",
-                          i === 1 ? "bg-black text-white border-black dark:bg-white dark:text-black dark:border-white" : "border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white"
-                        )}
-                      >
-                        {i}
-                      </button>
-                    ))}
-                  </div>
-                  <button className="h-8 w-8 flex items-center justify-center border border-zinc-200 dark:border-zinc-800 rounded-md text-zinc-500 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all">
-                    <ChevronRight size={14} />
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : null}
+          {/* Pagination Section */}
+          {showPagination && (
+            pagination || <ModulePagination pages={[]} canGoBack={false} canGoNext={false} onBack={() => {}} onNext={() => {}} />
+          )}
         </div>
       </PageContent>
     </PageContainer>

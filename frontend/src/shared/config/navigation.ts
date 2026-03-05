@@ -6,6 +6,7 @@ import {
   Home,
   MousePointer2,
   ChartNoAxesColumn,
+  Settings,
 } from "lucide-react";
 
 export const mainNavigation = [
@@ -24,6 +25,7 @@ export const appsDropdown = [
 ];
 
 export const bottomNavigation = [
+  { name: "Settings", href: "/settings", icon: Settings },
   { name: "Analytics", href: "/analytics", icon: ChartNoAxesColumn },
   { name: "Resources", href: "/resources", icon: Database },
 ];

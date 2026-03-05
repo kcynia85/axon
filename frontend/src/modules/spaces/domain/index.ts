@@ -7,4 +7,6 @@ export type Space = {
   readonly lastEdited: string;
   readonly status: SpaceStatus;
   readonly created_at: string;
+  readonly projectId?: string;
+  readonly projectName?: string;
 };

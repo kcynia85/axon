@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Settings, Inbox } from "lucide-react";
+import { Inbox } from "lucide-react";
 import { Sidebar, NavigationItem } from "@/shared/ui/layout/sidebar";
 import { ModeToggle } from "@/shared/ui/ui/ModeToggle";
 import { InboxDrawer } from "@/modules/inbox/ui/InboxDrawer";
@@ -40,7 +40,7 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
   const sidebarItems = mapNavigationToSidebarItems(mainNavigation);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white dark:bg-black">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar
         items={sidebarItems}
         bottomItems={bottomNavigation}
@@ -68,17 +68,6 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
             )}
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            asChild
-            className="rounded-xl h-10 w-10 shrink-0"
-          >
-            <Link href="/settings">
-              <Settings className="w-[18px] h-[18px] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors" />
-            </Link>
-          </Button>
-          
           <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-1" />
           <div className="w-auto shrink-0">
             <UserNav hideText={true} />

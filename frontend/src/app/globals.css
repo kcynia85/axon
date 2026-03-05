@@ -6,11 +6,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
+@theme {
+  --font-sans: "JetBrains Mono", ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-jetbrains-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -52,6 +53,8 @@
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
+  --background-start: oklch(1 0 0);
+  --background-end: oklch(0.97 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -82,10 +85,22 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Font Optimization Variables */
+  --font-weight-thin: 150;
+  --font-weight-extra-light: 250;
+  --font-weight-light: 350;
+  --font-weight-normal: 450;
+  --font-weight-medium: 550;
+  --font-weight-semi-bold: 650;
+  --font-weight-bold: 750;
+  --font-weight-extra-bold: 850;
 }
 
 .dark {
   --background: oklch(0.145 0 0);
+  --background-start: oklch(0.145 0 0);
+  --background-end: oklch(0.11 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -119,72 +134,68 @@
 }
 
 @layer base {
-  html {
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-  }
   *, ::after, ::before {
-    box-sizing: inherit;
     @apply border-border outline-ring/50;
   }
-  body {
-        @apply bg-background text-foreground font-mono;
-        font-family: var(--font-jetbrains-mono);
-      }
-    }
-    
-    /* React Flow Figma-style Cursor Overrides */
-    .react-flow__pane {
-      cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
-    }
-    
-    .is-space-panning .react-flow__pane {
-      cursor: grab !important;
-    }
-    
-    .react-flow__pane.grabbing,
-    .is-space-panning .react-flow__pane.dragging,
-    .is-space-panning .react-flow__pane:active {
-      cursor: grabbing !important;
-    }
-    
-    .react-flow__node {
-      cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
-      transition: filter 0.2s ease !important;
-      pointer-events: all !important;
-      z-index: 10;
-      border-radius: 1rem;
-    }
-    
-    .react-flow__node-zone {
-      z-index: 0;
-      border-radius: 2rem;
-    }
-    
-    .react-flow__node:hover {
-      filter: brightness(1.1);
-      z-index: 1000 !important;
-    }
-    
-    .is-space-panning .react-flow__node {
-      cursor: grab !important;
-    }
-    
-    .react-flow__node.dragging {
-      cursor: move !important;
-    }
-    
-    .react-flow__edge {
-      cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
-    }
-    
-    .react-flow__handle {
-      cursor: crosshair !important;
-    }
-    
-    .react-flow__controls button {
-      cursor: pointer !important;
-    }
-    
+  
+  html, body {
+    @apply text-foreground font-sans;
+    background-image: linear-gradient(to right, var(--background-start), var(--background-end));
+    background-attachment: fixed;
+    font-feature-settings: "liga" on, "calt" on;
+    font-variation-settings: "wght" var(--font-weight-normal);
+  }
+}
+
+/* React Flow Figma-style Cursor Overrides */
+.react-flow__pane {
+  cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
+}
+
+.is-space-panning .react-flow__pane {
+  cursor: grab !important;
+}
+
+.react-flow__pane.grabbing,
+.is-space-panning .react-flow__pane.dragging,
+.is-space-panning .react-flow__pane:active {
+  cursor: grabbing !important;
+}
+
+.react-flow__node {
+  cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
+  transition: filter 0.2s ease !important;
+  pointer-events: all !important;
+  z-index: 10;
+  border-radius: 1rem;
+}
+
+.react-flow__node-zone {
+  z-index: 0;
+  border-radius: 2rem;
+}
+
+.react-flow__node:hover {
+  filter: brightness(1.1);
+  z-index: 1000 !important;
+}
+
+.is-space-panning .react-flow__node {
+  cursor: grab !important;
+}
+
+.react-flow__node.dragging {
+  cursor: move !important;
+}
+
+.react-flow__edge {
+  cursor: url('/cursors/figma-cursor.svg') 7 5, auto !important;
+}
+
+.react-flow__handle {
+  cursor: crosshair !important;
+}
+
+.react-flow__controls button {
+  cursor: pointer !important;
+}

@@ -51,7 +51,7 @@ export const ProjectActionRemoveTag: React.FC<{ onClick: (e: React.MouseEvent) =
 );
 
 export const ProjectCardViewDetailsLabel: React.FC = () => (
-    <BaseSpan className="text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+    <BaseSpan className="text-[16px] font-black tracking-widest text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
         View Details
     </BaseSpan>
 );

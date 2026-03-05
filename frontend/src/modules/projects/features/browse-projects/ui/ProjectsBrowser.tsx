@@ -8,16 +8,20 @@ import { ProjectDetailsView } from "../../project-details/ui/ProjectDetailsView"
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { useProjectsBrowser } from "../application/useProjectsBrowser";
 import { ProjectsBrowserProps } from "./types";
-import { ProjectsFilterSection } from "./components/ProjectsFilterSection";
-import { ProjectsActionsSection } from "./components/ProjectsActionsSection";
 import { ProjectsBrowserContent } from "./components/ProjectsBrowserContent";
 import { RecentlyUsedProjects } from "./RecentlyUsedProjects";
+import { ModuleActionBar, QuickFilter } from "@/shared/ui/complex/ModuleActionBar";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
   { id: "name-desc", label: "Name (Z-A)" },
   { id: "date-desc", label: "Newest first" },
   { id: "date-asc", label: "Oldest first" },
+];
+
+const QUICK_FILTERS: readonly QuickFilter[] = [
+  { label: "By Workspace", groupId: "workspace" },
+  { label: "By Status", groupId: "status" },
 ];
 
 export const ProjectsBrowser = ({ initialProjects = [] }: ProjectsBrowserProps) => {
@@ -74,24 +78,21 @@ export const ProjectsBrowser = ({ initialProjects = [] }: ProjectsBrowserProps) 
             onSelect={handleViewDetails} 
           />
         }
-        filters={
-          <ProjectsFilterSection 
+        actionBar={
+          <ModuleActionBar 
             filterGroups={filterGroups}
             activeFilters={activeFilters}
+            quickFilters={QUICK_FILTERS}
             onToggleFilter={handleToggleFilter}
             onApplyFilters={handleApplyFilters}
-            onClearAll={handleClearAll}
+            onClearAllFilters={handleClearAll}
             onPendingFilterIdsChange={setPendingFilterIds}
             resultsCount={getPreviewCount(projects)}
-          />
-        }
-        actions={
-          <ProjectsActionsSection 
+            sortOptions={SORT_OPTIONS}
             sortBy={sortBy}
-            onSortByChange={setSortBy}
+            onSortChange={setSortBy}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
-            sortOptions={SORT_OPTIONS}
           />
         }
       >

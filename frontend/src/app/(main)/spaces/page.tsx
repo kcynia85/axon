@@ -12,7 +12,9 @@ const INITIAL_SPACES: Space[] = [
     description: "Main workspace for the Phoenix redesign project. Contains discovery and design zones.",
     lastEdited: "Last edited 2 hours ago",
     status: "active",
-    created_at: new Date(Date.now() - 2 * 3600000).toISOString()
+    created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
+    projectId: "p1",
+    projectName: "Phoenix Redesign"
   },
   {
     id: "2",
@@ -28,7 +30,9 @@ const INITIAL_SPACES: Space[] = [
     description: "Global market analysis for the upcoming product launch.",
     lastEdited: "Last edited 3 days ago",
     status: "active",
-    created_at: new Date(Date.now() - 3 * 24 * 3600000).toISOString()
+    created_at: new Date(Date.now() - 3 * 24 * 3600000).toISOString(),
+    projectId: "p2",
+    projectName: "Global Launch"
   }
 ];
 

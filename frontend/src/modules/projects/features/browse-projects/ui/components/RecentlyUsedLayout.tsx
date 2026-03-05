@@ -54,7 +54,7 @@ export const RecentlyUsedItemTitle: React.FC<{ children: React.ReactNode }> = ({
 );
 
 export const RecentlyUsedItemStatus: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <BaseParagraph className="text-[10px] text-zinc-400 truncate uppercase tracking-tighter">
+    <BaseParagraph className="text-[10px] text-zinc-400 truncate capitalize tracking-normal">
         {children}
     </BaseParagraph>
 );

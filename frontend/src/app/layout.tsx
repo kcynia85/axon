@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} antialiased h-screen overflow-hidden bg-background text-foreground`}
+        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-sans antialiased h-screen overflow-hidden bg-background text-foreground`}
       >
         <ThemeProvider
             attribute="class"
