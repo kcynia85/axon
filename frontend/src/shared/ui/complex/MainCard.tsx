@@ -77,7 +77,7 @@ export const MainCardFooter = ({ label, className }: MainCardFooterProps) => (
     {/* Spacer to keep text centered when chevron is on the right */}
     <div className="w-4 h-4" /> 
     
-    <BaseSpan className="text-[16px] font-black tracking-widest text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+    <BaseSpan className="text-[16px] font-blackpod tracking-widest text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
       {label}
     </BaseSpan>
     

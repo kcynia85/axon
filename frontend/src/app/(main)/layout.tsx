@@ -51,8 +51,6 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Top Actions Bar - Direct on background, no floating island */}
         <div className="absolute top-6 right-8 z-50 flex items-center gap-2">
-          <ModeToggle />
-          
           <Button
             variant="ghost"
             size="icon"
@@ -67,6 +65,8 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
               <span className="absolute top-2 right-2 flex h-2 w-2 items-center justify-center rounded-full bg-blue-500 border border-white dark:border-black" />
             )}
           </Button>
+
+          <ModeToggle />
 
           <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-1" />
           <div className="w-auto shrink-0">

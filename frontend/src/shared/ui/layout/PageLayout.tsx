@@ -22,7 +22,7 @@ export const PageLayout = ({
   return (
     <PageContainer>
       <PageContent>
-        <div className={cn("flex flex-col space-y-8 py-6 max-w-5xl mx-auto", className)}>
+        <div className={cn("flex flex-col space-y-8 pt-2 pb-6", className)}>
           {/* Breadcrumbs Section */}
           <Breadcrumbs items={breadcrumbs} />
 
