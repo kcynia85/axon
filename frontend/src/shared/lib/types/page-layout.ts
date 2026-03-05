@@ -1,7 +1,7 @@
 import React from "react";
 import { Breadcrumb } from "./breadcrumbs";
 
-export type ModulePageLayoutProps = {
+export type PageLayoutProps = {
   readonly title: string;
   readonly description?: string;
   readonly breadcrumbs: readonly Breadcrumb[];

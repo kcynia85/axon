@@ -1,28 +1,20 @@
+"use client";
+
 import React from "react";
-import { cn } from "@/shared/lib/utils";
+import type { PageHeaderProps } from "@/shared/lib/types/page-header";
 
-type PageHeaderProps = {
-  readonly title: string;
-  readonly description?: string;
-  readonly children?: React.ReactNode;
-} & React.HTMLAttributes<HTMLDivElement>;
-
-export const PageHeader = ({
-  title,
-  description,
-  className,
-  children,
-  ...props
-}: PageHeaderProps) => {
+export const PageHeader = ({ title, description, actions }: PageHeaderProps) => {
   return (
-    <header className={cn("mb-8 flex items-center justify-between", className)} {...props}>
-      <div className="space-y-1">
-        <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-        {description && (
-          <p className="text-muted-foreground">{description}</p>
-        )}
+    <div className="flex flex-col space-y-4">
+      <div className="flex justify-between items-start">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
+          {description && (
+            <p className="text-muted-foreground">{description}</p>
+          )}
+        </div>
+        {actions && <div>{actions}</div>}
       </div>
-      {children && <div>{children}</div>}
-    </header>
+    </div>
   );
-}
+};

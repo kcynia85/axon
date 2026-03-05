@@ -2,7 +2,7 @@
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAgents, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { Button } from "@/shared/ui/ui/Button";
 import { Plus } from "lucide-react";
 import { AgentModal } from "@/modules/workspaces/ui/modals/AgentModal";
@@ -30,7 +30,7 @@ export default function AgentsListPage() {
   };
 
   return (
-    <ModulePageLayout
+    <PageLayout
       title="Agents"
       description={`Manage AI agents for ${workspace?.name || 'workspace'}.`}
       breadcrumbs={[
@@ -59,6 +59,6 @@ export default function AgentsListPage() {
       <Suspense>
         <AgentModal />
       </Suspense>
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

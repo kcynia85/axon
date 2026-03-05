@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { Search } from "lucide-react";
-import { Input } from "@/shared/ui/ui/Input";
 import { cn } from "@/shared/lib/utils";
+import { SearchInput } from "@/shared/ui/complex/SearchInput";
 import type { BrowserLayoutProps } from "@/shared/lib/types/browser-layout";
 
 export const BrowserLayout = ({
@@ -31,15 +30,11 @@ export const BrowserLayout = ({
         <div className="flex flex-col space-y-8">
           {/* Search Row */}
           {showSearch && (
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
-              <Input 
-                placeholder={searchPlaceholder} 
-                className="pl-10 h-[52px] py-3 border-zinc-200 dark:border-zinc-800"
-                value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
-              />
-            </div>
+            <SearchInput 
+              value={searchQuery}
+              onChange={onSearchChange}
+              placeholder={searchPlaceholder}
+            />
           )}
 
           {/* Active Filters Row */}

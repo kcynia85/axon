@@ -3,7 +3,7 @@ export type PageItem = {
   readonly isActive: boolean;
 };
 
-export type ModulePaginationProps = {
+export type PaginationProps = {
   readonly pages: readonly PageItem[];
   readonly onPageChange?: (page: number) => void;
   readonly canGoBack: boolean;

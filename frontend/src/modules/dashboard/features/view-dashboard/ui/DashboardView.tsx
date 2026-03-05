@@ -7,17 +7,15 @@ import {
     Sparkles, 
     ArrowRight, 
     FolderOpen, 
-    ChevronRight,
     Box,
     Clock,
     Plus,
-    Zap
 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
-import { Card, CardContent } from "@/shared/ui/ui/Card";
 import { PageContent } from "@/shared/ui/layout/PageContent";
-import { Badge } from "@/shared/ui/ui/Badge";
 import { CreateProjectDialog } from "@/modules/projects/features/browse-projects/ui/CreateProjectDialog";
+import { ResourceQuickCard } from "@/shared/ui/complex/ResourceQuickCard";
+import { ResourceQuickGrid } from "@/shared/ui/complex/ResourceQuickGrid";
 
 import { UIState } from "@/modules/agents/infrastructure/AiProvider";
 
@@ -30,10 +28,10 @@ type DashboardViewProps = {
 }
 
 const recentlyUsed = [
-    { title: "Market Landscape", type: "Space", time: "2 hours ago", icon: FolderOpen },
-    { title: "Axon MVP", type: "Project", time: "3 hours ago", icon: Box },
-    { title: "Market Research", type: "Space", time: "Yesterday", icon: FolderOpen },
-    { title: "Product Strategy", type: "Project", time: "Yesterday", icon: Box },
+    { title: "Market Landscape", type: "Space", time: "2 hours ago", icon: FolderOpen, href: "/spaces/1" },
+    { title: "Axon MVP", type: "Project", time: "3 hours ago", icon: Box, href: "/projects/p1" },
+    { title: "Market Research", type: "Space", time: "Yesterday", icon: FolderOpen, href: "/spaces/2" },
+    { title: "Product Strategy", type: "Project", time: "Yesterday", icon: Box, href: "/projects/p2" },
 ];
 
 export const DashboardView = ({
@@ -117,29 +115,18 @@ export const DashboardView = ({
                         Recently Used
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <ResourceQuickGrid>
                         {recentlyUsed.map((item) => (
-                            <Card key={item.title} className="border-zinc-200/60 dark:border-zinc-800/60 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-sm rounded-xl hover:bg-white dark:hover:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer shadow-sm group">
-                                <CardContent className="p-3.5 flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-7.5 h-7.5 rounded-lg bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 group-hover:text-primary transition-colors shrink-0">
-                                            <item.icon className="w-3.5 h-3.5" />
-                                        </div>
-                                        <div className="flex flex-col min-w-0 gap-1.5">
-                                            <div className="flex items-center leading-none">
-                                                <Badge variant="outline" className="text-[9px] px-1 py-0 uppercase font-black tracking-widest bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400 h-auto rounded-sm border-none shadow-none">
-                                                    {item.type}
-                                                </Badge>
-                                            </div>
-                                            <p className="font-bold text-[13px] text-zinc-900 dark:text-zinc-100 tracking-tight truncate leading-tight group-hover:text-primary transition-colors">{item.title}</p>
-                                            <p className="text-[10px] font-medium text-zinc-400 leading-none">{item.time}</p>
-                                        </div>
-                                    </div>
-                                    <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-500 transition-all shrink-0 ml-4" />
-                                </CardContent>
-                            </Card>
+                            <ResourceQuickCard 
+                                key={item.title}
+                                title={item.title}
+                                badge={item.type}
+                                status={item.time}
+                                icon={item.icon}
+                                href={item.href}
+                            />
                         ))}
-                    </div>
+                    </ResourceQuickGrid>
                 </div>
             </div>
         </PageContent>

@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useAutomations, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { Input } from "@/shared/ui/ui/Input";
 import { Search, Zap, Clock } from "lucide-react";
@@ -43,7 +43,7 @@ export default function AutomationsListPage() {
   );
 
   return (
-    <ModulePageLayout
+    <PageLayout
       title="Automations" 
       description={`Active automations for ${workspace?.name || 'workspace'}.`}
       breadcrumbs={[
@@ -114,6 +114,6 @@ export default function AutomationsListPage() {
             </div>
         )}
       </BrowserLayout>
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

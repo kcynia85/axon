@@ -14,7 +14,7 @@ export type QuickFilter = {
   readonly groupId: string;
 };
 
-interface ModuleActionBarProps {
+interface ActionBarProps {
   // Filter Props
   readonly filterGroups: readonly FilterGroup[];
   readonly activeFilters: readonly ActiveFilter[];
@@ -38,10 +38,10 @@ interface ModuleActionBarProps {
 }
 
 /**
- * ModuleActionBar - A unified component for filtering, sorting, and view toggling.
+ * ActionBar - A unified component for filtering, sorting, and view toggling.
  * Ensures consistent layout and spacing across all modules.
  */
-export const ModuleActionBar: React.FC<ModuleActionBarProps> = ({
+export const ActionBar: React.FC<ActionBarProps> = ({
   filterGroups,
   activeFilters,
   quickFilters = [],

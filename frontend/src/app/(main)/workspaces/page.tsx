@@ -2,7 +2,7 @@
 
 import React from "react";
 import { WorkspacesList } from "@/modules/workspaces/ui/WorkspacesList";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { useWorkspaces } from "@/modules/workspaces/application/useWorkspaces";
 import { shouldShowPagination } from "@/shared/lib/pagination";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
@@ -13,7 +13,7 @@ export default function WorkspacesPage() {
   const showPagination = workspaces ? shouldShowPagination(workspaces.length) : false;
 
   return (
-    <ModulePageLayout
+    <PageLayout
         title="Workspaces"
         description="Manage your AI agents and crews in isolated environments."
         breadcrumbs={[
@@ -31,6 +31,6 @@ export default function WorkspacesPage() {
                 viewMode="grid"
             />
         </BrowserLayout>
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

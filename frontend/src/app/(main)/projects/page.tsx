@@ -1,6 +1,6 @@
 import { getProjects } from "@/modules/projects";
 import { CreateProjectDialog } from "@/modules/projects/features/browse-projects/ui/CreateProjectDialog";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { ProjectsBrowser } from "@/modules/projects/features/browse-projects/ui/ProjectsBrowser";
 import { shouldShowPagination } from "@/shared/lib/pagination";
 
@@ -8,7 +8,7 @@ const ProjectsPage = async () => {
     const projects = await getProjects();
 
     return (
-        <ModulePageLayout
+        <PageLayout
             title="Projekty"
             description="Browse and manage all your ongoing initiatives."
             breadcrumbs={[
@@ -20,7 +20,7 @@ const ProjectsPage = async () => {
             showPagination={shouldShowPagination(projects.length)}
         >
             <ProjectsBrowser initialProjects={projects} />
-        </ModulePageLayout>
+        </PageLayout>
     );
 };
 

@@ -1,4 +1,4 @@
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { Button } from "@/shared/ui/ui/Button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -38,7 +38,7 @@ const INITIAL_SPACES: Space[] = [
 
 export default function SpacesPage() {
   return (
-    <ModulePageLayout
+    <PageLayout
       title="Spaces"
       description="Manage your workspaces and canvas environments."
       breadcrumbs={[
@@ -57,6 +57,6 @@ export default function SpacesPage() {
       showPagination={false}
     >
       <SpacesBrowser initialSpaces={INITIAL_SPACES} />
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

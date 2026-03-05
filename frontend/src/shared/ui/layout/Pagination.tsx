@@ -3,9 +3,9 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import type { ModulePaginationProps } from "@/shared/lib/types/module-pagination";
+import type { PaginationProps } from "@/shared/lib/types/pagination";
 
-export const ModulePagination = ({
+export const Pagination = ({
   pages = [],
   onPageChange,
   canGoBack,
@@ -13,7 +13,7 @@ export const ModulePagination = ({
   onBack,
   onNext,
   className,
-}: ModulePaginationProps) => {
+}: PaginationProps) => {
   return (
     <div className={cn("pt-12 border-t border-zinc-100 dark:border-zinc-900", className)}>
       <div className="flex justify-start items-center gap-4">

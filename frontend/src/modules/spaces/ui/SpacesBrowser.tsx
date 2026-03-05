@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useState, useMemo } from "react";
-import { Search } from "lucide-react";
-import { Input } from "@/shared/ui/ui/Input";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { FilterGroup, ActiveFilter, SortOption } from "@/shared/domain/filters";
 import { SpaceList } from "./SpaceList";
 import { RecentlyUsed } from "./RecentlyUsed";
 import { Space } from "../domain";
-import { ModuleActionBar, QuickFilter } from "@/shared/ui/complex/ModuleActionBar";
+import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
+import { SearchInput } from "@/shared/ui/complex/SearchInput";
 
 type SpacesBrowserProps = {
   readonly initialSpaces: readonly Space[];
@@ -170,15 +169,11 @@ export const SpacesBrowser = ({ initialSpaces }: SpacesBrowserProps) => {
         <RecentlyUsed spaces={initialSpaces} className="animate-in fade-in slide-in-from-top-2 duration-300" />
 
         {/* Row 2: Search */}
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" size={18} />
-          <Input 
-            placeholder="Search Spaces..." 
-            className="pl-10 h-[52px] py-3 border-zinc-200 dark:border-zinc-800"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+        <SearchInput 
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="Search Spaces..."
+        />
 
         {/* Row 3: Active Filters */}
         {activeFilters.length > 0 && (
@@ -195,7 +190,7 @@ export const SpacesBrowser = ({ initialSpaces }: SpacesBrowserProps) => {
       </div>
 
       {/* Unified Action Bar (Filters, Sort, View) */}
-      <ModuleActionBar 
+      <ActionBar 
         filterGroups={filterGroups}
         activeFilters={activeFilters}
         quickFilters={QUICK_FILTERS}

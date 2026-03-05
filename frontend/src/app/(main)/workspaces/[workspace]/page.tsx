@@ -8,7 +8,7 @@ import { PatternsSection } from "@/modules/workspaces/ui/PatternsSection";
 import { TemplatesSection } from "@/modules/workspaces/ui/TemplatesSection";
 import { ServicesSection } from "@/modules/workspaces/ui/ServicesSection";
 import { AutomationsSection } from "@/modules/workspaces/ui/AutomationsSection";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Button } from "@/shared/ui/ui/Button";
@@ -80,7 +80,7 @@ export default function WorkspaceOverviewPage() {
 
   if (isLoading) {
     return (
-        <ModulePageLayout
+        <PageLayout
             title="Loading..."
             breadcrumbs={[{ label: "Workspaces", href: "/workspaces" }, { label: "..." }]}
         >
@@ -91,20 +91,20 @@ export default function WorkspaceOverviewPage() {
                     <Skeleton className="h-64 w-full rounded-2xl" />
                 </div>
             </div>
-        </ModulePageLayout>
+        </PageLayout>
     );
   }
 
   if (!workspace) {
     return (
-        <ModulePageLayout title="Not Found" breadcrumbs={[]}>
+        <PageLayout title="Not Found" breadcrumbs={[]}>
             <div className="p-12 text-center text-muted-foreground">Workspace not found</div>
-        </ModulePageLayout>
+        </PageLayout>
     );
   }
 
   return (
-    <ModulePageLayout
+    <PageLayout
       title={workspace.name}
       description={workspace.description}
       breadcrumbs={[
@@ -139,6 +139,6 @@ export default function WorkspaceOverviewPage() {
             )}
         </div>
       </BrowserLayout>
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

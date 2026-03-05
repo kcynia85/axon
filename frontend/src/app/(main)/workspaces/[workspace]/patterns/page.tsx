@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { usePatterns, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { PatternsBrowser } from "@/modules/workspaces/features/browse-patterns/ui/PatternsBrowser";
 import { shouldShowPagination } from "@/shared/lib/pagination";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
@@ -18,7 +18,7 @@ export default function PatternsListPage() {
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
 
   return (
-    <ModulePageLayout
+    <PageLayout
       title="Patterns"
       description={`Behavior & Workflow patterns for ${workspace?.name || 'workspace'}.`}
       breadcrumbs={[
@@ -38,6 +38,6 @@ export default function PatternsListPage() {
       ) : (
         <PatternsBrowser initialPatterns={patterns || []} colorName={colorName} />
       )}
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

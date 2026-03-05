@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useTemplates, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { Button } from "@/shared/ui/ui/Button";
 import { Plus } from "lucide-react";
 import { TemplatesBrowser } from "@/modules/workspaces/features/browse-templates/ui/TemplatesBrowser";
@@ -20,7 +20,7 @@ export default function TemplatesListPage() {
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
 
   return (
-    <ModulePageLayout
+    <PageLayout
       title="Templates"
       description={`Standardized document structures for ${workspace?.name || 'workspace'}.`}
       breadcrumbs={[
@@ -45,6 +45,6 @@ export default function TemplatesListPage() {
       ) : (
         <TemplatesBrowser initialTemplates={templates || []} colorName={colorName} />
       )}
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

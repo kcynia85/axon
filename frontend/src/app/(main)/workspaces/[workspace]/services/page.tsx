@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useServices, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { Input } from "@/shared/ui/ui/Input";
 import { Search, Globe, Activity } from "lucide-react";
@@ -43,7 +43,7 @@ export default function ServicesListPage() {
   );
 
   return (
-    <ModulePageLayout
+    <PageLayout
       title="Services" 
       description={`External services available in ${workspace?.name || 'workspace'}.`}
       breadcrumbs={[
@@ -112,6 +112,6 @@ export default function ServicesListPage() {
             </div>
         )}
       </BrowserLayout>
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

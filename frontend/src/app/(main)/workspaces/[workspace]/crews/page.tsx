@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useCrews, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
-import { ModulePageLayout } from "@/shared/ui/layout/ModulePageLayout";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { Button } from "@/shared/ui/ui/Button";
 import { Plus } from "lucide-react";
 import { CrewsBrowser } from "@/modules/workspaces/features/browse-crews/ui/CrewsBrowser";
@@ -20,7 +20,7 @@ export default function CrewsListPage() {
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
 
   return (
-    <ModulePageLayout
+    <PageLayout
       title="Crews"
       description={`Tactical units and multi-agent teams for ${workspace?.name || 'workspace'}.`}
       breadcrumbs={[
@@ -45,6 +45,6 @@ export default function CrewsListPage() {
       ) : (
         <CrewsBrowser initialCrews={crews || []} colorName={colorName} />
       )}
-    </ModulePageLayout>
+    </PageLayout>
   );
 }

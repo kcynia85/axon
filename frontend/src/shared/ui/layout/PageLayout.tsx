@@ -4,12 +4,12 @@ import React from "react";
 import { PageContainer } from "./PageContainer";
 import { PageContent } from "./PageContent";
 import { Breadcrumbs } from "./Breadcrumbs";
-import { ModuleHeader } from "./ModuleHeader";
-import { ModulePagination } from "./ModulePagination";
+import { PageHeader } from "./PageHeader";
+import { Pagination } from "./Pagination";
 import { cn } from "@/shared/lib/utils";
-import type { ModulePageLayoutProps } from "@/shared/lib/types/module-page-layout";
+import type { PageLayoutProps } from "@/shared/lib/types/page-layout";
 
-export const ModulePageLayout = ({
+export const PageLayout = ({
   title,
   description,
   breadcrumbs,
@@ -18,7 +18,7 @@ export const ModulePageLayout = ({
   pagination,
   showPagination = true,
   className,
-}: ModulePageLayoutProps) => {
+}: PageLayoutProps) => {
   return (
     <PageContainer>
       <PageContent>
@@ -27,7 +27,7 @@ export const ModulePageLayout = ({
           <Breadcrumbs items={breadcrumbs} />
 
           {/* Header Section */}
-          <ModuleHeader 
+          <PageHeader 
             title={title} 
             description={description} 
             actions={actions} 
@@ -40,7 +40,7 @@ export const ModulePageLayout = ({
 
           {/* Pagination Section */}
           {showPagination && (
-            pagination || <ModulePagination pages={[]} canGoBack={false} canGoNext={false} onBack={() => {}} onNext={() => {}} />
+            pagination || <Pagination pages={[]} canGoBack={false} canGoNext={false} onBack={() => {}} onNext={() => {}} />
           )}
         </div>
       </PageContent>

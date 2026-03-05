@@ -10,7 +10,7 @@ import { useProjectsBrowser } from "../application/useProjectsBrowser";
 import { ProjectsBrowserProps } from "./types";
 import { ProjectsBrowserContent } from "./components/ProjectsBrowserContent";
 import { RecentlyUsedProjects } from "./RecentlyUsedProjects";
-import { ModuleActionBar, QuickFilter } from "@/shared/ui/complex/ModuleActionBar";
+import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -79,7 +79,7 @@ export const ProjectsBrowser = ({ initialProjects = [] }: ProjectsBrowserProps) 
           />
         }
         actionBar={
-          <ModuleActionBar 
+          <ActionBar 
             filterGroups={filterGroups}
             activeFilters={activeFilters}
             quickFilters={QUICK_FILTERS}
