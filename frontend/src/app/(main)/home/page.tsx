@@ -1,11 +1,11 @@
 "use client";
 
 import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { DashboardView } from "@/modules/dashboard/features/view-dashboard/ui/DashboardView";
+import { HomeView } from "@/modules/dashboard/features/view-dashboard/ui/HomeView";
 import { useDashboardLogic } from "@/modules/dashboard/features/view-dashboard/application/useDashboardLogic";
 import React from "react";
 
-const DashboardPage = (): React.ReactNode => {
+const HomePage = (): React.ReactNode => {
     const {
         messages,
         inputValue,
@@ -16,7 +16,7 @@ const DashboardPage = (): React.ReactNode => {
 
     return (
         <PageContainer>
-            <DashboardView 
+            <HomeView 
                 messages={messages}
                 inputValue={inputValue}
                 onInputChange={setInputValue}
@@ -27,4 +27,4 @@ const DashboardPage = (): React.ReactNode => {
     );
 };
 
-export default DashboardPage;
+export default HomePage;

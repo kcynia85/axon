@@ -14,12 +14,12 @@ import {
 import { Button } from "@/shared/ui/ui/Button";
 import { PageContent } from "@/shared/ui/layout/PageContent";
 import { CreateProjectDialog } from "@/modules/projects/features/browse-projects/ui/CreateProjectDialog";
-import { ResourceQuickCard } from "@/shared/ui/complex/ResourceQuickCard";
-import { ResourceQuickGrid } from "@/shared/ui/complex/ResourceQuickGrid";
+import { QuickAccessCard } from "@/shared/ui/complex/QuickAccessCard";
+import { QuickAccessGrid } from "@/shared/ui/complex/QuickAccessGrid";
 
 import { UIState } from "@/modules/agents/infrastructure/AiProvider";
 
-type DashboardViewProps = {
+type HomeViewProps = {
     readonly messages: UIState;
     readonly inputValue: string;
     readonly onInputChange: (value: string) => void;
@@ -34,12 +34,12 @@ const recentlyUsed = [
     { title: "Product Strategy", type: "Project", time: "Yesterday", icon: Box, href: "/projects/p2" },
 ];
 
-export const DashboardView = ({
+export const HomeView = ({
     inputValue,
     onInputChange,
     onSubmission,
     onKeyDown,
-}: DashboardViewProps): React.ReactNode => {
+}: HomeViewProps): React.ReactNode => {
     return (
         <PageContent>
             <div className="flex flex-col space-y-16 py-12 max-w-5xl mx-auto w-full">
@@ -107,27 +107,27 @@ export const DashboardView = ({
                         </Button>
                     </div>
                 </div>
+{/* --- RECENTLY USED --- */}
+<div className="space-y-6 pt-4">
+    <div className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">
+        <Clock className="w-3.5 h-3.5" />
+        Recently Used
+    </div>
 
-                {/* --- RECENTLY USED --- */}
-                <div className="space-y-6 pt-4">
-                    <div className="flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2">
-                        <Clock className="w-3.5 h-3.5" />
-                        Recently Used
-                    </div>
+    <QuickAccessGrid>
+        {recentlyUsed.map((item) => (
+            <QuickAccessCard 
+                key={item.title}
+                title={item.title}
+                badge={item.type}
+                status={item.time}
+                href={item.href}
+                hideArrow={true}
+            />
+        ))}
+    </QuickAccessGrid>
+</div>
 
-                    <ResourceQuickGrid>
-                        {recentlyUsed.map((item) => (
-                            <ResourceQuickCard 
-                                key={item.title}
-                                title={item.title}
-                                badge={item.type}
-                                status={item.time}
-                                icon={item.icon}
-                                href={item.href}
-                            />
-                        ))}
-                    </ResourceQuickGrid>
-                </div>
             </div>
         </PageContent>
     );

@@ -1,11 +1,11 @@
 import React from "react";
 import { RecentlyUsedItemProps } from "../types";
-import { ResourceQuickCard } from "@/shared/ui/complex/ResourceQuickCard";
+import { QuickAccessCard } from "@/shared/ui/complex/QuickAccessCard";
 import { Box } from "lucide-react";
 
 export const RecentlyUsedItem: React.FC<RecentlyUsedItemProps> = ({ viewModel, onClick }) => {
     return (
-        <ResourceQuickCard 
+        <QuickAccessCard 
             title={viewModel.title}
             status={viewModel.statusLabel}
             icon={Box}

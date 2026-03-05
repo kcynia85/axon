@@ -1,8 +1,8 @@
 import React from "react";
 import { Clock, Layout } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-import { ResourceQuickCard } from "@/shared/ui/complex/ResourceQuickCard";
-import { ResourceQuickGrid } from "@/shared/ui/complex/ResourceQuickGrid";
+import { QuickAccessCard } from "@/shared/ui/complex/QuickAccessCard";
+import { QuickAccessGrid } from "@/shared/ui/complex/QuickAccessGrid";
 import type { RecentlyUsedProps } from "./types";
 
 export const RecentlyUsed = ({ spaces, className }: RecentlyUsedProps) => {
@@ -17,9 +17,9 @@ export const RecentlyUsed = ({ spaces, className }: RecentlyUsedProps) => {
         </h3>
       </div>
       
-      <ResourceQuickGrid>
+      <QuickAccessGrid>
         {spaces.slice(0, 3).map((space) => (
-          <ResourceQuickCard 
+          <QuickAccessCard 
             key={space.id}
             title={space.name}
             status={space.lastEdited}
@@ -27,7 +27,7 @@ export const RecentlyUsed = ({ spaces, className }: RecentlyUsedProps) => {
             href={`/spaces/${space.id}`}
           />
         ))}
-      </ResourceQuickGrid>
+      </QuickAccessGrid>
     </div>
   );
 };
