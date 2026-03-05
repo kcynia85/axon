@@ -1,14 +1,9 @@
 import React from "react";
 import { Clock, Layout } from "lucide-react";
-import { Space } from "../domain";
 import { cn } from "@/shared/lib/utils";
 import { ResourceQuickCard } from "@/shared/ui/complex/ResourceQuickCard";
 import { ResourceQuickGrid } from "@/shared/ui/complex/ResourceQuickGrid";
-
-type RecentlyUsedProps = {
-  readonly spaces: readonly Space[];
-  readonly className?: string;
-}
+import type { RecentlyUsedProps } from "./types";
 
 export const RecentlyUsed = ({ spaces, className }: RecentlyUsedProps) => {
   if (spaces.length === 0) return null;

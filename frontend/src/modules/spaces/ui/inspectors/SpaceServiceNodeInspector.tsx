@@ -1,41 +1,33 @@
-// frontend/src/modules/spaces/ui/inspectors/SpaceServiceNodeInspector.tsx
+"use client";
 
 import React from "react";
-import { SpaceServiceDomainData } from "../../domain/types";
-import { SpaceServiceInspectorProperties } from "../types";
 import { useSpaceServiceInspectorLogic } from "../../application/hooks/useSpaceServiceInspectorLogic";
 import { SpaceServiceNodeInspectorView } from "../pure/SpaceServiceNodeInspectorView";
+import type { SpaceServiceInspectorProperties } from "../types";
 
+/**
+ * SpaceServiceNodeInspector - Pure view component for service node details.
+ * Delegates logic to useSpaceServiceInspectorLogic hook.
+ */
 export const SpaceServiceNodeInspector = ({
     data,
     onPropertyChange
 }: SpaceServiceInspectorProperties) => {
-    const {
-        handleContextLinkChange,
-        handleLinkContextFromNode,
-        handleArtefactLinkChange,
-        handleArtefactStatusChange,
-        handleArtefactOutputToggle,
-        handleAddArtefact,
-        handleCapabilityChange,
-        handleAttachedLabelChange,
-        isContextDone,
-        isArtefactsDone,
-    } = useSpaceServiceInspectorLogic(data, onPropertyChange);
+    const logic = useSpaceServiceInspectorLogic(data, onPropertyChange);
 
     return (
         <SpaceServiceNodeInspectorView
             data={data}
-            isContextDone={isContextDone}
-            isArtefactsDone={isArtefactsDone}
-            onContextLinkChange={handleContextLinkChange}
-            onLinkContextFromNode={handleLinkContextFromNode}
-            onArtefactLinkChange={handleArtefactLinkChange}
-            onArtefactStatusChange={handleArtefactStatusChange}
-            onArtefactOutputToggle={handleArtefactOutputToggle}
-            onAddArtefact={handleAddArtefact}
-            onCapabilityChange={handleCapabilityChange}
-            onAttachedLabelChange={handleAttachedLabelChange}
+            isContextDone={logic.isContextDone}
+            isArtefactsDone={logic.isArtefactsDone}
+            onContextLinkChange={logic.handleContextLinkChange}
+            onLinkContextFromNode={logic.handleLinkContextFromNode}
+            onArtefactLinkChange={logic.handleArtefactLinkChange}
+            onArtefactStatusChange={logic.handleArtefactStatusChange}
+            onArtefactOutputToggle={logic.handleArtefactOutputToggle}
+            onAddArtefact={logic.handleAddArtefact}
+            onCapabilityChange={logic.handleCapabilityChange}
+            onAttachedLabelChange={logic.handleAttachedLabelChange}
         />
     );
 };

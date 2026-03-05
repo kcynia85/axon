@@ -1,23 +1,16 @@
 import React from "react";
-import { Space } from "../domain";
 import { SpaceCard } from "./SpaceCard";
 import { SpaceListItem } from "./SpaceListItem";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/shared/ui/ui/Card";
-
-export type ViewMode = 'grid' | 'list';
-
-type SpaceListProps = {
-    readonly spaces: readonly Space[];
-    readonly viewMode?: ViewMode;
-}
+import type { SpaceListProps } from "./types";
 
 export const SpaceList = ({ spaces, viewMode = 'grid' }: SpaceListProps) => {
     if (spaces.length === 0) {
         return (
             <div className="text-center py-10 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">
-                <p className="text-muted-foreground">No spaces found. Create one to get started.</p>
+                <p className="text-muted-foreground font-medium">No spaces found. Create one to get started.</p>
             </div>
         );
     }

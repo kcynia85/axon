@@ -1,16 +1,19 @@
-// frontend/src/modules/spaces/ui/inspectors/SpacePatternNodeInspector.tsx
+"use client";
 
 import React from "react";
 import { Divider } from "@heroui/react";
-import { SpacePatternNodeInspectorProperties } from "../types";
 import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";
+import { useSpacePatternInspector } from "../../application/hooks/useSpacePatternInspector";
+import type { SpacePatternNodeInspectorProperties } from "../types";
 
 export const SpacePatternNodeInspector = ({ patternNodeInformation }: SpacePatternNodeInspectorProperties) => {
+    const { state } = useSpacePatternInspector(patternNodeInformation);
+
     return (
         <SpaceInspectorPanel>
             <div className="p-8 space-y-8">
                 <div className="space-y-2">
-                    <h3 className="font-black text-xl text-white">{patternNodeInformation.data.label as string}</h3>
+                    <h3 className="font-black text-xl text-white">{state.label}</h3>
                     <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Intelligent Pattern</p>
                 </div>
 
@@ -23,7 +26,7 @@ export const SpacePatternNodeInspector = ({ patternNodeInformation }: SpacePatte
                 <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Pipeline Steps</label>
                     <ul className="space-y-3">
-                        {['Extract raw text', 'Sentiment Analysis', 'Key Topic Extraction', 'Summary Generation'].map((step, i) => (
+                        {state.pipelineSteps.map((step, i) => (
                             <li key={i} className="flex items-center gap-3 text-xs font-bold text-zinc-300">
                                 <span className="w-5 h-5 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500">{i + 1}</span>
                                 {step}

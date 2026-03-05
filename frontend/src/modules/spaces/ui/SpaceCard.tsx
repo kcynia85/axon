@@ -1,5 +1,4 @@
 import React from "react";
-import { Space } from "../domain";
 import { 
     MainCard, 
     MainCardHeader, 
@@ -8,10 +7,7 @@ import {
 } from "@/shared/ui/complex/MainCard";
 import { Link as LinkIcon, Globe, Layout } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-
-type SpaceCardProps = {
-    readonly space: Space;
-}
+import type { SpaceCardProps } from "./types";
 
 export const SpaceCard = ({ space }: SpaceCardProps) => {
     const isLinkedToProject = !!space.projectId;

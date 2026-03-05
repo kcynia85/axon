@@ -1,112 +1,29 @@
-// frontend/src/modules/spaces/ui/inspectors/crews/SpaceCrewSequentialNodeInspector.tsx
+"use client";
 
 import React from "react";
-import {
-  Tabs,
-  Tab,
-  Input,
-  Button,
-  Avatar
-} from "@heroui/react";
-import { useQuery } from "@tanstack/react-query";
-import { 
-  Zap,
-  CheckCircle2,
-  Layers,
-  FileText,
-  CircleStop,
-  Terminal,
-  ChevronUp,
-  ChevronDown
-} from "lucide-react";
+import { Tabs, Tab, Input, Button, Avatar } from "@heroui/react";
+import { Zap, CheckCircle2, Layers, FileText, CircleStop, Terminal, ChevronUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import {  SharedMemoryEntry } from "@/modules/spaces/domain/types";
-import { SpaceCrewInspectorProperties } from "../../types";
-import { useCrewInspectorBaseLogic } from "@/modules/spaces/application/hooks/useCrewInspectorBaseLogic";
+import { cn } from "@/shared/lib/utils";
 import { SpaceCrewContextTab } from "./shared/SpaceCrewContextTab";
 import { SpaceCrewArtefactsTab } from "./shared/SpaceCrewArtefactsTab";
 import { SpaceCrewProgressBar } from "./shared/SpaceCrewProgressBar";
 import { SpaceCrewOrchestrationLayout } from "./shared/SpaceCrewOrchestrationLayout";
-import { cn } from "@/shared/lib/utils";
 import { SpaceInspectorFooter } from "../../inspectors/components/SpaceInspectorFooter";
 import { SpaceInspectorPanel } from "../../inspectors/components/SpaceInspectorPanel";
+import { useSpaceCrewSequentialInspector } from "../../../application/hooks/useSpaceCrewSequentialInspector";
+import type { SpaceCrewInspectorProperties } from "../../types";
 
+/**
+ * SpaceCrewSequentialNodeInspector - Pure view component for sequential crew details.
+ * Delegates logic to useSpaceCrewSequentialInspector hook.
+ */
 export const SpaceCrewSequentialNodeInspector = ({ 
     data, 
     nodeId,
     onPropertyChange
 }: SpaceCrewInspectorProperties) => {
-    const logic = useCrewInspectorBaseLogic(data, onPropertyChange);
-    const {
-        isMissingContext, isWorking, isConsultation, isBriefing, isDone, isAborted,
-        tasks, progressValue, transitionTo, handleAnswerChange,
-        allQuestionsAnswered, consultationAnswers, consultationQuestions,
-        sharedMemory,
-        isContextComplete, contextRequirements, nodeSearch, setNodeSearch,
-        editingArtefactId, setEditingArtefactId,
-        toggleVersionHistory, handleRestoreVersion,
-        handleArtefactContentChange,
-        selectedTab, setSelectedTab, isDetailsOpen, setIsDetailsOpen,
-        logs, isLogsOpen, setIsLogsOpen
-    } = logic;
-
-    const artefacts = data.artefacts || [];
-
-    // Simulation of dynamic working process for Sequential Crew
-    useQuery({
-        queryKey: ["crew-worker-sequential", nodeId, data.state],
-        queryFn: async () => {
-            if (isWorking && progressValue < 100) {
-                const currentTaskIndex = tasks.findIndex(t => t.status !== 'done');
-                if (currentTaskIndex !== -1) {
-                    const currentTask = tasks[currentTaskIndex];
-                    const nextTasks = [...tasks];
-                    const nextSharedMemory = [...sharedMemory];
-                    
-                    if (currentTask.status === 'pending') {
-                        nextTasks[currentTaskIndex] = { ...currentTask, status: 'working', thought: 'Initializing sequential task...' };
-                    } else if (currentTask.status === 'working') {
-                        if (Math.random() > 0.7) {
-                            nextTasks[currentTaskIndex] = { ...currentTask, status: 'done', thought: 'Task completed successfully.' };
-                            const facts = ["Sequential step finalized.", "Data passed to next agent."];
-                            const newFact: SharedMemoryEntry = {
-                                id: `fact_${Date.now()}`,
-                                fact: facts[Math.floor(Math.random() * facts.length)],
-                                sourceAgentTitle: currentTask.assignedAgentTitle,
-                                timestamp: new Date().toLocaleTimeString()
-                            };
-                            nextSharedMemory.push(newFact);
-                        } else {
-                            nextTasks[currentTaskIndex] = { ...currentTask, thought: 'Processing in order...' };
-                        }
-                    }
-
-                    const nextTokens = (data.metrics?.tokens || 3200) + Math.floor(Math.random() * 50);
-                    const allDone = nextTasks.every(t => t.status === 'done');
-
-                    onPropertyChange({ 
-                        tasks: nextTasks,
-                        shared_memory: nextSharedMemory,
-                        metrics: {
-                            ...data.metrics,
-                            tokens: nextTokens,
-                            duration: data.metrics?.duration || '2 min 15s'
-                        },
-                        state: allDone ? 'done' : 'working'
-                    });
-                }
-                return progressValue;
-            }
-            return progressValue;
-        },
-        refetchInterval: isWorking && progressValue < 100 ? 2000 : false,
-        enabled: isWorking && progressValue < 100,
-    });
-
-    const submitConsultation = () => {
-        const updatedQuestions = consultationQuestions.map(q => ({ ...q, answer: consultationAnswers[q.id] || q.answer }));
-        transitionTo('working', { consultation_questions: updatedQuestions });
-    };
+    const { state, actions } = useSpaceCrewSequentialInspector(data, nodeId, onPropertyChange);
 
     return (
         <SpaceInspectorPanel>
@@ -114,8 +31,8 @@ export const SpaceCrewSequentialNodeInspector = ({
                 aria-label="Sequential Crew" 
                 size="sm" 
                 variant="underlined"
-                selectedKey={selectedTab}
-                onSelectionChange={(key) => setSelectedTab(key as string)}
+                selectedKey={state.selectedTab}
+                onSelectionChange={(key) => actions.setSelectedTab(key as string)}
                 classNames={{
                     base: "w-full border-b border-zinc-800",
                     tabList: "px-6 w-full gap-6",
@@ -130,16 +47,16 @@ export const SpaceCrewSequentialNodeInspector = ({
                         <div className="flex items-center gap-2">
                             <Zap size={12}/> 
                             Team 
-                            {isDone && <CheckCircle2 size={10} className="text-white"/>}
+                            {state.isDone && <CheckCircle2 size={10} className="text-white"/>}
                         </div>
                     }
                 >
                     <div className="h-[calc(100vh-192px)] pb-40">
                         <SpaceCrewOrchestrationLayout>
                             <div className="flex flex-col space-y-10">
-                                {(isMissingContext || isBriefing) && (
+                                {(state.isMissingContext || state.isBriefing) && (
                                     <div className="space-y-4">
-                                        {tasks.map((task, i) => {
+                                        {state.tasks.map((task: any, i: number) => {
                                             const isFilled = task.label.trim().length > 0;
                                             return (
                                                 <motion.div 
@@ -159,7 +76,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                         size="sm" 
                                                         variant="underlined" 
                                                         value={task.label} 
-                                                        onValueChange={(val) => logic.handleTaskLabelChange(task.id, val)} 
+                                                        onValueChange={(val) => actions.handleTaskLabelChange(task.id, val)} 
                                                         endContent={isFilled && <CheckCircle2 size={12} className="text-white" />}
                                                         classNames={{ 
                                                             input: "text-[10px] font-bold text-zinc-400 italic", 
@@ -175,16 +92,16 @@ export const SpaceCrewSequentialNodeInspector = ({
                                     </div>
                                 )}
 
-                                {(isWorking || isConsultation) && (
+                                {(state.isWorking || state.isConsultation) && (
                                     <div className="space-y-8">
-                                        {isConsultation && (
+                                        {state.isConsultation && (
                                             <motion.div 
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 className="space-y-5 p-4 bg-orange-500/5 border border-orange-500/10 rounded-2xl"
                                             >
-                                                {consultationQuestions.map(q => {
-                                                    const isAnswered = (consultationAnswers[q.id] || q.answer || "").trim().length > 0;
+                                                {state.consultationQuestions.map((q: any) => {
+                                                    const isAnswered = (state.consultationAnswers[q.id] || q.answer || "").trim().length > 0;
                                                     return (
                                                         <div key={q.id} className="space-y-2.5">
                                                             <p className="text-[11px] text-zinc-400 font-bold italic leading-relaxed">{q.question}</p>
@@ -192,8 +109,8 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                                 placeholder="Type your answer..." 
                                                                 size="sm" 
                                                                 variant="bordered" 
-                                                                value={consultationAnswers[q.id] || q.answer || ""} 
-                                                                onValueChange={(val) => handleAnswerChange(q.id, val)} 
+                                                                value={state.consultationAnswers[q.id] || q.answer || ""} 
+                                                                onValueChange={(val) => actions.handleAnswerChange(q.id, val)} 
                                                                 endContent={isAnswered && <CheckCircle2 size={14} className="text-white" />}
                                                                 classNames={{ 
                                                                     input: "text-xs font-mono text-zinc-300", 
@@ -206,12 +123,12 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                         </div>
                                                     );
                                                 })}
-                                                <Button size="sm" isDisabled={!allQuestionsAnswered} className="w-full font-black uppercase text-[10px] rounded-md h-10 bg-zinc-200 text-black hover:bg-white" onPress={submitConsultation}>Send responses</Button>
+                                                <Button size="sm" isDisabled={!state.allQuestionsAnswered} className="w-full font-black uppercase text-[10px] rounded-md h-10 bg-zinc-200 text-black hover:bg-white" onPress={actions.submitConsultation}>Send responses</Button>
                                             </motion.div>
                                         )}
-                                        <SpaceCrewProgressBar progress={progressValue}>
+                                        <SpaceCrewProgressBar progress={state.progressValue}>
                                             <div className="space-y-8">
-                                                {tasks.map((task, i) => {
+                                                {state.tasks.map((task: any, i: number) => {
                                                     const isAgentWorking = task.status === 'working';
                                                     const isAgentDone = task.status === 'done';
                                                     
@@ -276,32 +193,32 @@ export const SpaceCrewSequentialNodeInspector = ({
                                     </div>
                                 )}
 
-                                {(isDone || isAborted) && (
+                                {(state.isDone || state.isAborted) && (
                                     <div className="space-y-4">
                                         <motion.div 
                                             initial={{ opacity: 0, scale: 0.95 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             className="flex items-center gap-3 py-4 border-b border-zinc-900"
                                         >
-                                            {isDone ? <CheckCircle2 size={24} className="text-white" /> : <CircleStop size={24} className="text-zinc-500" />}
+                                            {state.isDone ? <CheckCircle2 size={24} className="text-white" /> : <CircleStop size={24} className="text-zinc-500" />}
                                             <div>
-                                                <h3 className="text-sm font-black text-white tracking-tight uppercase">{isDone ? "Wszystko gotowe!" : "Praca zatrzymana"}</h3>
-                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">{isDone ? "Twój zespół przygotował materiały do przeglądu." : "Zakończyliśmy zadanie przed czasem."}</p>
+                                                <h3 className="text-sm font-black text-white tracking-tight uppercase">{state.isDone ? "Wszystko gotowe!" : "Praca zatrzymana"}</h3>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">{state.isDone ? "Twój zespół przygotował materiały do przeglądu." : "Zakończyliśmy zadanie przed czasem."}</p>
                                             </div>
                                         </motion.div>
 
-                                        {isDone && (
+                                        {state.isDone && (
                                             <div className="pt-4">
                                                 <button 
-                                                    onClick={() => setIsDetailsOpen(!isDetailsOpen)}
+                                                    onClick={() => actions.setIsDetailsOpen(!state.isDetailsOpen)}
                                                     className="flex items-center justify-between w-full group py-1"
                                                 >
                                                     <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Szczegóły:</h4>
-                                                    {isDetailsOpen ? <ChevronUp size={12} className="text-zinc-600" /> : <ChevronDown size={12} className="text-zinc-600" />}
+                                                    {state.isDetailsOpen ? <ChevronUp size={12} className="text-zinc-600" /> : <ChevronDown size={12} className="text-zinc-600" />}
                                                 </button>
                                                 
                                                 <AnimatePresence mode="wait">
-                                                    {isDetailsOpen && (
+                                                    {state.isDetailsOpen && (
                                                         <motion.div 
                                                             initial={{ opacity: 0, height: 0 }}
                                                             animate={{ opacity: 1, height: 'auto' }}
@@ -310,7 +227,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                         >
                                                             <div className="text-[10px] text-zinc-400 space-y-1 font-mono">
                                                                 <p>• Zespół: {(data.roles || []).join(', ')}</p>
-                                                                <p>• Wykonano {tasks.length} zadań sekwencyjnie</p>
+                                                                <p>• Wykonano {state.tasks.length} zadań sekwencyjnie</p>
                                                                 <p>• Wszystkie artefakty zostały wygenerowane</p>
                                                                 <div className="pt-2 text-zinc-600 font-bold uppercase" suppressHydrationWarning>
                                                                     Całkowity czas: {data.metrics?.duration || '2 min 15s'} | Zużycie: {data.metrics?.tokens?.toLocaleString() || '3,200'} tokenów
@@ -323,15 +240,15 @@ export const SpaceCrewSequentialNodeInspector = ({
                                     </div>
                                 )}
 
-                                {!isMissingContext && (logs?.length || 0) > 0 && (
+                                {!state.isMissingContext && (state.logs?.length || 0) > 0 && (
                                     <div className="pt-4 border-t border-zinc-900">
-                                        <button onClick={() => setIsLogsOpen(!isLogsOpen)} className="flex items-center justify-between w-full group py-1">
+                                        <button onClick={() => actions.setIsLogsOpen(!state.isLogsOpen)} className="flex items-center justify-between w-full group py-1">
                                             <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2"><Terminal size={12} /> Sequential Logs</h4>
-                                            {isLogsOpen ? <ChevronUp size={12} className="text-zinc-600" /> : <ChevronDown size={12} className="text-zinc-600" />}
+                                            {state.isLogsOpen ? <ChevronUp size={12} className="text-zinc-600" /> : <ChevronDown size={12} className="text-zinc-600" />}
                                         </button>
-                                        {isLogsOpen && (
+                                        {state.isLogsOpen && (
                                             <div className="bg-zinc-950 rounded-xl p-4 border border-zinc-900 font-mono text-[10px] space-y-2 mt-3">
-                                                {logs.map((log, i) => <div key={i} className="flex gap-2"><span className="text-zinc-700" suppressHydrationWarning>[{new Date().toLocaleTimeString()}]</span><span className="text-zinc-400">{log}</span></div>)}
+                                                {state.logs.map((log: any, i: number) => <div key={i} className="flex gap-2"><span className="text-zinc-700" suppressHydrationWarning>[{new Date().toLocaleTimeString()}]</span><span className="text-zinc-400">{log}</span></div>)}
                                             </div>
                                         )}
                                     </div>
@@ -347,14 +264,14 @@ export const SpaceCrewSequentialNodeInspector = ({
                         <div className="flex items-center gap-2">
                             <Layers size={12} /> 
                             Context
-                            {isContextComplete && contextRequirements.length > 0 && (
+                            {state.isContextComplete && state.contextRequirements.length > 0 && (
                                 <CheckCircle2 size={10} className="text-white" />
                             )}
                         </div>
                     }
                 >
                     <div className="h-[calc(100vh-192px)] pb-40">
-                        <SpaceCrewContextTab isContextComplete={isContextComplete} contextRequirements={contextRequirements} nodeSearch={nodeSearch} setNodeSearch={setNodeSearch} handleContextLinkChange={logic.handleContextLinkChange} handleLinkContextFromNode={logic.handleLinkContextFromNode} />
+                        <SpaceCrewContextTab isContextComplete={state.isContextComplete} contextRequirements={state.contextRequirements} nodeSearch={state.nodeSearch} setNodeSearch={actions.setNodeSearch} handleContextLinkChange={actions.handleContextLinkChange} handleLinkContextFromNode={actions.handleLinkContextFromNode} />
                     </div>
                 </Tab>
 
@@ -364,36 +281,36 @@ export const SpaceCrewSequentialNodeInspector = ({
                         <div className="flex items-center gap-2">
                             <FileText size={12} /> 
                             Artefacts
-                            {artefacts.some(a => a.status === 'in_review') ? (
+                            {state.hasInReview ? (
                                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-                            ) : artefacts.length > 0 ? (
+                            ) : state.artefacts.length > 0 ? (
                                 <CheckCircle2 size={10} className="text-white" />
                             ) : null}
                         </div>
                     }
                 >
                     <div className="h-[calc(100vh-192px)] pb-40">
-                        <SpaceCrewArtefactsTab isDone={isDone} artefacts={data.artefacts || []} progressValue={progressValue} isWorking={isWorking} editingArtefactId={editingArtefactId} setEditingArtefactId={setEditingArtefactId} expandedVersionHistory={logic.expandedVersionHistory} toggleVersionHistory={toggleVersionHistory} handleRestoreVersion={handleRestoreVersion} handleArtefactStatusChange={logic.handleArtefactStatusChange} handleArtefactOutputToggle={logic.handleArtefactOutputToggle} handleArtefactContentChange={handleArtefactContentChange} />
+                        <SpaceCrewArtefactsTab isDone={state.isDone} artefacts={state.artefacts} progressValue={state.progressValue} isWorking={state.isWorking} editingArtefactId={state.editingArtefactId} setEditingArtefactId={actions.setEditingArtefactId} expandedVersionHistory={state.expandedVersionHistory} toggleVersionHistory={actions.toggleVersionHistory} handleRestoreVersion={actions.handleRestoreVersion} handleArtefactStatusChange={actions.handleArtefactStatusChange} handleArtefactOutputToggle={actions.handleArtefactOutputToggle} handleArtefactContentChange={actions.handleArtefactContentChange} />
                     </div>
                 </Tab>
             </Tabs>
 
             <SpaceInspectorFooter>
-                {(isMissingContext || isBriefing) && (
+                {(state.isMissingContext || state.isBriefing) && (
                     <div className="space-y-3">
-                        <Button size="sm" isDisabled={!isContextComplete} className={cn("w-full font-black uppercase text-[10px] rounded-md h-12 shadow-xl", isContextComplete ? "bg-white text-black hover:bg-zinc-100 shadow-white/5" : "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed")} onPress={() => transitionTo('working')}>
-                            {progressValue > 0 ? "Wznów pracę" : "Rozpocznij pracę"}
+                        <Button size="sm" isDisabled={!state.isContextComplete} className={cn("w-full font-black uppercase text-[10px] rounded-md h-12 shadow-xl", state.isContextComplete ? "bg-white text-black hover:bg-zinc-100 shadow-white/5" : "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed")} onPress={() => actions.transitionTo('working')}>
+                            {state.progressValue > 0 ? "Wznów pracę" : "Rozpocznij pracę"}
                         </Button>
-                        {progressValue > 0 && <Button size="sm" variant="light" className="w-full text-zinc-500 font-black uppercase text-[10px] rounded-md h-10 hover:bg-zinc-900/50" onPress={() => transitionTo('aborted')}>Zakończ pracę</Button>}
+                        {state.progressValue > 0 && <Button size="sm" variant="light" className="w-full text-zinc-500 font-black uppercase text-[10px] rounded-md h-10 hover:bg-zinc-900/50" onPress={() => actions.transitionTo('aborted')}>Zakończ pracę</Button>}
                     </div>
                 )}
-                {(isWorking || isConsultation) && (
-                    <Button size="sm" variant="flat" className="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] rounded-md h-10" onPress={() => transitionTo('briefing')}>Zatrzymaj pracę</Button>
+                {(state.isWorking || state.isConsultation) && (
+                    <Button size="sm" variant="flat" className="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] rounded-md h-10" onPress={() => actions.transitionTo('briefing')}>Zatrzymaj pracę</Button>
                 )}
-                {(isDone || isAborted) && (
+                {(state.isDone || state.isAborted) && (
                     <div className="flex gap-3">
-                        <Button size="sm" className="flex-1 bg-zinc-200 text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-white" onPress={() => transitionTo('missing_context', { tasks: [] })}>Nowe zadanie</Button>
-                        <Button size="sm" variant="flat" className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] h-10 hover:bg-zinc-800" onPress={() => setSelectedTab("artefacts")}>Historia Wersji</Button>
+                        <Button size="sm" className="flex-1 bg-zinc-200 text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-white" onPress={() => actions.transitionTo('missing_context', { tasks: [] })}>Nowe zadanie</Button>
+                        <Button size="sm" variant="flat" className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] h-10 hover:bg-zinc-800" onPress={() => actions.setSelectedTab("artefacts")}>Historia Wersji</Button>
                     </div>
                 )}
             </SpaceInspectorFooter>
