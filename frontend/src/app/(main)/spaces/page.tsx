@@ -1,9 +1,8 @@
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
-import { Button } from "@/shared/ui/ui/Button";
-import { Plus } from "lucide-react";
 import Link from "next/link";
 import { SpacesBrowser } from "@/modules/spaces/ui/SpacesBrowser";
 import { Space } from "@/modules/spaces/domain";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
 
 const INITIAL_SPACES: Space[] = [
   {
@@ -46,12 +45,9 @@ export default function SpacesPage() {
         { label: "Spaces" }
       ]}
       actions={
-        <Button variant="primary" size="lg" asChild>
-          <Link href="/spaces/new">
-            <Plus className="mr-2 h-4 w-4" />
-            New Space
-          </Link>
-        </Button>
+        <ActionButton label="New Space" asChild>
+          <Link href="/spaces/new" />
+        </ActionButton>
       }
       pagination={null}
       showPagination={false}

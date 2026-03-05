@@ -17,6 +17,7 @@ import { ProjectKeywordsField } from "./components/ProjectKeywordsField";
 import { ProjectSpaceSelector } from "./components/ProjectSpaceSelector";
 import { CreateProjectDialogProps } from "./types";
 import { CreateProjectFormScrollArea } from "./components/CreateProjectFormLayout";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
 
 export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ trigger }) => {
   const [open, setOpen] = useState(false);
@@ -41,10 +42,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ trigge
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="primary" size="lg">
-              <Plus className="mr-2 h-4 w-4" />
-              Nowy projekt
-          </Button>
+          <ActionButton label="Nowy projekt" />
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[95vh] p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black shadow-2xl rounded-2xl flex flex-col">

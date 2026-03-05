@@ -2,7 +2,7 @@
 
 import React from "react";
 import { 
-    SpaceCanvasRightSidebarProperties, 
+    SpaceCanvasSidebarProps, 
 } from "./types";
 import { useSpaceCanvasInspectorManagement } from "../application/hooks/useSpaceCanvasInspectorManagement";
 import { SpaceCanvasRightSidebarView } from "./pure/SpaceCanvasRightSidebarView";
@@ -11,7 +11,7 @@ export const SpaceCanvasRightSidebar = ({
     currentlySelectedNodeInformation, 
     handleNodeDataPropertyChange,
     canvasNodes
-}: SpaceCanvasRightSidebarProperties) => {
+}: SpaceCanvasSidebarProps) => {
     const {
         effectiveNodeType,
         isNodeSelectedRepresentingAZone,

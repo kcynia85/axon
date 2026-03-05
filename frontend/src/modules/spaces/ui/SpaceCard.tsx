@@ -37,7 +37,9 @@ export const SpaceCard = ({ space }: SpaceCardProps) => {
             </MainCardHeader>
 
             <MainCardContent>
-                {/* Space content area (description removed as requested earlier) */}
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                    Space details
+                </p>
             </MainCardContent>
 
             <MainCardFooter label="Open Space" />
