@@ -57,7 +57,7 @@ export const DashboardPrototypeView = ({
     return (
         <PageContent>
             <div className={cn(
-                "flex flex-col w-full max-w-6xl mx-auto px-6 lg:px-8 transition-all duration-700 ease-in-out",
+                "flex flex-col w-full max-w-5xl mx-auto px-6 lg:px-8 transition-all duration-700 ease-in-out",
                 isFocusMode ? "h-[80vh] justify-center" : "py-6 space-y-8"
             )}>
                 

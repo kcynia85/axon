@@ -11,6 +11,8 @@ export const BrowserLayout = ({
   searchPlaceholder = "Search...",
   activeFilters,
   actionBar,
+  filters,
+  actions,
   topContent,
   children,
   className,
@@ -26,7 +28,7 @@ export const BrowserLayout = ({
         </div>
       )}
 
-      {(showSearch || activeFilters) && (
+      {(showSearch || activeFilters || filters || actions) && (
         <div className="flex flex-col space-y-8">
           {/* Search Row */}
           {showSearch && (
@@ -35,6 +37,18 @@ export const BrowserLayout = ({
               onChange={onSearchChange}
               placeholder={searchPlaceholder}
             />
+          )}
+
+          {/* Filters & Actions Row */}
+          {(filters || actions) && (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-1 pb-3 border-b border-zinc-100 dark:border-zinc-900">
+              <div className="flex flex-wrap items-center gap-2">
+                {filters}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {actions}
+              </div>
+            </div>
           )}
 
           {/* Active Filters Row */}
@@ -49,7 +63,7 @@ export const BrowserLayout = ({
         </div>
       )}
 
-      {/* Unified Action Bar (Filters + Sort/View) */}
+      {/* Legacy Unified Action Bar (Filters + Sort/View) */}
       {actionBar}
 
       {/* Content Area */}

@@ -40,11 +40,6 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
                     `group-hover:${styles.borderClassName}`
                 )}
             >
-                {/* Accent Top Bar (Remains as a subtle identifier) */}
-                <div 
-                    className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
-                />
-
                 {/* Background Grid Pattern (Static, kept for subtle texture) */}
                 <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
                     style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
@@ -72,6 +67,11 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
                         </p>
                     </div>
                 </CardContent>
+
+                {/* Accent Bottom Bar */}
+                <div 
+                    className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+                />
             </Card>
         </Link>
     );

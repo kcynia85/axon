@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useTemplates } from "../application/useTemplates";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
@@ -11,33 +10,21 @@ import {
   Copy,
   Layout,
   Hash,
+  ListTodo,
 } from "lucide-react";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
-import { cn } from "@/shared/lib/utils";
-import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import { Card } from "@/shared/ui/ui/Card";
+import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 
 type TemplatesSectionProps = {
   readonly workspaceId: string;
   readonly colorName?: string;
 }
 
-const COLOR_TO_RGB: Record<string, string> = {
-    blue: "59, 130, 246",
-    purple: "168, 85, 247",
-    pink: "236, 72, 153",
-    green: "34, 197, 94",
-    yellow: "234, 179, 8",
-    orange: "249, 115, 22",
-    default: "113, 113, 122"
-};
-
 export const TemplatesSection = ({ workspaceId, colorName = "default" }: TemplatesSectionProps) => {
   const { data: templates, isLoading } = useTemplates(workspaceId);
   const [selectedTemplateId, setSelectedTemplateId] = React.useState<string | null>(null);
-
-  const styles = getVisualStylesForZoneColor(colorName);
-  const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
   if (isLoading) {
     return (
@@ -49,7 +36,7 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
 
   if (!templates || templates.length === 0) {
     return (
-      <Card className="border-dashed h-32 flex items-center justify-center text-muted-foreground text-sm italic rounded-xl bg-muted/5">
+      <Card className="border-dashed h-32 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5">
         No templates registered. Draft some structures.
       </Card>
     );
@@ -61,51 +48,23 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {templates.map((template) => (
-          <Card
+          <WorkspaceCardHorizontal 
             key={template.id}
-            className={cn(
-                "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
-                "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
-                "hover:shadow-md",
-                `hover:${styles.borderClassName}`
-            )}
-            onClick={() => setSelectedTemplateId(template.id)}
-          >
-            {/* Accent Top Bar */}
-            <div 
-                className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
-            />
-
-            {/* Background Grid Pattern */}
-            <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
-                style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
-            />
-
-            <CardHeader className="relative z-10 space-y-3 pb-3 pt-4">
-              <div className="flex justify-between items-start">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded bg-muted/30">
-                    <FileText className="h-3 w-3 text-zinc-500" />
-                  </div>
-                  <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{template.template_name}</CardTitle>
+            title={template.template_name}
+            description={template.template_description}
+            href={`/workspaces/${workspaceId}/templates/${template.id}/edit`}
+            badgeLabel={template.template_type}
+            tags={template.template_keywords}
+            icon={FileText}
+            onEdit={() => setSelectedTemplateId(template.id)}
+            colorName={colorName}
+            footerContent={
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
+                    <ListTodo className="w-3 h-3" />
+                    <span>{template.template_checklist_items?.length || 0} Tasks</span>
                 </div>
-                <Badge variant="outline" className="text-[9px] h-4 py-0 uppercase font-bold tracking-tighter bg-muted/30 border-none">
-                  {template.template_type}
-                </Badge>
-              </div>
-              <CardDescription className="text-[11px] mt-1 line-clamp-2 leading-relaxed">
-                {template.template_description || "Reusable document structure."}
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="relative z-10 mt-auto pt-0 pb-4">
-              <div className="flex items-center gap-1 flex-wrap">
-                {template.template_keywords?.slice(0, 2).map((kw, i) => (
-                  <span key={i} className="text-[10px] text-muted-foreground/60 italic font-medium">#{kw}</span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+            }
+          />
         ))}
       </div>
 

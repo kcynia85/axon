@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useServices } from "../application/useServices";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
@@ -12,30 +11,17 @@ import {
 } from "lucide-react";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
-import { cn } from "@/shared/lib/utils";
-import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import { Card } from "@/shared/ui/ui/Card";
+import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 
 type ServicesSectionProps = {
   readonly workspaceId: string;
   readonly colorName?: string;
 }
 
-const COLOR_TO_RGB: Record<string, string> = {
-    blue: "59, 130, 246",
-    purple: "168, 85, 247",
-    pink: "236, 72, 153",
-    green: "34, 197, 94",
-    yellow: "234, 179, 8",
-    orange: "249, 115, 22",
-    default: "113, 113, 122"
-};
-
 export const ServicesSection = ({ workspaceId, colorName = "default" }: ServicesSectionProps) => {
   const { data: services, isLoading } = useServices(workspaceId);
   const [selectedServiceId, setSelectedServiceId] = React.useState<string | null>(null);
-
-  const styles = getVisualStylesForZoneColor(colorName);
-  const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
   if (isLoading) {
     return (
@@ -47,7 +33,7 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
 
   if (!services || services.length === 0) {
     return (
-      <Card className="border-dashed h-32 flex items-center justify-center text-muted-foreground text-sm italic rounded-xl bg-muted/5">
+      <Card className="border-dashed h-32 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5">
         No external services connected. Scale with APIs.
       </Card>
     );
@@ -59,50 +45,22 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {services.map((service) => (
-          <Card
+          <WorkspaceCardHorizontal 
             key={service.id}
-            className={cn(
-                "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
-                "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
-                "hover:shadow-md",
-                `hover:${styles.borderClassName}`
-            )}
-            onClick={() => setSelectedServiceId(service.id)}
-          >
-            {/* Accent Top Bar */}
-            <div 
-                className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
-            />
-
-            {/* Background Grid Pattern */}
-            <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
-                style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
-            />
-
-            <CardHeader className="relative z-10 space-y-3 pb-3 pt-4">
-              <div className="flex justify-between items-start">
+            title={service.service_name}
+            description={`Integration with ${service.provider_name} platform.`}
+            href={`/workspaces/${workspaceId}/services/${service.id}`}
+            badgeLabel={service.connection_status}
+            icon={Cloud}
+            onEdit={() => setSelectedServiceId(service.id)}
+            colorName={colorName}
+            footerContent={
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded bg-muted/30">
-                    <Cloud className="h-3 w-3 text-zinc-500" />
-                  </div>
-                  <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{service.service_name}</CardTitle>
+                    <Activity className="h-3 w-3 text-green-500" />
+                    <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Active</span>
                 </div>
-                <Badge variant={service.connection_status === "connected" ? "default" : "outline"} className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none", service.connection_status === "connected" ? "bg-green-500/10 text-green-600" : "bg-muted/30")}>
-                  {service.connection_status}
-                </Badge>
-              </div>
-              <CardDescription className="text-[11px] mt-1 line-clamp-2 leading-relaxed">
-                Integration with {service.provider_name} platform.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="relative z-10 mt-auto pt-0 pb-4">
-              <div className="flex items-center gap-2">
-                <Activity className="h-3 w-3 text-muted-foreground opacity-40" />
-                <span className="text-[10px] text-muted-foreground font-medium">Monitoring active</span>
-              </div>
-            </CardContent>
-          </Card>
+            }
+          />
         ))}
       </div>
 

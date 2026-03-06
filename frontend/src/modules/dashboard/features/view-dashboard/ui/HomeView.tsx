@@ -39,7 +39,7 @@ export const HomeView = ({
 }: HomeViewProps): React.ReactNode => {
     return (
         <PageContent className="flex flex-col">
-            <div className="flex-1 flex flex-col items-center justify-center -mt-9 py-12 max-w-6xl mx-auto w-full space-y-3">
+            <div className="flex-1 flex flex-col items-center justify-center -mt-9 py-12 max-w-5xl mx-auto w-full space-y-3">
                 
                 {/* --- HEADER SECTION --- */}
                 <div className="flex flex-col items-center space-y-6">
@@ -56,7 +56,7 @@ export const HomeView = ({
                 </div>
 
                 {/* --- MAIN CONTENT (INPUT + RECENTLY USED) --- */}
-                <div className="w-full max-w-4xl space-y-9 pt-6">
+                <div className="w-full max-w-3xl space-y-9 pt-6">
                     <div className="space-y-4">
                         <AiAssistantCard 
                             value={inputValue}

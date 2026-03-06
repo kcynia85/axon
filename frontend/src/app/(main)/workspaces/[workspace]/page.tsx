@@ -18,9 +18,9 @@ import Link from "next/link";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 
 const SECTIONS = [
-  { id: "patterns", label: "Patterns", count: 3, href: "patterns", Component: PatternsSection },
-  { id: "crews", label: "Crews", count: 5, href: "crews", Component: CrewsSection },
   { id: "agents", label: "Agents", href: "agents", Component: AgentsSection },
+  { id: "crews", label: "Crews", count: 5, href: "crews", Component: CrewsSection },
+  { id: "patterns", label: "Patterns", count: 3, href: "patterns", Component: PatternsSection },
   { id: "templates", label: "Templates", href: "templates", Component: TemplatesSection },
   { id: "services", label: "Services", href: "services", Component: ServicesSection },
   { id: "automations", label: "Automations", href: "automations", Component: AutomationsSection },
@@ -43,13 +43,13 @@ const PreviewSection = ({
 }) => (
   <section id={id} className="mb-16 animate-in fade-in slide-in-from-bottom-2 duration-500 text-left">
     <div className="flex items-center justify-between mb-6 border-b border-zinc-100 dark:border-zinc-900 pb-2">
-        <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-zinc-400">
+        <h3 className="text-xl font-black tracking-tight flex items-center gap-3 text-zinc-400">
             {label} {count !== undefined && <span className="opacity-40 tabular-nums">[{count}]</span>}
         </h3>
         
-        <button className="h-auto p-0 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-black dark:hover:text-white transition-colors outline-none">
+        <button className="h-auto p-0 text-[16px] font-bold text-zinc-400 hover:text-black dark:hover:text-white transition-colors outline-none">
             <Link href={`/workspaces/${workspaceId}/${href}`} className="flex items-center gap-1.5">
-                View All <ChevronRight className="h-3 w-3" />
+                View all <ChevronRight className="h-4 w-4" />
             </Link>
         </button>
     </div>
@@ -119,7 +119,7 @@ export default function WorkspaceOverviewPage() {
         onSearchChange={setSearchQuery}
         searchPlaceholder={`Search within ${workspace.name}...`}
       >
-        <div className="max-w-5xl mx-auto pt-4">
+        <div className="max-w-5xl pt-4">
             {filteredSections.map((section) => (
                 <PreviewSection 
                     key={section.id} 

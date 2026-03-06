@@ -2,16 +2,14 @@
 
 import * as React from "react";
 import { useAgentsSection } from "../application/useAgentsSection";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { CostEstimator } from "./CostEstimator";
 import { Button } from "@/shared/ui/ui/Button";
-import { cn } from "@/shared/lib/utils";
-import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import { Card } from "@/shared/ui/ui/Card";
+import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
 import {
-  Edit2,
   Layout,
   Zap,
   Trash2,
@@ -22,9 +20,12 @@ import {
   Globe,
   Cpu,
   Activity,
-} from "lucide-react";
+  User,
+  Bot,
+  } from "lucide-react";
 
-/** Human-friendly names for mock knowledge hub IDs */
+  /** Human-friendly names for mock knowledge hub IDs */
+
 const KNOWLEDGE_HUB_NAMES: Record<string, string> = {
   "kh-product-management": "Product Management Hub",
   "kh-strategy-frameworks": "Strategy Frameworks",
@@ -44,20 +45,21 @@ const LLM_MODEL_NAMES: Record<string, string> = {
   "model-claude-sonnet": "Claude 3.5 Sonnet",
 };
 
+const AGENT_REAL_NAMES: Record<string, string> = {
+  "a-product-owner": "Alex Morgan",
+  "a-tech-writer": "Elena Vance",
+  "a-user-researcher": "Marcus Chen",
+  "a-competitor-analyst": "Sarah Jenkins",
+  "a-ui-designer": "Olivia Aris",
+  "a-developer": "David Kessler",
+  "a-qa-engineer": "Jordan Smith",
+  "a-copywriter": "Mia Thorne",
+};
+
 type AgentsSectionProps = {
   readonly workspaceId: string;
   readonly colorName?: string;
 }
-
-const COLOR_TO_RGB: Record<string, string> = {
-    blue: "59, 130, 246",
-    purple: "168, 85, 247",
-    pink: "236, 72, 153",
-    green: "34, 197, 94",
-    yellow: "234, 179, 8",
-    orange: "249, 115, 22",
-    default: "113, 113, 122"
-};
 
 export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSectionProps) => {
   const {
@@ -70,20 +72,17 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
     handleClosePeek,
   } = useAgentsSection(workspaceId);
 
-  const styles = getVisualStylesForZoneColor(colorName);
-  const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
-
   if (isAgentsLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full shadow-sm rounded-xl" />)}
+      <div className="flex flex-wrap gap-6">
+        {[1, 2, 3, 4].map((index) => <Skeleton key={index} className="aspect-[2/3] w-[236px] shadow-sm rounded-xl" />)}
       </div>
     );
   }
 
   if (!agents || agents.length === 0) {
     return (
-      <Card className="border-dashed h-32 flex items-center justify-center text-muted-foreground text-sm italic rounded-xl bg-muted/5">
+      <Card className="border-dashed h-24 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5">
         No agents defined yet. Bring in some talent.
       </Card>
     );
@@ -98,56 +97,42 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {agents.map((agent) => (
-          <Card
-            key={agent.id}
-            className={cn(
-                "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
-                "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
-                "hover:shadow-md",
-                `hover:${styles.borderClassName}`
-            )}
-            onClick={() => handleSelectAgent(agent.id)}
-          >
-            {/* Accent Top Bar */}
-            <div 
-                className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+      <div className="flex flex-wrap gap-6">
+        {agents.map((agent) => {
+          // Better deterministic image selection based on ID
+          const idHash = agent.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+          const imgId = (idHash % 5) + 1;
+          
+          return (
+            <WorkspaceCard 
+              key={agent.id}
+              variant="agent"
+              title={AGENT_REAL_NAMES[agent.id] || agent.agent_name || "Agent Person"}
+              description={agent.agent_goal}
+              href={`/workspaces/${workspaceId}/agents/${agent.id}`}
+              badgeLabel={agent.agent_role_text || "AI Agent"}
+              tags={agent.agent_keywords}
+              onEdit={() => handleSelectAgent(agent.id)}
+              className="w-[236px] shrink-0"
+              colorName={colorName}
+              visualArea={
+                  <div className="absolute inset-0 flex items-start justify-center overflow-hidden pt-9">
+                      {/* Background Soft Glow (Lowered, fading up for clarity) */}
+                      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-zinc-100/[0.04] to-transparent dark:from-zinc-900/[0.04] dark:to-transparent" />
+                      
+                      {/* Real Agent Image */}
+                      <div className="relative w-full h-full flex justify-center">
+                          <img 
+                              src={`/images/avatars/agent-${imgId}.png`}
+                              alt={agent.agent_name}
+                              className="w-full h-full object-contain scale-110 origin-bottom transition-all duration-700 brightness-[1.15] contrast-[1.05] group-hover:brightness-[1.22] group-hover:contrast-[1.10] group-hover:-translate-y-2"
+                          />
+                      </div>
+                  </div>
+              }
             />
-
-            {/* Background Grid Pattern */}
-            <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
-                style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
-            />
-
-            <CardHeader className="relative z-10 space-y-3 pb-3 pt-4">
-              <div className="flex justify-between items-start">
-                <Badge variant="outline" className="text-[9px] uppercase tracking-widest font-bold bg-muted/30 border-none">
-                  {agent.agent_role_text || "Specialist"}
-                </Badge>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="ghost" size="icon" className="h-6 w-6">
-                    <Edit2 className="w-3 h-3 text-zinc-400" />
-                  </Button>
-                </div>
-              </div>
-              <CardTitle className="text-sm font-bold mt-1 font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                {agent.agent_name || "Untitled Agent"}
-              </CardTitle>
-              <CardDescription className="line-clamp-2 text-[11px] leading-relaxed min-h-[2.5rem]">
-                {agent.agent_goal || "No goal defined"}
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="relative z-10 mt-auto pt-0 pb-4">
-                <div className="flex items-center gap-1 flex-wrap">
-                    {agent.agent_keywords?.slice(0, 2).map((kw, i) => (
-                    <span key={i} className="text-[10px] text-muted-foreground/60 italic font-medium">#{kw}</span>
-                    ))}
-                </div>
-            </CardContent>
-          </Card>
-        ))}
+          );
+        })}
       </div>
 
       <SidePeek

@@ -25,22 +25,22 @@ export const AiAssistantCard = ({
   placeholder = "Ask AI anything... What do you want to accomplish today?",
 }: AiAssistantCardProps) => {
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto">
       <div className="relative bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl transition-all">
         {/* Input Area */}
-        <div className="p-6 pb-2 text-left">
+        <div className="p-5 pb-1 text-left">
           <textarea
             value={value}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
             rows={2}
-            className="w-full bg-transparent border-none text-base font-medium focus:outline-none resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 min-h-[60px]"
+            className="w-full bg-transparent border-none text-base font-medium focus:outline-none resize-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 min-h-[48px]"
           />
         </div>
 
         {/* Action Bar */}
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center gap-2">
             {/* Left side empty */}
           </div>

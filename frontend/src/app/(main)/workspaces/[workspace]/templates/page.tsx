@@ -3,8 +3,7 @@
 import { useParams } from "next/navigation";
 import { useTemplates, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
-import { Button } from "@/shared/ui/ui/Button";
-import { Plus } from "lucide-react";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { TemplatesBrowser } from "@/modules/workspaces/features/browse-templates/ui/TemplatesBrowser";
 import { shouldShowPagination } from "@/shared/lib/pagination";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
@@ -29,9 +28,7 @@ export default function TemplatesListPage() {
           { label: "Templates" }
       ]}
       actions={
-        <Button variant="primary" size="lg">
-          <Plus className="mr-2 h-4 w-4" /> Create Template
-        </Button>
+        <ActionButton label="Create Template" />
       }
       showPagination={shouldShowPagination(templates?.length || 0)}
       pagination={null}
