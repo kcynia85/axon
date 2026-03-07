@@ -62,6 +62,7 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
         onOpenChange={(open) => !open && setSelectedPatternId(null)}
         title={selectedPattern?.pattern_name || "Pattern Details"}
         description={`${selectedPattern?.domain} Domain Pattern`}
+        modal={false}
       >
         {selectedPattern && (
           <div className="space-y-6">

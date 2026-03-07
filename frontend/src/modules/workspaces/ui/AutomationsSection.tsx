@@ -71,6 +71,7 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
         onOpenChange={(open) => !open && setSelectedAutomationId(null)}
         title={selectedAutomation?.automation_name || "Automation Details"}
         description={`${selectedAutomation?.automation_platform} Trigger`}
+        modal={false}
       >
         {selectedAutomation && (
           <div className="space-y-6">

@@ -69,6 +69,7 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
         onOpenChange={(open) => !open && setSelectedServiceId(null)}
         title={selectedService?.service_name || "Service Details"}
         description={`${selectedService?.provider_name} Integration`}
+        modal={false}
       >
         {selectedService && (
           <div className="space-y-6">

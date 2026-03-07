@@ -57,7 +57,16 @@ export const WorkspaceCardHorizontal = ({
         const remainingCount = Math.max(0, agentIds.length - 3);
 
         return (
-            <Link href={href} className={cn("group block w-full outline-none h-full", className)}>
+            <Link 
+                href={href} 
+                className={cn("group block w-full outline-none h-full", className)}
+                onClick={(e) => {
+                    if (onEdit) {
+                        e.preventDefault();
+                        onEdit(e);
+                    }
+                }}
+            >
                 <Card className="flex flex-col h-full p-6 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-xl transition-all rounded-2xl overflow-hidden active:scale-[0.98] relative min-h-[200px] justify-between">
                     
                     {/* Background Soft Glow */}
@@ -160,7 +169,16 @@ export const WorkspaceCardHorizontal = ({
 
     // --- DEFAULT VARIANT (High quality horizontal row) ---
     return (
-        <Link href={href} className={cn("group block w-full outline-none", className)}>
+        <Link 
+            href={href} 
+            className={cn("group block w-full outline-none", className)}
+            onClick={(e) => {
+                if (onEdit) {
+                    e.preventDefault();
+                    onEdit(e);
+                }
+            }}
+        >
             <Card className="flex items-start p-5 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative min-h-[120px]">
                 
                 {/* Visual / Icon */}

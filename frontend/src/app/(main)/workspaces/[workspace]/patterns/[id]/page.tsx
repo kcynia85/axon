@@ -25,6 +25,7 @@ export default function PatternSidePeekPage() {
         description="Pattern Details"
         open={true}
         onOpenChange={() => router.push(`/workspaces/${workspaceId}/patterns`)}
+        modal={false}
         footer={
             <Button className="w-full gap-2" variant="outline">
                 <ExternalLink className="h-4 w-4" /> Edit in Space

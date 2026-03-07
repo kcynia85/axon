@@ -13,13 +13,15 @@ import { cn } from "@/shared/lib/utils";
 
 type SidePeekProps = {
   readonly title: string;
-  readonly description?: string;
+  readonly description?: React.ReactNode;
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
   readonly children: React.ReactNode;
   readonly footer?: React.ReactNode;
   readonly className?: string;
   readonly maxWidth?: string;
+  readonly modal?: boolean;
+  readonly image?: React.ReactNode;
 }
 
 /**
@@ -35,20 +37,31 @@ export const SidePeek = ({
   footer,
   className,
   maxWidth = "sm:max-w-md",
+  modal = true,
+  image,
 }: SidePeekProps) => {
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className={cn("flex flex-col p-0 overflow-y-auto", maxWidth, className)}>
+    <Sheet open={open} onOpenChange={onOpenChange} modal={modal}>
+      <SheetContent className={cn("flex flex-col p-0 overflow-y-auto", maxWidth, className)} modal={modal}>
         <SheetHeader className="p-6 border-b shrink-0">
-          <SheetTitle className="text-xl font-bold tracking-tight">{title}</SheetTitle>
-          {description && (
-            <SheetDescription className="text-muted-foreground">
-              {description}
-            </SheetDescription>
-          )}
+          <div className="flex items-center gap-4">
+            {image && (
+              <div className="shrink-0">
+                {image}
+              </div>
+            )}
+            <div className="flex flex-col gap-1 min-w-0">
+              <SheetTitle className="text-xl font-bold tracking-tight truncate">{title}</SheetTitle>
+              {description && (
+                <SheetDescription className="text-muted-foreground truncate">
+                  {description}
+                </SheetDescription>
+              )}
+            </div>
+          </div>
         </SheetHeader>
         
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 text-base">
           {children}
         </div>
 

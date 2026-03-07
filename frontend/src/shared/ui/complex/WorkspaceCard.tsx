@@ -56,7 +56,16 @@ export const WorkspaceCard = ({
     // --- AGENT VARIANT: GRID (Poster style) ---
     if (variant === "agent" && layout === "grid") {
         return (
-            <Link href={href} className={cn("group block h-full outline-none", className)}>
+            <Link 
+                href={href} 
+                className={cn("group block h-full outline-none", className)}
+                onClick={(e) => {
+                    if (onEdit) {
+                        e.preventDefault();
+                        onEdit(e);
+                    }
+                }}
+            >
                 <Card className="aspect-[1694/2528] w-full border-zinc-200 dark:border-zinc-800 bg-black flex flex-col transition-all group-hover:border-zinc-400 dark:group-hover:border-zinc-600 group-hover:shadow-xl rounded-2xl overflow-hidden active:scale-[0.98] relative">
                     
                     {/* Visual Area (AI Avatar style human) - Always black background */}
@@ -104,7 +113,16 @@ export const WorkspaceCard = ({
     // --- AGENT VARIANT: LIST (Horizontal Row style) ---
     if (variant === "agent" && layout === "list") {
         return (
-            <Link href={href} className={cn("group block w-full outline-none", className)}>
+            <Link 
+                href={href} 
+                className={cn("group block w-full outline-none", className)}
+                onClick={(e) => {
+                    if (onEdit) {
+                        e.preventDefault();
+                        onEdit(e);
+                    }
+                }}
+            >
                 <Card className="flex flex-row items-stretch p-0 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative min-h-[120px]">
                     
                     {/* Left Side: Avatar Box */}
@@ -154,7 +172,16 @@ export const WorkspaceCard = ({
 
     // --- DEFAULT VARIANT (MainCard style) ---
     return (
-        <Link href={href} className={cn("group block h-full outline-none", className)}>
+        <Link 
+            href={href} 
+            className={cn("group block h-full outline-none", className)}
+            onClick={(e) => {
+                if (onEdit) {
+                    e.preventDefault();
+                    onEdit(e);
+                }
+            }}
+        >
             <Card className="h-full border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col transition-all group-hover:border-zinc-400 dark:group-hover:border-zinc-600 group-hover:shadow-md rounded-2xl overflow-hidden active:scale-[0.98] relative">
                 <CardHeader className="pb-2 pt-4 flex flex-col items-start gap-2">
                     {/* Title Block */}

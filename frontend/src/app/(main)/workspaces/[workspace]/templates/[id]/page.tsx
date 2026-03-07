@@ -25,6 +25,7 @@ export default function TemplateSidePeekPage() {
         description="Template Details"
         open={true}
         onOpenChange={() => router.push(`/workspaces/${workspaceId}/templates`)}
+        modal={false}
         footer={
             <Button className="w-full" variant="outline" onClick={() => router.push(`/workspaces/${workspaceId}/templates/${templateId}/edit`)}>
                 Edytuj Template

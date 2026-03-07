@@ -6,29 +6,19 @@ import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { useAgentsBrowser } from "../application/useAgentsBrowser";
 import { Agent } from "@/shared/domain/workspaces";
-import { Bot } from "lucide-react";
 import { useParams } from "next/navigation";
 import { SortOption } from "@/shared/domain/filters";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
+import { AgentProfilePeek } from "@/modules/workspaces/ui/AgentProfilePeek";
 import { cn } from "@/shared/lib/utils";
+import { AGENT_REAL_NAMES } from "@/modules/workspaces/domain/constants";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
   { id: "name-desc", label: "Name (Z-A)" },
   { id: "newest", label: "Recently Added" },
 ];
-
-const AGENT_REAL_NAMES: Record<string, string> = {
-  "a-product-owner": "Alex Morgan",
-  "a-tech-writer": "Elena Vance",
-  "a-user-researcher": "Marcus Chen",
-  "a-competitor-analyst": "Sarah Jenkins",
-  "a-ui-designer": "Olivia Aris",
-  "a-developer": "David Kessler",
-  "a-qa-engineer": "Jordan Smith",
-  "a-copywriter": "Mia Thorne",
-};
 
 const getDeterministicImgId = (id: string): number => {
   let hash = 0;
@@ -51,6 +41,10 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
     processedAgents,
     viewMode,
     setViewMode,
+    selectedAgentId,
+    setIsSidebarOpen,
+    isSidebarOpen,
+    handleViewDetails,
     filterConfig,
   } = useAgentsBrowser(initialAgents);
 
@@ -68,6 +62,8 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
     getPreviewCount,
     setPendingFilterIds,
   } = filterConfig;
+
+  const selectedAgent = initialAgents.find(a => a.id === selectedAgentId) || null;
 
   return (
     <BrowserLayout
@@ -122,6 +118,7 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                   href={`/workspaces/${workspaceId}/agents/${agent.id}`}
                   badgeLabel={agent.agent_role_text || "AI Agent"}
                   tags={agent.agent_keywords}
+                  onEdit={() => handleViewDetails(agent.id)}
                   colorName={colorName}
                   className={viewMode === "grid" ? "w-[252px] shrink-0" : ""}
                   visualArea={
@@ -153,6 +150,13 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
           })}
         </div>
       )}
+
+      <AgentProfilePeek 
+        agent={selectedAgent}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onEdit={() => {}} // TODO: Handle edit
+      />
     </BrowserLayout>
   );
 };

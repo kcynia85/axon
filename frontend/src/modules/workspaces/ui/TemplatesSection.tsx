@@ -65,6 +65,7 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
         onOpenChange={(open) => !open && setSelectedTemplateId(null)}
         title={selectedTemplate?.template_name || "Template Details"}
         description={`${selectedTemplate?.template_type} Core Template`}
+        modal={false}
       >
         {selectedTemplate && (
           <div className="space-y-6">

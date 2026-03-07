@@ -25,6 +25,7 @@ export default function ServiceSidePeekPage() {
         description={service.service_category}
         open={true}
         onOpenChange={() => router.push(`/workspaces/${workspaceId}/services`)}
+        modal={false}
         footer={
             <Button className="w-full gap-2" variant="outline" onClick={() => router.push(`/workspaces/${workspaceId}/services/${serviceId}/edit`)}>
                 Edytuj Service

@@ -25,6 +25,7 @@ export default function AutomationSidePeekPage() {
         description={`${automation.automation_platform} Unit`}
         open={true}
         onOpenChange={() => router.push(`/workspaces/${workspaceId}/automations`)}
+        modal={false}
         footer={
             <Button className="w-full gap-2" variant="outline" onClick={() => router.push(`/workspaces/${workspaceId}/automations/${automationId}/edit`)}>
                 Edytuj Automatyzację
