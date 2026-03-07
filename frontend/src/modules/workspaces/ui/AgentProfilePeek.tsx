@@ -5,22 +5,7 @@ import Image from "next/image";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
-import { Separator } from "@/shared/ui/ui/Separator";
-import {
-  Hash,
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  BookOpen,
-  Globe,
-  Users,
-  Info,
-  Brain,
-  Zap,
-  HelpCircle,
-  Code2,
-  Cpu,
-} from "lucide-react";
-
+import { HelpCircle, BookOpen } from "lucide-react";
 import { AGENT_REAL_NAMES, KNOWLEDGE_HUB_NAMES, LLM_MODEL_NAMES } from "../domain/constants";
 import { Agent } from "@/shared/domain/workspaces";
 
@@ -33,12 +18,8 @@ const getDeterministicImgId = (id: string): number => {
   return (Math.abs(hash) % 5) + 1;
 };
 
-const SKILL_ICONS: Record<string, React.ElementType | null> = {
-  "Web Search": null,
-  "File Browser": null,
-  "lead_scoring": Code2,
-  "validate_nip_pl": Code2,
-};
+// Re-importing Code2 if needed but instructions said remove icons from native skills
+import { Code2 } from "lucide-react";
 
 type AgentProfilePeekProps = {
   readonly agent: Agent | null;
@@ -56,6 +37,13 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit }: AgentProfil
   const outputFields = agent.output_schema
     ? Object.entries(agent.output_schema as Record<string, string>)
     : [];
+
+  const skillIcons: Record<string, React.ElementType | null> = {
+    "Web Search": null,
+    "File Browser": null,
+    "lead_scoring": Code2,
+    "validate_nip_pl": Code2,
+  };
 
   return (
     <SidePeek
@@ -184,7 +172,7 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit }: AgentProfil
           </h4>
           <div className="space-y-1.5">
             {["Web Search", "File Browser", "lead_scoring", "validate_nip_pl"].map((skill) => {
-              const Icon = SKILL_ICONS[skill];
+              const Icon = skillIcons[skill];
               return (
                 <div key={skill} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
                   <div className="flex items-center gap-3">

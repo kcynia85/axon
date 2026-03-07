@@ -53,9 +53,9 @@ export const SidePeek = ({
             <div className="flex flex-col gap-1 min-w-0">
               <SheetTitle className="text-xl font-bold tracking-tight truncate">{title}</SheetTitle>
               {description && (
-                <SheetDescription className="text-muted-foreground truncate">
+                <div className="text-muted-foreground truncate">
                   {description}
-                </SheetDescription>
+                </div>
               )}
             </div>
           </div>
