@@ -24,7 +24,7 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full shadow-sm rounded-xl" />)}
       </div>
     );
@@ -42,7 +42,7 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {patterns.map((pattern) => (
           <WorkspaceCardHorizontal 
             key={pattern.id}
@@ -51,7 +51,6 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
             href={`/workspaces/${workspaceId}/patterns/${pattern.id}`}
             badgeLabel={pattern.domain || "Workflow"}
             tags={pattern.pattern_keywords}
-            icon={Workflow}
             onEdit={() => setSelectedPatternId(pattern.id)}
             colorName={colorName}
           />

@@ -27,7 +27,7 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full shadow-sm rounded-xl" />)}
       </div>
     );
@@ -45,7 +45,7 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
 
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {templates.map((template) => (
           <WorkspaceCardHorizontal 
             key={template.id}
@@ -54,7 +54,6 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
             href={`/workspaces/${workspaceId}/templates/${template.id}/edit`}
             badgeLabel={template.template_type}
             tags={template.template_keywords}
-            icon={FileText}
             onEdit={() => setSelectedTemplateId(template.id)}
             colorName={colorName}
           />

@@ -88,7 +88,7 @@ export const WorkspaceCardHorizontal = ({
                                         );
                                     })}
                                     {remainingCount > 0 && (
-                                        <div className="flex items-center justify-center text-[14px] font-bold tracking-tight ml-[-4px] z-40 text-zinc-500">
+                                        <div className="w-10 h-10 flex items-center justify-center text-[13px] font-black tracking-tighter z-40 text-zinc-500 pl-2 border-2 border-transparent">
                                             +{remainingCount}
                                         </div>
                                     )}
@@ -143,7 +143,7 @@ export const WorkspaceCardHorizontal = ({
                     </div>
 
                     {/* BOTTOM: Tags */}
-                    <div className="flex justify-start w-full z-10">
+                    <div className="flex justify-start w-full z-10 pt-2">
                         <div className="flex flex-wrap gap-2 justify-start">
                             {tags?.slice(0, 2).map(tag => (
                                 <TagChip key={tag} label={tag} />
@@ -151,16 +151,8 @@ export const WorkspaceCardHorizontal = ({
                         </div>
                     </div>
 
-                    {/* Hover Arrow */}
-                    <div className="absolute right-5 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center">
-                        <ArrowRight 
-                            size={20} 
-                            className="text-white opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" 
-                        />
-                    </div>
-
                     {/* Bottom Accent Bar */}
-                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-60 group-hover:opacity-100 transition-opacity z-30", styles.hoverBackgroundClassName)} />
+                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
                 </Card>
             </Link>
         );
@@ -186,14 +178,14 @@ export const WorkspaceCardHorizontal = ({
                         </h4>
                     </div>
                     {description && (
-                        <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed mb-4 font-medium">
+                        <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed mb-6 font-medium">
                             {truncatedDescription}
                         </p>
                     )}
                     
                     {/* Tags */}
                     {tags && tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-1.5 mt-1">
                             {tags.slice(0, 2).map(tag => (
                                 <TagChip key={tag} label={tag} />
                             ))}
@@ -207,16 +199,8 @@ export const WorkspaceCardHorizontal = ({
                     )}
                 </div>
 
-                {/* Hover Arrow */}
-                <div className="absolute right-5 top-1/2 -translate-y-1/2 flex items-center justify-center">
-                    <ArrowRight 
-                        size={18} 
-                        className="text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" 
-                    />
-                </div>
-
                 {/* Bottom Accent Bar */}
-                <div className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-40 group-hover:opacity-100 transition-opacity z-30", styles.hoverBackgroundClassName)} />
+                <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
             </Card>
         </Link>
     );

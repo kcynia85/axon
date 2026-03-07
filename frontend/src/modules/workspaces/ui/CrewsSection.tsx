@@ -43,7 +43,7 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full shadow-sm rounded-xl" />)}
       </div>
     );
@@ -70,7 +70,7 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
 
   return (
     <>
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {crews.map((crew) => (
           <WorkspaceCardHorizontal 
             key={crew.id}

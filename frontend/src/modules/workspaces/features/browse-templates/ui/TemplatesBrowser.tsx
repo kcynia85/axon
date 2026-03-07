@@ -88,20 +88,13 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
           {processedTemplates.map((template) => (
             <WorkspaceCardHorizontal 
                 key={template.id}
-                variant="crew"
+                variant="default"
                 title={template.name || template.template_name}
                 description={template.description || template.template_description}
                 href={`/workspaces/${workspaceId}/templates/${template.id}/edit`}
                 badgeLabel={template.category || template.template_type}
                 tags={template.tags || template.template_keywords}
-                icon={FileText}
                 colorName={colorName}
-                footerContent={
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
-                        <ListTodo className="w-3 h-3" />
-                        <span>{template.template_checklist_items?.length || 0} Tasks</span>
-                    </div>
-                }
             />
           ))}
         </div>

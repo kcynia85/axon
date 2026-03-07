@@ -80,7 +80,5 @@ export const MainCardFooter = ({ label, className }: MainCardFooterProps) => (
     <BaseSpan className="text-[16px] font-blackpod tracking-widest text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
       {label}
     </BaseSpan>
-    
-    <ChevronRight size={16} className="text-zinc-300 group-hover:text-black dark:group-hover:text-white transition-all transform group-hover:translate-x-0.5" />
   </CardFooter>
 );

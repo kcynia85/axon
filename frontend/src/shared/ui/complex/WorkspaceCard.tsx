@@ -73,7 +73,7 @@ export const WorkspaceCard = ({
                         <div className="flex flex-col items-start w-full mb-4 mt-auto">
                             {/* 1. Role Heading (16px) */}
                             <div className="h-[24px] w-full flex items-end justify-start mb-1">
-                                <h4 className="text-[16px] font-bold tracking-tight text-white group-hover:text-primary transition-colors leading-tight whitespace-nowrap truncate w-full uppercase">
+                                <h4 className="text-[16px] font-bold tracking-tight text-white group-hover:text-primary transition-colors leading-tight whitespace-nowrap truncate w-full capitalize">
                                     {badgeLabel}
                                 </h4>
                             </div>
@@ -94,16 +94,8 @@ export const WorkspaceCard = ({
                         </div>
                     </div>
 
-                    {/* Arrow indicator on hover */}
-                    <div className="absolute right-4 top-[148px] -translate-y-1/2 z-30 flex items-center justify-center">
-                        <ArrowRight 
-                            size={20} 
-                            className="text-white opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" 
-                        />
-                    </div>
-
                     {/* Bottom Accent Bar */}
-                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-60 group-hover:opacity-100 transition-opacity z-30", styles.hoverBackgroundClassName)} />
+                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
                 </Card>
             </Link>
         );
@@ -128,7 +120,7 @@ export const WorkspaceCard = ({
                     {/* Right Side: Content */}
                     <div className="flex-1 p-5 min-w-0 pr-12 flex flex-col justify-center">
                         <div className="flex flex-col items-start mb-2">
-                            <h4 className="text-[15px] font-black tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2">
+                            <h4 className="text-[15px] font-black tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2 capitalize">
                                 {badgeLabel || "AI Agent"}
                             </h4>
                             <span className="text-[13px] font-bold text-zinc-500 group-hover:text-zinc-400 transition-colors">
@@ -153,16 +145,8 @@ export const WorkspaceCard = ({
                         )}
                     </div>
 
-                    {/* Hover Arrow (Absolutely Centered Right) */}
-                    <div className="absolute right-5 top-1/2 -translate-y-1/2 flex items-center justify-center">
-                        <ArrowRight 
-                            size={18} 
-                            className="text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" 
-                        />
-                    </div>
-
                     {/* Bottom Accent Bar */}
-                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-40 group-hover:opacity-100 transition-opacity z-30", styles.hoverBackgroundClassName)} />
+                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
                 </Card>
             </Link>
         );
@@ -211,11 +195,10 @@ export const WorkspaceCard = ({
                     <BaseSpan className="text-[11px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
                         {footerLabel}
                     </BaseSpan>
-                    <ChevronRight size={14} className="text-zinc-300 group-hover:text-black dark:group-hover:text-white transition-all transform group-hover:translate-x-0.5" />
                 </CardFooter>
 
                 {/* Bottom Accent Bar */}
-                <div className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-60 group-hover:opacity-100 transition-opacity z-30", styles.hoverBackgroundClassName)} />
+                <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
             </Card>
         </Link>
     );

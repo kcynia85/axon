@@ -88,13 +88,12 @@ export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: Patt
           {processedPatterns.map((pattern) => (
             <WorkspaceCardHorizontal 
                 key={pattern.id}
-                variant="crew"
-                title={pattern.name || pattern.pattern_name}
-                description={pattern.description || pattern.pattern_description}
+                variant="default"
+                title={pattern.pattern_name || (pattern as any).name}
+                description={(pattern as any).pattern_description || (pattern as any).description || "Optimized process sequence."}
                 href={`/workspaces/${workspaceId}/patterns/${pattern.id}`}
-                badgeLabel={pattern.type || "Workflow"}
+                badgeLabel={pattern.pattern_type || "Workflow"}
                 tags={pattern.pattern_keywords}
-                icon={Workflow}
                 colorName={colorName}
             />
           ))}
