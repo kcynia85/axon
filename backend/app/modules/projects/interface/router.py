@@ -3,6 +3,8 @@ from typing import List
 from uuid import UUID
 
 from app.modules.projects.domain.models import Project, KeyResource, Artifact
+from app.modules.projects.infrastructure.repo import ProjectRepository
+from app.modules.projects.dependencies import get_project_repo
 from app.modules.projects.application import service
 from app.modules.projects.application.schemas import (
     ProjectCreateDTO, 
@@ -11,6 +13,7 @@ from app.modules.projects.application.schemas import (
     ArtifactCreateDTO
 )
 from app.api.deps import get_current_user
+from app.shared.security.schemas import UserPayload
 
 router = APIRouter(
     prefix="/projects", 
@@ -20,12 +23,15 @@ router = APIRouter(
 
 @router.get("/", response_model=List[Project])
 async def list_projects(
-    projects: List[Project] = Depends(service.list_projects_use_case)
+    limit: int = 100,
+    offset: int = 0,
+    repo: ProjectRepository = Depends(get_project_repo),
+    user: UserPayload = Depends(get_current_user)
 ):
     """
     List all projects for the authenticated user.
     """
-    return projects
+    return await service.list_projects_use_case(limit=limit, offset=offset, user=user, repo=repo)
 
 @router.post("/", response_model=Project, status_code=status.HTTP_201_CREATED)
 async def create_project(

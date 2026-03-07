@@ -1,8 +1,11 @@
-import React from "react";
+"use client";
+
+import React, { useRef, useMemo } from "react";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { EmptyState } from "@/shared/ui/ui/EmptyState";
 import { LucideIcon, SearchX, AlertCircle } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 export type ViewMode = "grid" | "list";
 
@@ -22,10 +25,13 @@ type ResourceListProps<T> = {
   readonly gridClassName?: string;
   readonly listClassName?: string;
   readonly containerClassName?: string;
+  readonly virtualize?: boolean;
+  readonly itemHeight?: number; // Estimated height for virtualization
+  readonly containerHeight?: string | number;
 }
 
 export const ResourceList = <T,>({
-  items,
+  items = [],
   isLoading,
   isError = false,
   errorTitle = "Something went wrong",
@@ -40,13 +46,24 @@ export const ResourceList = <T,>({
   gridClassName = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
   listClassName = "flex flex-col gap-3",
   containerClassName,
+  virtualize = false,
+  itemHeight = 150,
+  containerHeight = "70vh",
 }: ResourceListProps<T>) => {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: items?.length ?? 0,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => itemHeight,
+    overscan: 5,
+  });
+
   if (isLoading) {
     if (renderSkeleton) {
       return <div className={containerClassName}>{renderSkeleton()}</div>;
     }
     
-    // Default skeleton layout
     const skeletonLayout = viewMode === "grid" ? gridClassName : listClassName;
     return (
       <div className={cn(skeletonLayout, containerClassName)}>
@@ -78,11 +95,47 @@ export const ResourceList = <T,>({
     );
   }
 
+  if (virtualize && viewMode === "list") {
+    return (
+      <div
+        ref={parentRef}
+        className={cn("overflow-auto", containerClassName)}
+        style={{ height: containerHeight }}
+      >
+        <div
+          style={{
+            height: `${rowVirtualizer.getTotalSize()}px`,
+            width: "100%",
+            position: "relative",
+          }}
+        >
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+            <div
+              key={virtualRow.index}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+              className="pb-3" // Gap emulation
+            >
+              {renderItem(items[virtualRow.index])}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   const layoutClassName = viewMode === "grid" ? gridClassName : listClassName;
+  const safeItems = Array.isArray(items) ? items : [];
 
   return (
     <div className={cn(layoutClassName, containerClassName)}>
-      {items.map((item, index) => (
+      {safeItems.map((item, index) => (
         <React.Fragment key={index}>
           {renderItem(item)}
         </React.Fragment>

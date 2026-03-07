@@ -1,20 +1,22 @@
 from uuid import UUID, uuid4
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func, union
 from sqlalchemy.orm import selectinload
 from app.modules.workspaces.domain.models import Pattern, Template, Crew
 from app.modules.workspaces.infrastructure.tables import PatternTable, TemplateTable, CrewTable, crew_agents_association
+from app.shared.utils.time import now_utc
 
 class WorkspaceRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
     # --- Patterns ---
-    async def list_patterns(self, workspace: Optional[str] = None) -> List[Pattern]:
+    async def list_patterns(self, workspace: Optional[str] = None, limit: int = 100, offset: int = 0) -> List[Pattern]:
         stmt = select(PatternTable).where(PatternTable.deleted_at == None).order_by(PatternTable.created_at.desc())
         if workspace:
              stmt = stmt.where(PatternTable.availability_workspace.contains([workspace]))
+        stmt = stmt.limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return [self._pattern_to_domain(row) for row in result.scalars().all()]
 
@@ -57,10 +59,11 @@ class WorkspaceRepository:
         )
 
     # --- Templates ---
-    async def list_templates(self, workspace: Optional[str] = None) -> List[Template]:
+    async def list_templates(self, workspace: Optional[str] = None, limit: int = 100, offset: int = 0) -> List[Template]:
         stmt = select(TemplateTable).where(TemplateTable.deleted_at == None).order_by(TemplateTable.created_at.desc())
         if workspace:
              stmt = stmt.where(TemplateTable.availability_workspace.contains([workspace]))
+        stmt = stmt.limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return [self._template_to_domain(row) for row in result.scalars().all()]
 
@@ -103,10 +106,11 @@ class WorkspaceRepository:
         )
 
     # --- Crews ---
-    async def list_crews(self, workspace: Optional[str] = None) -> List[Crew]:
+    async def list_crews(self, workspace: Optional[str] = None, limit: int = 100, offset: int = 0) -> List[Crew]:
         stmt = select(CrewTable).options(selectinload(CrewTable.agents)).where(CrewTable.deleted_at == None).order_by(CrewTable.created_at.desc())
         if workspace:
              stmt = stmt.where(CrewTable.availability_workspace.contains([workspace]))
+        stmt = stmt.limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return [self._crew_to_domain(row) for row in result.scalars().all()]
 
@@ -159,29 +163,18 @@ class WorkspaceRepository:
         await self.session.commit()
         return self._crew_to_domain(new_row)
 
-    async def get_unique_workspaces(self) -> List[str]:
+    async def get_unique_workspaces(self, limit: int = 100, offset: int = 0) -> List[str]:
         """Get all unique workspace identifiers from patterns, templates, and crews."""
-        workspaces = set()
+        # Use SQL UNION and unnest for scalability
+        p_sub = select(func.unnest(PatternTable.availability_workspace).label("ws"))
+        t_sub = select(func.unnest(TemplateTable.availability_workspace).label("ws"))
+        c_sub = select(func.unnest(CrewTable.availability_workspace).label("ws"))
         
-        # Get from patterns
-        result = await self.session.execute(select(PatternTable.availability_workspace).distinct())
-        for row in result.scalars().all():
-            if row:
-                workspaces.update(row)
+        combined = union(p_sub, t_sub, c_sub).alias("all_ws")
+        stmt = select(combined.c.ws).order_by(combined.c.ws).limit(limit).offset(offset)
         
-        # Get from templates
-        result = await self.session.execute(select(TemplateTable.availability_workspace).distinct())
-        for row in result.scalars().all():
-            if row:
-                workspaces.update(row)
-        
-        # Get from crews
-        result = await self.session.execute(select(CrewTable.availability_workspace).distinct())
-        for row in result.scalars().all():
-            if row:
-                workspaces.update(row)
-        
-        return sorted(list(workspaces))
+        result = await self.session.execute(stmt)
+        return [row[0] for row in result.all() if row[0]]
 
     def _crew_to_domain(self, row: CrewTable) -> Crew:
         return Crew(

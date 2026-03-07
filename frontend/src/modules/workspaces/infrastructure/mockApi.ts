@@ -528,9 +528,9 @@ const MOCK_AUTOMATIONS: Record<string, Automation[]> = {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const mockApi = {
-  getWorkspaces: async (): Promise<Workspace[]> => {
+  getWorkspaces: async (limit: number = 100, offset: number = 0): Promise<Workspace[]> => {
     await delay(600);
-    return MOCK_WORKSPACES;
+    return MOCK_WORKSPACES.slice(offset, offset + limit);
   },
 
   getWorkspace: async (id: string): Promise<Workspace | null> => {
@@ -538,33 +538,39 @@ export const mockApi = {
     return MOCK_WORKSPACES.find((workspace) => workspace.id === id) || null;
   },
 
-  getAgents: async (workspaceId: string): Promise<Agent[]> => {
+  getAgents: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Agent[]> => {
     await delay(500);
-    return MOCK_AGENTS[workspaceId] ?? [];
+    const items = MOCK_AGENTS[workspaceId] ?? [];
+    return items.slice(offset, offset + limit);
   },
 
-  getCrews: async (workspaceId: string): Promise<Crew[]> => {
+  getCrews: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Crew[]> => {
     await delay(500);
-    return MOCK_CREWS[workspaceId] ?? [];
+    const items = MOCK_CREWS[workspaceId] ?? [];
+    return items.slice(offset, offset + limit);
   },
 
-  getPatterns: async (workspaceId: string): Promise<Pattern[]> => {
+  getPatterns: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Pattern[]> => {
     await delay(300);
-    return MOCK_PATTERNS[workspaceId] ?? [];
+    const items = MOCK_PATTERNS[workspaceId] ?? [];
+    return items.slice(offset, offset + limit);
   },
 
-  getTemplates: async (workspaceId: string): Promise<Template[]> => {
+  getTemplates: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Template[]> => {
     await delay(300);
-    return MOCK_TEMPLATES[workspaceId] ?? [];
+    const items = MOCK_TEMPLATES[workspaceId] ?? [];
+    return items.slice(offset, offset + limit);
   },
 
-  getServices: async (workspaceId: string): Promise<Service[]> => {
+  getServices: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Service[]> => {
     await delay(300);
-    return MOCK_SERVICES[workspaceId] ?? [];
+    const items = MOCK_SERVICES[workspaceId] ?? [];
+    return items.slice(offset, offset + limit);
   },
 
-  getAutomations: async (workspaceId: string): Promise<Automation[]> => {
+  getAutomations: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Automation[]> => {
     await delay(300);
-    return MOCK_AUTOMATIONS[workspaceId] ?? [];
+    const items = MOCK_AUTOMATIONS[workspaceId] ?? [];
+    return items.slice(offset, offset + limit);
   },
 };

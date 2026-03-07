@@ -32,10 +32,12 @@ async def create_project_use_case(
     return await repo.create(new_project)
 
 async def list_projects_use_case(
+    limit: int = 100,
+    offset: int = 0,
     user: UserPayload = Depends(get_current_user),
     repo: ProjectRepository = Depends(get_project_repo)
 ) -> List[Project]:
-    return await repo.list_by_user(user.sub)
+    return await repo.list_by_user(user.sub, limit=limit, offset=offset)
 
 async def get_project_use_case(
     project_id: UUID,

@@ -1,10 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { workspacesApi } from "../infrastructure/api";
 import { Workspace } from "@/shared/domain/workspaces";
 
 export const workspaceKeys = {
   all: ["workspaces"] as const,
   lists: () => [...workspaceKeys.all, "list"] as const,
+  infinite: () => [...workspaceKeys.all, "infinite"] as const,
   detail: (id: string) => [...workspaceKeys.all, "detail", id] as const,
   agents: (workspaceId: string) => [...workspaceKeys.detail(workspaceId), "agents"] as const,
   crews: (workspaceId: string) => [...workspaceKeys.detail(workspaceId), "crews"] as const,
@@ -14,11 +15,15 @@ export const workspaceKeys = {
   automations: (workspaceId: string) => [...workspaceKeys.detail(workspaceId), "automations"] as const,
 };
 
-export const useWorkspaces = () => {
-  return useQuery<Workspace[]>({
-    queryKey: workspaceKeys.lists(),
-    queryFn: workspacesApi.getWorkspaces,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+export const useWorkspaces = (limit: number = 20) => {
+  return useInfiniteQuery<Workspace[]>({
+    queryKey: workspaceKeys.infinite(),
+    queryFn: ({ pageParam = 0 }) => workspacesApi.getWorkspaces(limit, pageParam as number),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === limit ? allPages.length * limit : undefined;
+    },
+    initialPageParam: 0,
+    staleTime: 1000 * 60 * 5,
   });
 };
 
