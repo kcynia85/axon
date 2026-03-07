@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import { SortOption } from "@/shared/domain/filters";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
+import { cn } from "@/shared/lib/utils";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -108,13 +109,14 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
           <p className="text-muted-foreground italic">No agents found matching your criteria.</p>
         </div>
       ) : (
-        <div className={viewMode === "grid" ? "flex flex-wrap gap-6" : "flex flex-col gap-4"}>
+        <div className={viewMode === "grid" ? "flex flex-wrap gap-6" : "flex flex-col gap-8"}>
           {processedAgents.map((agent, index) => {
             const imgId = getDeterministicImgId(agent.id);
             return (
               <WorkspaceCard 
                   key={agent.id}
-                  variant={viewMode === "grid" ? "agent" : "default"}
+                  variant="agent"
+                  layout={viewMode}
                   title={AGENT_REAL_NAMES[agent.id] || agent.agent_name || "Agent Person"}
                   description={agent.agent_goal}
                   href={`/workspaces/${workspaceId}/agents/${agent.id}`}
@@ -123,7 +125,10 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                   colorName={colorName}
                   className={viewMode === "grid" ? "w-[252px] shrink-0" : ""}
                   visualArea={
-                      <div className="absolute inset-0 flex items-start justify-center overflow-hidden pt-24">
+                      <div className={cn(
+                          "absolute inset-0 flex items-start justify-center overflow-hidden",
+                          viewMode === "grid" ? "pt-24" : "pt-0"
+                      )}>
                           {/* Background Soft Glow (Consistent neutral black for all workspaces) */}
                           <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
                           
@@ -133,9 +138,12 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                                   src={`/images/avatars/agent-${imgId}.png`}
                                   alt={agent.agent_name}
                                   fill
-                                  sizes="252px"
+                                  sizes={viewMode === "grid" ? "252px" : "140px"}
                                   priority={index < 4}
-                                  className="object-contain scale-[1.25] origin-bottom transition-all duration-500 group-hover:-translate-y-2"
+                                  className={cn(
+                                      "object-contain transition-all duration-500 group-hover:-translate-y-2",
+                                      viewMode === "grid" ? "scale-[1.25] origin-bottom" : "scale-[1.1] origin-top pt-2"
+                                  )}
                               />
                           </div>
                       </div>

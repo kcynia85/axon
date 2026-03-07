@@ -8,10 +8,7 @@ import { Template } from "@/shared/domain/workspaces";
 import { FileText, ListTodo } from "lucide-react";
 import { useParams } from "next/navigation";
 import { SortOption } from "@/shared/domain/filters";
-import { FilterPill } from "@/shared/ui/complex/FilterPill";
-import { FilterBigMenu } from "@/shared/ui/complex/FilterBigMenu";
-import { SortMenu } from "@/shared/ui/complex/SortMenu";
-import { ViewModeSwitcher } from "@/shared/ui/complex/ViewModeSwitcher";
+import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 
 const SORT_OPTIONS: readonly SortOption[] = [
@@ -62,36 +59,24 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
           onClearAll={handleClearAll}
         />
       )}
-      filters={
-        <div className="flex items-center gap-2">
-          <FilterPill 
-              label="By Category" 
-              group={filterGroups.find(g => g.id === 'categories')} 
-              activeFilters={activeFilters}
-              onToggle={handleToggleFilter}
-          />
-          <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 mx-1 hidden sm:block" />
-          <FilterBigMenu 
-              groups={filterGroups}
-              resultsCount={getPreviewCount(initialTemplates)}
-              onApply={handleApplyFilters}
-              onClearAll={handleClearAll}
-              onSelectionChange={setPendingFilterIds}
-          />
-        </div>
-      }
-      actions={
-        <div className="flex items-center gap-6 mb-[-10px]">
-          <SortMenu 
-              options={SORT_OPTIONS}
-              activeOptionId={sortBy}
-              onSelect={setSortBy}
-          />
-          <ViewModeSwitcher 
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-          />
-        </div>
+      actionBar={
+        <ActionBar 
+          filterGroups={filterGroups}
+          activeFilters={activeFilters}
+          quickFilters={[
+            { label: "Kategorie", groupId: 'categories' }
+          ]}
+          onToggleFilter={handleToggleFilter}
+          onApplyFilters={handleApplyFilters}
+          onClearAllFilters={handleClearAll}
+          onPendingFilterIdsChange={setPendingFilterIds}
+          resultsCount={getPreviewCount(initialTemplates)}
+          sortOptions={SORT_OPTIONS}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+        />
       }
     >
       {processedTemplates.length === 0 ? (
@@ -99,10 +84,11 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
           <p className="text-muted-foreground italic">No templates found matching your criteria.</p>
         </div>
       ) : (
-        <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "flex flex-col gap-4"}>
+        <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-8"}>
           {processedTemplates.map((template) => (
             <WorkspaceCardHorizontal 
                 key={template.id}
+                variant="crew"
                 title={template.name || template.template_name}
                 description={template.description || template.template_description}
                 href={`/workspaces/${workspaceId}/templates/${template.id}/edit`}

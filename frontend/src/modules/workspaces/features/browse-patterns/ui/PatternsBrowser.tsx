@@ -7,10 +7,7 @@ import { usePatternsBrowser } from "../application/usePatternsBrowser";
 import { Pattern } from "@/shared/domain/workspaces";
 import { Workflow } from "lucide-react";
 import { SortOption } from "@/shared/domain/filters";
-import { FilterPill } from "@/shared/ui/complex/FilterPill";
-import { FilterBigMenu } from "@/shared/ui/complex/FilterBigMenu";
-import { SortMenu } from "@/shared/ui/complex/SortMenu";
-import { ViewModeSwitcher } from "@/shared/ui/complex/ViewModeSwitcher";
+import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { useParams } from "next/navigation";
 
@@ -62,36 +59,24 @@ export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: Patt
           onClearAll={handleClearAll}
         />
       )}
-      filters={
-        <div className="flex items-center gap-2">
-          <FilterPill 
-              label="By Type" 
-              group={filterGroups.find(g => g.id === 'types')} 
-              activeFilters={activeFilters}
-              onToggle={handleToggleFilter}
-          />
-          <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 mx-1 hidden sm:block" />
-          <FilterBigMenu 
-              groups={filterGroups}
-              resultsCount={getPreviewCount(initialPatterns)}
-              onApply={handleApplyFilters}
-              onClearAll={handleClearAll}
-              onSelectionChange={setPendingFilterIds}
-          />
-        </div>
-      }
-      actions={
-        <div className="flex items-center gap-6 mb-[-10px]">
-          <SortMenu 
-              options={SORT_OPTIONS}
-              activeOptionId={sortBy}
-              onSelect={setSortBy}
-          />
-          <ViewModeSwitcher 
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-          />
-        </div>
+      actionBar={
+        <ActionBar 
+          filterGroups={filterGroups}
+          activeFilters={activeFilters}
+          quickFilters={[
+            { label: "Typy", groupId: 'types' }
+          ]}
+          onToggleFilter={handleToggleFilter}
+          onApplyFilters={handleApplyFilters}
+          onClearAllFilters={handleClearAll}
+          onPendingFilterIdsChange={setPendingFilterIds}
+          resultsCount={getPreviewCount(initialPatterns)}
+          sortOptions={SORT_OPTIONS}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+        />
       }
     >
       {processedPatterns.length === 0 ? (
@@ -99,10 +84,11 @@ export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: Patt
           <p className="text-muted-foreground italic">No patterns found matching your criteria.</p>
         </div>
       ) : (
-        <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "flex flex-col gap-4"}>
+        <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-8"}>
           {processedPatterns.map((pattern) => (
             <WorkspaceCardHorizontal 
                 key={pattern.id}
+                variant="crew"
                 title={pattern.name || pattern.pattern_name}
                 description={pattern.description || pattern.pattern_description}
                 href={`/workspaces/${workspaceId}/patterns/${pattern.id}`}
@@ -110,7 +96,6 @@ export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: Patt
                 tags={pattern.pattern_keywords}
                 icon={Workflow}
                 colorName={colorName}
-                footerLabel="View Blueprint"
             />
           ))}
         </div>
