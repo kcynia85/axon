@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { useAgentsSection } from "../application/useAgentsSection";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
@@ -22,10 +23,9 @@ import {
   Activity,
   User,
   Bot,
-  } from "lucide-react";
+} from "lucide-react";
 
-  /** Human-friendly names for mock knowledge hub IDs */
-
+/** Human-friendly names for mock knowledge hub IDs */
 const KNOWLEDGE_HUB_NAMES: Record<string, string> = {
   "kh-product-management": "Product Management Hub",
   "kh-strategy-frameworks": "Strategy Frameworks",
@@ -56,10 +56,19 @@ const AGENT_REAL_NAMES: Record<string, string> = {
   "a-copywriter": "Mia Thorne",
 };
 
+const getDeterministicImgId = (id: string): number => {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i);
+    hash |= 0; // Convert to 32bit integer
+  }
+  return (Math.abs(hash) % 5) + 1;
+};
+
 type AgentsSectionProps = {
   readonly workspaceId: string;
   readonly colorName?: string;
-}
+};
 
 export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSectionProps) => {
   const {
@@ -75,7 +84,9 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
   if (isAgentsLoading) {
     return (
       <div className="flex flex-wrap gap-6">
-        {[1, 2, 3, 4].map((index) => <Skeleton key={index} className="aspect-[2/3] w-[236px] shadow-sm rounded-xl" />)}
+        {[1, 2, 3, 4].map((index) => (
+          <Skeleton key={index} className="aspect-[1694/2528] w-[252px] shadow-sm rounded-xl" />
+        ))}
       </div>
     );
   }
@@ -99,12 +110,10 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
     <>
       <div className="flex flex-wrap gap-6">
         {agents.map((agent) => {
-          // Better deterministic image selection based on ID
-          const idHash = agent.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-          const imgId = (idHash % 5) + 1;
-          
+          const imgId = getDeterministicImgId(agent.id);
+
           return (
-            <WorkspaceCard 
+            <WorkspaceCard
               key={agent.id}
               variant="agent"
               title={AGENT_REAL_NAMES[agent.id] || agent.agent_name || "Agent Person"}
@@ -113,22 +122,25 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
               badgeLabel={agent.agent_role_text || "AI Agent"}
               tags={agent.agent_keywords}
               onEdit={() => handleSelectAgent(agent.id)}
-              className="w-[236px] shrink-0"
+              className="w-[252px] shrink-0"
               colorName={colorName}
               visualArea={
-                  <div className="absolute inset-0 flex items-start justify-center overflow-hidden pt-9">
-                      {/* Background Soft Glow (Lowered, fading up for clarity) */}
-                      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-zinc-100/[0.04] to-transparent dark:from-zinc-900/[0.04] dark:to-transparent" />
-                      
-                      {/* Real Agent Image */}
-                      <div className="relative w-full h-full flex justify-center">
-                          <img 
-                              src={`/images/avatars/agent-${imgId}.png`}
-                              alt={agent.agent_name}
-                              className="w-full h-full object-contain scale-110 origin-bottom transition-all duration-700 brightness-[1.15] contrast-[1.05] group-hover:brightness-[1.22] group-hover:contrast-[1.10] group-hover:-translate-y-2"
-                          />
-                      </div>
+                <div className="absolute inset-0 flex items-start justify-center overflow-hidden pt-24">
+                  {/* Background Soft Glow (Consistent neutral black for all workspaces) */}
+                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
+
+                  {/* Optimized Agent Image using Next.js Image component */}
+                  <div className="relative w-full h-full flex justify-center">
+                    <Image
+                      src={`/images/avatars/agent-${imgId}.png`}
+                      alt={agent.agent_name}
+                      fill
+                      sizes="252px"
+                      priority={imgId <= 2}
+                      className="object-contain scale-[1.25] origin-bottom transition-all duration-500 group-hover:-translate-y-2"
+                    />
                   </div>
+                </div>
               }
             />
           );

@@ -10,7 +10,6 @@ import {
   Copy,
   Layout,
   Hash,
-  ListTodo,
 } from "lucide-react";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
@@ -58,12 +57,6 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
             icon={FileText}
             onEdit={() => setSelectedTemplateId(template.id)}
             colorName={colorName}
-            footerContent={
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
-                    <ListTodo className="w-3 h-3" />
-                    <span>{template.template_checklist_items?.length || 0} Tasks</span>
-                </div>
-            }
           />
         ))}
       </div>

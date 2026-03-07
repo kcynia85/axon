@@ -43,11 +43,11 @@ const PreviewSection = ({
 }) => (
   <section id={id} className="mb-16 animate-in fade-in slide-in-from-bottom-2 duration-500 text-left">
     <div className="flex items-center justify-between mb-6 border-b border-zinc-100 dark:border-zinc-900 pb-2">
-        <h3 className="text-xl font-black tracking-tight flex items-center gap-3 text-zinc-400">
+        <h3 className="text-xl font-black tracking-tight flex items-center gap-3 text-zinc-900 dark:text-white">
             {label} {count !== undefined && <span className="opacity-40 tabular-nums">[{count}]</span>}
         </h3>
         
-        <button className="h-auto p-0 text-[16px] font-bold text-zinc-400 hover:text-black dark:hover:text-white transition-colors outline-none">
+        <button className="h-auto p-0 text-[16px] font-bold text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors outline-none">
             <Link href={`/workspaces/${workspaceId}/${href}`} className="flex items-center gap-1.5">
                 View all <ChevronRight className="h-4 w-4" />
             </Link>

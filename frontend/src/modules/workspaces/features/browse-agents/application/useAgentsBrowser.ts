@@ -14,23 +14,44 @@ export function useAgentsBrowser(initialAgents: Agent[] = []) {
     initialSortBy: "name-asc",
     initialFilterGroups: [
       {
-        id: "roles",
-        title: "Role",
+        id: "tools",
+        title: "Narzędzia",
         type: "checkbox",
         options: [
-          { id: "product-owner", label: "Product Owner", isChecked: false },
-          { id: "technical-writer", label: "Technical Writer", isChecked: false },
-          { id: "researcher", label: "Researcher", isChecked: false },
+          { id: "model-gpt4o", label: "GPT-4o", isChecked: false },
+          { id: "model-gpt4o-mini", label: "GPT-4o Mini", isChecked: false },
+          { id: "model-claude-sonnet", label: "Claude 3.5 Sonnet", isChecked: false },
         ],
       },
       {
-        id: "keywords",
-        title: "Keywords",
+        id: "strength",
+        title: "Siła",
         type: "checkbox",
         options: [
-          { id: "product", label: "#product", isChecked: false },
-          { id: "strategy", label: "#strategy", isChecked: false },
-          { id: "documentation", label: "#documentation", isChecked: false },
+          { id: "lead", label: "Lead", isChecked: false },
+          { id: "specialist", label: "Specialist", isChecked: false },
+          { id: "senior", label: "Senior", isChecked: false },
+        ],
+      },
+      {
+        id: "roles",
+        title: "Rola",
+        type: "checkbox",
+        options: [
+          { id: "product", label: "Product", isChecked: false },
+          { id: "engineering", label: "Engineering", isChecked: false },
+          { id: "design", label: "Design", isChecked: false },
+          { id: "research", label: "Research", isChecked: false },
+        ],
+      },
+      {
+        id: "status",
+        title: "Status",
+        type: "checkbox",
+        options: [
+          { id: "active", label: "Aktywny", isChecked: false },
+          { id: "idle", label: "Bezczynny", isChecked: false },
+          { id: "offline", label: "Offline", isChecked: false },
         ],
       },
     ],
@@ -42,18 +63,25 @@ export function useAgentsBrowser(initialAgents: Agent[] = []) {
         filtered = filtered.filter(
           (item) =>
             item.agent_name?.toLowerCase().includes(lowQuery) ||
-            item.role?.toLowerCase().includes(lowQuery) ||
-            item.goal?.toLowerCase().includes(lowQuery)
+            item.agent_role_text?.toLowerCase().includes(lowQuery) ||
+            item.agent_goal?.toLowerCase().includes(lowQuery)
         );
       }
 
       if (filterIds.length > 0) {
         filtered = filtered.filter((item) => {
-          const itemTags = [
-            item.role?.toLowerCase(),
-            ...(item.keywords || []).map(k => k.toLowerCase())
+          const itemAttributes = [
+            item.llm_model_id?.toLowerCase(),
+            item.agent_role_text?.toLowerCase(),
+            ...(item.agent_keywords || []).map(k => k.toLowerCase()),
+            // Status is mocked for now as it's not in the schema
+            "active" 
           ];
-          return filterIds.some(id => itemTags.includes(id.toLowerCase()));
+          
+          return filterIds.some(id => {
+            const lowId = id.toLowerCase();
+            return itemAttributes.some(attr => attr?.includes(lowId));
+          });
         });
       }
 

@@ -3,8 +3,7 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAgents, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
-import { Button } from "@/shared/ui/ui/Button";
-import { Plus } from "lucide-react";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { AgentModal } from "@/modules/workspaces/ui/modals/AgentModal";
 import { AgentsBrowser } from "@/modules/workspaces/features/browse-agents/ui/AgentsBrowser";
 import { Suspense } from "react";
@@ -39,9 +38,7 @@ export default function AgentsListPage() {
           { label: "Agents" }
       ]}
       actions={
-        <Button variant="primary" size="lg" onClick={openNewAgentModal}>
-          <Plus className="mr-2 h-4 w-4" /> Nowy Agent
-        </Button>
+        <ActionButton label="Nowy Agent" onClick={openNewAgentModal} />
       }
       showPagination={shouldShowPagination(agents?.length || 0)}
       pagination={null}

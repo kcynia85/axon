@@ -228,7 +228,7 @@ const MOCK_CREWS: Record<string, Crew[]> = {
       crew_name: "PRD Production Crew",
       crew_description: "Creates comprehensive Product Requirements Documents from discovery insights.",
       crew_process_type: "Sequential",
-      agent_member_ids: ["a-product-owner", "a-tech-writer"],
+      agent_member_ids: ["a-product-owner", "a-tech-writer", "a-user-researcher", "a-competitor-analyst", "a-ui-designer"],
       availability_workspace: ["ws-product"],
       crew_keywords: ["prd", "writing", "strategy"],
       created_at: "2026-01-15T09:00:00Z",

@@ -32,6 +32,7 @@ export const useCreateProjectMutation = () => {
     const router = useRouter();
 
     return useMutation({
+        mutationKey: ['create-project'],
         mutationFn: async (values: CreateProjectFormData) => {
             return await createProject({
                 project_name: values.name,

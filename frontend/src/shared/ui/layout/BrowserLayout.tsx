@@ -28,8 +28,8 @@ export const BrowserLayout = ({
         </div>
       )}
 
-      {(showSearch || activeFilters || filters || actions) && (
-        <div className="flex flex-col space-y-8">
+      {(showSearch || filters || actions) && (
+        <div className="flex flex-col space-y-12">
           {/* Search Row */}
           {showSearch && (
             <SearchInput 
@@ -39,7 +39,7 @@ export const BrowserLayout = ({
             />
           )}
 
-          {/* Filters & Actions Row */}
+          {/* Filters & Actions Row (Manual/Legacy) */}
           {(filters || actions) && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-1 pb-3 border-b border-zinc-100 dark:border-zinc-900">
               <div className="flex flex-wrap items-center gap-2">
@@ -50,21 +50,25 @@ export const BrowserLayout = ({
               </div>
             </div>
           )}
+        </div>
+      )}
 
+      {/* Unified Action Bar & Active Filters Group */}
+      {(actionBar || activeFilters) && (
+        <div className="flex flex-col space-y-6">
+          {actionBar}
+          
           {/* Active Filters Row */}
           {activeFilters && (
-            <div className="flex flex-col space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
-              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest px-1">Active Filters</span>
-              <div className="px-1">
+            <div className="flex items-center gap-4 px-1 animate-in fade-in slide-in-from-top-1 duration-200">
+              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest whitespace-nowrap">Active filters</span>
+              <div className="flex-1">
                 {activeFilters}
               </div>
             </div>
           )}
         </div>
       )}
-
-      {/* Legacy Unified Action Bar (Filters + Sort/View) */}
-      {actionBar}
 
       {/* Content Area */}
       <div className="pt-2">

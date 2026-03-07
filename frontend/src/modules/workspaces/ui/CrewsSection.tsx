@@ -82,6 +82,7 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
             tags={crew.crew_keywords}
             onEdit={() => setSelectedCrewId(crew.id)}
             colorName={colorName}
+            agentIds={crew.agent_member_ids}
             footerContent={
                 <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
                     <Workflow className="w-3 h-3" />

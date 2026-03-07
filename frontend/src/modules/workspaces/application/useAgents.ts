@@ -13,6 +13,7 @@ export const useAgents = (workspaceId: string): UseQueryResult<Agent[]> => {
 export const useCreateAgent = (): UseMutationResult<Agent, Error, Partial<Agent>> => {
     const queryClient = useQueryClient();
     return useMutation({
+        mutationKey: ['create-agent'],
         mutationFn: async (agent: Partial<Agent>): Promise<Agent> => await workspacesApi.createAgent(agent),
         onSuccess: () => {
             // Invalidate both global and workspace-specific agent lists if needed

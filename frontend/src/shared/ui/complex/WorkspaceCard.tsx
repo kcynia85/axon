@@ -2,10 +2,11 @@
 
 import React from "react";
 import Link from "next/link";
-import { LucideIcon, Edit2, ChevronRight } from "lucide-react";
+import { LucideIcon, Edit2, ChevronRight, ArrowRight } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Card, CardHeader, CardContent, CardFooter } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
+import { TagChip } from "@/shared/ui/ui/TagChip";
 import { Button } from "@/shared/ui/ui/Button";
 import { BaseSpan } from "@/modules/projects/features/browse-projects/ui/components/ProjectBaseAtoms";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
@@ -44,70 +45,60 @@ export const WorkspaceCard = ({
     onEdit
 }: WorkspaceCardProps) => {
     const styles = getVisualStylesForZoneColor(colorName);
+
+    // Helper for description truncation
+    const truncatedDescription = description && description.length > 70 
+        ? `${description.substring(0, 70)}...` 
+        : description;
     
     // --- AGENT VARIANT (Sketch Match - Simple Horizontal Layout) ---
     if (variant === "agent") {
         return (
             <Link href={href} className={cn("group block h-full outline-none", className)}>
-                <Card className="aspect-[2/3] w-full border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col transition-all group-hover:border-zinc-400 dark:group-hover:border-zinc-600 group-hover:shadow-xl rounded-2xl overflow-hidden active:scale-[0.98] relative">
+                <Card className="aspect-[1694/2528] w-full border-zinc-200 dark:border-zinc-800 bg-black flex flex-col transition-all group-hover:border-zinc-400 dark:group-hover:border-zinc-600 group-hover:shadow-xl rounded-2xl overflow-hidden active:scale-[0.98] relative">
                     
-                    {/* Visual Area (AI Avatar style human) */}
-                    <div className="absolute inset-0 z-0 bg-zinc-50 dark:bg-zinc-900/20 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-900/40 transition-colors">
+                    {/* Visual Area (AI Avatar style human) - Always black background */}
+                    <div className="absolute inset-0 z-0 bg-black transition-colors">
                         {visualArea}
                     </div>
 
-                    {/* Opacity Gradient */}
-                    <div className="absolute inset-0 z-10 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-zinc-950 dark:via-zinc-950/90 dark:to-transparent pointer-events-none" />
+                    {/* Opacity Gradient - Solid black fading up to ensure text readability */}
+                    <div className="absolute inset-x-0 bottom-0 h-[60%] z-10 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
 
-                    {/* Content Layer (Bottom aligned, centered text) */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 z-20 flex flex-col items-center justify-end text-center pointer-events-none h-1/2">
+                    {/* Content Layer (Bottom aligned, left-aligned text) */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 z-20 flex flex-col items-start justify-end text-left pointer-events-none h-1/2">
                         
-                        <div className="flex flex-col items-center w-full mb-4 mt-auto">
-                            {/* 1. Specialization Heading (16px) - Fixed height for up to 2 lines */}
-                            <div className="h-[40px] w-full flex items-end justify-center mb-1">
-                                <h4 className="text-[16px] font-bold tracking-tight text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors leading-tight text-balance line-clamp-2">
+                        <div className="flex flex-col items-start w-full mb-4 mt-auto">
+                            {/* 1. Specialization Heading (16px) - Force single line */}
+                            <div className="h-[24px] w-full flex items-end justify-start mb-1">
+                                <h4 className="text-[16px] font-bold tracking-tight text-white group-hover:text-primary transition-colors leading-tight whitespace-nowrap truncate w-full">
                                     {badgeLabel}
                                 </h4>
                             </div>
                             
                             {/* 2. Full Name (14px) - Fixed height */}
-                            <div className="h-[20px] w-full flex items-start justify-center">
-                                <span className="text-[14px] font-medium text-zinc-500 dark:text-zinc-400 truncate w-full px-2">
+                            <div className="h-[20px] w-full flex items-start justify-start">
+                                <span className="text-[14px] font-medium text-zinc-400 truncate w-full">
                                     {title}
                                 </span>
                             </div>
                         </div>
 
-                        {/* 3. Tags (Chips - 14px, max 2) */}
-                        <div className="flex flex-wrap justify-center items-start gap-2 h-7 shrink-0 w-full overflow-hidden">
+                        {/* 3. Tags (Using reusable TagChip - max 2) */}
+                        <div className="flex flex-wrap justify-start items-start gap-2 h-8 shrink-0 w-full overflow-hidden">
                             {tags?.slice(0, 2).map(tag => (
-                                <Badge 
-                                    key={tag} 
-                                    variant="secondary" 
-                                    className="text-[14px] px-3 py-0.5 h-7 bg-zinc-100/90 dark:bg-zinc-800/90 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-700/50 font-medium text-zinc-700 dark:text-zinc-300 not-italic rounded-lg"
-                                >
-                                    #{tag}
-                                </Badge>
+                                <TagChip key={tag} label={tag} />
                             ))}
                         </div>
                     </div>
 
-                    {/* Edit Button */}
-                    {onEdit && (
-                        <div className="absolute top-3 right-3 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button 
-                                variant="secondary" 
-                                size="icon" 
-                                className="h-7 w-7 rounded-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 shadow-sm pointer-events-auto"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    onEdit(e);
-                                }}
-                            >
-                                <Edit2 className="w-3 h-3 text-zinc-600 dark:text-zinc-400" />
-                            </Button>
-                        </div>
-                    )}
+                    {/* Arrow indicator on hover (consistent with horizontal cards) */}
+                    <div className="absolute right-4 top-[148px] -translate-y-1/2 z-30 flex items-center justify-center">
+                        <ArrowRight 
+                            size={20} 
+                            className="text-white opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" 
+                        />
+                    </div>
 
                     {/* Bottom Accent Bar */}
                     <div className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-60 group-hover:opacity-100 transition-opacity z-30", styles.hoverBackgroundClassName)} />
@@ -141,16 +132,14 @@ export const WorkspaceCard = ({
 
                 <CardContent className="flex-1 pt-0.5 pb-4">
                     {description && (
-                        <p className="text-[12px] text-zinc-600 dark:text-zinc-400 line-clamp-3 leading-relaxed">
-                            {description}
+                        <p className="text-[12px] text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed mb-4">
+                            {truncatedDescription}
                         </p>
                     )}
                     {tags && tags.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2.5">
-                            {tags.slice(0, 3).map(tag => (
-                                <Badge key={tag} variant="secondary" className="text-[7px] h-3.5 bg-zinc-100 dark:bg-zinc-800 border-none font-medium italic text-muted-foreground px-1">
-                                    #{tag}
-                                </Badge>
+                            {tags.slice(0, 2).map(tag => (
+                                <TagChip key={tag} label={tag} />
                             ))}
                         </div>
                     )}

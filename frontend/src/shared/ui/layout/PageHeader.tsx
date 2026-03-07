@@ -12,7 +12,7 @@ export const PageHeader = ({ title, description, actions }: PageHeaderProps) => 
             {title}
           </h1>
           {description && (
-            <p className="text-zinc-500 dark:text-zinc-400 font-medium text-lg max-w-2xl">
+            <p className="text-zinc-500 dark:text-zinc-400 font-medium text-lg max-w-2xl pb-3">
               {description}
             </p>
           )}
