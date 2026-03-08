@@ -92,7 +92,7 @@ export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: Patt
                 title={pattern.pattern_name || (pattern as any).name}
                 description={(pattern as any).pattern_description || (pattern as any).description || "Optimized process sequence."}
                 href={`/workspaces/${workspaceId}/patterns/${pattern.id}`}
-                badgeLabel={pattern.pattern_type || "Workflow"}
+                badgeLabel="Pattern"
                 tags={pattern.pattern_keywords}
                 colorName={colorName}
             />

@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 // --- Enums to match Backend ---
-export const PatternTypeSchema = z.enum(["Pattern", "Reusable Template"]);
 export const ProcessTypeSchema = z.enum(["Sequential", "Hierarchical", "Parallel"]);
 
 // --- Domain Entities ---
@@ -50,9 +49,10 @@ export type Crew = z.infer<typeof CrewSchema>;
 export const PatternSchema = z.object({
   id: z.string().uuid(),
   pattern_name: z.string(),
-  pattern_type: PatternTypeSchema,
   pattern_okr_context: z.string().nullable().optional(),
   pattern_graph_structure: z.record(z.unknown()),
+  pattern_inputs: z.record(z.string()).default({}),
+  pattern_outputs: z.record(z.string()).default({}),
   pattern_keywords: z.array(z.string()).default([]),
   availability_workspace: z.array(z.string()).default([]),
   created_at: z.string().datetime(),
@@ -70,7 +70,12 @@ export const TemplateSchema = z.object({
     id: z.string(),
     label: z.string(),
     description: z.string().optional(),
-    isCompleted: z.boolean().default(false)
+    isCompleted: z.boolean().default(false),
+    subactions: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      isCompleted: z.boolean().default(false)
+    })).optional()
   })).default([]),
   template_keywords: z.array(z.string()).default([]),
   // Deterministic I/O — configured in Workspaces, consumed by Space canvas

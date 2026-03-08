@@ -293,7 +293,6 @@ export const SpaceCanvasPresentationView = ({
           
           await createPattern({
               pattern_name: finalBlueprint.name,
-              pattern_type: finalBlueprint.type === 'super-pattern' ? "Pattern" : "Pattern", // Mapping to enum
               pattern_okr_context: finalBlueprint.description,
               pattern_graph_structure: {
                   ...finalBlueprint.structure,

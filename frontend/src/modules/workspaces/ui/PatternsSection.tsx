@@ -43,9 +43,9 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
           <WorkspaceCardHorizontal 
             key={pattern.id}
             title={pattern.pattern_name}
-            description={pattern.pattern_description || "Optimized process sequence."}
+            description={pattern.pattern_okr_context || "Optimized process sequence."}
             href={`/workspaces/${workspaceId}/patterns/${pattern.id}`}
-            badgeLabel={pattern.pattern_type}
+            badgeLabel="Pattern"
             tags={pattern.pattern_keywords}
             onEdit={() => setSelectedPatternId(pattern.id)}
             colorName={colorName}
@@ -62,3 +62,4 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
     </>
   );
 };
+

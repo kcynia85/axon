@@ -270,13 +270,14 @@ const MOCK_PATTERNS: Record<string, Pattern[]> = {
     {
       id: "p-prd-flow",
       pattern_name: "PRD Creation Flow",
-      pattern_type: "Pattern",
       pattern_okr_context: "Achieve 100% PRD coverage for core features in Q1.",
       pattern_graph_structure: {
         nodes: { 1: "Input", 2: "Analysis", 3: "Writing", 4: "Output" },
         edges: { "1-2": "flows to", "2-3": "flows to", "3-4": "completes" },
         components: ["t-prd-template", "c-prd-crew"]
       },
+      pattern_inputs: { user_research_summary: "json", market_segment: "string" },
+      pattern_outputs: { prd_document: "markdown", priority_matrix: "json" },
       pattern_keywords: ["prd", "flow", "product", "standard"],
       availability_workspace: ["ws-product", "ws-discovery"],
       created_at: "2026-01-20T09:00:00Z",
@@ -287,9 +288,10 @@ const MOCK_PATTERNS: Record<string, Pattern[]> = {
     {
       id: "p-research-flow",
       pattern_name: "Discovery Research Pipeline",
-      pattern_type: "Pattern",
       pattern_okr_context: "User understanding OKR",
       pattern_graph_structure: { nodes: 6, edges: 5 },
+      pattern_inputs: {},
+      pattern_outputs: {},
       pattern_keywords: ["research", "discovery"],
       availability_workspace: ["ws-discovery"],
       created_at: "2026-01-22T09:00:00Z",
@@ -300,9 +302,10 @@ const MOCK_PATTERNS: Record<string, Pattern[]> = {
     {
       id: "p-design-audit",
       pattern_name: "Design System Audit",
-      pattern_type: "Reusable Template",
       pattern_okr_context: "Design quality OKR",
       pattern_graph_structure: { nodes: 3, edges: 2 },
+      pattern_inputs: {},
+      pattern_outputs: {},
       pattern_keywords: ["design", "audit", "system"],
       availability_workspace: ["ws-design"],
       created_at: "2026-01-25T09:00:00Z",
@@ -314,9 +317,10 @@ const MOCK_PATTERNS: Record<string, Pattern[]> = {
     {
       id: "p-launch-campaign",
       pattern_name: "Product Launch Campaign",
-      pattern_type: "Pattern",
       pattern_okr_context: "Growth OKR",
       pattern_graph_structure: { nodes: 5, edges: 4 },
+      pattern_inputs: {},
+      pattern_outputs: {},
       pattern_keywords: ["launch", "campaign", "marketing"],
       availability_workspace: ["ws-growth"],
       created_at: "2026-01-28T09:00:00Z",
@@ -333,7 +337,15 @@ const MOCK_TEMPLATES: Record<string, Template[]> = {
       template_description: "Standard Product Requirements Document with user stories and acceptance criteria.",
       template_markdown_content: "# Product Requirements Document\n\n## Problem Statement\n\n## User Stories\n\n## Acceptance Criteria\n\n## Success Metrics",
       template_checklist_items: [
-        { id: "c1", label: "Define problem statement", isCompleted: true },
+        { 
+          id: "c1", 
+          label: "Define problem statement", 
+          isCompleted: true,
+          subactions: [
+            { id: "s1", label: "Analyze user pain points", isCompleted: true },
+            { id: "s2", label: "Define core objective", isCompleted: true }
+          ]
+        },
         { id: "c2", label: "Write user stories", isCompleted: false },
         { id: "c3", label: "Define acceptance criteria", isCompleted: false },
         { id: "c4", label: "Set success metrics", isCompleted: false },

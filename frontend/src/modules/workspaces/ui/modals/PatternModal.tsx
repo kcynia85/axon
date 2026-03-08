@@ -27,13 +27,6 @@ import {
 } from "@/shared/ui/ui/Form";
 import { Input } from "@/shared/ui/ui/Input";
 import { Button } from "@/shared/ui/ui/Button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from "@/shared/ui/ui/Select";
 import { Textarea } from "@/shared/ui/ui/Textarea";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { Share2, Network, Target, Save, X } from "lucide-react";
@@ -58,9 +51,10 @@ export const PatternModal = () => {
         resolver: zodResolver(CreatePatternFormSchema) as unknown as Resolver<FormData>,
         defaultValues: {
             pattern_name: "",
-            pattern_type: "Pattern",
             pattern_okr_context: "",
             pattern_graph_structure: { nodes: {}, edges: {} },
+            pattern_inputs: {},
+            pattern_outputs: {},
             pattern_keywords: [],
             availability_workspace: [workspaceId],
         },
@@ -109,28 +103,6 @@ export const PatternModal = () => {
                                             <FormControl>
                                                 <Input placeholder="e.g. Multi-Stage Research Flow" {...field} />
                                             </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="pattern_type"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="text-xs uppercase font-bold">Category</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger className="text-xs">
-                                                        <SelectValue placeholder="Select type" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Pattern" className="text-xs">Standard Pattern</SelectItem>
-                                                    <SelectItem value="Reusable Template" className="text-xs">Reusable Template</SelectItem>
-                                                </SelectContent>
-                                            </Select>
                                             <FormMessage />
                                         </FormItem>
                                     )}
