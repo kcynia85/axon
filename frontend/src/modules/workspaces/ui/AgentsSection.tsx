@@ -55,6 +55,7 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
       <div className="flex flex-wrap gap-6">
         {agents.map((agent) => {
           const imgId = getDeterministicImgId(agent.id);
+          const avatarUrl = agent.agent_visual_url || `/images/avatars/agent-${imgId}.png`;
 
           return (
             <WorkspaceCard
@@ -76,8 +77,8 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
                   {/* Optimized Agent Image using Next.js Image component */}
                   <div className="relative w-full h-full flex justify-center">
                     <Image
-                      src={`/images/avatars/agent-${imgId}.png`}
-                      alt={agent.agent_name}
+                      src={avatarUrl}
+                      alt={agent.agent_name || "Agent"}
                       fill
                       sizes="252px"
                       priority={imgId <= 2}

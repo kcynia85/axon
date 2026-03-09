@@ -5,6 +5,18 @@ export const ProcessTypeSchema = z.enum(["Sequential", "Hierarchical", "Parallel
 
 // --- Domain Entities ---
 
+export const DataInterfaceItemSchema = z.object({
+  name: z.string(),
+  field_type: z.string(),
+  is_required: z.boolean().default(true),
+  value: z.string().optional().nullable()
+});
+
+export const DataInterfaceSchema = z.object({
+  context: z.array(DataInterfaceItemSchema).default([]),
+  artefacts: z.array(DataInterfaceItemSchema).default([])
+});
+
 export const AgentSchema = z.object({
   id: z.string().uuid(),
   agent_name: z.string().nullable(),
@@ -25,6 +37,14 @@ export const AgentSchema = z.object({
   agent_keywords: z.array(z.string()).default([]),
   llm_model_id: z.string().uuid().nullable().optional(),
   knowledge_hub_ids: z.array(z.string().uuid()).nullable().optional(),
+  
+  // vNext+ Fields (Extended UI configuration)
+  agent_visual_url: z.string().nullable().optional(),
+  auto_start: z.boolean().default(false),
+  grounded_mode: z.boolean().default(false),
+  native_skills: z.array(z.string()).default([]),
+  data_interface: DataInterfaceSchema.default({ context: [], artefacts: [] }),
+
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });

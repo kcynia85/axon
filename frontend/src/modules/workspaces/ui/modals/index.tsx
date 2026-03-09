@@ -1,6 +1,5 @@
 "use client";
 
-import { AgentModal } from "./AgentModal";
 import { CrewModal } from "./CrewModal";
 import { ServiceModal } from "./ServiceModal";
 import { PatternModal } from "./PatternModal";
@@ -12,7 +11,6 @@ import { Suspense } from "react";
 export const WorkspaceModals = () => {
   return (
     <Suspense>
-      <AgentModal />
       <CrewModal />
       <ServiceModal />
       <PatternModal />

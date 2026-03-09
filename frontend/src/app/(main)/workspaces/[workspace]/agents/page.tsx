@@ -1,19 +1,15 @@
 "use client";
 
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAgents, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
-import { AgentModal } from "@/modules/workspaces/ui/modals/AgentModal";
 import { AgentsBrowser } from "@/modules/workspaces/features/browse-agents/ui/AgentsBrowser";
-import { Suspense } from "react";
-import { shouldShowPagination } from "@/shared/lib/pagination";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 
 export default function AgentsListPage() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const workspaceId = params.workspace as string;
   
   const { data: workspace } = useWorkspace(workspaceId);
@@ -22,10 +18,8 @@ export default function AgentsListPage() {
   const colorKey = workspaceId.replace("ws-", "");
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
 
-  const openNewAgentModal = () => {
-    const urlSearchParams = new URLSearchParams(searchParams.toString());
-    urlSearchParams.set("modal", "new-agent");
-    router.push(`?${urlSearchParams.toString()}`, { scroll: false });
+  const goToAgentStudio = () => {
+    router.push(`/workspaces/${workspaceId}/agents/studio`);
   };
 
   return (
@@ -38,9 +32,9 @@ export default function AgentsListPage() {
           { label: "Agents" }
       ]}
       actions={
-        <ActionButton label="Nowy Agent" onClick={openNewAgentModal} />
+        <ActionButton label="Nowy Agent" onClick={goToAgentStudio} />
       }
-      showPagination={shouldShowPagination(agents?.length || 0)}
+      showPagination={agents ? agents.length > 12 : false}
       pagination={null}
     >
       {isLoading ? (
@@ -52,10 +46,6 @@ export default function AgentsListPage() {
       ) : (
         <AgentsBrowser initialAgents={agents || []} colorName={colorName} />
       )}
-      
-      <Suspense>
-        <AgentModal />
-      </Suspense>
     </PageLayout>
   );
 }

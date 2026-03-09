@@ -55,7 +55,7 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit }: AgentProfil
       image={
         <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-primary/20 bg-black">
           <Image
-            src={`/images/avatars/agent-${getDeterministicImgId(agent.id)}.png`}
+            src={agent.agent_visual_url || `/images/avatars/agent-${getDeterministicImgId(agent.id)}.png`}
             alt={agent.agent_name || "Agent"}
             fill
             className="object-cover object-top scale-110"

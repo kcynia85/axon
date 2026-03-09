@@ -9,4 +9,4 @@ export const CreateAgentFormSchema = AgentSchema.omit({
 
 export type CreateAgentFormData = z.infer<typeof CreateAgentFormSchema>;
 
-export type AgentModalStep = "Identity" | "Memory" | "Engine";
+export type StudioSectionId = "IDENTITY" | "MEMORY" | "ENGINE" | "SKILLS" | "INTERFACE" | "AVAILABILITY";

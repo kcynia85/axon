@@ -18,6 +18,16 @@ class Message(BaseModel):
     timestamp: datetime = Field(default_factory=now_utc)
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
+class DataInterfaceItem(BaseModel):
+    name: str
+    field_type: str # e.g. "link", "text", "file"
+    is_required: bool = True
+    value: Optional[str] = None
+
+class DataInterface(BaseModel):
+    context: List[DataInterfaceItem] = Field(default_factory=list)
+    artefacts: List[DataInterfaceItem] = Field(default_factory=list)
+
 class AgentConfig(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     # Legacy fields
@@ -44,6 +54,13 @@ class AgentConfig(BaseModel):
     
     llm_model_id: Optional[UUID] = None
     knowledge_hub_ids: Optional[List[UUID]] = None
+
+    # vNext+ Fields (Extended UI configuration)
+    agent_visual_url: Optional[str] = None
+    auto_start: bool = False
+    grounded_mode: bool = False
+    native_skills: List[str] = Field(default_factory=list) # e.g. ["WEB_SEARCH", "CODE_INTERPRETER", "FILE_BROWSER"]
+    data_interface: DataInterface = Field(default_factory=DataInterface)
     
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)

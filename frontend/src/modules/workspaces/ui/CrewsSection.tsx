@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useCrews } from "../application/useCrews";
+import { useAgents } from "@/modules/agents/infrastructure/useAgents";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
@@ -13,10 +14,11 @@ type CrewsSectionProps = {
 };
 
 export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectionProps) => {
-  const { data: crews, isLoading } = useCrews(workspaceId);
+  const { data: crews, isLoading: isCrewsLoading } = useCrews(workspaceId);
+  const { data: agents } = useAgents(workspaceId);
   const [selectedCrewId, setSelectedCrewId] = React.useState<string | null>(null);
 
-  if (isLoading) {
+  if (isCrewsLoading) {
     return (
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((index) => (
@@ -33,6 +35,17 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
       </Card>
     );
   }
+
+  // Map agent IDs to their visual URLs for better visual representation in cards
+  const agentVisualsMap = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    agents?.forEach(agent => {
+      if (agent.agent_visual_url) {
+        map[agent.id] = agent.agent_visual_url;
+      }
+    });
+    return map;
+  }, [agents]);
 
   const selectedCrew = crews.find((crewItem) => crewItem.id === selectedCrewId) || null;
 
@@ -51,6 +64,7 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
             onEdit={() => setSelectedCrewId(crew.id)}
             colorName={colorName}
             agentIds={crew.agent_member_ids}
+            agentVisualsMap={agentVisualsMap}
           />
         ))}
       </div>

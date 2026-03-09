@@ -182,7 +182,7 @@ export const Sidebar = ({
     >
       <SidebarContainer
         className={cn(
-          "h-full rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl shadow-zinc-200/20 dark:shadow-none overflow-hidden bg-gradient-to-b from-white/95 to-white/70 dark:from-zinc-950/95 dark:to-zinc-950/70 backdrop-blur-xl",
+          "h-full rounded-2xl border border-white/10 shadow-2xl overflow-hidden bg-gradient-to-t from-zinc-950 to-black backdrop-blur-xl",
           "transition-all duration-300 ease-in-out z-[70] w-full"
         )}
       >

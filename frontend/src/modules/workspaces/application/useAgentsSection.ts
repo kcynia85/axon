@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useAgents } from "../application/useAgents";
+import { useAgents } from "@/modules/agents/infrastructure/useAgents";
 import { useCostEstimate } from "@/modules/agents/application/useCostEstimate";
 
 export const useAgentsSection = (workspaceId: string) => {

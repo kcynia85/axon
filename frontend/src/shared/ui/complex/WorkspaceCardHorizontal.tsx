@@ -23,6 +23,7 @@ type WorkspaceCardHorizontalProps = {
     readonly colorName?: string;
     readonly onEdit?: (e: React.MouseEvent) => void;
     readonly agentIds?: readonly string[];
+    readonly agentVisualsMap?: Record<string, string>;
 };
 
 /**
@@ -42,7 +43,8 @@ export const WorkspaceCardHorizontal = ({
     className,
     colorName = "default",
     onEdit,
-    agentIds = []
+    agentIds = [],
+    agentVisualsMap = {}
 }: WorkspaceCardHorizontalProps) => {
     const styles = getVisualStylesForZoneColor(colorName);
 
@@ -80,6 +82,7 @@ export const WorkspaceCardHorizontal = ({
                                 <div className="flex -space-x-3 mr-3">
                                     {displayedAgents.map((agentId, i) => {
                                         const imgId = ((agentId.charCodeAt(agentId.length - 1) + i) % 5) + 1;
+                                        const avatarUrl = agentVisualsMap[agentId] || `/images/avatars/agent-${imgId}.png`;
                                         return (
                                             <div key={agentId} className={cn(
                                                 "w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative",
@@ -87,7 +90,7 @@ export const WorkspaceCardHorizontal = ({
                                                 i === 0 ? "z-30" : i === 1 ? "z-20" : "z-10"
                                             )}>
                                                 <Image 
-                                                    src={`/images/avatars/agent-${imgId}.png`} 
+                                                    src={avatarUrl} 
                                                     alt={`Agent ${imgId}`}
                                                     fill
                                                     sizes="40px"

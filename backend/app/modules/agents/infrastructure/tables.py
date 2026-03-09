@@ -33,6 +33,13 @@ class AgentConfigTable(Base):
     # Relationships
     llm_model_id = Column(UUID(as_uuid=True), ForeignKey("llm_models.id"), nullable=True)
     knowledge_hub_ids = Column(ARRAY(UUID(as_uuid=True)), nullable=True)
+
+    # vNext+ Fields (Extended UI configuration)
+    agent_visual_url = Column(String, nullable=True)
+    auto_start = Column(Boolean, default=False)
+    grounded_mode = Column(Boolean, default=False)
+    native_skills = Column(ARRAY(String), default=[])
+    data_interface = Column(JSONB, default={"context": [], "artefacts": []})
     
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
