@@ -27,6 +27,7 @@ export const useAgentDraft = (workspaceId: string) => {
     },
     staleTime: Infinity, // Keep in cache indefinitely
     gcTime: 1000 * 60 * 60, // Keep in garbage collection for 1 hour
+    notifyOnChangeProps: ['isLoading', 'isError'], // Prevent re-renders when cache is updated via saveDraft
   });
 
   // Save draft mutation

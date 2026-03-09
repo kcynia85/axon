@@ -3,9 +3,9 @@
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateAgentFormSchema, CreateAgentFormData } from "../domain/agent.schema";
-import { useAgentDraft } from "./useAgentDraft";
-import { useCreateAgent } from "../infrastructure/useAgents";
+import { CreateAgentFormSchema, CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
+import { useAgentDraft } from "@/modules/agents/application/useAgentDraft";
+import { useCreateAgent } from "@/modules/agents/infrastructure/useAgents";
 import { useParams, useRouter } from "next/navigation";
 
 /**

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useTemplates, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
@@ -10,6 +10,7 @@ import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/
 
 export default function TemplatesListPage() {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
   
   const { data: workspace } = useWorkspace(workspaceId);
@@ -17,6 +18,10 @@ export default function TemplatesListPage() {
 
   const colorKey = workspaceId.replace("ws-", "");
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
+
+  const handleCreateTemplate = () => {
+    router.push(`/workspaces/${workspaceId}/templates/new`);
+  };
 
   return (
     <PageLayout
@@ -28,7 +33,7 @@ export default function TemplatesListPage() {
           { label: "Templates" }
       ]}
       actions={
-        <ActionButton label="Create Template" />
+        <ActionButton label="Create Template" onClick={handleCreateTemplate} />
       }
       showPagination={shouldShowPagination(templates?.length || 0)}
       pagination={null}

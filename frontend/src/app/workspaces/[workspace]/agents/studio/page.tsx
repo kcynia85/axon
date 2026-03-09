@@ -1,4 +1,4 @@
-import { AgentStudio } from "@/modules/agents/ui/studio/AgentStudio";
+import { AgentStudio } from "@/modules/studio/features/agent-studio/ui/AgentStudio";
 
 export default function AgentStudioPage() {
   return <AgentStudio />;

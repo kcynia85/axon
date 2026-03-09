@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCrews, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { Button } from "@/shared/ui/ui/Button";
@@ -11,6 +11,7 @@ import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/
 
 export default function CrewsListPage() {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
   
   const { data: workspace } = useWorkspace(workspaceId);
@@ -18,6 +19,10 @@ export default function CrewsListPage() {
 
   const colorKey = workspaceId.replace("ws-", "");
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
+
+  const handleAssembleCrew = () => {
+    router.push(`/workspaces/${workspaceId}/crews/new`);
+  };
 
   return (
     <PageLayout
@@ -29,7 +34,7 @@ export default function CrewsListPage() {
           { label: "Crews" }
       ]}
       actions={
-        <Button variant="primary" size="lg">
+        <Button variant="primary" size="lg" onClick={handleAssembleCrew}>
           <Plus className="mr-2 h-4 w-4" /> Assemble Crew
         </Button>
       }
