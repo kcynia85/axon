@@ -16,7 +16,7 @@ export const FormNavItem = ({
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"group block w-full text-left space-y-2 transition-all outline-none",
+				"group block w-full text-left space-y-2 transition-all outline-none cursor-pointer",
 				isActive ? "opacity-100 scale-[1.02]" : "opacity-40 hover:opacity-60",
 				className,
 			)}

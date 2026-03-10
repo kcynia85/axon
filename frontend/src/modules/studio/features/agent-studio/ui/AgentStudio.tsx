@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import type React from "react";
+import * as React from "react";
 import { FormProvider } from "react-hook-form";
 import { ARCHETYPES } from "@/modules/agents/domain/archetypes";
 import { StudioDiscovery } from "@/modules/studio/ui/components/StudioDiscovery";

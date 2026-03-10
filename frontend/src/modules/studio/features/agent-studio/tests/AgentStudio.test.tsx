@@ -54,7 +54,7 @@ describe("AgentStudio", () => {
 
 	const enterDesignMode = () => {
 		renderWithProviders(<AgentStudio />);
-		const emptyAgentButton = screen.getByText("Pusty Agent");
+		const emptyAgentButton = screen.getByText("Start Blank");
 		fireEvent.click(emptyAgentButton);
 	};
 

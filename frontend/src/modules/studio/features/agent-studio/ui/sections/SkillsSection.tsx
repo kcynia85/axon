@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { Plus } from "lucide-react";
 import { FormField } from "@/shared/ui/ui/Form";
+import { useWatch } from "react-hook-form";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormCheckbox } from "@/shared/ui/form/FormCheckbox";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
@@ -7,9 +10,20 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { NATIVE_SKILLS, CUSTOM_FUNCTIONS } from "../../types/agent-studio.constants";
 import type { SkillsSectionProps } from "../../types/sections/skills.types";
 import { useSkillsSection } from "../../application/hooks/sections/useSkillsSection";
+import { InternalSkillsModal } from "../components/InternalSkillsModal";
+import { useInternalSkillsModal } from "../../application/hooks/sections/useInternalSkillsModal";
 
 export const SkillsSection = (props: SkillsSectionProps) => {
 	const { control, syncDraft } = useSkillsSection(props);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const currentCustomFunctions = useWatch({ control, name: "custom_functions" }) || [];
+	const modalProps = useInternalSkillsModal(
+		isModalOpen,
+		setIsModalOpen,
+		CUSTOM_FUNCTIONS,
+		currentCustomFunctions
+	);
 
 	return (
 		<FormSection id="SKILLS" number={4} title="Skills">
@@ -65,31 +79,58 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 						<FormField
 							control={control}
 							name="custom_functions"
-							render={({ field }) => (
-								<FormItemField>
-									<div className="space-y-3">
-										{CUSTOM_FUNCTIONS.map((fn) => {
-											const current = field.value || [];
-											const isChecked = current.includes(fn.id);
-											return (
+							render={({ field }) => {
+								const current = field.value || [];
+								const addedFunctions = CUSTOM_FUNCTIONS.filter((fn) => current.includes(fn.id));
+
+								return (
+									<FormItemField>
+										<div className="space-y-3">
+											{addedFunctions.map((fn) => (
 												<FormCheckbox
 													key={fn.id}
 													title={fn.name}
 													description={fn.desc}
-													checked={isChecked}
+													checked={true}
 													onChange={() => {
-														const next = isChecked
-															? current.filter((s: string) => s !== fn.id)
-															: [...current, fn.id];
+														const next = current.filter((s: string) => s !== fn.id);
 														field.onChange(next);
 														syncDraft();
 													}}
 												/>
-											);
-										})}
-									</div>
-								</FormItemField>
-							)}
+											))}
+
+											<button
+												type="button"
+												onClick={() => setIsModalOpen(true)}
+												className="w-full text-left p-6 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900/30 transition-all flex items-center justify-center gap-2 group shadow-sm outline-none cursor-pointer"
+											>
+												<Plus className="text-zinc-400 group-hover:text-zinc-600 transition-colors w-5 h-5" />
+												<span className="font-bold text-zinc-500 group-hover:text-zinc-700 transition-colors text-base">
+													Wybierz z biblioteki (Internal Skills)
+												</span>
+											</button>
+
+											<InternalSkillsModal
+												isOpen={isModalOpen}
+												onOpenChange={modalProps.handleOpenChange}
+												searchQuery={modalProps.searchQuery}
+												onSearchChange={modalProps.setSearchQuery}
+												filterGroups={modalProps.filterGroups}
+												onApplyFilters={modalProps.handleApplyFilters}
+												onClearFilters={modalProps.handleClearFilters}
+												skills={modalProps.filteredSkills}
+												onAddFunction={(functionId) => {
+													if (!current.includes(functionId)) {
+														field.onChange([...current, functionId]);
+														syncDraft();
+													}
+												}}
+											/>
+										</div>
+									</FormItemField>
+								);
+							}}
 						/>
 					</div>
 				</div>
@@ -97,3 +138,4 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 		</FormSection>
 	);
 };
+

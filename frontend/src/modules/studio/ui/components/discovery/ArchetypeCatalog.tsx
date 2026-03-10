@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Search, X } from "lucide-react";
-import type React from "react";
+import * as React from "react";
 import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/ui/ui/Input";
 import type { ArchetypeCatalogProps } from "../../../types/discovery.types";

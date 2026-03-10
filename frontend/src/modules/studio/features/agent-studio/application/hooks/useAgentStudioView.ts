@@ -6,7 +6,7 @@ import { AGENT_STUDIO_SECTIONS } from "../../types/sections.constants";
 import type { StudioArchetype } from "@/modules/studio/types/discovery.types";
 import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
 import { Shield, Code, Globe, Database, Zap, Search, Info } from "lucide-react";
-import type React from "react";
+import * as React from "react";
 
 export const useAgentStudioView = () => {
 	const { form, handleExit, handleSubmit, syncDraft } = useAgentStudio();
