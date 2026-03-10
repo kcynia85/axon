@@ -11,12 +11,15 @@ These standards apply to **humans and AI agents (LLMs)** equally.
 - **Explicit over implicit** — no magic, no hidden behavior
 - **KISS (Keep It Simple, Stupid)** — avoid unnecessary complexity
 - **DRY (Don't Repeat Yourself)** — abstract common patterns into reusable units
+- **SRP (Single Responsibility Principle)** — every function, module, or component should have one, and only one, reason to change. One function = one logic task.
+- **ISP (Interface Segregation Principle)** — clients should not depend on properties or methods they do not use. Prefer many small, specific types/interfaces over one large, general-purpose one.
 - **First generic functions** — aim for generic, reusable functions before specific ones
 - **Modular-first** — organize code into self-contained, independent modules
 - **Component-first** — build UI as a collection of isolated, reusable components
 - **Functional-first** — functions before classes
 - **Immutability by default**
 - **DDD mindset** — Ubiquitous Language everywhere
+- **Pure View principle** — UI components should be pure presentation layers. Business logic, state transformations, and side effects must live outside the view. Views receive typed data via props and only render UI.
 
 ---
 
