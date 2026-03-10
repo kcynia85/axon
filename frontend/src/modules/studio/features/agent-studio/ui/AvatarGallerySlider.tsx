@@ -1,32 +1,20 @@
 "use client";
 
 import { cn } from "@/shared/lib/utils";
+import type { AvatarGallerySliderProps } from "../../types/components.types";
+import { useAvatarGallerySlider } from "../application/hooks/useAvatarGallerySlider";
 
-const AVATARS = [
-	{ id: 1, url: "/images/avatars/agent-1.png" },
-	{ id: 2, url: "/images/avatars/agent-2.png" },
-	{ id: 3, url: "/images/avatars/agent-3.png" },
-	{ id: 4, url: "/images/avatars/agent-4.png" },
-	{ id: 5, url: "/images/avatars/agent-5.png" },
-];
+export const AvatarGallerySlider = (props: AvatarGallerySliderProps) => {
+	const { avatars, value, onSelect } = useAvatarGallerySlider(props);
 
-type AvatarGallerySliderProps = {
-	value?: string | null;
-	onChange: (url: string) => void;
-};
-
-export const AvatarGallerySlider = ({
-	value,
-	onChange,
-}: AvatarGallerySliderProps) => {
 	return (
 		<div className="w-full overflow-x-auto no-scrollbar py-8">
 			<div className="flex gap-8 px-2">
-				{AVATARS.map((avatar) => (
+				{avatars.map((avatar) => (
 					<button
 						type="button"
 						key={avatar.id}
-						onClick={() => onChange(avatar.url)}
+						onClick={() => onSelect(avatar.url)}
 						className={cn(
 							"relative flex-shrink-0 w-48 aspect-square rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 border-2 text-left p-0",
 							value === avatar.url

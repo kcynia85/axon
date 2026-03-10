@@ -1,105 +1,84 @@
-import { useFormContext } from "react-hook-form";
-import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
-import { BlueprintSection } from "@/modules/studio/ui/components/primitives/BlueprintSection";
-import { StudioArea } from "@/modules/studio/ui/components/primitives/StudioArea";
-import { DynamicListInput } from "@/shared/ui/form/DynamicListInput";
-import { SearchableSelect } from "@/shared/ui/form/SearchableSelect";
-import { SelectableCard } from "@/shared/ui/form/SelectableCard";
-import {
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-} from "@/shared/ui/ui/Form";
-import { ALL_HUBS } from "../../types/agent-studio.types";
+import { FormField } from "@/shared/ui/ui/Form";
+import { FormSection } from "@/shared/ui/form/FormSection";
+import { FormTextarea } from "@/shared/ui/form/FormTextarea";
+import { FormDynamicList } from "@/shared/ui/form/FormDynamicList";
+import { FormSelect } from "@/shared/ui/form/FormSelect";
+import { FormCheckbox } from "@/shared/ui/form/FormCheckbox";
+import { FormItemField } from "@/shared/ui/form/FormItemField";
+import { FormSubheading } from "@/shared/ui/form/FormSubheading";
+import { ALL_HUBS } from "../../types/agent-studio.constants";
+import type { CognitionSectionProps } from "../../types/sections/cognition.types";
+import { useCognitionSection } from "../../application/hooks/sections/useCognitionSection";
 
-export type CognitionSectionProps = {
-	readonly syncDraft: () => void;
-};
-
-export const CognitionSection = ({ syncDraft }: CognitionSectionProps) => {
-	const form = useFormContext<CreateAgentFormData>();
+export const CognitionSection = (props: CognitionSectionProps) => {
+	const { control, syncDraft } = useCognitionSection(props);
 
 	return (
-		<BlueprintSection id="MEMORY" number={2} title="Cognition">
+		<FormSection id="MEMORY" number={2} title="Cognition">
 			<div className="space-y-12">
 				<div className="space-y-2">
-					<h3 className="text-lg font-mono text-zinc-500">
-						Knowledge Hubs (RAG)
-					</h3>
+					<FormSubheading>Knowledge Hubs (RAG)</FormSubheading>
 					<div className="w-full max-w-2xl">
 						<FormField
-							control={form.control}
+							control={control}
 							name="knowledge_hub_ids"
 							render={({ field }) => (
-								<FormItem>
-									<FormControl>
-										<SearchableSelect
-											multiple
-											options={ALL_HUBS}
-											value={field.value || []}
-											onChange={(val) => {
-												field.onChange(val);
-												syncDraft();
-											}}
-											placeholder="Select Knowledge Sources..."
-											searchPlaceholder="Search hubs..."
-										/>
-									</FormControl>
-								</FormItem>
+								<FormItemField>
+									<FormSelect
+										multiple
+										options={ALL_HUBS as any}
+										value={field.value || []}
+										onChange={(val) => {
+											field.onChange(val);
+											syncDraft();
+										}}
+										placeholder="Select Knowledge Sources..."
+										searchPlaceholder="Search hubs..."
+									/>
+								</FormItemField>
 							)}
 						/>
 					</div>
 				</div>
 
 				<div className="space-y-2">
-					<h3 className="text-lg font-mono text-zinc-500">Guardrails</h3>
+					<FormSubheading>Guardrails</FormSubheading>
 					<div className="space-y-16">
 						<FormField
-							control={form.control}
+							control={control}
 							name="guardrails.instructions"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="text-base font-mono text-primary flex items-center gap-2">
-										Instructions
-									</FormLabel>
-									<FormControl>
-										<DynamicListInput
-											items={(field.value as string[]) || []}
-											onChange={(val) => {
-												field.onChange(val);
-												syncDraft();
-											}}
-											onBlur={syncDraft}
-											placeholder="Operational guideline..."
-											addPlaceholder="Add new instruction..."
-										/>
-									</FormControl>
-								</FormItem>
+								<FormItemField label="Instructions">
+									<FormDynamicList
+										items={(field.value as string[]) || []}
+										onChange={(val) => {
+											field.onChange(val);
+											syncDraft();
+										}}
+										onBlur={syncDraft}
+										placeholder="Operational guideline..."
+										addPlaceholder="Add new instruction..."
+									/>
+								</FormItemField>
 							)}
 						/>
 
 						<FormField
-							control={form.control}
+							control={control}
 							name="guardrails.constraints"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="text-base font-mono text-destructive flex items-center gap-2">
-										Constraints
-									</FormLabel>
-									<FormControl>
-										<DynamicListInput
-											items={(field.value as string[]) || []}
-											onChange={(val) => {
-												field.onChange(val);
-												syncDraft();
-											}}
-											onBlur={syncDraft}
-											placeholder="Hard limitation..."
-											addPlaceholder="Add new constraint..."
-										/>
-									</FormControl>
-								</FormItem>
+								<FormItemField label="Constraints">
+									<FormDynamicList
+										items={(field.value as string[]) || []}
+										onChange={(val) => {
+											field.onChange(val);
+											syncDraft();
+										}}
+										onBlur={syncDraft}
+										placeholder="Hard limitation..."
+										addPlaceholder="Add new constraint..."
+									/>
+								</FormItemField>
 							)}
 						/>
 					</div>
@@ -107,48 +86,41 @@ export const CognitionSection = ({ syncDraft }: CognitionSectionProps) => {
 
 				<div className="space-y-8 pt-8">
 					<FormField
-						control={form.control}
+						control={control}
 						name="few_shot_examples"
 						render={({ field }) => (
-							<FormItem>
-								<FormLabel className="text-lg font-mono text-zinc-500 mb-4 block h4">
-									Strategia Formatowania (Few Shot)
-								</FormLabel>
-								<FormControl>
-									<StudioArea
-										placeholder="Input examples of desired output format... (e.g. User: Hello -> Agent: Greetings!)"
-										className="min-h-[100px] leading-relaxed text-sm focus:placeholder:text-zinc-900 dark:focus:placeholder:text-white transition-opacity"
-										{...field}
-										value={Array.isArray(field.value) ? field.value.join("\n") : ""}
-										onChange={(e) => field.onChange(e.target.value.split("\n"))}
-										onBlur={syncDraft}
-									/>
-								</FormControl>
-							</FormItem>
+							<FormItemField label="Strategia Formatowania (Few Shot)">
+								<FormTextarea
+									placeholder="Input examples of desired output format... (e.g. User: Hello -> Agent: Greetings!)"
+									className="min-h-[100px] leading-relaxed text-sm focus:placeholder:text-zinc-900 dark:focus:placeholder:text-white transition-opacity"
+									{...field}
+									value={Array.isArray(field.value) ? field.value.join("\n") : ""}
+									onChange={(e) => field.onChange(e.target.value.split("\n"))}
+									onBlur={syncDraft}
+								/>
+							</FormItemField>
 						)}
 					/>
 
 					<FormField
-						control={form.control}
+						control={control}
 						name="reflexion"
 						render={({ field }) => (
-							<FormItem>
-								<FormControl>
-									<SelectableCard
-										title="Reflexion Mode"
-										description="Agent will self-correct before responding"
-										checked={!!field.value}
-										onChange={(checked) => {
-											field.onChange(checked);
-											syncDraft();
-										}}
-									/>
-								</FormControl>
-							</FormItem>
+							<FormItemField>
+								<FormCheckbox
+									title="Reflexion Mode"
+									description="Agent will self-correct before responding"
+									checked={!!field.value}
+									onChange={(checked) => {
+										field.onChange(checked);
+										syncDraft();
+									}}
+								/>
+							</FormItemField>
 						)}
 					/>
 				</div>
 			</div>
-		</BlueprintSection>
+		</FormSection>
 	);
 };

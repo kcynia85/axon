@@ -1,36 +1,22 @@
-import { useFormContext } from "react-hook-form";
-import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
-import { BlueprintSection } from "@/modules/studio/ui/components/primitives/BlueprintSection";
-import { SelectableCard } from "@/shared/ui/form/SelectableCard";
-import { FormControl, FormField, FormItem } from "@/shared/ui/ui/Form";
+import { FormField } from "@/shared/ui/ui/Form";
+import { FormSection } from "@/shared/ui/form/FormSection";
+import { FormCheckbox } from "@/shared/ui/form/FormCheckbox";
+import { FormItemField } from "@/shared/ui/form/FormItemField";
+import { FormSubheading } from "@/shared/ui/form/FormSubheading";
+import { DEPLOYMENT_SCOPES } from "../../types/agent-studio.constants";
+import type { AvailabilitySectionProps } from "../../types/sections/availability.types";
+import { useAvailabilitySection } from "../../application/hooks/sections/useAvailabilitySection";
 
-const DEPLOYMENT_SCOPES = [
-	"Global Availability",
-	"Product Management",
-	"Discovery Hub",
-	"Design System",
-	"Delivery & CI/CD",
-	"Growth & Market",
-] as const;
-
-export type AvailabilitySectionProps = {
-	readonly syncDraft: () => void;
-};
-
-export const AvailabilitySection = ({
-	syncDraft,
-}: AvailabilitySectionProps) => {
-	const form = useFormContext<CreateAgentFormData>();
+export const AvailabilitySection = (props: AvailabilitySectionProps) => {
+	const { control, syncDraft } = useAvailabilitySection(props);
 
 	return (
-		<BlueprintSection id="AVAILABILITY" number={6} title="Availability">
+		<FormSection id="AVAILABILITY" number={6} title="Availability">
 			<div className="space-y-8">
-				<div className="flex items-center gap-4">
-					<h3 className="text-lg font-mono text-zinc-500">Deployment Scope</h3>
-				</div>
+				<FormSubheading>Deployment Scope</FormSubheading>
 
 				<FormField
-					control={form.control}
+					control={control}
 					name="availability_workspace"
 					render={({ field }) => {
 						const currentWorkspace = field.value || [];
@@ -39,44 +25,42 @@ export const AvailabilitySection = ({
 						);
 
 						return (
-							<FormItem>
-								<FormControl>
-									<div className="grid grid-cols-1 gap-4">
-										{DEPLOYMENT_SCOPES.map((space) => {
-											const isSelected = currentWorkspace.includes(space);
-											const isDisabled =
-												isGlobalSelected && space !== "Global Availability";
+							<FormItemField>
+								<div className="grid grid-cols-1 gap-4">
+									{DEPLOYMENT_SCOPES.map((space) => {
+										const isSelected = currentWorkspace.includes(space);
+										const isDisabled =
+											isGlobalSelected && space !== "Global Availability";
 
-											return (
-												<SelectableCard
-													key={space}
-													title={space}
-													checked={isSelected}
-													disabled={isDisabled}
-													onChange={() => {
-														let next: string[] = [];
-														if (space === "Global Availability") {
-															next = isSelected ? [] : ["Global Availability"];
-														} else {
-															next = isSelected
-																? currentWorkspace.filter(
-																		(s: string) => s !== space,
-																	)
-																: [...currentWorkspace, space];
-														}
-														field.onChange(next);
-														syncDraft();
-													}}
-												/>
-											);
-										})}
-									</div>
-								</FormControl>
-							</FormItem>
+										return (
+											<FormCheckbox
+												key={space}
+												title={space}
+												checked={isSelected}
+												disabled={isDisabled}
+												onChange={() => {
+													let next: string[] = [];
+													if (space === "Global Availability") {
+														next = isSelected ? [] : ["Global Availability"];
+													} else {
+														next = isSelected
+															? currentWorkspace.filter(
+																	(s: string) => s !== space,
+																)
+															: [...currentWorkspace, space];
+													}
+													field.onChange(next);
+													syncDraft();
+												}}
+											/>
+										);
+									})}
+								</div>
+							</FormItemField>
 						);
 					}}
 				/>
 			</div>
-		</BlueprintSection>
+		</FormSection>
 	);
 };

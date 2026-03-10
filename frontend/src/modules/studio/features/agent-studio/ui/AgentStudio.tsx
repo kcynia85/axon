@@ -8,22 +8,19 @@ import { StudioDiscovery } from "@/modules/studio/ui/components/StudioDiscovery"
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { Button } from "@/shared/ui/ui/Button";
-import { useAgentPosterState } from "../application/hooks/useAgentFormState";
 import { useAgentStudioView } from "../application/hooks/useAgentStudioView";
 import { StudioSectionNav } from "./components/StudioSectionNav";
-import { LivePoster } from "./LivePoster";
-import { AvailabilitySection } from "./sections/AvailabilitySection";
+import { IdentitySection } from "./sections/IdentitySection";
 import { CognitionSection } from "./sections/CognitionSection";
 import { EngineSection } from "./sections/EngineSection";
-import { IdentitySection } from "./sections/IdentitySection";
-import { InterfaceSection } from "./sections/InterfaceSection";
 import { SkillsSection } from "./sections/SkillsSection";
+import { InterfaceSection } from "./sections/InterfaceSection";
+import { AvailabilitySection } from "./sections/AvailabilitySection";
+import { ConnectedLivePoster } from "./ConnectedLivePoster";
 
-const ConnectedLivePoster = () => {
-	const data = useAgentPosterState();
-	return <LivePoster data={data} />;
-};
-
+/**
+ * AgentStudio: Pure view component for the agent design experience.
+ */
 export const AgentStudio = () => {
 	const {
 		form,

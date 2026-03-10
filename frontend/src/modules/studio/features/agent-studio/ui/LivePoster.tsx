@@ -1,23 +1,12 @@
 "use client";
 
 import { Shield, Zap } from "lucide-react";
-import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
+import type { LivePosterProps } from "../../types/components.types";
+import { useLivePoster } from "../application/hooks/useLivePoster";
 
-type LivePosterProps = {
-	data: Partial<CreateAgentFormData>;
-};
-
-const MODEL_NAMES: Record<string, string> = {
-	"gemini-2.5-pro": "Gemini 2.5 Pro",
-	"gemini-2.0-flash": "Gemini 2.0 Flash",
-	"gpt-4o": "GPT-4o",
-};
-
-export const LivePoster = ({ data }: LivePosterProps) => {
-	const modelName = data.llm_model_id
-		? MODEL_NAMES[data.llm_model_id] || data.llm_model_id
-		: "Select Model";
+export const LivePoster = (props: LivePosterProps) => {
+	const { modelName, inferenceCost, data } = useLivePoster(props);
 
 	return (
 		<div className="sticky top-24 w-full max-w-[240px] animate-in fade-in slide-in-from-right-8 duration-700">
@@ -50,7 +39,6 @@ export const LivePoster = ({ data }: LivePosterProps) => {
 					}
 				/>
 
-				{/* Status Info below the card */}
 				<div className="mt-6 space-y-3 px-2">
 					<div className="flex justify-between items-center text-[9px] font-mono uppercase tracking-widest opacity-40">
 						<span>Model Engine</span>
@@ -80,8 +68,7 @@ export const LivePoster = ({ data }: LivePosterProps) => {
 					<div className="flex justify-between items-center text-[9px] font-mono uppercase tracking-widest opacity-40">
 						<span>Inference Cost</span>
 						<span className="text-white font-bold text-[8px]">
-							{data.llm_model_id === "gemini-2.0-flash" ? "$0.0001" : "$0.002"}{" "}
-							/ 1k tkn
+							{inferenceCost} / 1k tkn
 						</span>
 					</div>
 				</div>
