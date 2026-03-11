@@ -4,14 +4,7 @@ import { FormTextField } from "@/shared/ui/form/FormTextField";
 import { FormTextarea } from "@/shared/ui/form/FormTextarea";
 import { FormTagInput } from "@/shared/ui/form/FormTagInput";
 import { FormSubheading } from "@/shared/ui/form/FormSubheading";
-import { FormPropertyTable } from "@/shared/ui/form/FormPropertyTable";
 import { useFormContext, Controller } from "react-hook-form";
-
-const DATA_TYPE_OPTIONS = [
-	{ label: "Link", value: "Link" },
-	{ label: "File", value: "File" },
-	{ label: "String", value: "String" },
-];
 
 /**
  * CrewBasicInfoSection: The first section of the form collecting crew foundations.
@@ -54,42 +47,6 @@ export const CrewBasicInfoSection = () => {
 								onChange={field.onChange}
 								onBlur={field.onBlur}
 								placeholder="e.g. research, analysis, scraping..." 
-							/>
-						)}
-					/>
-				</div>
-
-				<div className="space-y-6">
-					<FormSubheading>Context</FormSubheading>
-					<Controller
-						control={control}
-						name="contexts"
-						render={({ field }) => (
-							<FormPropertyTable
-								items={field.value || []}
-								onChange={field.onChange}
-								onBlur={field.onBlur}
-								typeOptions={DATA_TYPE_OPTIONS}
-								namePlaceholder="context name (e.g. competitors_list)"
-								addPlaceholder="+ Add Context"
-							/>
-						)}
-					/>
-				</div>
-
-				<div className="space-y-6">
-					<FormSubheading>Artefact</FormSubheading>
-					<Controller
-						control={control}
-						name="artefacts"
-						render={({ field }) => (
-							<FormPropertyTable
-								items={field.value || []}
-								onChange={field.onChange}
-								onBlur={field.onBlur}
-								typeOptions={DATA_TYPE_OPTIONS}
-								namePlaceholder="artefact name (e.g. synthesis.md)"
-								addPlaceholder="+ Add Artefact"
 							/>
 						)}
 					/>

@@ -38,10 +38,10 @@ export const SequentialExecution = ({ agents }: Props) => {
 						</Button>
 
 						<div className="flex items-center gap-4">
-							<div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center font-mono text-[10px] font-bold text-zinc-500 border border-zinc-700">
+							<div className="w-8 h-8 rounded-full bg-white flex items-center justify-center font-mono text-[10px] font-bold text-black border border-zinc-200 shadow-xl">
 								{index + 1}
 							</div>
-							<span className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-600 font-bold">
+							<span className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-bold">
 								Step Definition / Task #{index + 1}
 							</span>
 						</div>

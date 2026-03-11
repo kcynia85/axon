@@ -24,8 +24,7 @@ export const FormNavItem = ({
 			<div className="flex items-center justify-between">
 				<span
 					className={cn(
-						"font-mono text-[10px] font-bold tracking-tighter transition-colors",
-						isActive ? "text-white" : "text-zinc-500",
+						"font-mono text-[10px] font-bold tracking-tighter transition-colors text-white",
 					)}
 				>
 					0{number}

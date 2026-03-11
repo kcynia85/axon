@@ -28,7 +28,7 @@ export const FormPropertyTable = (props: FormPropertyTableProps) => {
 
 	return (
 		<div className="space-y-4">
-			<div className="grid grid-cols-[1fr_150px_100px_50px] gap-4 px-4 text-[12px] font-mono tracking-[0.2em] text-zinc-500">
+			<div className="grid grid-cols-[1fr_150px_100px_50px] gap-4 px-4 text-[12px] font-mono tracking-[0.2em] text-zinc-500 uppercase">
 				<span>Name</span>
 				<span>Type/Format</span>
 				<span className="text-center">Req.</span>

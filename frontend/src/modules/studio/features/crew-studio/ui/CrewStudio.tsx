@@ -3,8 +3,9 @@ import { useCrewForm } from "../application/useCrewForm";
 import { CrewBasicInfoSection } from "./sections/CrewBasicInfoSection";
 import { CrewTypeSelectionSection } from "./sections/CrewTypeSelectionSection";
 import { CrewExecutionSection } from "./sections/CrewExecutionSection";
+import { CrewContextSection } from "./sections/CrewContextSection";
 import { CrewAvailabilitySection } from "./sections/CrewAvailabilitySection";
-import { CrewLivePoster } from "./components/CrewLivePoster";
+import { CrewLiveGraphContainer } from "./components/CrewLiveGraphContainer";
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
 import { StudioSectionNav } from "@/modules/studio/features/agent-studio/ui/components/StudioSectionNav";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
@@ -16,7 +17,7 @@ import { useState, useRef, useCallback, useMemo } from "react";
 import { useWatch } from "react-hook-form";
 
 interface Props {
-	availableAgents: { id: string; name: string; subtitle?: string }[];
+	availableAgents: { id: string; name: string; subtitle?: string; avatarUrl?: string }[];
 	onSave: (data: CrewStudioFormData) => void;
 	onCancel: () => void;
 	initialData?: Partial<CrewStudioFormData>;
@@ -93,11 +94,12 @@ export const CrewStudio = ({ availableAgents, onSave, onCancel, initialData }: P
 								<CrewBasicInfoSection />
 								<CrewTypeSelectionSection onTypeChange={handleTypeChange} />
 								<CrewExecutionSection availableAgents={availableAgents} />
+								<CrewContextSection />
 								<CrewAvailabilitySection />
 							</form>
 						</div>
 					}
-					poster={<CrewLivePoster />}
+					poster={<CrewLiveGraphContainer availableAgents={availableAgents} />}
 					footer={
 						<div className="flex items-center gap-4">
 							<div className="flex flex-col items-end mr-8">

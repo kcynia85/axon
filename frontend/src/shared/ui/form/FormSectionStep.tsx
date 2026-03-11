@@ -7,7 +7,7 @@ import type { FormSectionStepProps } from "@/shared/types/form/FormPrimitives.ty
  */
 export const FormSectionStep = ({ number, className }: FormSectionStepProps) => (
 	<div
-		className={cn("font-mono text-sm font-bold text-zinc-500 mb-2", className)}
+		className={cn("font-mono text-sm font-bold text-white mb-2", className)}
 	>
 		[{String(number).padStart(2, "0")}]
 	</div>
