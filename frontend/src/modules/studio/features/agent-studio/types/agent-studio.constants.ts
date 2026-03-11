@@ -58,19 +58,19 @@ export const CUSTOM_FUNCTIONS = [
 	{
 		id: "lead_scoring",
 		name: "lead_scoring",
-		desc: "Oblicza potencjał leada na podstawie przychodu...",
-		category: "Sprzedaż",
+		desc: "Calculates lead potential based on revenue...",
+		category: "Sales",
 	},
 	{
 		id: "validate_pesel",
 		name: "validate_pesel",
-		desc: "Sprawdza poprawność sumy kontrolnej numeru PES...",
-		category: "Prawne",
+		desc: "Verifies the checksum of the PESEL number...",
+		category: "Legal",
 	},
 	{
 		id: "sentiment_analysis_local",
 		name: "sentiment_analysis_local",
-		desc: "Lokalna analiza sentymentu tekstu (Positive/Negative).",
+		desc: "Local text sentiment analysis (Positive/Negative).",
 		category: "AI Utils",
 	},
 ] as const;

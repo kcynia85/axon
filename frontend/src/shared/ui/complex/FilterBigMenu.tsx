@@ -160,7 +160,7 @@ export const FilterBigMenu = forwardRef<HTMLDivElement, FilterBigMenuProps>(({
                 onClick={handleClear}
                 className="mr-auto text-[10px] font-bold text-zinc-500 hover:text-black dark:hover:text-white transition-colors underline underline-offset-4 decoration-zinc-200 dark:decoration-zinc-800"
               >
-                Wyczyść wszystko
+                Clear all
               </button>
               
               <DropdownMenuPrimitive.Item asChild>

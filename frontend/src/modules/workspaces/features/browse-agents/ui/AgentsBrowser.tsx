@@ -11,7 +11,7 @@ import { SortOption } from "@/shared/domain/filters";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
 import { AgentProfilePeek } from "@/modules/workspaces/ui/AgentProfilePeek";
-import { cn } from "@/shared/lib/utils";
+import { cn, getDeterministicImgId } from "@/shared/lib/utils";
 import { AGENT_REAL_NAMES } from "@/modules/workspaces/domain/constants";
 
 const SORT_OPTIONS: readonly SortOption[] = [
@@ -19,15 +19,6 @@ const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-desc", label: "Name (Z-A)" },
   { id: "newest", label: "Recently Added" },
 ];
-
-const getDeterministicImgId = (id: string): number => {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash << 5) - hash + id.charCodeAt(i);
-    hash |= 0; // Convert to 32bit integer
-  }
-  return (Math.abs(hash) % 5) + 1;
-};
 
 type AgentsBrowserProps = {
   readonly initialAgents: Agent[];

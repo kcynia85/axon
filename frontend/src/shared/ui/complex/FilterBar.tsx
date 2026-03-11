@@ -57,7 +57,7 @@ export const FilterBar = ({
           "underline underline-offset-4 decoration-zinc-200 dark:decoration-zinc-800 hover:decoration-zinc-400 dark:hover:decoration-zinc-600"
         )}
       >
-        Wyczyść wszystko
+        Clear all
       </button>
     </div>
   );

@@ -36,7 +36,7 @@ export const DiscoveryLibrary = ({
 						className="text-zinc-500 hover:text-white flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest group outline-none"
 					>
 						<X className="w-4 h-4 group-hover:rotate-90 transition-transform" />{" "}
-						Wróć
+						Back
 					</button>
 					<h3 className="text-2xl font-black font-display uppercase italic tracking-tighter text-white">
 						{title}

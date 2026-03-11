@@ -42,7 +42,7 @@ export const InternalSkillsModal = ({
 						{/* Header */}
 						<div className="px-6 py-4 border-b border-zinc-200 dark:border-white/5 flex items-center justify-between shrink-0">
 							<DialogPrimitive.Title className="text-lg font-bold font-display tracking-tight text-zinc-900 dark:text-white">
-								Wybierz Umiejętność (Internal Skills)
+								Select Skill (Internal Skills)
 							</DialogPrimitive.Title>
 							<DialogPrimitive.Close className="rounded-full p-1.5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition-all outline-none">
 								<X size={18} />
@@ -54,7 +54,7 @@ export const InternalSkillsModal = ({
 							<SearchInput
 								value={searchQuery}
 								onChange={onSearchChange}
-								placeholder="Szukaj funkcji..."
+								placeholder="Search functions..."
 								className="h-10"
 							/>
 							<div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ export const InternalSkillsModal = ({
 							<div className="space-y-3">
 								{skills.length === 0 ? (
 									<div className="py-12 text-center text-zinc-500 font-mono text-sm">
-										Brak wyników
+										No results found
 									</div>
 								) : (
 									skills.map((fn) => {
@@ -120,7 +120,7 @@ export const InternalSkillsModal = ({
 																: "bg-black text-white dark:bg-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
 														)}
 													>
-														{fn.isAdded ? "Dodano" : "+ Dodaj Funkcje"}
+														{fn.isAdded ? "Added" : "+ Add Functions"}
 													</Button>
 												</div>
 											</div>

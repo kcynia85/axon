@@ -4,6 +4,7 @@ export type FormSelectOption = {
 	readonly id: string;
 	readonly name: string;
 	readonly subtitle?: string;
+	readonly avatarUrl?: string;
 };
 
 export type FormSelectProps = {

@@ -1,5 +1,6 @@
 import { Check, ChevronDown, Clock, Search, X } from "lucide-react";
 import type React from "react";
+import Image from "next/image";
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
@@ -47,12 +48,27 @@ export const FormSelect = (props: FormSelectProps) => {
 							<Badge
 								key={opt.id}
 								variant="secondary"
-								className="bg-primary/10 text-primary border-primary/20 flex items-center gap-1 py-1 px-3"
+								className="bg-primary/10 text-primary border-primary/20 flex items-center gap-3 py-2.5 px-3 pr-2 rounded-2xl h-auto"
 							>
-								{opt.name}
+								{opt.avatarUrl && (
+									<div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20 shrink-0 bg-black shadow-lg">
+										<Image 
+											src={opt.avatarUrl} 
+											alt={opt.name} 
+											fill 
+											className="object-cover object-top scale-110" 
+										/>
+									</div>
+								)}
+								<div className="flex flex-col">
+									<span className="text-[14px] font-bold tracking-tight leading-tight">{opt.name}</span>
+									{opt.subtitle && (
+										<span className="text-[10px] opacity-70 font-mono leading-tight mt-0.5">{opt.subtitle}</span>
+									)}
+								</div>
 								<X
-									size={10}
-									className="cursor-pointer hover:text-white"
+									size={14}
+									className="cursor-pointer hover:text-white ml-1 opacity-50 hover:opacity-100 transition-opacity"
 									onClick={(e) => {
 										e.stopPropagation();
 										handleSelect(opt.id);
@@ -61,18 +77,27 @@ export const FormSelect = (props: FormSelectProps) => {
 							</Badge>
 						))
 					) : (
-						<div className="flex items-center gap-6">
-							<span className="text-base font-bold text-zinc-900 dark:text-white">
-								{selectedOptions[0].name}
-							</span>
-							{selectedOptions[0].subtitle && (
-								<Badge
-									variant="outline"
-									className="text-[12px] border-zinc-200 dark:border-zinc-700 tracking-tighter text-zinc-500 shrink-0"
-								>
-									{selectedOptions[0].subtitle}
-								</Badge>
+						<div className="flex items-center gap-4">
+							{selectedOptions[0]?.avatarUrl && (
+								<div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20 shrink-0 bg-black">
+									<Image 
+										src={selectedOptions[0].avatarUrl} 
+										alt={selectedOptions[0].name} 
+										fill 
+										className="object-cover object-top scale-110" 
+									/>
+								</div>
 							)}
+							<div className="flex flex-col">
+								<span className="text-base font-bold text-zinc-900 dark:text-white leading-none">
+									{selectedOptions[0]?.name || placeholder}
+								</span>
+								{selectedOptions[0]?.subtitle && (
+									<span className="text-[10px] text-zinc-500 font-mono mt-1">
+										{selectedOptions[0].subtitle}
+									</span>
+								)}
+							</div>
 						</div>
 					)
 				) : (
@@ -116,17 +141,26 @@ export const FormSelect = (props: FormSelectProps) => {
 									className="px-4 py-4 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer flex items-center justify-between group transition-colors"
 								>
 									<div className="flex items-center gap-4">
-										<span className="text-sm font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
-											{opt.name}
-										</span>
-										{opt.subtitle && (
-											<Badge
-												variant="outline"
-												className="text-[10px] border-zinc-200 dark:border-zinc-700 tracking-tighter text-zinc-500"
-											>
-												{opt.subtitle}
-											</Badge>
+										{opt.avatarUrl && (
+											<div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10 shrink-0 bg-black">
+												<Image 
+													src={opt.avatarUrl} 
+													alt={opt.name} 
+													fill 
+													className="object-cover object-top scale-110" 
+												/>
+											</div>
 										)}
+										<div className="flex flex-col">
+											<span className="text-sm font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+												{opt.name}
+											</span>
+											{opt.subtitle && (
+												<span className="text-[10px] text-zinc-500 font-mono">
+													{opt.subtitle}
+												</span>
+											)}
+										</div>
 									</div>
 									{selectedIds.includes(opt.id) && (
 										<Check className="w-4 h-4 text-primary" />
@@ -147,17 +181,26 @@ export const FormSelect = (props: FormSelectProps) => {
 							className="px-4 py-4 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer flex items-center justify-between group transition-colors"
 						>
 							<div className="flex items-center gap-4">
-								<span className="text-sm font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
-									{opt.name}
-								</span>
-								{opt.subtitle && (
-									<Badge
-										variant="outline"
-										className="text-[10px] border-zinc-200 dark:border-zinc-800 text-zinc-500"
-									>
-										{opt.subtitle}
-									</Badge>
+								{opt.avatarUrl && (
+									<div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10 shrink-0 bg-black">
+										<Image 
+											src={opt.avatarUrl} 
+											alt={opt.name} 
+											fill 
+											className="object-cover object-top scale-110" 
+										/>
+									</div>
 								)}
+								<div className="flex flex-col">
+									<span className="text-sm font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+										{opt.name}
+									</span>
+									{opt.subtitle && (
+										<span className="text-[10px] text-zinc-500 font-mono">
+											{opt.subtitle}
+										</span>
+									)}
+								</div>
 							</div>
 							{selectedIds.includes(opt.id) && (
 								<Check className="w-4 h-4 text-primary" />

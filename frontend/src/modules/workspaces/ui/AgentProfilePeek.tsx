@@ -8,15 +8,7 @@ import { Button } from "@/shared/ui/ui/Button";
 import { HelpCircle, BookOpen } from "lucide-react";
 import { AGENT_REAL_NAMES, KNOWLEDGE_HUB_NAMES, LLM_MODEL_NAMES } from "../domain/constants";
 import { Agent } from "@/shared/domain/workspaces";
-
-const getDeterministicImgId = (id: string): number => {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash << 5) - hash + id.charCodeAt(i);
-    hash |= 0; // Convert to 32bit integer
-  }
-  return (Math.abs(hash) % 5) + 1;
-};
+import { getDeterministicImgId } from "@/shared/lib/utils";
 
 // Re-importing Code2 if needed but instructions said remove icons from native skills
 import { Code2 } from "lucide-react";

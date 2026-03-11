@@ -107,7 +107,7 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 											>
 												<Plus className="text-zinc-400 group-hover:text-zinc-600 transition-colors w-5 h-5" />
 												<span className="font-bold text-zinc-500 group-hover:text-zinc-700 transition-colors text-base">
-													Wybierz z biblioteki (Internal Skills)
+													Select from library (Internal Skills)
 												</span>
 											</button>
 

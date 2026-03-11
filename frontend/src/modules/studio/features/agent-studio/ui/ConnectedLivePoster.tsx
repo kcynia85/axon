@@ -9,15 +9,15 @@ const MOCK_ESTIMATOR_DATA: CostEstimatorData = {
 		current: 4256,
 		total: 128000,
 	},
-	suggestions: ["Zmień model na GPT-4o-mini", "Wyłącz RAG"],
+	suggestions: ["Change model to GPT-4o-mini", "Disable RAG"],
 	staticCosts: [
-		{ label: "Inicjalizacja Agenta (Setup)", cost: 0.005 },
-		{ label: "Koszt użycia RAG (1 Hub)", cost: 0.008 },
-		{ label: "Koszt wywołania Narzędzi (2)", cost: 0.002 },
+		{ label: "Agent Initialization (Setup)", cost: 0.005 },
+		{ label: "RAG Usage Cost (1 Hub)", cost: 0.008 },
+		{ label: "Tool Call Cost (2)", cost: 0.002 },
 	],
 	dynamicCosts: [
-		{ label: "Tokeny Wejściowe (Prompt)", tokenCount: "~15k", cost: 0.025 },
-		{ label: "Tokeny Wyjściowe (Odpowiedź)", tokenCount: "~2k", cost: 0.008 },
+		{ label: "Input Tokens (Prompt)", tokenCount: "~15k", cost: 0.025 },
+		{ label: "Output Tokens (Response)", tokenCount: "~2k", cost: 0.008 },
 	],
 	memoryAllocation: [
 		{ label: "System", size: "1.2k" },

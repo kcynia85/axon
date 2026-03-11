@@ -27,8 +27,8 @@ export const ModeToggle = (): React.ReactNode => {
         isSelected={isDark}
         onValueChange={(isSelected) => setTheme(isSelected ? "dark" : "light")}
         size="lg"
-        aria-label="Przełącz motyw"
-        title="Przełącz motyw"
+        aria-label="Toggle theme"
+        title="Toggle theme"
         classNames={{
           wrapper: cn(
             "w-[58px] h-8 transition-all duration-500 relative px-1 rounded-full",

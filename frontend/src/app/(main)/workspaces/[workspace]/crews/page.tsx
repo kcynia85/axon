@@ -13,7 +13,7 @@ export default function CrewsListPage() {
   const params = useParams();
   const router = useRouter();
   const workspaceId = params.workspace as string;
-  
+
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: crews, isLoading } = useCrews(workspaceId);
 
@@ -21,7 +21,8 @@ export default function CrewsListPage() {
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
 
   const handleAssembleCrew = () => {
-    router.push(`/workspaces/${workspaceId}/crews/new`);
+    // Nawigacja do nowo utworzonego Crew Studio
+    router.push(`/workspaces/${workspaceId}/crews/studio`);
   };
 
   return (
@@ -35,7 +36,7 @@ export default function CrewsListPage() {
       ]}
       actions={
         <Button variant="primary" size="lg" onClick={handleAssembleCrew}>
-          <Plus className="mr-2 h-4 w-4" /> Assemble Crew
+          <Plus className="mr-2 h-4 w-4" /> Nowy Crew
         </Button>
       }
       showPagination={shouldShowPagination(crews?.length || 0)}
