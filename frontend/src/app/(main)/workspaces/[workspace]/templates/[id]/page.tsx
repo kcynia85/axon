@@ -1,9 +1,12 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useTemplates } from "@/modules/workspaces/application/useWorkspaces";
+import { useTemplates } from "@/modules/workspaces/application/useTemplates";
 import { TemplateProfilePeek } from "@/modules/workspaces/ui/TemplateProfilePeek";
 
+/**
+ * TemplateSidePeekPage: Displays details of a specific template in a side panel.
+ */
 export default function TemplateSidePeekPage() {
   const params = useParams();
   const router = useRouter();
@@ -20,7 +23,7 @@ export default function TemplateSidePeekPage() {
       template={template}
       isOpen={true}
       onClose={() => router.push(`/workspaces/${workspaceId}/templates`)}
-      onEdit={() => router.push(`/workspaces/${workspaceId}/templates/${templateId}/edit`)}
+      onEdit={() => router.push(`/workspaces/${workspaceId}/templates/studio?id=${templateId}`)}
     />
   );
 }

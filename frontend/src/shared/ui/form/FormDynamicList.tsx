@@ -4,6 +4,7 @@ import { Button } from "@/shared/ui/ui/Button";
 import { Input } from "@/shared/ui/ui/Input";
 import type { FormDynamicListProps } from "@/shared/types/form/FormDynamicList.types";
 import { useFormDynamicList } from "@/shared/hooks/form/useFormDynamicList";
+import { cn } from "@/shared/lib/utils";
 
 export const FormDynamicList = (props: FormDynamicListProps) => {
 	const {
@@ -19,6 +20,8 @@ export const FormDynamicList = (props: FormDynamicListProps) => {
 		onBlur,
 		placeholder = "Item...",
 		addPlaceholder = "Add new item...",
+		className,
+		plusClassName,
 	} = props;
 
 	return (
@@ -31,7 +34,10 @@ export const FormDynamicList = (props: FormDynamicListProps) => {
 						onChange={(e) => handleChange(index, e.target.value)}
 						onBlur={onBlur}
 						placeholder={placeholder}
-						className="bg-zinc-50 dark:bg-black border border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-200 transition-all text-base h-14 rounded-xl outline-none shadow-inner text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 px-6"
+						className={cn(
+							"bg-zinc-50 dark:bg-black border border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-200 transition-all text-base h-14 rounded-xl outline-none shadow-inner text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 px-6",
+							className
+						)}
 					/>
 					<Button
 						variant="ghost"
@@ -48,7 +54,10 @@ export const FormDynamicList = (props: FormDynamicListProps) => {
 					<button
 						type="button"
 						onClick={handleAdd}
-						className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-primary transition-colors z-10 p-1"
+						className={cn(
+							"absolute left-5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-primary transition-colors z-10 p-1",
+							plusClassName
+						)}
 					>
 						<Plus className="w-5 h-5" />
 					</button>
@@ -62,7 +71,10 @@ export const FormDynamicList = (props: FormDynamicListProps) => {
 							}
 						}}
 						placeholder={addPlaceholder}
-						className="bg-zinc-50 dark:bg-black border border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-200 transition-all text-base h-14 rounded-xl outline-none shadow-inner text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 pl-14 pr-6"
+						className={cn(
+							"bg-zinc-50 dark:bg-black border border-zinc-200 dark:border-zinc-800 focus:border-zinc-900 dark:focus:border-zinc-200 transition-all text-base h-14 rounded-xl outline-none shadow-inner text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-700 pl-12 pr-6",
+							className
+						)}
 					/>
 				</div>
 				<div className="w-14" />

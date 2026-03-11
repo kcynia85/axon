@@ -24,7 +24,7 @@ export const FormNavItem = ({
 			<div className="flex items-center justify-between">
 				<span
 					className={cn(
-						"font-mono text-[10px] font-bold tracking-tighter transition-colors text-white",
+						"font-mono text-[10px] font-bold tracking-tighter transition-colors text-zinc-200",
 					)}
 				>
 					0{number}
@@ -33,7 +33,7 @@ export const FormNavItem = ({
 					<span
 						className={cn(
 							"font-mono text-[8px] transition-colors",
-							isActive ? "text-white/80" : "text-zinc-500",
+							isActive ? "text-zinc-300" : "text-zinc-500",
 						)}
 					>
 						{currentProgress}/{totalProgress}
@@ -43,7 +43,7 @@ export const FormNavItem = ({
 			<div
 				className={cn(
 					"text-sm font-bold uppercase tracking-[0.2em] transition-colors",
-					isActive ? "text-white" : "text-zinc-400",
+					isActive ? "text-zinc-200" : "text-zinc-400",
 				)}
 			>
 				{title}

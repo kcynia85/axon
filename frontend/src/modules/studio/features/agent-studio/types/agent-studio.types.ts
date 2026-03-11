@@ -21,7 +21,8 @@ export type AgentStudioSectionId =
 	| "MEMORY"
 	| "ENGINE"
 	| "SKILLS"
-	| "INTERFACE"
+	| "CONTEXT"
+	| "ARTEFACTS"
 	| "AVAILABILITY";
 
 export type AgentStudioState = {

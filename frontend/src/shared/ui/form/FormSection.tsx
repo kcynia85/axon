@@ -11,6 +11,7 @@ export const FormSection = ({
 	id,
 	number,
 	title,
+	description,
 	children,
 	className,
 }: FormSectionProps) => (
@@ -22,7 +23,12 @@ export const FormSection = ({
 		)}
 	>
 		<FormSectionStep number={number} />
-		<FormHeading className="text-white">{title}</FormHeading>
+		<FormHeading className="text-zinc-200 mb-3">{title}</FormHeading>
+		{description ? (
+			<p className="text-sm font-mono text-zinc-500 mb-12">*Hint: {description}</p>
+		) : (
+			<div className="mb-12" />
+		)}
 		<div className="max-w-4xl">{children}</div>
 	</section>
 );

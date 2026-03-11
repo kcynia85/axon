@@ -4,10 +4,11 @@ import { CrewBasicInfoSection } from "./sections/CrewBasicInfoSection";
 import { CrewTypeSelectionSection } from "./sections/CrewTypeSelectionSection";
 import { CrewExecutionSection } from "./sections/CrewExecutionSection";
 import { CrewContextSection } from "./sections/CrewContextSection";
+import { CrewArtefactsSection } from "./sections/CrewArtefactsSection";
 import { CrewAvailabilitySection } from "./sections/CrewAvailabilitySection";
 import { CrewLiveGraphContainer } from "./components/CrewLiveGraphContainer";
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
-import { StudioSectionNav } from "@/modules/studio/features/agent-studio/ui/components/StudioSectionNav";
+import { CrewStudioSectionNav } from "./components/CrewStudioSectionNav";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { Button } from "@/shared/ui/ui/Button";
 import { X } from "lucide-react";
@@ -59,11 +60,9 @@ export const CrewStudio = ({ availableAgents, onSave, onCancel, initialData }: P
 			return {
 				...section,
 				title,
-				isActive: activeSection === section.id,
-				progress: { current: 0, total: 0 }
 			};
 		});
-	}, [currentType, activeSection]);
+	}, [currentType]);
 
 	return (
 		<FormProvider {...form}>
@@ -81,7 +80,7 @@ export const CrewStudio = ({ availableAgents, onSave, onCancel, initialData }: P
 						</Button>
 					}
 					navigator={
-						<StudioSectionNav
+						<CrewStudioSectionNav
 							sections={navigationItems as any}
 							activeSection={activeSection}
 							onSectionClick={scrollToSection}
@@ -95,6 +94,7 @@ export const CrewStudio = ({ availableAgents, onSave, onCancel, initialData }: P
 								<CrewTypeSelectionSection onTypeChange={handleTypeChange} />
 								<CrewExecutionSection availableAgents={availableAgents} />
 								<CrewContextSection />
+								<CrewArtefactsSection />
 								<CrewAvailabilitySection />
 							</form>
 						</div>

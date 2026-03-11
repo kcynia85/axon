@@ -57,7 +57,7 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 						{title}
 					</h5>
 					{description && (
-						<p className="text-sm text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-300 transition-colors">
+						<p className="text-sm text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-300 transition-colors">
 							{description}
 						</p>
 					)}

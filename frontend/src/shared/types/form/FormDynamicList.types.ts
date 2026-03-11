@@ -5,4 +5,5 @@ export type FormDynamicListProps = {
 	readonly placeholder?: string;
 	readonly addPlaceholder?: string;
 	readonly className?: string;
+	readonly plusClassName?: string;
 };

@@ -16,7 +16,7 @@ export const CognitionSection = (props: CognitionSectionProps) => {
 	return (
 		<FormSection id="MEMORY" number={2} title="Cognition">
 			<div className="space-y-12">
-				<div className="space-y-2">
+				<div className="space-y-6">
 					<FormSubheading>Knowledge Hubs (RAG)</FormSubheading>
 					<div className="w-full max-w-2xl">
 						<FormField
@@ -28,8 +28,8 @@ export const CognitionSection = (props: CognitionSectionProps) => {
 										multiple
 										options={ALL_HUBS as any}
 										value={field.value || []}
-										onChange={(val) => {
-											field.onChange(val);
+										onChange={(value) => {
+											field.onChange(value);
 											syncDraft();
 										}}
 										placeholder="Select Knowledge Sources..."
@@ -43,21 +43,23 @@ export const CognitionSection = (props: CognitionSectionProps) => {
 
 				<div className="space-y-2">
 					<FormSubheading>Guardrails</FormSubheading>
-					<div className="space-y-16">
+					<div className="space-y-10">
 						<FormField
 							control={control}
 							name="guardrails.instructions"
 							render={({ field }) => (
-								<FormItemField label="Instructions">
+								<FormItemField>
 									<FormDynamicList
 										items={(field.value as string[]) || []}
-										onChange={(val) => {
-											field.onChange(val);
+										onChange={(value) => {
+											field.onChange(value);
 											syncDraft();
 										}}
 										onBlur={syncDraft}
 										placeholder="Operational guideline..."
 										addPlaceholder="Add new instruction..."
+										className="border-green-200 dark:border-green-900/30 text-green-600 dark:text-green-400 placeholder:text-green-500/50 dark:placeholder:text-green-500/30"
+										plusClassName="text-green-500 hover:text-green-600"
 									/>
 								</FormItemField>
 							)}
@@ -67,16 +69,18 @@ export const CognitionSection = (props: CognitionSectionProps) => {
 							control={control}
 							name="guardrails.constraints"
 							render={({ field }) => (
-								<FormItemField label="Constraints">
+								<FormItemField>
 									<FormDynamicList
 										items={(field.value as string[]) || []}
-										onChange={(val) => {
-											field.onChange(val);
+										onChange={(value) => {
+											field.onChange(value);
 											syncDraft();
 										}}
 										onBlur={syncDraft}
 										placeholder="Hard limitation..."
 										addPlaceholder="Add new constraint..."
+										className="dark:text-red-400 text-red-600 dark:border-red-900/30 placeholder:text-red-500/50 dark:placeholder:text-red-500/30"
+										plusClassName="text-red-500 hover:text-red-600"
 									/>
 								</FormItemField>
 							)}
@@ -84,7 +88,7 @@ export const CognitionSection = (props: CognitionSectionProps) => {
 					</div>
 				</div>
 
-				<div className="space-y-8 pt-8">
+				<div className="space-y-14 pt-8">
 					<FormField
 						control={control}
 						name="few_shot_examples"

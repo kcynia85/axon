@@ -7,7 +7,7 @@ These standards apply to **humans and AI agents (LLMs)** equally.
 
 ## 🎯 Core Principles
 
-- **Readability over cleverness** — code must read like a book
+- **Readability over cleverness** — code must read like a book. Use full, descriptive names for variables, functions, types, and components. Do not use abbreviations or shortened forms (e.g., ctx, cfg, btn, usr, msg, err). Names should clearly express domain meaning and intent.
 - **Explicit over implicit** — no magic, no hidden behavior
 - **KISS (Keep It Simple, Stupid)** — avoid unnecessary complexity
 - **DRY (Don't Repeat Yourself)** — abstract common patterns into reusable units

@@ -19,6 +19,7 @@ export type FormSectionProps = {
 	readonly id: string;
 	readonly number: number;
 	readonly title: string;
+	readonly description?: string;
 	readonly children: React.ReactNode;
 	readonly className?: string;
 };

@@ -14,7 +14,7 @@ export const CrewAvailabilitySection = () => {
 	const { control } = useFormContext();
 
 	return (
-		<FormSection id="availability" number={5} title="Availability">
+		<FormSection id="availability" number={6} title="Availability">
 			<div className="space-y-8">
 				<FormSubheading>Deployment Scope</FormSubheading>
 

@@ -37,9 +37,9 @@ export default function ServicesListPage() {
   const styles = getVisualStylesForZoneColor(colorName);
   const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
-  const filteredServices = services?.filter(s => 
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.provider_name?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredServices = services?.filter(service => 
+    service.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    service.provider_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (

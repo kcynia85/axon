@@ -93,7 +93,7 @@ export const FormSelect = (props: FormSelectProps) => {
 									{selectedOptions[0]?.name || placeholder}
 								</span>
 								{selectedOptions[0]?.subtitle && (
-									<span className="text-[10px] text-zinc-500 font-mono mt-1">
+									<span className="text-[10px] text-zinc-400 font-mono mt-1">
 										{selectedOptions[0].subtitle}
 									</span>
 								)}
@@ -101,10 +101,10 @@ export const FormSelect = (props: FormSelectProps) => {
 						</div>
 					)
 				) : (
-					<span className="text-zinc-500 font-bold">{placeholder}</span>
+					<span className="text-zinc-400 font-bold">{placeholder}</span>
 				)}
 			</div>
-			<ChevronDown className="w-5 h-5 text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors shrink-0 ml-4" />
+			<ChevronDown className="w-5 h-5 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors shrink-0 ml-4" />
 		</div>
 	);
 
@@ -119,7 +119,7 @@ export const FormSelect = (props: FormSelectProps) => {
 				sideOffset={8}
 			>
 				<div className="p-2 relative flex items-center">
-					<Search className="absolute left-4 w-4 h-4 text-zinc-500" />
+					<Search className="absolute left-4 w-4 h-4 text-zinc-400" />
 					<input
 						placeholder={searchPlaceholder}
 						value={search}
@@ -131,7 +131,7 @@ export const FormSelect = (props: FormSelectProps) => {
 				<div className="max-h-[400px] overflow-y-auto custom-scrollbar p-1">
 					{recentOptions.length > 0 && !search && (
 						<>
-							<DropdownMenuLabel className="px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+							<DropdownMenuLabel className="px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-400 flex items-center gap-2">
 								<Clock size={12} /> Recently Used
 							</DropdownMenuLabel>
 							{recentOptions.map((opt) => (
@@ -156,7 +156,7 @@ export const FormSelect = (props: FormSelectProps) => {
 												{opt.name}
 											</span>
 											{opt.subtitle && (
-												<span className="text-[10px] text-zinc-500 font-mono">
+												<span className="text-[10px] text-zinc-400 font-mono">
 													{opt.subtitle}
 												</span>
 											)}
@@ -171,7 +171,7 @@ export const FormSelect = (props: FormSelectProps) => {
 						</>
 					)}
 
-					<DropdownMenuLabel className="px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+					<DropdownMenuLabel className="px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-400">
 						All Options
 					</DropdownMenuLabel>
 					{filteredOptions.map((opt) => (
@@ -196,7 +196,7 @@ export const FormSelect = (props: FormSelectProps) => {
 										{opt.name}
 									</span>
 									{opt.subtitle && (
-										<span className="text-[10px] text-zinc-500 font-mono">
+										<span className="text-[10px] text-zinc-400 font-mono">
 											{opt.subtitle}
 										</span>
 									)}
@@ -208,7 +208,7 @@ export const FormSelect = (props: FormSelectProps) => {
 						</DropdownMenuItem>
 					))}
 					{filteredOptions.length === 0 && (
-						<div className="p-8 text-center text-zinc-500 text-xs font-mono">
+						<div className="p-8 text-center text-zinc-400 text-xs font-mono">
 							No options found
 						</div>
 					)}
@@ -217,3 +217,4 @@ export const FormSelect = (props: FormSelectProps) => {
 		</DropdownMenu>
 	);
 };
+

@@ -91,7 +91,7 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
                 variant="default"
                 title={template.name || template.template_name}
                 description={template.description || template.template_description}
-                href={`/workspaces/${workspaceId}/templates/${template.id}/edit`}
+                href={`/workspaces/${workspaceId}/templates/studio?id=${template.id}`}
                 badgeLabel={template.category || template.template_type}
                 tags={template.tags || template.template_keywords}
                 colorName={colorName}

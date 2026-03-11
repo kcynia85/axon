@@ -5,9 +5,11 @@ import { useTemplates, useWorkspace } from "@/modules/workspaces/application/use
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { TemplatesBrowser } from "@/modules/workspaces/features/browse-templates/ui/TemplatesBrowser";
-import { shouldShowPagination } from "@/shared/lib/pagination";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 
+/**
+ * TemplatesListPage: Displays all standardized document structures for a workspace.
+ */
 export default function TemplatesListPage() {
   const params = useParams();
   const router = useRouter();
@@ -20,8 +22,10 @@ export default function TemplatesListPage() {
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
 
   const handleCreateTemplate = () => {
-    router.push(`/workspaces/${workspaceId}/templates/new`);
+    router.push(`/workspaces/${workspaceId}/templates/studio`);
   };
+
+  const shouldShowPagination = (count: number) => count > 12;
 
   return (
     <PageLayout

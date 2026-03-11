@@ -1,6 +1,6 @@
-import { Info, Workflow, UserCircle, ShieldCheck, Database } from "lucide-react";
+import { Info, Workflow, UserCircle, ShieldCheck, Database, FileText } from "lucide-react";
 
-export type CrewStudioSectionId = "basic-info" | "collaboration-type" | "execution" | "context-artefacts" | "availability";
+export type CrewStudioSectionId = "basic-info" | "collaboration-type" | "execution" | "context" | "artefacts" | "availability";
 
 export const CREW_STUDIO_SECTIONS = [
 	{
@@ -22,14 +22,20 @@ export const CREW_STUDIO_SECTIONS = [
 		icon: UserCircle,
 	},
 	{
-		id: "context-artefacts" as CrewStudioSectionId,
+		id: "context" as CrewStudioSectionId,
 		number: 4,
-		title: "Context & Artefacts",
+		title: "Context",
 		icon: Database,
 	},
 	{
-		id: "availability" as CrewStudioSectionId,
+		id: "artefacts" as CrewStudioSectionId,
 		number: 5,
+		title: "Artefacts",
+		icon: FileText,
+	},
+	{
+		id: "availability" as CrewStudioSectionId,
+		number: 6,
 		title: "Availability",
 		icon: ShieldCheck,
 	},

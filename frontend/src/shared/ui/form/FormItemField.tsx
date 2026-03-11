@@ -15,7 +15,7 @@ export const FormItemField = ({
 	return (
 		<FormItem className={className}>
 			{label && (
-				<FormLabel className="text-lg font-mono text-zinc-500 block h4">
+				<FormLabel className="text-lg font-mono text-zinc-200 block h4">
 					{label}
 				</FormLabel>
 			)}

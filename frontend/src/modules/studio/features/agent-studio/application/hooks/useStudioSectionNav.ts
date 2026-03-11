@@ -43,12 +43,17 @@ export const useStudioSectionNav = ({
 				const skillsFields = [(values.native_skills?.length || 0) > 0];
 				return { current: skillsFields.filter(Boolean).length, total: 1 };
 			}
-			case "INTERFACE": {
-				const intFields = [
-					(values.data_interface?.context?.length || 0) > 0,
-					(values.data_interface?.artefacts?.length || 0) > 0,
-				];
-				return { current: intFields.filter(Boolean).length, total: 2 };
+			case "CONTEXT": {
+				return {
+					current: (values.data_interface?.context?.length || 0) > 0 ? 1 : 0,
+					total: 1,
+				};
+			}
+			case "ARTEFACTS": {
+				return {
+					current: (values.data_interface?.artefacts?.length || 0) > 0 ? 1 : 0,
+					total: 1,
+				};
 			}
 			case "AVAILABILITY": {
 				return {

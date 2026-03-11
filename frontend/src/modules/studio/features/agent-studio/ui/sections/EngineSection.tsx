@@ -16,7 +16,7 @@ export const EngineSection = (props: EngineSectionProps) => {
 		<FormSection id="ENGINE" number={3} title="Engine">
 			<div className="space-y-12 relative overflow-hidden">
 				<div className="space-y-8 relative z-10">
-					<div className="space-y-4">
+					<div className="space-y-6">
 						<FormSubheading>Model LLM</FormSubheading>
 						<div className="w-full max-w-2xl">
 							<FormField
@@ -61,7 +61,7 @@ export const EngineSection = (props: EngineSectionProps) => {
 					</div>
 				</div>
 
-				<div className="space-y-8 relative z-10">
+				<div className="space-y-8 relative z-10 pt-10">
 					<div className="space-y-4">
 						<FormField
 							control={control}

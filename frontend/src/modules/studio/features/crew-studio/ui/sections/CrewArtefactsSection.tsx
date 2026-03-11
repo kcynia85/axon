@@ -9,25 +9,25 @@ const DATA_TYPE_OPTIONS = [
 ];
 
 /**
- * CrewContextSection: Manages team contexts.
+ * CrewArtefactsSection: Manages expected team artefacts.
  */
-export const CrewContextSection = () => {
+export const CrewArtefactsSection = () => {
 	const { control } = useFormContext();
 
 	return (
-		<FormSection id="context" number={4} title="Context">
+		<FormSection id="artefacts" number={5} title="Artefacts">
 			<div className="space-y-6">
 				<Controller
 					control={control}
-					name="contexts"
+					name="artefacts"
 					render={({ field }) => (
 						<FormPropertyTable
 							items={field.value || []}
 							onChange={field.onChange}
 							onBlur={field.onBlur}
 							typeOptions={DATA_TYPE_OPTIONS}
-							namePlaceholder="context name (e.g. competitors_list)"
-							addPlaceholder="+ Add Context"
+							namePlaceholder="artefact name (e.g. synthesis.md)"
+							addPlaceholder="+ Add Artefact"
 						/>
 					)}
 				/>

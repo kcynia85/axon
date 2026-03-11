@@ -14,7 +14,8 @@ import { IdentitySection } from "./sections/IdentitySection";
 import { CognitionSection } from "./sections/CognitionSection";
 import { EngineSection } from "./sections/EngineSection";
 import { SkillsSection } from "./sections/SkillsSection";
-import { InterfaceSection } from "./sections/InterfaceSection";
+import { ContextSection } from "./sections/ContextSection";
+import { ArtefactsSection } from "./sections/ArtefactsSection";
 import { AvailabilitySection } from "./sections/AvailabilitySection";
 import { ConnectedLivePoster } from "./ConnectedLivePoster";
 
@@ -92,7 +93,8 @@ export const AgentStudio = () => {
 								<CognitionSection syncDraft={syncDraft} />
 								<EngineSection syncDraft={syncDraft} />
 								<SkillsSection syncDraft={syncDraft} />
-								<InterfaceSection syncDraft={syncDraft} />
+								<ContextSection syncDraft={syncDraft} />
+								<ArtefactsSection syncDraft={syncDraft} />
 								<AvailabilitySection syncDraft={syncDraft} />
 							</form>
 						</div>
