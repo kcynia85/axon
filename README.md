@@ -1,77 +1,96 @@
-# RAGAS Axon — AI Command Center
+# 🌐 RAGAS Axon — AI-Native Command Center
 
-Axon is an AI-Native Command Center designed for complex RAG (Retrieval-Augmented Generation) workflows, autonomous agents, and knowledge management.
+Axon is a high-performance, **AI-Native Command Center** designed for complex RAG (Retrieval-Augmented Generation) workflows, autonomous multi-agent orchestration, and deep knowledge management. It transforms static documentation into a dynamic, "living" knowledge base that agents can reason over in real-time.
 
-## 🏗 Architecture
+---
 
-The project follows a **Modular Monolith** architecture with a clear separation of concerns:
+## ✨ Key Features
+
+- **🧠 Intelligent RAG Engine:** Advanced retrieval using `pgvector` and LangChain, supporting citations and source attribution.
+- **🤖 Autonomous Agents:** Multi-agent orchestration powered by **crewAI** and **LangChain**, capable of generating artifacts and executing tasks.
+- **⚡ Real-time Streaming:** Seamless, low-latency communication via **Server-Sent Events (SSE)** for AI interactions.
+- **🏗 Modular Monolith:** A clean, scalable architecture following Domain-Driven Design (DDD) principles.
+- **🎨 Generative UI:** Interactive components and real-time canvas built with **Next.js 16** and **Vercel AI SDK**.
+
+---
+
+## 🏗 High-Level Architecture
+
+Axon follows a **Modular Monolith** pattern, ensuring high cohesion within vertical slices while maintaining clear boundaries between modules.
 
 ### 🐍 Backend (`/backend`)
-*   **Framework:** Python 3.10+, FastAPI.
-*   **Architecture:** Domain-Driven Design (DDD) with Vertical Slices (`modules/`).
-*   **Key Modules:**
-    *   `projects`: Context & Artifact management.
-    *   `agents`: Orchestration (Google ADK) & Chat Sessions.
-    *   `knowledge`: RAG Engine (pgvector + Assets).
-    *   `workflows`: Durable execution (Inngest).
-*   **Infrastructure:** Supabase (PostgreSQL + pgvector).
+- **Core:** Python 3.11+, FastAPI.
+- **Orchestration:** crewAI (Agents/Tasks/Crews) + Inngest (Durable Execution).
+- **AI/LLM:** LangChain (Chat models, Retrievers, Vector Stores).
+- **Database:** Supabase (PostgreSQL + `pgvector`).
+- **Structure:** Vertical slices (`app/modules/`) containing `domain`, `application`, and `infrastructure` layers.
 
 ### ⚛️ Frontend (`/frontend`)
-*   **Framework:** Next.js 16 (App Router).
-*   **UI Library:** Shadcn/UI + Tailwind CSS.
-*   **State:** Vercel AI SDK (RSC + StreamUI) for Generative UI.
-*   **Architecture:** Feature Sliced Design (FSD) / Vertical Slices.
+- **Framework:** Next.js 16 (App Router).
+- **State & AI:** Vercel AI SDK (RSC + StreamUI).
+- **UI:** Tailwind CSS + Shadcn/UI.
+- **Patterns:** Feature-Sliced Design (FSD) / Vertical Slices for feature isolation.
 
 ---
 
-## 🚀 Getting Started
+## 📂 Project Structure
+
+```text
+.
+├── backend/            # Python FastAPI backend (The "Brain")
+│   ├── app/
+│   │   ├── modules/    # Vertical business slices (agents, knowledge, projects)
+│   │   └── shared/     # Cross-cutting infrastructure and ports
+├── frontend/           # Next.js React frontend (The "Face")
+│   ├── src/
+│   │   ├── modules/    # Vertical UI slices matching backend logic
+│   │   └── shared/     # Reusable components and logic
+├── docs/               # Detailed documentation, PRDs, and ADRs
+└── data/               # Local development data and mocks
+```
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-*   Node.js 20+
-*   Python 3.10+
-*   `uv` (Python Package Manager) -> `pip install uv`
-*   Supabase Project (or local Docker)
+- **Node.js 20+**
+- **Python 3.11+**
+- **`uv`** (Python package manager) -> `pip install uv`
+- **Supabase** (PostgreSQL + pgvector)
 
-### 1. Backend Setup
-```bash
-cd backend
-cp .env.example .env # Configure SUPABASE_URL, SUPABASE_KEY, GOOGLE_API_KEY
-uv sync              # Install dependencies
-uv run uvicorn app.main:app --reload
-```
-API will be available at: `http://localhost:8000/docs`
-
-### 2. Frontend Setup
-```bash
-cd frontend
-cp .env.example .env.local
-npm install
-npm run dev
-```
-App will be available at: `http://localhost:3000`
+### Setup & Run
+1. **Backend:**
+   ```bash
+   cd backend
+   cp .env.example .env
+   uv sync
+   uv run uvicorn app.main:app --reload
+   ```
+2. **Frontend:**
+   ```bash
+   cd frontend
+   cp .env.example .env.local
+   npm install
+   npm run dev
+   ```
 
 ---
 
-## 🧪 Testing
+## 🧪 Quality & Testing
 
-### Backend
-```bash
-cd backend
-uv run pytest        # Run Unit & Integration Tests
-uv run ruff check .  # Linting
-```
-
-### Frontend
-```bash
-cd frontend
-npm run test         # Run Vitest
-npm run lint         # Run ESLint
-```
+| Layer | Tool | Command |
+| :--- | :--- | :--- |
+| **Backend Tests** | Pytest | `cd backend && uv run pytest` |
+| **Backend Lint** | Ruff | `cd backend && uv run ruff check .` |
+| **Frontend Tests** | Vitest | `cd frontend && npm run test` |
+| **Frontend Lint** | ESLint | `cd frontend && npm run lint` |
 
 ---
 
-## 📚 Documentation
-*   [Technical PRD](docs/tech-prd-axon.md)
-*   [Architecture Decisions](docs/ard-axon.md)
-*   [Implementation Plan](docs/IMPLEMENTATION.md)
-*   [Agent Strategy](docs/agents.md)
+## 📚 Detailed Documentation
+
+- 🗺 **[Architecture Overview](docs/ARCHITECTURE.md)** - Deep dive into DDD and Modular Monolith.
+- 🛠 **[Developer Guide](docs/DEVELOPER_GUIDE.md)** - Onboarding, workflows, and standards.
+- 📋 **[Technical PRD](docs/tech_prd_axon_v2.md)** - Product requirements and roadmap.
+- ⚖️ **[Architecture Decisions (ADR)](docs/ard_axon_v2.md)** - Record of key architectural choices.
