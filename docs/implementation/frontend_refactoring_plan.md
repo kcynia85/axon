@@ -1,6 +1,6 @@
 # 🏗 Frontend Refactoring Plan
 
-This document outlines the strategy for bringing the frontend codebase into alignment with the established coding standards in `docs/guidelines/tech_stack/00_coding_standards.md`.
+This document outlines the strategy for bringing the frontend codebase into alignment with the established coding standards managed via **Gemini Skills** (see `.gemini/skills/`).
 
 ## 📋 Objectives
 - [x] Align with "Arrow functions only" rule.

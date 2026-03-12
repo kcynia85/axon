@@ -6,7 +6,7 @@ This guide is for developers working on the Axon repository. It covers environme
 
 ## 🏗 Coding Standards (Mandatory)
 
-Axon follows strict coding standards for both TypeScript (Frontend) and Python (Backend). Refer to the full specification here: `docs/guidelines/tech_stack/00_coding_standards.md`.
+Axon follows strict coding standards for both TypeScript (Frontend) and Python (Backend). These standards are managed via **Gemini Skills** located in `.gemini/skills/` (specifically `code-review` and `react-architecture-refactor`).
 
 ### Core Principles
 - **Functional-first:** Favor functions over classes.

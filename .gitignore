@@ -11,7 +11,7 @@ dist/
 build/
 .next/
 
-.gemini/
+#! .gemini/
 gha-creds-*.json
 
 # Logs and temporary files
