@@ -37,9 +37,9 @@ export default function AutomationsListPage() {
   const styles = getVisualStylesForZoneColor(colorName);
   const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
-  const filteredAutomations = automations?.filter(a => 
-    a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    a.trigger.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAutomations = automations?.filter(automation => 
+    automation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    automation.trigger.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -64,8 +64,8 @@ export default function AutomationsListPage() {
             </div>
         ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
-                {filteredAutomations?.map((auto) => (
-                    <Card key={auto.id} className={cn(
+                {filteredAutomations?.map((automation) => (
+                    <Card key={automation.id} className={cn(
                         "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
                         "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
                         "hover:shadow-md",
@@ -87,25 +87,25 @@ export default function AutomationsListPage() {
                                     <div className="p-1.5 rounded bg-muted/30">
                                         <Zap className="h-4 w-4 text-zinc-500" />
                                     </div>
-                                    <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{auto.name || auto.automation_name}</CardTitle>
+                                    <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{automation.name || automation.automation_name}</CardTitle>
                                 </div>
                                 <Badge 
                                     variant="outline" 
-                                    className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none", auto.enabled || auto.is_active ? "bg-blue-500/10 text-blue-600" : "bg-muted/30")}
+                                    className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none", automation.enabled || automation.is_active ? "bg-blue-500/10 text-blue-600" : "bg-muted/30")}
                                 >
-                                    {auto.enabled || auto.is_active ? 'active' : 'paused'}
+                                    {automation.enabled || automation.is_active ? 'active' : 'paused'}
                                 </Badge>
                             </div>
                             <CardDescription className="flex items-center gap-1.5 mt-1 capitalize text-[11px]">
                                 <Clock className="h-3 w-3" />
-                                Trigger: {auto.trigger || auto.trigger_type}
+                                Trigger: {automation.trigger || automation.trigger_type}
                             </CardDescription>
                         </CardHeader>
 
                         <CardContent className="relative z-10 mt-auto pt-0 pb-4">
                             <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
-                                    Last run: {auto.lastRun ? new Date(auto.lastRun).toLocaleDateString() : 'Never'}
+                                    Last run: {automation.lastRun ? new Date(automation.lastRun).toLocaleDateString() : 'Never'}
                                 </span>
                             </div>
                         </CardContent>

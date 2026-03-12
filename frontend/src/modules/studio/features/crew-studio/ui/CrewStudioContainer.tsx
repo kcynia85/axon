@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useActionState, startTransition } from "react";
 import { CrewStudio } from "./CrewStudio";
 import { createCrewAction } from "../application/crew-actions";
 import type { CrewStudioFormData } from "../types/crew-schema";
@@ -12,9 +13,15 @@ interface Props {
 	initialData?: Partial<CrewStudioFormData>;
 }
 
+type ActionState = {
+	success: boolean;
+	error?: string;
+};
+
 /**
  * CrewStudioContainer: Intelligent client container that connects
  * form view with Server Actions and navigation.
+ * Standard: React 19 useActionState, No manual loading flags.
  */
 export const CrewStudioContainer = ({ 
 	workspaceId, 
@@ -23,17 +30,28 @@ export const CrewStudioContainer = ({
 }: Props) => {
 	const router = useRouter();
 
-	const handleSave = async (data: CrewStudioFormData) => {
-		const promise = createCrewAction(workspaceId, data);
-
-		toast.promise(promise, {
-			loading: "Saving new crew...",
-			success: () => {
+	const [state, formAction, isPending] = useActionState(
+		async (_previousState: ActionState, formData: CrewStudioFormData): Promise<ActionState> => {
+			try {
+				await createCrewAction(workspaceId, formData);
+				
+				toast.success("Crew successfully created!");
 				router.push(`/workspaces/${workspaceId}/crews`);
-				router.refresh(); // Refresh data on the destination page
-				return "Crew successfully created!";
-			},
-			error: (err) => `Save error: ${err.message}`,
+				router.refresh();
+				
+				return { success: true };
+			} catch (error: any) {
+				const errorMessage = error.message || "An unexpected error occurred";
+				toast.error(`Save error: ${errorMessage}`);
+				return { success: false, error: errorMessage };
+			}
+		},
+		{ success: false }
+	);
+
+	const handleSave = (data: CrewStudioFormData) => {
+		startTransition(() => {
+			formAction(data);
 		});
 	};
 
@@ -48,6 +66,7 @@ export const CrewStudioContainer = ({
 				onSave={handleSave}
 				onCancel={handleCancel}
 				initialData={initialData}
+				isSaving={isPending}
 			/>
 		</div>
 	);

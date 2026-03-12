@@ -1,13 +1,16 @@
 import { useState, useCallback } from "react";
 import { useAgentStudio } from "../useAgentStudio";
 import { useStudioShortcuts } from "./useStudioShortcuts";
-import { useStudioScroll } from "./useStudioScroll";
 import { AGENT_STUDIO_SECTIONS } from "../../types/sections.constants";
 import type { StudioArchetype } from "@/modules/studio/types/discovery.types";
 import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
 import { Shield, Code, Globe, Database, Zap, Search, Info } from "lucide-react";
 import * as React from "react";
 
+/**
+ * useAgentStudioView: Orchestrates the high-level steps and interactions of Agent Studio.
+ * Standard: 0% co-located UI, 0% useEffect.
+ */
 export const useAgentStudioView = () => {
 	const { form, handleExit, handleSubmit, syncDraft } = useAgentStudio();
 	const [step, setStep] = useState<"discovery" | "design">("discovery");
@@ -21,11 +24,6 @@ export const useAgentStudioView = () => {
 		},
 		isActive: isDesignStep,
 	});
-
-	const { setCanvasRef, activeSection, scrollToSection } = useStudioScroll(
-		AGENT_STUDIO_SECTIONS,
-		isDesignStep,
-	);
 
 	const handleSelectEmpty = useCallback(() => {
 		setStep("design");
@@ -50,7 +48,6 @@ export const useAgentStudioView = () => {
 			Info,
 		};
 		const Comp = typeof IconName === "string" ? icons[IconName] : IconName;
-		// @ts-ignore - dynamic icon rendering
 		return Comp ? React.createElement(Comp, { size, className }) : null;
 	}, []);
 
@@ -63,9 +60,6 @@ export const useAgentStudioView = () => {
 		handleSubmit,
 		syncDraft,
 		handleKeyDown,
-		setCanvasRef,
-		activeSection,
-		scrollToSection,
 		handleSelectEmpty,
 		handleSelectArchetype,
 		renderIcon,

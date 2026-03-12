@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Resolver } from "react-hook-form";
 import { useMemo } from "react";
 import { CrewStudioFormSchema, type CrewStudioFormData } from "../types/crew-schema";
 
@@ -9,7 +9,7 @@ import { CrewStudioFormSchema, type CrewStudioFormData } from "../types/crew-sch
  */
 export const useCrewForm = (initialData?: Partial<CrewStudioFormData>) => {
 	const form = useForm<CrewStudioFormData>({
-		resolver: zodResolver(CrewStudioFormSchema),
+		resolver: zodResolver(CrewStudioFormSchema) as unknown as Resolver<CrewStudioFormData>,
 		mode: "onChange",
 		defaultValues: {
 			crew_process_type: "Hierarchical",
@@ -20,17 +20,19 @@ export const useCrewForm = (initialData?: Partial<CrewStudioFormData>) => {
 			artefacts: [],
 			availability_workspace: [],
 			agent_member_ids: [],
+			owner_agent_id: "",
 			cost: 0,
 			...initialData,
-		} as any,
+		} as CrewStudioFormData, // Asserting as the specific union type since owner_agent_id is provided
 	});
 
 	const { watch, setValue } = form;
 
 	// Subscription to fields for dynamic calculations
-	const currentType = watch("crew_process_type");
-	const members = watch("agent_member_ids") || [];
-	const tasks = (watch as any)("tasks") || [];
+	const formValues = watch();
+	const currentType = formValues.crew_process_type;
+	const members = formValues.agent_member_ids || [];
+	const tasks = currentType === "Sequential" && "tasks" in formValues ? formValues.tasks : [];
 
 	/**
 	 * DERIVED STATE: Dynamic Cost Calculation

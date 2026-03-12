@@ -16,17 +16,17 @@ export const useStudioDiscovery = ({
 
 	const displayedArchetypes = useMemo(() => {
 		const filtered = archetypes.filter(
-			(a) =>
-				a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				a.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				a.category.toLowerCase().includes(searchQuery.toLowerCase()),
+			(archetype) =>
+				archetype.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				archetype.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				archetype.category.toLowerCase().includes(searchQuery.toLowerCase()),
 		);
 
 		if (activeCategory === "All") {
 			return filtered;
 		}
 
-		return filtered.filter((a) => a.category === activeCategory);
+		return filtered.filter((archetype) => archetype.category === activeCategory);
 	}, [archetypes, searchQuery, activeCategory]);
 
 	return {
