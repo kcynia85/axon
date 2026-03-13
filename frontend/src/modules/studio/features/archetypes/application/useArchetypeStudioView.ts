@@ -6,16 +6,23 @@ import {
 	archetypeSchema,
 	type ArchetypeFormValues,
 } from "./archetypeSchema";
+import { useCreatePromptArchetype, useUpdatePromptArchetype } from "@/modules/resources/application/usePromptArchetypes";
+import { toast } from "sonner";
 
 export type ArchetypeStudioSectionId = "IDENTITY" | "MEMORY" | "ACCESS";
 
-export const useArchetypeStudioView = () => {
+export const useArchetypeStudioView = (initialData?: Partial<ArchetypeFormValues>, archetypeId?: string) => {
 	const router = useRouter();
 	const [activeSection, setActiveSection] = useState<ArchetypeStudioSectionId>("IDENTITY");
+
+	const { mutateAsync: createArchetype, isPending: isCreating } = useCreatePromptArchetype();
+	const { mutateAsync: updateArchetype, isPending: isUpdating } = useUpdatePromptArchetype();
 
 	const form = useForm<ArchetypeFormValues>({
 		resolver: zodResolver(archetypeSchema),
 		defaultValues: {
+			name: "",
+			description: "",
 			role: "",
 			goal: "",
 			backstory: "",
@@ -25,12 +32,38 @@ export const useArchetypeStudioView = () => {
 			constraints: [],
 			isGlobalAccess: true,
 			workspaceIds: [],
+			...initialData,
 		},
 	});
 
 	const handleSubmit = async (data: ArchetypeFormValues) => {
-		// Replace with actual infrastructure call in the future
-		console.log("Saving archetype draft:", data);
+		try {
+			// Map ArchetypeFormValues to the API structure (PromptArchetype)
+			const apiData = {
+				archetype_name: data.name,
+				archetype_description: data.description,
+				archetype_role: data.role,
+				archetype_goal: data.goal,
+				archetype_backstory: data.backstory,
+				archetype_guardrails: {
+					instructions: data.instructions,
+					constraints: data.constraints,
+				},
+				archetype_keywords: data.keywords,
+				// workspace_domain: data.isGlobalAccess ? "General" : "Custom", // example logic
+			};
+
+			if (archetypeId) {
+				await updateArchetype({ id: archetypeId, archetype: apiData });
+				toast.success("Archetyp zaktualizowany pomyślnie");
+			} else {
+				await createArchetype(apiData);
+				toast.success("Archetyp utworzony pomyślnie");
+			}
+			router.back();
+		} catch (error: any) {
+			toast.error(`Błąd: ${error.message || "Nieznany błąd"}`);
+		}
 	};
 
 	const handleExit = () => {
@@ -58,5 +91,6 @@ export const useArchetypeStudioView = () => {
 		handleSubmit,
 		handleExit,
 		sections,
+		isSaving: isCreating || isUpdating,
 	};
 };

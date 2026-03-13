@@ -18,7 +18,7 @@ const SERVICE_STUDIO_SECTION_IDENTIFIERS: readonly ServiceStudioSectionId[] = [
  * Adheres to Pure View and Zero useEffect principles.
  * Standard: Container pattern, 0% co-located UI.
  */
-export const ServiceStudio = ({ onSave, onCancel, initialData }: ServiceStudioProps) => {
+export const ServiceStudio = ({ onSave, onCancel, initialData, isEditing }: ServiceStudioProps) => {
     const { form } = useServiceForm(initialData);
     
     const { 
@@ -40,6 +40,7 @@ export const ServiceStudio = ({ onSave, onCancel, initialData }: ServiceStudioPr
             onCancel={onCancel}
             onSave={handleSave}
             setCanvasContainerReference={setCanvasContainerReference}
+            isEditing={isEditing}
         />
     );
 };

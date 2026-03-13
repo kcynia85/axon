@@ -18,11 +18,17 @@ import { ContextSection } from "./sections/ContextSection";
 import { ArtefactsSection } from "./sections/ArtefactsSection";
 import { AvailabilitySection } from "./sections/AvailabilitySection";
 import { ConnectedLivePoster } from "./ConnectedLivePoster";
+import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
+
+interface AgentStudioProps {
+	initialData?: Partial<CreateAgentFormData>;
+	agentId?: string;
+}
 
 /**
  * AgentStudio: Pure view component for the agent design experience.
  */
-export const AgentStudio = () => {
+export const AgentStudio = ({ initialData, agentId }: AgentStudioProps = {}) => {
 	const {
 		form,
 		step,
@@ -38,7 +44,7 @@ export const AgentStudio = () => {
 		handleSelectArchetype,
 		renderIcon,
 		sections,
-	} = useAgentStudioView();
+	} = useAgentStudioView(initialData, agentId);
 
 	if (step === "discovery") {
 		return (
@@ -72,7 +78,7 @@ export const AgentStudio = () => {
 						<Button
 							variant="ghost"
 							size="sm"
-							onClick={() => setStep("discovery")}
+							onClick={() => initialData ? handleExit() : setStep("discovery")}
 							className="hover:bg-zinc-900 gap-2 text-zinc-400 hover:text-white px-4 font-mono text-[10px] uppercase tracking-[0.2em] border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
 						>
 							<X className="w-4 h-4" /> Exit Studio
@@ -83,7 +89,7 @@ export const AgentStudio = () => {
 							sections={sections}
 							activeSection={activeSection}
 							onSectionClick={scrollToSection}
-							onExitToLibrary={() => setStep("discovery")}
+							onExitToLibrary={() => initialData ? handleExit() : setStep("discovery")}
 						/>
 					}
 					canvas={
@@ -111,7 +117,7 @@ export const AgentStudio = () => {
 								Anuluj
 							</Button>
 							<ActionButton
-								label="Zapisz Agenta"
+								label={agentId ? "Zaktualizuj Agenta" : "Zapisz Agenta"}
 								onClick={form.handleSubmit(handleSubmit)}
 							/>
 						</div>

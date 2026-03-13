@@ -10,6 +10,14 @@ export const useCrews = (workspaceId: string): UseQueryResult<Crew[]> => {
     });
 };
 
+export const useCrew = (workspaceId: string, crewId: string): UseQueryResult<Crew> => {
+    return useQuery({
+        queryKey: ["crew", workspaceId, crewId],
+        queryFn: async (): Promise<Crew> => await workspacesApi.getCrew(workspaceId, crewId),
+        enabled: !!workspaceId && !!crewId,
+    });
+};
+
 export const useCreateCrew = (workspaceId: string): UseMutationResult<Crew, Error, Omit<Crew, "id" | "created_at" | "updated_at">> => {
     const queryClient = useQueryClient();
     return useMutation({

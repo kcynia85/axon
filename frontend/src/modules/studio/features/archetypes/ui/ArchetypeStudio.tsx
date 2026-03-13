@@ -3,6 +3,7 @@
 import { useArchetypeStudioView, ArchetypeStudioSectionId } from "../application/useArchetypeStudioView";
 import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";
 import { ArchetypeStudioView } from "./ArchetypeStudioView";
+import { ArchetypeFormValues } from "../application/archetypeSchema";
 
 const ARCHETYPE_STUDIO_SECTION_IDENTIFIERS: readonly ArchetypeStudioSectionId[] = [
     "IDENTITY",
@@ -10,18 +11,23 @@ const ARCHETYPE_STUDIO_SECTION_IDENTIFIERS: readonly ArchetypeStudioSectionId[] 
     "ACCESS"
 ];
 
+interface ArchetypeStudioProps {
+	initialData?: Partial<ArchetypeFormValues>;
+	archetypeId?: string;
+}
+
 /**
  * ArchetypeStudio: Container component for the archetype studio.
  * Adheres to Pure View and Zero useEffect principles.
  * Standard: Container pattern, 0% co-located UI.
  */
-export const ArchetypeStudio = () => {
+export const ArchetypeStudio = ({ initialData, archetypeId }: ArchetypeStudioProps = {}) => {
 	const {
 		form,
 		handleSubmit,
 		handleExit,
 		sections,
-	} = useArchetypeStudioView();
+	} = useArchetypeStudioView(initialData, archetypeId);
 
     const { 
         activeSectionIdentifier, 
@@ -43,6 +49,7 @@ export const ArchetypeStudio = () => {
             onSave={handleSave}
             setCanvasContainerReference={setCanvasContainerReference}
             sections={sections}
+            isEditing={!!archetypeId}
         />
 	);
 };

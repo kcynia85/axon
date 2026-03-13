@@ -1,0 +1,47 @@
+"use client";
+
+import { useCrew } from "@/modules/workspaces/application/useCrews";
+import { CrewStudioContainer } from "./CrewStudioContainer";
+import type { CrewStudioFormData } from "../types/crew-schema";
+
+interface Props {
+	workspaceId: string;
+	crewId: string;
+	availableAgents: { id: string; name: string; subtitle?: string }[];
+}
+
+export const EditCrewStudioContainer = ({ workspaceId, crewId, availableAgents }: Props) => {
+	const { data: crew, isLoading, isError } = useCrew(workspaceId, crewId);
+
+	if (isLoading) {
+		return <div className="flex h-screen w-full items-center justify-center text-zinc-500 font-mono text-sm tracking-widest uppercase">Ładowanie...</div>;
+	}
+
+	if (isError || !crew) {
+		return <div className="flex h-screen w-full items-center justify-center text-red-500 font-mono text-sm tracking-widest uppercase">Błąd podczas ładowania załogi.</div>;
+	}
+
+	// Map Crew model back to CrewStudioFormData
+	const initialData: Partial<CrewStudioFormData> = {
+		crew_name: crew.crew_name,
+		crew_description: crew.crew_description,
+		crew_process_type: crew.crew_process_type as any,
+		crew_keywords: crew.crew_keywords,
+		availability_workspace: crew.availability_workspace,
+		contexts: crew.metadata?.contexts || [],
+		artefacts: crew.metadata?.artefacts || [],
+		agent_member_ids: crew.agent_member_ids || [],
+		owner_agent_id: crew.metadata?.owner_agent_id || "",
+		synthesis_instruction: crew.metadata?.synthesis_instruction || "",
+		tasks: crew.metadata?.tasks || [],
+	};
+
+	return (
+		<CrewStudioContainer
+			workspaceId={workspaceId}
+			crewId={crewId}
+			availableAgents={availableAgents}
+			initialData={initialData}
+		/>
+	);
+};

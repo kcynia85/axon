@@ -23,7 +23,8 @@ export const ServiceStudioView = ({
     onSectionClick,
     onCancel,
     onSave,
-    setCanvasContainerReference
+    setCanvasContainerReference,
+    isEditing
 }: ServiceStudioViewProps) => {
     return (
         <FormProvider {...form}>
@@ -69,7 +70,7 @@ export const ServiceStudioView = ({
                                 Cancel
                             </Button>
                             <ActionButton
-                                label="Register Service"
+                                label={isEditing ? "Update Service" : "Register Service"}
                                 onClick={onSave}
                             />
                         </div>

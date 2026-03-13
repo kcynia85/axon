@@ -5,6 +5,7 @@ export type AutomationStudioProps = {
     readonly onSave: (data: AutomationFormData) => void;
     readonly onCancel: () => void;
     readonly initialData?: Partial<AutomationFormData>;
+    readonly isEditing?: boolean;
 };
 
 export type AutomationStudioViewProps = {
@@ -14,4 +15,5 @@ export type AutomationStudioViewProps = {
     readonly onCancel: () => void;
     readonly onSave: () => void;
     readonly setCanvasContainerReference: (scrollContainerNode: HTMLDivElement | null) => void;
+    readonly isEditing?: boolean;
 };

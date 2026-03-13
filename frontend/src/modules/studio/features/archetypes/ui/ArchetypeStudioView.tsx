@@ -23,7 +23,8 @@ export const ArchetypeStudioView = ({
     onExit,
     onSave,
     setCanvasContainerReference,
-    sections
+    sections,
+    isEditing
 }: ArchetypeStudioViewProps) => {
     const emptyPoster = <div className="w-full h-full bg-zinc-950 flex items-center justify-center text-zinc-600 font-mono text-xs">Archetype Preview</div>;
 
@@ -71,7 +72,7 @@ export const ArchetypeStudioView = ({
                                 Anuluj
                             </Button>
                             <ActionButton
-                                label="Zapisz Archetyp"
+                                label={isEditing ? "Aktualizuj Archetyp" : "Zapisz Archetyp"}
                                 onClick={onSave}
                             />
                         </div>

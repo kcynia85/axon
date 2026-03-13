@@ -25,7 +25,8 @@ export const AutomationStudioView = ({
     onSectionClick,
     onCancel,
     onSave,
-    setCanvasContainerReference
+    setCanvasContainerReference,
+    isEditing
 }: AutomationStudioViewProps) => {
     return (
         <FormProvider {...form}>
@@ -76,7 +77,7 @@ export const AutomationStudioView = ({
                                 Anuluj
                             </Button>
                             <ActionButton
-                                label="Zapisz"
+                                label={isEditing ? "Zaktualizuj" : "Zapisz"}
                                 onClick={onSave}
                             />
                         </div>

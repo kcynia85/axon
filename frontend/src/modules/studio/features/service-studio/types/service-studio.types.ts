@@ -5,6 +5,7 @@ export type ServiceStudioProps = {
     readonly onSave: (data: ServiceStudioFormData) => void;
     readonly onCancel: () => void;
     readonly initialData?: Partial<ServiceStudioFormData>;
+    readonly isEditing?: boolean;
 };
 
 export type ServiceStudioViewProps = {
@@ -14,4 +15,5 @@ export type ServiceStudioViewProps = {
     readonly onCancel: () => void;
     readonly onSave: () => void;
     readonly setCanvasContainerReference: (scrollContainerNode: HTMLDivElement | null) => void;
+    readonly isEditing?: boolean;
 };

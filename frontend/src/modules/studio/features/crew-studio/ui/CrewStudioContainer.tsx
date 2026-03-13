@@ -4,11 +4,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useActionState, startTransition } from "react";
 import { CrewStudio } from "./CrewStudio";
-import { createCrewAction } from "../application/crew-actions";
+import { createCrewAction, updateCrewAction } from "../application/crew-actions";
 import type { CrewStudioFormData } from "../types/crew-schema";
 
 interface Props {
 	workspaceId: string;
+	crewId?: string;
 	availableAgents: { id: string; name: string; subtitle?: string }[];
 	initialData?: Partial<CrewStudioFormData>;
 }
@@ -25,6 +26,7 @@ type ActionState = {
  */
 export const CrewStudioContainer = ({ 
 	workspaceId, 
+	crewId,
 	availableAgents, 
 	initialData 
 }: Props) => {
@@ -33,9 +35,14 @@ export const CrewStudioContainer = ({
 	const [state, formAction, isPending] = useActionState(
 		async (_previousState: ActionState, formData: CrewStudioFormData): Promise<ActionState> => {
 			try {
-				await createCrewAction(workspaceId, formData);
+				if (crewId) {
+					await updateCrewAction(workspaceId, crewId, formData);
+					toast.success("Crew successfully updated!");
+				} else {
+					await createCrewAction(workspaceId, formData);
+					toast.success("Crew successfully created!");
+				}
 				
-				toast.success("Crew successfully created!");
 				router.push(`/workspaces/${workspaceId}/crews`);
 				router.refresh();
 				

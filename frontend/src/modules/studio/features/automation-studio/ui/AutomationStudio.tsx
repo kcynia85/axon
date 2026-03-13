@@ -20,7 +20,7 @@ const AUTOMATION_STUDIO_SECTION_IDENTIFIERS: readonly AutomationStudioSectionId[
  * Adheres to Pure View and Zero useEffect principles.
  * Standard: Container pattern, 0% co-located UI.
  */
-export const AutomationStudio = ({ onSave, onCancel, initialData }: AutomationStudioProps) => {
+export const AutomationStudio = ({ onSave, onCancel, initialData, isEditing }: AutomationStudioProps) => {
     const { form } = useAutomationForm(initialData);
     
     const { 
@@ -42,6 +42,7 @@ export const AutomationStudio = ({ onSave, onCancel, initialData }: AutomationSt
             onCancel={onCancel}
             onSave={handleSave}
             setCanvasContainerReference={setCanvasContainerReference}
+            isEditing={isEditing}
         />
     );
 };

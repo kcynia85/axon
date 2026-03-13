@@ -10,6 +10,14 @@ export const useAgents = (workspaceId: string): UseQueryResult<Agent[]> => {
     });
 };
 
+export const useAgent = (agentId: string): UseQueryResult<Agent> => {
+    return useQuery({
+        queryKey: ["agent", agentId],
+        queryFn: async (): Promise<Agent> => await agentsApi.getAgent(agentId),
+        enabled: !!agentId,
+    });
+};
+
 export const useCreateAgent = (): UseMutationResult<Agent, Error, Partial<Agent>> => {
     const queryClient = useQueryClient();
     return useMutation({

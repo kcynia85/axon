@@ -18,10 +18,26 @@ export const resourcesApi = {
         return data.map((a: unknown) => PromptArchetypeSchema.parse(a));
     },
 
+    getPromptArchetype: async (id: string): Promise<PromptArchetype> => {
+        const res = await apiClient.get(`/resources/prompts/${id}`);
+        const data = await res.json() as unknown;
+        return PromptArchetypeSchema.parse(data);
+    },
+
     createPromptArchetype: async (archetype: unknown): Promise<PromptArchetype> => {
         const res = await apiClient.post("/resources/prompts", archetype);
         const data = await res.json() as unknown;
         return PromptArchetypeSchema.parse(data);
+    },
+
+    updatePromptArchetype: async (id: string, archetype: unknown): Promise<PromptArchetype> => {
+        const res = await apiClient.put(`/resources/prompts/${id}`, archetype);
+        const data = await res.json() as unknown;
+        return PromptArchetypeSchema.parse(data);
+    },
+
+    deletePromptArchetype: async (id: string): Promise<void> => {
+        await apiClient.delete(`/resources/prompts/${id}`);
     },
 
     // --- External Services ---
@@ -56,10 +72,26 @@ export const resourcesApi = {
         return data.map((a: unknown) => AutomationSchema.parse(a));
     },
 
+    getAutomation: async (id: string): Promise<Automation> => {
+        const res = await apiClient.get(`/resources/automations/${id}`);
+        const data = await res.json() as unknown;
+        return AutomationSchema.parse(data);
+    },
+
     createAutomation: async (automation: unknown): Promise<Automation> => {
         const res = await apiClient.post("/resources/automations", automation);
         const data = await res.json() as unknown;
         return AutomationSchema.parse(data);
+    },
+
+    updateAutomation: async (id: string, automation: unknown): Promise<Automation> => {
+        const res = await apiClient.put(`/resources/automations/${id}`, automation);
+        const data = await res.json() as unknown;
+        return AutomationSchema.parse(data);
+    },
+
+    deleteAutomation: async (id: string): Promise<void> => {
+        await apiClient.delete(`/resources/automations/${id}`);
     },
 
     testAutomation: async (id: string, payload: unknown): Promise<unknown> => {

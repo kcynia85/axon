@@ -9,4 +9,5 @@ export type ArchetypeStudioViewProps = {
     readonly onSave: () => void;
     readonly setCanvasContainerReference: (scrollContainerNode: HTMLDivElement | null) => void;
     readonly sections: readonly { id: ArchetypeStudioSectionId; title: string; number: number }[];
+    readonly isEditing?: boolean;
 };

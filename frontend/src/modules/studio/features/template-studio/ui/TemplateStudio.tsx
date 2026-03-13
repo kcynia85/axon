@@ -21,12 +21,13 @@ interface TemplateStudioProps {
 	onSave: (data: TemplateStudioFormData) => void;
 	onCancel: () => void;
 	initialData?: Partial<TemplateStudioFormData>;
+	isEditing?: boolean;
 }
 
 /**
  * TemplateStudio: 3-column architecture for designing AXON Templates.
  */
-export const TemplateStudio = ({ onSave, onCancel, initialData }: TemplateStudioProps) => {
+export const TemplateStudio = ({ onSave, onCancel, initialData, isEditing }: TemplateStudioProps) => {
 	const { form } = useTemplateForm(initialData);
 	const {
 		canvasRef,
@@ -81,7 +82,7 @@ export const TemplateStudio = ({ onSave, onCancel, initialData }: TemplateStudio
 								Cancel
 							</Button>
 							<ActionButton
-								label="Save Template"
+								label={isEditing ? "Update Template" : "Save Template"}
 								onClick={form.handleSubmit(onSave)}
 							/>
 						</div>

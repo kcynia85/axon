@@ -11,16 +11,16 @@ import * as React from "react";
  * useAgentStudioView: Orchestrates the high-level steps and interactions of Agent Studio.
  * Standard: 0% co-located UI, 0% useEffect.
  */
-export const useAgentStudioView = () => {
-	const { form, handleExit, handleSubmit, syncDraft } = useAgentStudio();
-	const [step, setStep] = useState<"discovery" | "design">("discovery");
+export const useAgentStudioView = (initialData?: Partial<CreateAgentFormData>, agentId?: string) => {
+	const { form, handleExit, handleSubmit, syncDraft } = useAgentStudio(initialData, agentId);
+	const [step, setStep] = useState<"discovery" | "design">(initialData ? "design" : "discovery");
 
 	const isDesignStep = step === "design";
 
 	const { handleKeyDown } = useStudioShortcuts({
 		onSave: syncDraft,
 		onEscape: () => {
-			if (isDesignStep) setStep("discovery");
+			if (isDesignStep && !initialData) setStep("discovery");
 		},
 		isActive: isDesignStep,
 	});
