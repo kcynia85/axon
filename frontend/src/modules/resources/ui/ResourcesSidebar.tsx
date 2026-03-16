@@ -7,8 +7,6 @@ import {
     Database,
     Sparkles,
     Wrench,
-    Globe,
-    Zap,
     ChevronRight,
 } from "lucide-react";
 
@@ -30,18 +28,6 @@ const resourcesNavItems = [
         href: "/resources/tools",
         icon: Wrench,
         description: "Native capabilities",
-    },
-    {
-        title: "External Services",
-        href: "/resources/services",
-        icon: Globe,
-        description: "Third-party integrations",
-    },
-    {
-        title: "Automations",
-        href: "/resources/automations",
-        icon: Zap,
-        description: "Webhooks and workflows",
     },
 ];
 
