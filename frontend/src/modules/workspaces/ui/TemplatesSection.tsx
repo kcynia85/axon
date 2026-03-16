@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useTemplates } from "../application/useTemplates";
+import { useRouter } from "next/navigation";
+import { useTemplates, useDeleteTemplate } from "../application/useTemplates"; // Import useDeleteTemplate
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
@@ -13,8 +14,10 @@ type TemplatesSectionProps = {
 };
 
 export const TemplatesSection = ({ workspaceId, colorName = "default" }: TemplatesSectionProps) => {
+  const router = useRouter();
   const { data: templates, isLoading } = useTemplates(workspaceId);
   const [selectedTemplateId, setSelectedTemplateId] = React.useState<string | null>(null);
+  const deleteTemplateMutation = useDeleteTemplate(workspaceId); // Initialize delete mutation
 
   if (isLoading) {
     return (
@@ -36,6 +39,19 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
 
   const selectedTemplate = templates.find((t) => t.id === selectedTemplateId) || null;
 
+  const handleDelete = async (templateId: string) => {
+    try {
+      await deleteTemplateMutation.mutateAsync(templateId);
+      setSelectedTemplateId(null); // Close peek after deletion
+      // Optionally, show a success toast
+      // toast.success("Template deleted successfully!");
+    } catch (error) {
+      console.error("Failed to delete template:", error);
+      // Optionally, show an error toast
+      // toast.error("Failed to delete template.");
+    }
+  };
+
   return (
     <>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -45,19 +61,26 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
             title={template.template_name}
             description={template.template_description}
             href={`/workspaces/${workspaceId}/templates/${template.id}`}
-            badgeLabel={template.template_type}
+            badgeLabel="Structure"
             tags={template.template_keywords}
             onEdit={() => setSelectedTemplateId(template.id)}
+            onDelete={handleDelete} // Pass the handleDelete function
+            templateId={template.id} // Pass template.id here
             colorName={colorName}
           />
-        ))}
+          ))}
       </div>
 
       <TemplateProfilePeek 
         template={selectedTemplate}
         isOpen={!!selectedTemplateId}
         onClose={() => setSelectedTemplateId(null)}
-        onEdit={() => {}} // TODO: Handle edit
+        onEdit={() => {
+          if (selectedTemplateId) {
+            router.push(`/workspaces/${workspaceId}/templates/studio/${selectedTemplateId}`);
+          }
+        }}
+        onDelete={handleDelete} // Pass the handleDelete function to the peek
       />
     </>
   );

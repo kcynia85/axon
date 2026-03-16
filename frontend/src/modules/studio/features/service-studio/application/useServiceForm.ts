@@ -4,7 +4,7 @@ import { ServiceStudioSchema, type ServiceStudioFormData } from "../types/servic
 
 export const useServiceForm = (initialData?: Partial<ServiceStudioFormData>) => {
 	const form = useForm<ServiceStudioFormData>({
-		resolver: zodResolver(ServiceStudioSchema),
+		resolver: zodResolver(ServiceStudioSchema) as any,
 		defaultValues: {
 			name: initialData?.name ?? "",
 			url: initialData?.url ?? "",

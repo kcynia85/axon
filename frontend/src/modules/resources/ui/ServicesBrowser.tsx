@@ -10,6 +10,8 @@ import { ServicesBrowserContent } from "./components/ServicesBrowserContent";
 import { RecentlyUsedServices } from "./components/RecentlyUsedServices";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { ExternalService } from "@/shared/domain/resources";
+import { useDeleteExternalService } from "../application/useExternalServices";
+import { useParams, useRouter } from "next/navigation";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -24,10 +26,18 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
 ];
 
 interface ServicesBrowserProps {
-  initialServices?: ExternalService[];
+  readonly initialServices?: ExternalService[];
 }
 
+/**
+ * ServicesBrowser: UI for browsing available external services globally.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const ServicesBrowser = ({ initialServices = [] }: ServicesBrowserProps) => {
+  const params = useParams();
+  const router = useRouter();
+  const workspaceId = (params?.workspace as string) || "ws-product";
+
   const {
     services,
     processedServices,
@@ -57,6 +67,20 @@ export const ServicesBrowser = ({ initialServices = [] }: ServicesBrowserProps) 
     getPreviewCount,
     setPendingFilterIds,
   } = filterConfig;
+
+  const { mutate: deleteService } = useDeleteExternalService();
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this service?")) {
+      deleteService(id);
+    }
+  };
+
+  const handleEdit = () => {
+    if (selectedService) {
+      router.push(`/workspaces/${workspaceId}/services/studio/${selectedService.id}`);
+    }
+  };
 
   return (
     <>
@@ -99,6 +123,7 @@ export const ServicesBrowser = ({ initialServices = [] }: ServicesBrowserProps) 
             services={processedServices}
             viewMode={viewMode}
             onViewDetails={handleViewDetails}
+            onDelete={handleDelete}
             isLoading={isLoading}
             isError={isError}
         />
@@ -127,10 +152,21 @@ export const ServicesBrowser = ({ initialServices = [] }: ServicesBrowserProps) 
                         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Capabilities</span>
                         <div className="flex flex-wrap gap-2 mt-2">
                             {selectedService.capabilities?.map((cap, i) => (
-                                <span key={i} className="px-2 py-1 rounded bg-muted text-xs font-medium border">{cap}</span>
+                                <span key={i} className="px-2 py-1 rounded bg-muted text-xs font-medium border">
+                                    {(cap as any).name || cap}
+                                </span>
                             ))}
                         </div>
                     </div>
+                </div>
+                
+                <div className="mt-10 pt-6 border-t">
+                    <button 
+                        onClick={handleEdit}
+                        className="w-full py-3 bg-primary text-white rounded-xl font-bold hover:opacity-90 transition-all"
+                    >
+                        Edytuj w Studio
+                    </button>
                 </div>
             </div>
         )}

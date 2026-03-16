@@ -15,6 +15,10 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { Search } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";
 
+/**
+ * LLMModelsList: Displays available LLM models in a table.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const LLMModelsList = () => {
     const { data: models, isLoading } = useLLMModels();
     const [search, setSearch] = React.useState("");
@@ -24,8 +28,8 @@ export const LLMModelsList = () => {
     }
 
     const filteredModels = models?.filter(m =>
-        m.model_name.toLowerCase().includes(search.toLowerCase()) ||
-        m.model_api_identifier.toLowerCase().includes(search.toLowerCase())
+        m.model_display_name.toLowerCase().includes(search.toLowerCase()) ||
+        m.model_id.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
@@ -56,12 +60,12 @@ export const LLMModelsList = () => {
                             <TableRow key={model.id} className="group hover:bg-muted/10">
                                 <TableCell>
                                     <div className="flex flex-col">
-                                        <span className="text-xs font-bold">{model.model_name}</span>
-                                        <span className="text-[10px] text-muted-foreground font-mono">{model.model_provider_id.slice(0, 8)}</span>
+                                        <span className="text-xs font-bold">{model.model_display_name}</span>
+                                        <span className="text-[10px] text-muted-foreground font-mono">{model.llm_provider_id.slice(0, 8)}</span>
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-[10px] font-mono opacity-60">
-                                    {model.model_api_identifier}
+                                    {model.model_id}
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex gap-1">

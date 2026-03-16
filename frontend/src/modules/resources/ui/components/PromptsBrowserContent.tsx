@@ -5,14 +5,21 @@ import { PromptArchetype } from "@/shared/domain/resources";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Sparkles, Edit2, Copy, MoreHorizontal } from "lucide-react";
+import { Sparkles, Edit2, Copy, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/ui/ui/DropdownMenu";
 
 interface PromptsBrowserContentProps {
   prompts: readonly PromptArchetype[];
   viewMode: "grid" | "list";
   onViewDetails: (id: string) => void;
+  onDelete?: (id: string) => void;
   isLoading: boolean;
   isError: boolean;
 }
@@ -21,6 +28,7 @@ export const PromptsBrowserContent = ({
   prompts,
   viewMode,
   onViewDetails,
+  onDelete,
   isLoading,
   isError
 }: PromptsBrowserContentProps) => {
@@ -62,7 +70,7 @@ export const PromptsBrowserContent = ({
         {prompts.map((archetype) => (
           <Card 
             key={archetype.id} 
-            className="group hover:border-primary/40 transition-all cursor-pointer bg-muted/5 hover:bg-muted/10 border-transparent"
+            className="group hover:border-primary/40 transition-all cursor-pointer bg-muted/5 hover:bg-muted/10 border-transparent relative"
             onClick={() => onViewDetails(archetype.id)}
           >
             <div className="flex items-center p-4 gap-4">
@@ -78,7 +86,7 @@ export const PromptsBrowserContent = ({
                 </div>
                 <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{archetype.archetype_description}</p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 pr-10">
                 <div className="hidden md:flex gap-1">
                   {archetype.archetype_keywords?.slice(0, 2).map((kw, i) => (
                     <Badge key={i} variant="secondary" className="text-[8px] px-2 py-0 bg-zinc-800 text-zinc-400 border-none">
@@ -86,11 +94,36 @@ export const PromptsBrowserContent = ({
                     </Badge>
                   ))}
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
               </div>
             </div>
+            {onDelete && (
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8"
+                                onClick={(e) => { e.stopPropagation(); }}
+                            >
+                                <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem 
+                                variant="destructive"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete(archetype.id);
+                                }}
+                            >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            )}
           </Card>
         ))}
       </div>
@@ -102,33 +135,43 @@ export const PromptsBrowserContent = ({
       {prompts.map((archetype) => (
         <Card 
           key={archetype.id} 
-          className="group hover:border-primary/50 transition-all overflow-hidden cursor-pointer flex flex-col h-full bg-muted/5 hover:bg-muted/10"
+          className="group hover:border-primary/50 transition-all overflow-hidden cursor-pointer flex flex-col h-full bg-muted/5 hover:bg-muted/10 relative"
           onClick={() => onViewDetails(archetype.id)}
         >
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 pr-12">
             <div className="flex justify-between items-start">
               <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest bg-primary/5 text-primary border-primary/20">
                 {archetype.workspace_domain}
               </Badge>
-              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-6 w-6"
-                  onClick={(e) => { e.stopPropagation(); }}
-                >
-                  <Copy className="w-3 h-3" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-6 w-6"
-                  onClick={(e) => { e.stopPropagation(); }}
-                >
-                  <Edit2 className="w-3 h-3" />
-                </Button>
-              </div>
             </div>
+            {onDelete && (
+                <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8"
+                                onClick={(e) => { e.stopPropagation(); }}
+                            >
+                                <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem 
+                                variant="destructive"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete(archetype.id);
+                                }}
+                            >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            )}
             <CardTitle className="text-sm font-bold mt-2 group-hover:text-primary transition-colors">
               {archetype.archetype_name}
             </CardTitle>

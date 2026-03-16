@@ -3,7 +3,7 @@ import { Search, X } from "lucide-react";
 import type React from "react";
 import { cn } from "@/shared/lib/utils";
 import { Input } from "@/shared/ui/ui/Input";
-import type { DiscoveryLibraryProps } from "../../../types/studio.types";
+import type { DiscoveryLibraryProps } from "../../../types/discovery.types";
 import { ArchetypeCard } from "./ArchetypeCard";
 
 export const DiscoveryLibrary = ({

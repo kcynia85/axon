@@ -65,7 +65,7 @@ export const AgentStudioView = ({
                 tabIndex={0}
             >
                 <StudioLayout
-                    setCanvasRef={setCanvasContainerReference}
+                    canvasRef={setCanvasContainerReference}
                     exitButton={
                         <Button
                             variant="ghost"

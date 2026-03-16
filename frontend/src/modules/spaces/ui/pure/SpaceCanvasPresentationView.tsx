@@ -14,7 +14,7 @@ import { SpaceAutomationCanvasNode } from '../nodes/SpaceAutomationCanvasNode';
 import { SpaceTemplateCanvasNode } from '../nodes/SpaceTemplateCanvasNode';
 import { SpaceServiceCanvasNode } from '../nodes/SpaceServiceCanvasNode';
 import { SpaceEntityCanvasNode } from '../nodes/SpaceEntityCanvasNode';
-import SpaceCanvasCustomEdge from '../edges/SpaceCanvasCustomEdge';
+import { SpaceCanvasCustomEdge } from '../edges/SpaceCanvasCustomEdge';
 
 import { SpaceCanvasHeader } from '../SpaceCanvasHeader';
 import { SpaceCanvasLeftSidebar } from '../SpaceCanvasLeftSidebar';
@@ -212,14 +212,14 @@ export const SpaceCanvasPresentationView = ({
     []
   );
 
-  const onPaneClick = useCallback(() => {
+  const onPaneClick = useCallback((event: any) => {
     setMenu(null);
     if (isFullscreen) {
         setIsFullscreenInspectorOpen(false);
     }
   }, [isFullscreen]);
 
-  const onNodeClick = useCallback((_event: React.MouseEvent, _node: Node) => {
+  const onNodeClick = useCallback((event: any, node: any) => {
     if (isFullscreen) {
         setIsFullscreenInspectorOpen(true);
     }
@@ -299,9 +299,11 @@ export const SpaceCanvasPresentationView = ({
                   interface: finalBlueprint.interface,
                   dependencies: finalBlueprint.dependencies,
                   blueprint_type: finalBlueprint.type
-              },
+              } as any,
               pattern_keywords: [finalBlueprint.type, "Intelligent Mapping"],
-              availability_workspace: [workspaceId]
+              availability_workspace: [workspaceId],
+              pattern_inputs: {},
+              pattern_outputs: {}
           });
 
           console.log('Intelligent Pattern Detected & Saved Successfully');
@@ -459,7 +461,7 @@ export const SpaceCanvasPresentationView = ({
         onNodesChange={handleCanvasNodesChange}
         onEdgesChange={handleCanvasEdgesChange}
         onConnect={handleNewConnectionCreated}
-        isValidConnection={validateConnectionBetweenNodes}
+        isValidConnection={validateConnectionBetweenNodes as any}
         nodeTypes={canvasNodeComponents}
         edgeTypes={canvasEdgeComponents}
         onDragOver={handleDragOverEvent}
@@ -469,7 +471,7 @@ export const SpaceCanvasPresentationView = ({
         onPaneContextMenu={onPaneContextMenu}
         onSelectionContextMenu={onSelectionContextMenu}
         onKeyDown={handleKeyDown}
-        fitView
+        onPaneClick={onPaneClick as any}
         attributionPosition="bottom-right"
         className={cn(
             "bg-black",

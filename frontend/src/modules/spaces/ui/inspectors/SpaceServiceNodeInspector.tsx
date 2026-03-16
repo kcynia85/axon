@@ -13,7 +13,7 @@ export const SpaceServiceNodeInspector = ({
     data,
     onPropertyChange
 }: SpaceServiceInspectorProperties) => {
-    const logic = useSpaceServiceInspectorLogic(data, onPropertyChange);
+    const logic = useSpaceServiceInspectorLogic(data, onPropertyChange as any);
 
     return (
         <SpaceServiceNodeInspectorView

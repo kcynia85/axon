@@ -3,12 +3,11 @@ import {
     PromptArchetype,
     ExternalService,
     InternalTool,
-    Automation,
     PromptArchetypeSchema,
     ExternalServiceSchema,
-    InternalToolSchema,
-    AutomationSchema
+    InternalToolSchema
 } from "@/shared/domain/resources";
+import { Automation, AutomationSchema } from "@/shared/domain/workspaces";
 
 export const resourcesApi = {
     // --- Prompt Archetypes ---
@@ -40,17 +39,33 @@ export const resourcesApi = {
         await apiClient.delete(`/resources/prompts/${id}`);
     },
 
-    // --- External Services ---
+    // --- External Services (Global Definitions) ---
     getExternalServices: async (): Promise<ExternalService[]> => {
         const res = await apiClient.get("/resources/services");
         const data = await res.json() as unknown[];
         return data.map((s: unknown) => ExternalServiceSchema.parse(s));
     },
 
+    getExternalService: async (id: string): Promise<ExternalService> => {
+        const res = await apiClient.get(`/resources/services/${id}`);
+        const data = await res.json() as unknown;
+        return ExternalServiceSchema.parse(data);
+    },
+
     createExternalService: async (service: unknown): Promise<ExternalService> => {
         const res = await apiClient.post("/resources/services", service);
         const data = await res.json() as unknown;
         return ExternalServiceSchema.parse(data);
+    },
+
+    updateExternalService: async (id: string, service: unknown): Promise<ExternalService> => {
+        const res = await apiClient.put(`/resources/services/${id}`, service);
+        const data = await res.json() as unknown;
+        return ExternalServiceSchema.parse(data);
+    },
+
+    deleteExternalService: async (id: string): Promise<void> => {
+        await apiClient.delete(`/resources/services/${id}`);
     },
 
     // --- Internal Tools ---
@@ -65,7 +80,7 @@ export const resourcesApi = {
         return await res.json() as unknown;
     },
 
-    // --- Automations ---
+    // --- Global Automations (for Resources Browser) ---
     getAutomations: async (): Promise<Automation[]> => {
         const res = await apiClient.get("/resources/automations");
         const data = await res.json() as unknown[];

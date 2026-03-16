@@ -21,7 +21,7 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
             viewModel.visual.containerClassName,
             viewModel.isWorking && "ai-working-node"
         )}
-        style={{ '--ai-zone-color': COLOR_MAP[viewModel.zoneColor] || COLOR_MAP.default } as React.CSSProperties}
+        style={{ '--ai-zone-color': COLOR_MAP[viewModel.zoneColor || "default"] || COLOR_MAP.default } as React.CSSProperties}
     >
         {/* AI Working Shimmer Effect - Background Layer */}
         {viewModel.isWorking && <div className="ai-shimmer-layer" />}

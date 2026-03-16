@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AutomationSchema } from "@/shared/domain/resources";
+import { AutomationSchema } from "@/shared/domain/workspaces";
 
 export const CreateAutomationFormSchema = AutomationSchema.omit({
     id: true,

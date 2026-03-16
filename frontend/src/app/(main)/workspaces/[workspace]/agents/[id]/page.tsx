@@ -20,7 +20,7 @@ export default function AgentSidePeekPage() {
       agent={agent}
       isOpen={true}
       onClose={() => router.push(`/workspaces/${workspaceId}/agents`)}
-      onEdit={() => router.push(`/workspaces/${workspaceId}/agents/${agentId}/edit`)}
+      onEdit={() => router.push(`/workspaces/${workspaceId}/agents/studio/${agentId}`)}
     />
   );
 }

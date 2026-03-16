@@ -14,7 +14,7 @@ export async function createCrewAction(workspaceId: string, data: CrewStudioForm
 	const { data: { session } } = await supabase.auth.getSession();
 	const token = session?.access_token;
 
-	if (!token && process.env.NEXT_PUBLIC_USE_MOCK !== 'true') {
+	if (!token && process.env.NEXT_PUBLIC_USE_MOCK !== 'true' && process.env.NODE_ENV === 'production') {
 		throw new Error("Unauthorized - Session not found");
 	}
 
@@ -77,7 +77,7 @@ export async function updateCrewAction(workspaceId: string, crewId: string, data
 	const { data: { session } } = await supabase.auth.getSession();
 	const token = session?.access_token;
 
-	if (!token && process.env.NEXT_PUBLIC_USE_MOCK !== 'true') {
+	if (!token && process.env.NEXT_PUBLIC_USE_MOCK !== 'true' && process.env.NODE_ENV === 'production') {
 		throw new Error("Unauthorized - Session not found");
 	}
 
@@ -144,28 +144,28 @@ export async function getAvailableAgents(workspaceId: string) {
 		if (process.env.NEXT_PUBLIC_USE_MOCK === 'true' || !token) {
 			return [
 				{ 
-					id: "a-product-owner", 
+					id: "00000000-0000-0000-0000-000000000001", 
 					name: "Product Owner", 
-					subtitle: AGENT_REAL_NAMES["a-product-owner"], 
-					avatarUrl: `/images/avatars/agent-${getDeterministicImgId("a-product-owner")}.png` 
+					subtitle: "Alex Morgan", 
+					avatarUrl: `/images/avatars/agent-1.png` 
 				},
 				{ 
-					id: "a-tech-writer", 
+					id: "00000000-0000-0000-0000-000000000002", 
 					name: "Technical Writer", 
-					subtitle: AGENT_REAL_NAMES["a-tech-writer"], 
-					avatarUrl: `/images/avatars/agent-${getDeterministicImgId("a-tech-writer")}.png` 
+					subtitle: "Elena Vance", 
+					avatarUrl: `/images/avatars/agent-2.png` 
 				},
 				{ 
-					id: "a-user-researcher", 
+					id: "00000000-0000-0000-0000-000000000003", 
 					name: "User Researcher", 
-					subtitle: AGENT_REAL_NAMES["a-user-researcher"], 
-					avatarUrl: `/images/avatars/agent-${getDeterministicImgId("a-user-researcher")}.png` 
+					subtitle: "Marcus Chen", 
+					avatarUrl: `/images/avatars/agent-3.png` 
 				},
 				{ 
-					id: "a-developer", 
+					id: "00000000-0000-0000-0000-000000000004", 
 					name: "Full-Stack Developer", 
-					subtitle: AGENT_REAL_NAMES["a-developer"], 
-					avatarUrl: `/images/avatars/agent-${getDeterministicImgId("a-developer")}.png` 
+					subtitle: "David Kessler", 
+					avatarUrl: `/images/avatars/agent-4.png` 
 				},
 			];
 		}

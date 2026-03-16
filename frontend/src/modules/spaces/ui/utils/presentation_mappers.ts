@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/domain/presentation_mappers.ts
 
-import { VisualStyleForZoneColor, SpaceCanvasNodeInformation } from "./types";
+import { VisualStyleForZoneColor, SpaceCanvasNodeInformation } from "../types";
 
 export const MAP_OF_VISUAL_ZONE_COLORS_TO_CSS_CLASSES: Record<string, VisualStyleForZoneColor> = {
     purple: { 

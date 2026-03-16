@@ -5,15 +5,20 @@ from uuid import UUID
 from app.api.deps import get_current_user
 from app.modules.workspaces.application.service import (
     get_unique_workspaces_use_case,
-    list_patterns_use_case, create_pattern_use_case, update_pattern_use_case, delete_pattern_use_case,
-    list_templates_use_case, create_template_use_case, update_template_use_case, delete_template_use_case,
-    list_crews_use_case, create_crew_use_case, update_crew_use_case, delete_crew_use_case
+    list_patterns_use_case, get_pattern_use_case, create_pattern_use_case, update_pattern_use_case, delete_pattern_use_case,
+    list_templates_use_case, get_template_use_case, create_template_use_case, update_template_use_case, delete_template_use_case,
+    list_crews_use_case, get_crew_use_case, create_crew_use_case, update_crew_use_case, delete_crew_use_case
 )
 from app.modules.workspaces.application.schemas import (
     PatternResponse, CreatePatternRequest, UpdatePatternRequest,
     TemplateResponse, CreateTemplateRequest, UpdateTemplateRequest,
     CrewResponse, CreateCrewRequest, UpdateCrewRequest,
     WorkspaceResponse
+)
+from app.modules.resources.application.service import ResourcesService
+from app.modules.resources.dependencies import get_resources_service
+from app.modules.resources.application.schemas import (
+    AutomationResponse, CreateAutomationRequest, UpdateAutomationRequest
 )
 
 router = APIRouter(
@@ -23,19 +28,43 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[WorkspaceResponse])
-async def list_workspaces(
-    limit: int = 100,
-    offset: int = 0,
-    workspace_names: List[str] = Depends(get_unique_workspaces_use_case)
-):
+async def list_workspaces():
     """List all unique workspace identifiers from patterns, templates, and crews."""
+    standard_workspaces = [
+        {"id": "ws-discovery", "name": "Discovery", "description": "User research, JTBD, and opportunity mapping."},
+        {"id": "ws-design", "name": "Design", "description": "UI/UX standards, components, and brand guidelines."},
+        {"id": "ws-delivery", "name": "Delivery", "description": "Engineering standards, DevOps, and deployment workflows."},
+        {"id": "ws-product", "name": "Product Management", "description": "Strategy, roadmaps, and PRD production."},
+        {"id": "ws-growth", "name": "Growth & Market", "description": "Marketing, SEO, and competitor analysis."}
+    ]
     return [
         WorkspaceResponse(
-            id=name.lower().replace(" ", "-"),
-            name=name,
-            description=f"Automated workspace for {name}"
-        ) for name in workspace_names
+            id=ws["id"],
+            name=ws["name"],
+            description=ws["description"]
+        ) for ws in standard_workspaces
     ]
+
+@router.get("/{workspace_id}", response_model=WorkspaceResponse)
+async def get_workspace(workspace_id: str):
+    """Get a single workspace by its ID."""
+    standard_workspaces = {
+        "ws-discovery": {"name": "Discovery", "description": "User research, JTBD, and opportunity mapping."},
+        "ws-design": {"name": "Design", "description": "UI/UX standards, components, and brand guidelines."},
+        "ws-delivery": {"name": "Delivery", "description": "Engineering standards, DevOps, and deployment workflows."},
+        "ws-product": {"name": "Product Management", "description": "Strategy, roadmaps, and PRD production."},
+        "ws-growth": {"name": "Growth & Market", "description": "Marketing, SEO, and competitor analysis."}
+    }
+    
+    if workspace_id not in standard_workspaces:
+        raise HTTPException(status_code=404, detail="Workspace not found")
+        
+    ws = standard_workspaces[workspace_id]
+    return WorkspaceResponse(
+        id=workspace_id,
+        name=ws["name"],
+        description=ws["description"]
+    )
 
 # --- Patterns ---
 
@@ -48,6 +77,16 @@ async def list_patterns(
 ):
     """List all reusable graphs (Patterns) for a given workspace."""
     return patterns
+
+@router.get("/{workspace_id}/patterns/{pattern_id}", response_model=PatternResponse)
+async def get_pattern(
+    pattern_id: UUID,
+    pattern = Depends(get_pattern_use_case)
+):
+    """Get a single pattern."""
+    if not pattern:
+        raise HTTPException(status_code=404, detail="Pattern not found")
+    return pattern
 
 @router.post("/{workspace_id}/patterns", response_model=PatternResponse, status_code=status.HTTP_201_CREATED)
 async def create_pattern(
@@ -85,6 +124,16 @@ async def list_templates(
     """List all manual checklist templates for a given workspace."""
     return templates
 
+@router.get("/{workspace_id}/templates/{template_id}", response_model=TemplateResponse)
+async def get_template(
+    template_id: UUID,
+    template = Depends(get_template_use_case)
+):
+    """Get a single template."""
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return template
+
 @router.post("/{workspace_id}/templates", response_model=TemplateResponse, status_code=status.HTTP_201_CREATED)
 async def create_template(
     template = Depends(create_template_use_case)
@@ -120,6 +169,16 @@ async def list_crews(
 ):
     """List all agent crews for a given workspace."""
     return crews
+
+@router.get("/{workspace_id}/crews/{crew_id}", response_model=CrewResponse)
+async def get_crew(
+    crew_id: UUID,
+    crew = Depends(get_crew_use_case)
+):
+    """Get a single crew."""
+    if not crew:
+        raise HTTPException(status_code=404, detail="Crew not found")
+    return crew
 
 @router.post("/{workspace_id}/crews", response_model=CrewResponse, status_code=status.HTTP_201_CREATED)
 async def create_crew(

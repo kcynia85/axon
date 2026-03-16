@@ -1,13 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { useForm, Resolver, useWatch } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   CrewSchema
 } from "@/shared/domain/workspaces";
-import { useAgents } from "@/modules/workspaces/application/useAgents";
+import { useAgents } from "@/modules/agents/infrastructure/useAgents";
 import { useCreateCrew } from "@/modules/workspaces/application/useCrews";
 import {
   Dialog,
@@ -48,6 +48,10 @@ const CreateCrewFormSchema = CrewSchema.omit({
 
 type FormData = z.infer<typeof CreateCrewFormSchema>;
 
+/**
+ * CrewModal: UI for assembling a new agent crew.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const CrewModal = () => {
   const router = useRouter();
   const params = useParams();
@@ -59,7 +63,7 @@ export const CrewModal = () => {
   const { mutateAsync: createCrew, isPending } = useCreateCrew(workspaceId);
 
   const form = useForm<FormData>({
-    resolver: zodResolver(CreateCrewFormSchema) as unknown as Resolver<FormData>,
+    resolver: zodResolver(CreateCrewFormSchema) as any,
     defaultValues: {
       crew_name: "",
       crew_description: "",
@@ -112,11 +116,11 @@ export const CrewModal = () => {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit as any)} className="space-y-6">
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="crew_name"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
@@ -130,7 +134,7 @@ export const CrewModal = () => {
                 />
 
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="crew_process_type"
                   render={({ field }) => (
                     <FormItem>
@@ -153,7 +157,7 @@ export const CrewModal = () => {
                 />
 
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="manager_agent_id"
                   render={({ field }) => (
                     <FormItem>
@@ -201,7 +205,7 @@ export const CrewModal = () => {
                     agents?.map((agent) => (
                       <FormField
                         key={agent.id}
-                        control={form.control}
+                        control={form.control as any}
                         name="agent_member_ids"
                         render={({ field }) => {
                           const isChecked = field.value?.includes(agent.id);

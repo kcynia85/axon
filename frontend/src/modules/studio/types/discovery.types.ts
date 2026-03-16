@@ -2,6 +2,8 @@ import type React from "react";
 import type { LucideIcon } from "lucide-react";
 import type { StudioArchetype } from "./archetype.types";
 
+export type { StudioArchetype };
+
 export type StudioDiscoveryProps = {
 	readonly title: string;
 	readonly emptyLabel: string;
@@ -30,7 +32,9 @@ export type StudioEntryProps = {
 	readonly onExit: () => void;
 };
 
-export type ArchetypeBlueprintProps = {
+export type DiscoveryChoiceProps = StudioEntryProps;
+
+export type ArchetypeCardProps = {
 	readonly archetype: StudioArchetype;
 	readonly onSelect: (archetype: StudioArchetype) => void;
 	readonly renderIcon: (
@@ -40,7 +44,9 @@ export type ArchetypeBlueprintProps = {
 	) => React.ReactNode;
 };
 
-export type ArchetypeCatalogProps = {
+export type ArchetypeBlueprintProps = ArchetypeCardProps;
+
+export type DiscoveryLibraryProps = {
 	readonly title: string;
 	readonly searchQuery: string;
 	readonly setSearchQuery: (query: string) => void;
@@ -56,6 +62,8 @@ export type ArchetypeCatalogProps = {
 		className?: string,
 	) => React.ReactNode;
 };
+
+export type ArchetypeCatalogProps = DiscoveryLibraryProps;
 
 export type UseStudioDiscoveryProps = {
 	readonly archetypes: readonly StudioArchetype[];

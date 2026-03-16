@@ -24,7 +24,7 @@ export const useAgentStudio = (initialData?: Partial<CreateAgentFormData>, agent
 	const { mutateAsync: updateAgent, isPending: isUpdating } = useUpdateAgent();
 
 	const form = useForm<CreateAgentFormData>({
-		resolver: zodResolver(CreateAgentFormSchema),
+		resolver: zodResolver(CreateAgentFormSchema) as any,
 		defaultValues: initialData || draft || {
 			agent_name: "",
 			agent_role_text: "",

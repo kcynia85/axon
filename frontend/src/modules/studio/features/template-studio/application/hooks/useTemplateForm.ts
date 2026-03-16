@@ -7,7 +7,7 @@ import {
 
 export const useTemplateForm = (initialData?: Partial<TemplateStudioFormData>) => {
 	const form = useForm<TemplateStudioFormData>({
-		resolver: zodResolver(TemplateStudioSchema),
+		resolver: zodResolver(TemplateStudioSchema) as any,
 		defaultValues: {
 			name: initialData?.name ?? "",
 			goal: initialData?.goal ?? "",

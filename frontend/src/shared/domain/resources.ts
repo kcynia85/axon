@@ -2,7 +2,6 @@ import { z } from "zod";
 
 export const ServiceCategorySchema = z.enum(["Utility", "GenAI", "Scraping", "Business"]);
 export const ToolCategorySchema = z.enum(["Primeval", "AI_Utils", "Local", "Systems"]);
-export const AutomationPlatformSchema = z.enum(["n8n", "Zapier", "Make", "Custom"]);
 export const ValidationStatusSchema = z.enum(["Valid", "Invalid", "Untested"]);
 
 export const PromptArchetypeSchema = z.object({
@@ -25,15 +24,24 @@ export const PromptArchetypeSchema = z.object({
 
 export type PromptArchetype = z.infer<typeof PromptArchetypeSchema>;
 
+/**
+ * ServiceSchema (ExternalService): Global definitions of available external integrations.
+ * Used for mapping capabilities in Node Space Canvas.
+ */
 export const ExternalServiceSchema = z.object({
     id: z.string().uuid(),
     service_name: z.string(),
     service_description: z.string().nullable().optional(),
     service_category: ServiceCategorySchema,
-    service_url: z.string().url(),
+    service_url: z.string().url().optional(),
     service_keywords: z.array(z.string()).default([]),
     availability_workspace: z.array(z.string()).default([]),
-    capabilities: z.array(z.string()).default([]),
+    capabilities: z.array(z.object({
+        name: z.string(),
+        description: z.string(),
+        method: z.string().optional(),
+        path: z.string().optional(),
+    })).default([]),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
 });
@@ -56,23 +64,3 @@ export const InternalToolSchema = z.object({
 });
 
 export type InternalTool = z.infer<typeof InternalToolSchema>;
-
-export const AutomationSchema = z.object({
-    id: z.string().uuid(),
-    automation_name: z.string(),
-    automation_description: z.string().nullable().optional(),
-    automation_platform: AutomationPlatformSchema,
-    automation_webhook_url: z.string().url(),
-    automation_http_method: z.enum(["GET", "POST", "PUT"]),
-    automation_auth_config: z.record(z.any()).nullable().optional(),
-    automation_input_schema: z.record(z.any()).nullable().optional(),
-    automation_output_schema: z.record(z.any()).nullable().optional(),
-    automation_validation_status: ValidationStatusSchema,
-    automation_last_validated_at: z.string().datetime().nullable().optional(),
-    automation_keywords: z.array(z.string()).default([]),
-    availability_workspace: z.array(z.string()).default([]),
-    created_at: z.string().datetime(),
-    updated_at: z.string().datetime(),
-});
-
-export type Automation = z.infer<typeof AutomationSchema>;

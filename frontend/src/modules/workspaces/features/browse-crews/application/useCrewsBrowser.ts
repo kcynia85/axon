@@ -8,6 +8,7 @@ import { useViewMode } from "@/shared/lib/hooks/useViewMode";
 export function useCrewsBrowser(initialCrews: Crew[] = []) {
   const [viewMode, setViewMode] = useViewMode("crews", "grid");
   const [selectedCrewId, setSelectedCrewId] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const filterConfig = useResourceFilters<Crew>({
     initialSortBy: "name-asc",
@@ -47,6 +48,11 @@ export function useCrewsBrowser(initialCrews: Crew[] = []) {
     return filterConfig.getFilteredItems(initialCrews);
   }, [filterConfig, initialCrews]);
 
+  const handleViewDetails = (id: string) => {
+    setSelectedCrewId(id);
+    setIsSidebarOpen(true);
+  };
+
   return {
     crews: initialCrews,
     processedCrews,
@@ -54,6 +60,9 @@ export function useCrewsBrowser(initialCrews: Crew[] = []) {
     setViewMode,
     selectedCrewId,
     setSelectedCrewId,
+    isSidebarOpen,
+    setIsSidebarOpen,
+    handleViewDetails,
     filterConfig,
   };
 }

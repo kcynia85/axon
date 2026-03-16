@@ -13,7 +13,7 @@ export const SpaceTemplateNodeInspector = ({
     data, 
     onPropertyChange 
 }: SpaceTemplateInspectorProperties) => {
-    const logic = useSpaceTemplateInspectorLogic(data, onPropertyChange);
+    const logic = useSpaceTemplateInspectorLogic(data, onPropertyChange as any);
 
     return (
         <SpaceTemplateNodeInspectorView 

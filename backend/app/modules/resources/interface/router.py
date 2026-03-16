@@ -8,9 +8,9 @@ from app.modules.resources.application.service import ResourcesService
 from app.modules.resources.dependencies import get_resources_service
 from app.modules.resources.application.schemas import (
     PromptArchetypeResponse, CreatePromptArchetypeRequest, UpdatePromptArchetypeRequest,
-    ExternalServiceResponse, CreateExternalServiceRequest, ServiceCapabilityResponse, CreateCapabilityRequest,
+    ExternalServiceResponse, CreateExternalServiceRequest, UpdateExternalServiceRequest, ServiceCapabilityResponse, CreateCapabilityRequest,
     InternalToolResponse, SyncResultResponse,
-    AutomationResponse, CreateAutomationRequest, TestPayload, SimulatorResultResponse
+    AutomationResponse, CreateAutomationRequest, UpdateAutomationRequest, TestPayload, SimulatorResultResponse
 )
 
 router = APIRouter(
@@ -27,6 +27,17 @@ async def list_prompt_archetypes(
 ):
     """List all prompt archetypes available."""
     return await service.list_prompt_archetypes()
+
+@router.get("/prompts/{id}", response_model=PromptArchetypeResponse)
+async def get_prompt_archetype(
+    id: UUID,
+    service: ResourcesService = Depends(get_resources_service)
+):
+    """Get a prompt archetype by ID."""
+    result = await service.get_prompt_archetype(id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Prompt Archetype not found")
+    return result
 
 @router.post("/prompts", response_model=PromptArchetypeResponse, status_code=status.HTTP_201_CREATED)
 async def create_prompt_archetype(
@@ -68,6 +79,17 @@ async def list_external_services(
     """List all registered external services."""
     return await service.list_external_services()
 
+@router.get("/services/{id}", response_model=ExternalServiceResponse)
+async def get_external_service(
+    id: UUID,
+    service: ResourcesService = Depends(get_resources_service)
+):
+    """Get an external service by ID."""
+    result = await service.get_external_service(id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return result
+
 @router.post("/services", response_model=ExternalServiceResponse, status_code=status.HTTP_201_CREATED)
 async def create_external_service(
     request: CreateExternalServiceRequest,
@@ -75,6 +97,29 @@ async def create_external_service(
 ):
     """Register a new external service."""
     return await service.create_external_service(request)
+
+@router.put("/services/{id}", response_model=ExternalServiceResponse)
+async def update_external_service(
+    id: UUID,
+    request: UpdateExternalServiceRequest,
+    service: ResourcesService = Depends(get_resources_service)
+):
+    """Update an external service."""
+    result = await service.update_external_service(id, request)
+    if not result:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return result
+
+@router.delete("/services/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_external_service(
+    id: UUID,
+    service: ResourcesService = Depends(get_resources_service)
+):
+    """Delete an external service."""
+    deleted = await service.delete_external_service(id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return
 
 @router.post("/services/{id}/capabilities", response_model=ServiceCapabilityResponse, status_code=status.HTTP_201_CREATED)
 async def add_service_capability(
@@ -111,6 +156,17 @@ async def list_automations(
     """List all automations."""
     return await service.list_automations()
 
+@router.get("/automations/{id}", response_model=AutomationResponse)
+async def get_automation(
+    id: UUID,
+    service: ResourcesService = Depends(get_resources_service)
+):
+    """Get an automation by ID."""
+    result = await service.get_automation(id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Automation not found")
+    return result
+
 @router.post("/automations", response_model=AutomationResponse, status_code=status.HTTP_201_CREATED)
 async def create_automation(
     request: CreateAutomationRequest,
@@ -118,6 +174,29 @@ async def create_automation(
 ):
     """Create a new automation definition."""
     return await service.create_automation(request)
+
+@router.put("/automations/{id}", response_model=AutomationResponse)
+async def update_automation(
+    id: UUID,
+    request: UpdateAutomationRequest,
+    service: ResourcesService = Depends(get_resources_service)
+):
+    """Update an automation."""
+    result = await service.update_automation(id, request)
+    if not result:
+        raise HTTPException(status_code=404, detail="Automation not found")
+    return result
+
+@router.delete("/automations/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_automation(
+    id: UUID,
+    service: ResourcesService = Depends(get_resources_service)
+):
+    """Delete an automation."""
+    deleted = await service.delete_automation(id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Automation not found")
+    return
 
 @router.post("/automations/{id}/test", response_model=SimulatorResultResponse)
 async def test_automation(

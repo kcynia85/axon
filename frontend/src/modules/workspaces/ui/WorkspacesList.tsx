@@ -7,7 +7,6 @@ import { WorkspaceCard } from "./WorkspaceCard";
 import { Workspace } from "@/shared/domain/workspaces";
 import { Card, CardHeader } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Button } from "@/shared/ui/ui/Button";
 
 type WorkspacesListProps = {
   readonly workspaces?: Workspace[];
@@ -16,6 +15,10 @@ type WorkspacesListProps = {
   readonly viewMode?: ViewMode;
 }
 
+/**
+ * WorkspacesList: Orchestrates the display of available workspaces.
+ * Standard: 0% useEffect, Pure View.
+ */
 export const WorkspacesList = ({ 
   workspaces: providedWorkspaces, 
   isLoading: providedIsLoading,
@@ -25,24 +28,12 @@ export const WorkspacesList = ({
   const [viewMode] = useState<ViewMode>(initialViewMode);
   
   const { 
-    data, 
+    data: fetchedWorkspaces, 
     isLoading, 
-    isError, 
-    hasNextPage, 
-    fetchNextPage, 
-    isFetchingNextPage 
-  } = useWorkspaces(20);
+    isError 
+  } = useWorkspaces();
 
-  // Flatten infinite query pages
-  const workspaces = useMemo(() => {
-    // If external data is provided, use it directly (important for compatibility)
-    if (providedWorkspaces && Array.isArray(providedWorkspaces)) return providedWorkspaces;
-    
-    // Otherwise, flatten TanStack Infinite Query pages
-    if (!data?.pages) return [];
-    return data.pages.flatMap(page => Array.isArray(page) ? page : []);
-  }, [data, providedWorkspaces]);
-
+  const workspaces = providedWorkspaces || fetchedWorkspaces || [];
   const actualIsLoading = providedIsLoading ?? isLoading;
   const actualIsError = providedIsError ?? isError;
 
@@ -70,18 +61,6 @@ export const WorkspacesList = ({
           </div>
         )}
       />
-      
-      {hasNextPage && !providedWorkspaces && (
-        <div className="flex justify-center pt-4">
-          <Button 
-            variant="outline" 
-            onClick={() => fetchNextPage()} 
-            disabled={isFetchingNextPage}
-          >
-            {isFetchingNextPage ? "Loading more..." : "Load More"}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

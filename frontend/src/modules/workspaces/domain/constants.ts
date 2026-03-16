@@ -29,3 +29,18 @@ export const LLM_MODEL_NAMES: Record<string, string> = {
   "model-gpt4o-mini": "GPT-4o Mini",
   "model-claude-sonnet": "Claude 3.5 Sonnet",
 };
+
+export const GLOBAL_AVAILABILITY = "Global Availability";
+
+export const WORKSPACE_OPTIONS = [
+  "Discovery",
+  "Design",
+  "Delivery",
+  "Product Management",
+  "Growth & Market",
+];
+
+export const ALL_WORKSPACE_OPTIONS = [
+  GLOBAL_AVAILABILITY,
+  ...WORKSPACE_OPTIONS,
+];

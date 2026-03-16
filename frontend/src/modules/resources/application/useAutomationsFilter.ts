@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Automation } from "@/shared/domain/resources";
+import { Automation } from "@/shared/domain/workspaces";
 import { useResourceFilters } from "@/shared/lib/hooks/useResourceFilters";
 import { AutomationFilterResult, UseAutomationsFilterProps } from "../types/automation-browser.types";
 

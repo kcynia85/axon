@@ -4,10 +4,10 @@ import React from "react";
 import { Divider } from "@heroui/react";
 import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";
 import { useSpacePatternInspector } from "../../application/hooks/useSpacePatternInspector";
-import type { SpacePatternNodeInspectorProperties } from "../types";
+import { SpacePatternInspectorProperties } from "../types";
 
-export const SpacePatternNodeInspector = ({ patternNodeInformation }: SpacePatternNodeInspectorProperties) => {
-    const { state } = useSpacePatternInspector(patternNodeInformation);
+export const SpacePatternNodeInspector = ({ data, onPropertyChange }: SpacePatternInspectorProperties) => {
+    const { state } = useSpacePatternInspector(data as any);
 
     return (
         <SpaceInspectorPanel>

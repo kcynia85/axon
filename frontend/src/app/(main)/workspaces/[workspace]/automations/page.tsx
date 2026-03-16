@@ -1,11 +1,12 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useAutomations, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import { useParams, useRouter } from "next/navigation";
+import { useAutomations } from "@/modules/workspaces/application/useAutomations";
+import { useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
-import { Input } from "@/shared/ui/ui/Input";
-import { Search, Zap, Clock } from "lucide-react";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { Search, Zap, Clock, Plus } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
@@ -24,8 +25,13 @@ const COLOR_TO_RGB: Record<string, string> = {
     default: "113, 113, 122"
 };
 
-export default function AutomationsListPage() {
+/**
+ * AutomationsListPage: Lists all automations for a given workspace.
+ * Standard: 0% useEffect, Pure View architecture.
+ */
+const AutomationsListPage = () => {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
   
   const { data: workspace } = useWorkspace(workspaceId);
@@ -38,9 +44,13 @@ export default function AutomationsListPage() {
   const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
   const filteredAutomations = automations?.filter(automation => 
-    automation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    automation.trigger.toLowerCase().includes(searchQuery.toLowerCase())
+    automation.automation_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    automation.automation_platform.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const goToAutomationStudio = () => {
+    router.push(`/workspaces/${workspaceId}/automations/studio`);
+  };
 
   return (
     <PageLayout
@@ -51,6 +61,13 @@ export default function AutomationsListPage() {
           { label: workspace?.name || "...", href: `/workspaces/${workspaceId}` },
           { label: "Automations" }
       ]}
+      actions={
+        <ActionButton 
+            label="Nowa Automatyzacja" 
+            icon={Plus}
+            onClick={goToAutomationStudio} 
+        />
+      }
       showPagination={false}
     >
       <BrowserLayout
@@ -65,8 +82,11 @@ export default function AutomationsListPage() {
         ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
                 {filteredAutomations?.map((automation) => (
-                    <Card key={automation.id} className={cn(
-                        "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
+                    <Card 
+                        key={automation.id} 
+                        onClick={() => router.push(`/workspaces/${workspaceId}/automations/studio/${automation.id}`)}
+                        className={cn(
+                            "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
                         "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
                         "hover:shadow-md",
                         `hover:${styles.borderClassName}`
@@ -87,25 +107,25 @@ export default function AutomationsListPage() {
                                     <div className="p-1.5 rounded bg-muted/30">
                                         <Zap className="h-4 w-4 text-zinc-500" />
                                     </div>
-                                    <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{automation.name || automation.automation_name}</CardTitle>
+                                    <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{automation.automation_name}</CardTitle>
                                 </div>
                                 <Badge 
                                     variant="outline" 
-                                    className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none", automation.enabled || automation.is_active ? "bg-blue-500/10 text-blue-600" : "bg-muted/30")}
+                                    className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none", automation.automation_status === 'Active' ? "bg-blue-500/10 text-blue-600" : "bg-muted/30")}
                                 >
-                                    {automation.enabled || automation.is_active ? 'active' : 'paused'}
+                                    {automation.automation_status}
                                 </Badge>
                             </div>
                             <CardDescription className="flex items-center gap-1.5 mt-1 capitalize text-[11px]">
                                 <Clock className="h-3 w-3" />
-                                Trigger: {automation.trigger || automation.trigger_type}
+                                Platform: {automation.automation_platform}
                             </CardDescription>
                         </CardHeader>
 
                         <CardContent className="relative z-10 mt-auto pt-0 pb-4">
                             <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
-                                    Last run: {automation.lastRun ? new Date(automation.lastRun).toLocaleDateString() : 'Never'}
+                                    Last Validated: {automation.automation_last_validated_at ? new Date(automation.automation_last_validated_at).toLocaleDateString() : 'Never'}
                                 </span>
                             </div>
                         </CardContent>
@@ -116,4 +136,6 @@ export default function AutomationsListPage() {
       </BrowserLayout>
     </PageLayout>
   );
-}
+};
+
+export default AutomationsListPage;

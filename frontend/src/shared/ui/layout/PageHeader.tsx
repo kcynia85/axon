@@ -3,7 +3,13 @@
 import React from "react";
 import type { PageHeaderProps } from "@/shared/lib/types/page-header";
 
-export const PageHeader = ({ title, description, actions }: PageHeaderProps) => {
+/**
+ * PageHeader: Displays title, description, and actions.
+ * Standard: Pure View, accepts actions via prop or children.
+ */
+export const PageHeader = ({ title, description, actions, children }: PageHeaderProps) => {
+  const finalActions = actions || children;
+
   return (
     <div className="flex flex-col space-y-6 pt-6 pb-4">
       <div className="flex justify-between items-start w-full">
@@ -17,9 +23,9 @@ export const PageHeader = ({ title, description, actions }: PageHeaderProps) => 
             </p>
           )}
         </div>
-        {actions && (
+        {finalActions && (
           <div className="shrink-0">
-            {actions}
+            {finalActions}
           </div>
         )}
       </div>

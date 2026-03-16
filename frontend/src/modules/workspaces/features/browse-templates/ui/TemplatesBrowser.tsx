@@ -5,11 +5,12 @@ import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { useTemplatesBrowser } from "../application/useTemplatesBrowser";
 import { Template } from "@/shared/domain/workspaces";
-import { FileText, ListTodo } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { SortOption } from "@/shared/domain/filters";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
+import { useDeleteTemplate } from "@/modules/workspaces/application/useTemplates";
+import { TemplateProfilePeek } from "@/modules/workspaces/ui/TemplateProfilePeek";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -22,13 +23,20 @@ type TemplatesBrowserProps = {
   readonly colorName?: string;
 }
 
+/**
+ * TemplatesBrowser: UI for browsing templates in a workspace.
+ * Standard: 0% useEffect, Pure View, arrow function.
+ */
 export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: TemplatesBrowserProps) => {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
   const {
     processedTemplates,
     viewMode,
     setViewMode,
+    selectedTemplateId,
+    setSelectedTemplateId,
     filterConfig,
   } = useTemplatesBrowser(initialTemplates);
 
@@ -46,6 +54,16 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
     getPreviewCount,
     setPendingFilterIds,
   } = filterConfig;
+
+  const { mutate: deleteTemplate } = useDeleteTemplate();
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this template?")) {
+      deleteTemplate({ workspaceId, id });
+    }
+  };
+
+  const selectedTemplate = initialTemplates.find(t => t.id === selectedTemplateId) || null;
 
   return (
     <BrowserLayout
@@ -89,16 +107,29 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
             <WorkspaceCardHorizontal 
                 key={template.id}
                 variant="default"
-                title={template.name || template.template_name}
-                description={template.description || template.template_description}
-                href={`/workspaces/${workspaceId}/templates/studio?id=${template.id}`}
-                badgeLabel={template.category || template.template_type}
-                tags={template.tags || template.template_keywords}
+                title={template.template_name}
+                description={template.template_description}
+                href={`/workspaces/${workspaceId}/templates/${template.id}`}
+                badgeLabel="Structure"
+                tags={template.template_keywords}
                 colorName={colorName}
+                onEdit={() => setSelectedTemplateId(template.id)}
+                onDelete={() => handleDelete(template.id)}
             />
           ))}
         </div>
       )}
+
+      <TemplateProfilePeek 
+        template={selectedTemplate}
+        isOpen={!!selectedTemplateId}
+        onClose={() => setSelectedTemplateId(null)}
+        onEdit={() => {
+          if (selectedTemplateId) {
+            router.push(`/workspaces/${workspaceId}/templates/studio/${selectedTemplateId}`);
+          }
+        }}
+      />
     </BrowserLayout>
   );
 };

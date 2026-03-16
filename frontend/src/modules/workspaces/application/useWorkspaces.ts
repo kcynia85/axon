@@ -1,5 +1,6 @@
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { workspacesApi } from "../infrastructure/api";
+import { resourcesApi } from "@/modules/resources/infrastructure/api";
 import { Workspace } from "@/shared/domain/workspaces";
 
 export const workspaceKeys = {
@@ -15,70 +16,91 @@ export const workspaceKeys = {
   automations: (workspaceId: string) => [...workspaceKeys.detail(workspaceId), "automations"] as const,
 };
 
-export const useWorkspaces = (limit: number = 20) => {
-  return useInfiniteQuery<Workspace[]>({
-    queryKey: workspaceKeys.infinite(),
-    queryFn: ({ pageParam = 0 }) => workspacesApi.getWorkspaces(limit, pageParam as number),
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === limit ? allPages.length * limit : undefined;
-    },
-    initialPageParam: 0,
+/**
+ * useWorkspaces: Hook for fetching all available workspaces.
+ * Standard: 0% useEffect, arrow function.
+ */
+export const useWorkspaces = (limit: number = 100) => {
+  return useQuery<Workspace[]>({
+    queryKey: workspaceKeys.lists(),
+    queryFn: async () => await workspacesApi.getWorkspaces(limit),
     staleTime: 1000 * 60 * 5,
   });
 };
 
+/**
+ * useWorkspace: Hook for fetching a single workspace by ID.
+ */
 export const useWorkspace = (id: string) => {
   return useQuery<Workspace>({
     queryKey: workspaceKeys.detail(id),
-    queryFn: () => workspacesApi.getWorkspace(id),
+    queryFn: async () => await workspacesApi.getWorkspace(id),
     enabled: !!id,
   });
 };
 
+/**
+ * useAgents: Hook for fetching agents in a workspace.
+ */
 export const useAgents = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.agents(workspaceId),
-    queryFn: () => workspacesApi.getAgents(workspaceId),
+    queryFn: async () => await workspacesApi.getAgents(workspaceId),
     enabled: !!workspaceId,
   });
 };
 
+/**
+ * useCrews: Hook for fetching crews in a workspace.
+ */
 export const useCrews = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.crews(workspaceId),
-    queryFn: () => workspacesApi.getCrews(workspaceId),
+    queryFn: async () => await workspacesApi.getCrews(workspaceId),
     enabled: !!workspaceId,
   });
 };
 
+/**
+ * usePatterns: Hook for fetching patterns in a workspace.
+ */
 export const usePatterns = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.patterns(workspaceId),
-    queryFn: () => workspacesApi.getPatterns(workspaceId),
+    queryFn: async () => await workspacesApi.getPatterns(workspaceId),
     enabled: !!workspaceId,
   });
 };
 
+/**
+ * useTemplates: Hook for fetching templates in a workspace.
+ */
 export const useTemplates = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.templates(workspaceId),
-    queryFn: () => workspacesApi.getTemplates(workspaceId),
+    queryFn: async () => await workspacesApi.getTemplates(workspaceId),
     enabled: !!workspaceId,
   });
 };
 
+/**
+ * useServices: Hook for fetching services (mapped to global resources).
+ */
 export const useServices = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.services(workspaceId),
-    queryFn: () => workspacesApi.getServices(workspaceId),
+    queryFn: async () => await resourcesApi.getExternalServices(),
     enabled: !!workspaceId,
   });
 };
 
+/**
+ * useAutomations: Hook for fetching automations in a workspace.
+ */
 export const useAutomations = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.automations(workspaceId),
-    queryFn: () => workspacesApi.getAutomations(workspaceId),
+    queryFn: async () => await workspacesApi.getAutomations(workspaceId),
     enabled: !!workspaceId,
   });
 };

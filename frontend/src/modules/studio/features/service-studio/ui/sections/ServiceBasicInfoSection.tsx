@@ -27,7 +27,6 @@ export const ServiceBasicInfoSection = () => {
 							<FormTextField 
 								{...field}
 								placeholder="e.g. ElevenLabs, OpenAI, SerpApi" 
-								icon={Globe}
 							/>
 						</FormItemField>
 					)}
@@ -41,7 +40,6 @@ export const ServiceBasicInfoSection = () => {
 							<FormTextField 
 								{...field}
 								placeholder="https://api.service.com/v1" 
-								icon={Link}
 							/>
 						</FormItemField>
 					)}

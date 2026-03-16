@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { useAutomations } from "../application/useAutomations";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
@@ -10,6 +11,7 @@ import {
   Trash2,
   Clock,
   History,
+  Edit2,
 } from "lucide-react";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
@@ -22,6 +24,7 @@ type AutomationsSectionProps = {
 }
 
 export const AutomationsSection = ({ workspaceId, colorName = "default" }: AutomationsSectionProps) => {
+  const router = useRouter();
   const { data: automations, isLoading } = useAutomations(workspaceId);
   const [selectedAutomationId, setSelectedAutomationId] = React.useState<string | null>(null);
 
@@ -42,6 +45,12 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
   }
 
   const selectedAutomation = automations.find((a) => a.id === selectedAutomationId);
+
+  const handleEdit = () => {
+    if (selectedAutomationId) {
+      router.push(`/workspaces/${workspaceId}/automations/studio/${selectedAutomationId}`);
+    }
+  };
 
   return (
     <>
@@ -92,7 +101,9 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
             </section>
 
             <div className="flex gap-3 pt-6 border-t border-muted">
-              <Button className="flex-1 bg-primary hover:bg-primary/90">Test Logic</Button>
+              <Button className="flex-1 bg-primary hover:bg-primary/90" onClick={handleEdit}>
+                <Edit2 className="w-4 h-4 mr-2" /> Edytuj Automatyzację
+              </Button>
               <Button variant="outline" size="icon">
                 <Settings className="w-4 h-4" />
               </Button>

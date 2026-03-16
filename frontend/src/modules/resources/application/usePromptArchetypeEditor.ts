@@ -17,7 +17,7 @@ export const usePromptArchetypeEditor = (onSuccess: () => void): PromptArchetype
     const { mutateAsync: createArchetype, isPending: isCreating } = useCreatePromptArchetype();
 
     const form = useForm<PromptArchetypeFormData>({
-        resolver: zodResolver(CreatePromptArchetypeFormSchema) as unknown as Resolver<PromptArchetypeFormData>,
+        resolver: zodResolver(CreatePromptArchetypeFormSchema),
         defaultValues: {
             archetype_name: "",
             archetype_description: "",

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Library, Plus, X } from "lucide-react";
 import type React from "react";
-import type { DiscoveryChoiceProps } from "../../../types/studio.types";
+import type { DiscoveryChoiceProps } from "../../../types/discovery.types";
 
 export const DiscoveryChoice = ({
 	emptyLabel,

@@ -30,7 +30,7 @@ export const ServiceStudioView = ({
         <FormProvider {...form}>
             <div className="fixed inset-0 z-[200] h-screen w-screen bg-black outline-none" tabIndex={0}>
                 <StudioLayout
-                    setCanvasRef={setCanvasContainerReference}
+                    canvasRef={setCanvasContainerReference}
                     exitButton={
                         <Button
                             variant="ghost"

@@ -101,6 +101,28 @@ class ResourcesRepository:
         )
         return [self._to_domain_service(row) for row in result.scalars().all()]
     
+    async def get_external_service(self, id: UUID) -> Optional[ExternalService]:
+        result = await self.session.execute(
+            select(ExternalServiceTable)
+            .options(selectinload(ExternalServiceTable.capabilities))
+            .where(ExternalServiceTable.id == id)
+        )
+        row = result.scalar_one_or_none()
+        return self._to_domain_service(row) if row else None
+
+    async def update_external_service(self, id: UUID, update_data: Dict) -> Optional[ExternalService]:
+        update_data['updated_at'] = now_utc()
+        stmt = update(ExternalServiceTable).where(ExternalServiceTable.id == id).values(**update_data)
+        await self.session.execute(stmt)
+        await self.session.commit()
+        return await self.get_external_service(id)
+
+    async def delete_external_service(self, id: UUID) -> bool:
+        stmt = delete(ExternalServiceTable).where(ExternalServiceTable.id == id)
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        return result.rowcount > 0
+    
     async def add_service_capability(self, capability: ServiceCapability) -> ServiceCapability:
         db_obj = ServiceCapabilityTable(
             id=capability.id,
@@ -221,9 +243,30 @@ class ResourcesRepository:
         await self.session.refresh(db_obj)
         return self._to_domain_automation(db_obj)
 
-    async def list_automations(self) -> List[Automation]:
-        result = await self.session.execute(select(AutomationTable))
+    async def list_automations(self, workspace_id: Optional[str] = None) -> List[Automation]:
+        query = select(AutomationTable)
+        if workspace_id:
+            query = query.where(AutomationTable.availability_workspace.any(workspace_id))
+        result = await self.session.execute(query)
         return [self._to_domain_automation(row) for row in result.scalars().all()]
+    
+    async def get_automation(self, id: UUID) -> Optional[Automation]:
+        result = await self.session.execute(select(AutomationTable).where(AutomationTable.id == id))
+        row = result.scalar_one_or_none()
+        return self._to_domain_automation(row) if row else None
+
+    async def update_automation(self, id: UUID, update_data: Dict) -> Optional[Automation]:
+        update_data['updated_at'] = now_utc()
+        stmt = update(AutomationTable).where(AutomationTable.id == id).values(**update_data)
+        await self.session.execute(stmt)
+        await self.session.commit()
+        return await self.get_automation(id)
+
+    async def delete_automation(self, id: UUID) -> bool:
+        stmt = delete(AutomationTable).where(AutomationTable.id == id)
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        return result.rowcount > 0
     
     def _to_domain_automation(self, row: AutomationTable) -> Automation:
         return Automation(

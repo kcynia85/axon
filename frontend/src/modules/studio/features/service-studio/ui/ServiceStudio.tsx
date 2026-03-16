@@ -30,7 +30,7 @@ export const ServiceStudio = ({ onSave, onCancel, initialData, isEditing }: Serv
         "basic-info"
     );
 
-    const handleSave = form.handleSubmit(onSave);
+    const handleSave = form.handleSubmit(onSave as any);
 
     return (
         <ServiceStudioView

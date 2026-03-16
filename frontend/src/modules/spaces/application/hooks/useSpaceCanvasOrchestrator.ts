@@ -1,7 +1,7 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceCanvasOrchestrator.ts
 
 import { useState, useCallback } from 'react';
-import type { Node, Edge } from '@xyflow/react';
+import type { Node, Edge, OnNodesChange, OnEdgesChange } from '@xyflow/react';
 import { useSpaceCanvasState } from './useSpaceCanvasState';
 import { useSpaceCanvasConnectionLogic } from './useSpaceCanvasConnectionLogic';
 import { useSpaceCanvasDragAndDropLogic } from './useSpaceCanvasDragAndDropLogic';
@@ -59,7 +59,7 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
 
   const createPatternFromSelection = useCallback((name: string, description: string, type?: 'pattern' | 'super-pattern') => {
     const selectedNodes = canvasNodes.filter(n => n.selected);
-    const blueprint = BlueprintEngine.serializeSelection(selectedNodes, canvasNodes, canvasEdges, { name, description, type });
+    const blueprint = BlueprintEngine.serializeSelection(selectedNodes as any, canvasNodes as any, canvasEdges as any, { name, description, type });
     return blueprint;
   }, [canvasNodes, canvasEdges]);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Automation } from "@/shared/domain/resources";
+import { Automation } from "@/shared/domain/workspaces";
 import { useAutomationsQuery } from "./useAutomationsQuery";
 import { useAutomationsFilter } from "./useAutomationsFilter";
 import { useAutomationsView } from "./useAutomationsView";

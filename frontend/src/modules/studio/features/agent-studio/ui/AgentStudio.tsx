@@ -21,12 +21,13 @@ import { ConnectedLivePoster } from "./ConnectedLivePoster";
 import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
 
 interface AgentStudioProps {
-	initialData?: Partial<CreateAgentFormData>;
-	agentId?: string;
+	readonly initialData?: Partial<CreateAgentFormData>;
+	readonly agentId?: string;
 }
 
 /**
  * AgentStudio: Pure view component for the agent design experience.
+ * Standard: Pure View, 0% useEffect, arrow function.
  */
 export const AgentStudio = ({ initialData, agentId }: AgentStudioProps = {}) => {
 	const {
@@ -87,7 +88,7 @@ export const AgentStudio = ({ initialData, agentId }: AgentStudioProps = {}) => 
 					navigator={
 						<StudioSectionNav
 							sections={sections}
-							activeSection={activeSection}
+							activeSection={activeSection as any}
 							onSectionClick={scrollToSection}
 							onExitToLibrary={() => initialData ? handleExit() : setStep("discovery")}
 						/>
@@ -118,7 +119,7 @@ export const AgentStudio = ({ initialData, agentId }: AgentStudioProps = {}) => 
 							</Button>
 							<ActionButton
 								label={agentId ? "Zaktualizuj Agenta" : "Zapisz Agenta"}
-								onClick={form.handleSubmit(handleSubmit)}
+								onClick={form.handleSubmit(handleSubmit as any)}
 							/>
 						</div>
 					}

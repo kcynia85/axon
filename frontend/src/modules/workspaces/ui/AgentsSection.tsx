@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useAgentsSection } from "../application/useAgentsSection";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
@@ -24,6 +25,7 @@ type AgentsSectionProps = {
 };
 
 export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSectionProps) => {
+  const router = useRouter();
   const {
     agents,
     isAgentsLoading,
@@ -93,10 +95,14 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
       </div>
 
       <AgentProfilePeek 
-        agent={selectedAgent}
+        agent={selectedAgent || null}
         isOpen={!!selectedAgent}
         onClose={handleClosePeek}
-        onEdit={() => {}} // TODO: Handle edit
+        onEdit={() => {
+          if (selectedAgent) {
+            router.push(`/workspaces/${workspaceId}/agents/studio/${selectedAgent.id}`);
+          }
+        }}
       />
     </>
   );

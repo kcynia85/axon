@@ -15,7 +15,7 @@ export const useSpaceCanvasState = (initialCanvasConfiguration?: unknown): Space
   const [canvasEdges, setCanvasEdges, handleCanvasEdgesChange] = useEdgesState(initialEdgesForCanvas);
 
   const currentlySelectedNode = useMemo(
-    () => canvasNodes.find((node) => node.selected),
+    () => canvasNodes.find((node) => node.selected) || null,
     [canvasNodes]
   );
 

@@ -11,7 +11,10 @@ import { RecentlyUsedPrompts } from "./components/RecentlyUsedPrompts";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { PromptArchetype } from "@/shared/domain/resources";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Sparkles, Clock, Globe, ShieldCheck, Tag } from "lucide-react";
+import { Sparkles, Clock, Globe, ShieldCheck, Tag, Edit2 } from "lucide-react";
+import { useDeletePromptArchetype } from "../application/usePromptArchetypes";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/shared/ui/ui/Button";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -30,6 +33,10 @@ interface PromptsBrowserProps {
 }
 
 export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => {
+  const params = useParams();
+  const router = useRouter();
+  const workspaceId = (params?.workspace as string) || "ws-product";
+
   const {
     prompts,
     processedPrompts,
@@ -59,6 +66,20 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
     getPreviewCount,
     setPendingFilterIds,
   } = filterConfig;
+
+  const { mutate: deletePrompt } = useDeletePromptArchetype();
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this archetype?")) {
+      deletePrompt(id);
+    }
+  };
+
+  const handleEdit = () => {
+    if (selectedPrompt) {
+      router.push(`/workspaces/${workspaceId}/archetypes/studio/${selectedPrompt.id}`);
+    }
+  };
 
   return (
     <>
@@ -101,6 +122,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
             prompts={processedPrompts}
             viewMode={viewMode}
             onViewDetails={handleViewDetails}
+            onDelete={handleDelete}
             isLoading={isLoading}
             isError={isError}
         />
@@ -165,6 +187,15 @@ Strictly follow these domain guidelines:
 - Prioritize high-signal output.
 - Avoid redundant reasoning.`}</pre>
                     </div>
+                </div>
+
+                <div className="mt-6">
+                    <Button 
+                        onClick={handleEdit}
+                        className="w-full py-6 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:opacity-90 transition-all gap-3"
+                    >
+                        <Edit2 className="w-5 h-5" /> Edytuj Archetyp
+                    </Button>
                 </div>
             </div>
         )}

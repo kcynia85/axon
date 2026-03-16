@@ -36,10 +36,9 @@ export const SpaceAutomationNodeView = ({ viewModel }: { readonly viewModel: Spa
                         <span className="text-[10px] font-black text-zinc-300 font-mono truncate max-w-[180px]">{viewModel.artifactLabel}</span>
                         <span className={cn(
                             "text-[9px] font-bold uppercase",
-                            getStatusColorClass(viewModel.artifactStatusText)
+                            getStatusColorClass(viewModel.artifactStatusText || "in_review")
                         )}>
-                            {viewModel.artifactStatusText}
-                        </span>
+                            {viewModel.artifactStatusText || "UNKNOWN"}                        </span>
                     </div>
                 </div>
             )}

@@ -1,4 +1,7 @@
 import type { SectionConfig } from "./hooks.types";
+import type { AgentStudioSectionId } from "./agent-studio.types";
+
+export type { AgentStudioSectionId };
 
 export const AGENT_STUDIO_SECTIONS: readonly SectionConfig[] = [
 	{ id: "IDENTITY", title: "Identity", number: 1 },

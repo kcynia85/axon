@@ -14,8 +14,8 @@ export const SpaceZoneCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperti
         nodeProperties.selected ?? false
     );
 
-    const inputPorts = viewModel.ports.filter(p => p.type === 'input');
-    const outputPorts = viewModel.ports.filter(p => p.type === 'output');
+    const inputPorts = viewModel.ports?.filter(p => p.type === 'input') || [];
+    const outputPorts = viewModel.ports?.filter(p => p.type === 'output') || [];
 
     return (
         <>
@@ -52,8 +52,7 @@ export const SpaceZoneCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperti
                 <Handle
                     type="target"
                     position={Position.Left}
-                    className={viewModel.handleClassName}
-                    style={{ left: -8 }}
+                    className={viewModel.visual.handleClassName}                    style={{ left: -8 }}
                 />
             )}
 
@@ -88,8 +87,7 @@ export const SpaceZoneCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperti
                 <Handle
                     type="source"
                     position={Position.Right}
-                    className={viewModel.handleClassName}
-                    style={{ right: -8 }}
+                    className={viewModel.visual.handleClassName}                    style={{ right: -8 }}
                 />
             )}
         </>

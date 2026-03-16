@@ -5,17 +5,22 @@ import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Button } from "@/shared/ui/ui/Button";
 import { Separator } from "@/shared/ui/ui/Separator";
-import { useServices } from "@/modules/workspaces/application/useWorkspaces";
+import { useServices } from "@/modules/workspaces/application/useServices";
 import { Activity, Zap, Layers, Briefcase, Globe } from "lucide-react";
+import { Service } from "@/shared/domain/workspaces";
 
-export default function ServiceSidePeekPage() {
+/**
+ * ServiceSidePeekPage: Detailed view of a service integration.
+ * Standard: 0% useEffect, arrow function.
+ */
+const ServiceSidePeekPage = () => {
   const params = useParams();
   const router = useRouter();
   const workspaceId = params.workspace as string;
   const serviceId = params.id as string;
   
   const { data: services } = useServices(workspaceId);
-    const service = services?.find((serviceItem) => serviceItem.id === serviceId);
+  const service = services?.find((s) => s.id === serviceId);
 
   if (!service) return null;
 
@@ -66,10 +71,10 @@ export default function ServiceSidePeekPage() {
                     <Zap className="h-4 w-4 text-primary" /> Capabilities
                 </h3>
                 <div className="grid grid-cols-1 gap-2">
-                    {service.capabilities.map((cap, i) => (
+                    {service.capabilities?.map((cap: any, i: number) => (
                         <div key={i} className="flex items-center gap-2 text-xs p-2 bg-muted/30 rounded border border-dashed">
                             <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                            {cap}
+                            {cap.name || cap}
                         </div>
                     ))}
                 </div>
@@ -83,7 +88,7 @@ export default function ServiceSidePeekPage() {
                     <Layers className="h-4 w-4 text-primary" /> Availability
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                    {service.availability_workspace.map(ws => (
+                    {service.availability_workspace?.map((ws: string) => (
                         <Badge key={ws} variant="outline" className="text-[10px]">{ws}</Badge>
                     ))}
                 </div>
@@ -101,4 +106,6 @@ export default function ServiceSidePeekPage() {
         </div>
     </SidePeek>
   );
-}
+};
+
+export default ServiceSidePeekPage;

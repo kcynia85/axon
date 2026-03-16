@@ -9,7 +9,7 @@ import {
     DialogTitle,
 } from "@/shared/ui/ui/Dialog";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useInternalTools } from "@/modules/resources/application/use-internal-tools";
+import { useInternalTools } from "@/modules/resources/application/useInternalTools";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { InternalTool } from "@/shared/domain/resources";

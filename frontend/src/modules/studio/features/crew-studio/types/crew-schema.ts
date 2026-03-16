@@ -22,9 +22,9 @@ const BaseCrewFormSchema = z.object({
  */
 export const HierarchicalCrewFormSchema = z.object({
 	crew_process_type: z.literal("Hierarchical"),
-	owner_agent_id: z.string().uuid().min(1, "Manager/Owner Agent is required"),
+	owner_agent_id: z.string().min(1, "Manager/Owner Agent is required"),
 	synthesis_instruction: z.string().optional(),
-	agent_member_ids: z.array(z.string().uuid()).min(1, "At least one team member is required"),
+	agent_member_ids: z.array(z.string()).min(1, "At least one team member is required"),
 });
 
 /**
@@ -33,7 +33,7 @@ export const HierarchicalCrewFormSchema = z.object({
  */
 export const ParallelCrewFormSchema = z.object({
 	crew_process_type: z.literal("Parallel"),
-	agent_member_ids: z.array(z.string().uuid()).min(1, "At least one team member is required"),
+	agent_member_ids: z.array(z.string()).min(1, "At least one team member is required"),
 });
 
 /**
@@ -41,16 +41,16 @@ export const ParallelCrewFormSchema = z.object({
  * Strictly ordered sequence of tasks.
  */
 export const SequentialTaskFormSchema = z.object({
-	id: z.string().uuid().optional(), // For stable rendering in useFieldArray
+	id: z.string().optional(), // For stable rendering in useFieldArray
 	description: z.string().min(1, "Task description is required"),
-	specialist_id: z.string().uuid().min(1, "Specialist must be assigned"),
+	specialist_id: z.string().min(1, "Specialist must be assigned"),
 });
 
 export const SequentialCrewFormSchema = z.object({
 	crew_process_type: z.literal("Sequential"),
 	tasks: z.array(SequentialTaskFormSchema).min(1, "At least one task is required"),
 	// In sequential, members are derived from task specialists, but we keep the field for compatibility
-	agent_member_ids: z.array(z.string().uuid()).default([]),
+	agent_member_ids: z.array(z.string()).default([]),
 });
 
 /**

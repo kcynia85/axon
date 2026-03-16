@@ -1,11 +1,12 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useServices, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import { useParams, useRouter } from "next/navigation";
+import { useServices } from "@/modules/workspaces/application/useServices";
+import { useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
-import { Input } from "@/shared/ui/ui/Input";
-import { Search, Globe, Activity } from "lucide-react";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { Globe, Activity, Plus } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
@@ -24,8 +25,13 @@ const COLOR_TO_RGB: Record<string, string> = {
     default: "113, 113, 122"
 };
 
-export default function ServicesListPage() {
+/**
+ * ServicesListPage: Lists all available service definitions.
+ * Standard: 0% useEffect, arrow function.
+ */
+const ServicesListPage = () => {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
   
   const { data: workspace } = useWorkspace(workspaceId);
@@ -38,9 +44,13 @@ export default function ServicesListPage() {
   const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
   const filteredServices = services?.filter(service => 
-    service.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    service.provider_name?.toLowerCase().includes(searchQuery.toLowerCase())
+    service.service_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    service.service_category.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const goToServiceStudio = () => {
+    router.push(`/workspaces/${workspaceId}/services/studio`);
+  };
 
   return (
     <PageLayout
@@ -51,6 +61,13 @@ export default function ServicesListPage() {
           { label: workspace?.name || "...", href: `/workspaces/${workspaceId}` },
           { label: "Services" }
       ]}
+      actions={
+        <ActionButton 
+            label="Nowa Usługa" 
+            icon={Plus}
+            onClick={goToServiceStudio} 
+        />
+      }
       showPagination={false}
     >
       <BrowserLayout
@@ -65,8 +82,11 @@ export default function ServicesListPage() {
         ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
                 {filteredServices?.map((service) => (
-                    <Card key={service.id} className={cn(
-                        "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
+                    <Card 
+                        key={service.id} 
+                        onClick={() => router.push(`/workspaces/${workspaceId}/services/studio/${service.id}`)}
+                        className={cn(
+                            "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
                         "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
                         "hover:shadow-md",
                         `hover:${styles.borderClassName}`
@@ -87,17 +107,17 @@ export default function ServicesListPage() {
                                     <div className="p-1.5 rounded bg-muted/30">
                                         <Globe className="h-4 w-4 text-zinc-500" />
                                     </div>
-                                    <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{service.name || service.service_name}</CardTitle>
+                                    <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{service.service_name}</CardTitle>
                                 </div>
                                 <Badge 
                                     variant="outline" 
                                     className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none bg-muted/30")}
                                 >
-                                    {service.status || service.connection_status}
+                                    {service.service_category}
                                 </Badge>
                             </div>
                             <CardDescription className="text-[11px] mt-1 line-clamp-2 leading-relaxed">
-                                Integration with {service.provider_name || 'external'} platform.
+                                {service.service_description || `Integration with ${service.service_category} platform.`}
                             </CardDescription>
                         </CardHeader>
 
@@ -114,4 +134,6 @@ export default function ServicesListPage() {
       </BrowserLayout>
     </PageLayout>
   );
-}
+};
+
+export default ServicesListPage;

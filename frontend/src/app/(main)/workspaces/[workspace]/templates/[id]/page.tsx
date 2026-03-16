@@ -23,7 +23,7 @@ export default function TemplateSidePeekPage() {
       template={template}
       isOpen={true}
       onClose={() => router.push(`/workspaces/${workspaceId}/templates`)}
-      onEdit={() => router.push(`/workspaces/${workspaceId}/templates/studio?id=${templateId}`)}
+      onEdit={() => router.push(`/workspaces/${workspaceId}/templates/studio/${templateId}`)}
     />
   );
 }

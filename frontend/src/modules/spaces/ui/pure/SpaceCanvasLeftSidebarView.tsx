@@ -46,6 +46,7 @@ type ComponentItemDisplay = {
     readonly displayName: string;
     readonly type: string;
     readonly hoverClassName: string;
+    readonly zoneColor: string;
     readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
 };
 

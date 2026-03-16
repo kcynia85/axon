@@ -8,6 +8,7 @@ export const propertySchema = z.object({
 
 export const automationFormSchema = z.object({
 	definition: z.object({
+		name: z.string().min(1, "Nazwa jest wymagana"),
 		semanticDescription: z.string().min(1, "Opis jest wymagany"),
 		keywords: z.array(z.string()).default([]),
 	}),

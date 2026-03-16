@@ -1,4 +1,4 @@
-import { Automation } from "@/shared/domain/resources";
+import { Automation } from "@/shared/domain/workspaces";
 import { AutomationBrowserViewState } from "../types/automation-browser.types";
 import { useResourceFilters } from "@/shared/lib/hooks/useResourceFilters";
 

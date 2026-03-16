@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { LucideIcon, Edit2, ChevronRight, ArrowRight } from "lucide-react";
+import { LucideIcon, Edit2, ChevronRight, ArrowRight, MoreVertical, Trash2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Card, CardHeader, CardContent, CardFooter } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
@@ -10,6 +10,12 @@ import { TagChip } from "@/shared/ui/ui/TagChip";
 import { Button } from "@/shared/ui/ui/Button";
 import { BaseSpan } from "@/modules/projects/features/browse-projects/ui/components/ProjectBaseAtoms";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/ui/ui/DropdownMenu";
 
 type WorkspaceCardProps = {
     readonly title: string;
@@ -24,6 +30,7 @@ type WorkspaceCardProps = {
     readonly className?: string;
     readonly colorName?: string;
     readonly onEdit?: (e: React.MouseEvent) => void;
+    readonly onDelete?: (e: React.MouseEvent) => void;
     readonly layout?: "grid" | "list";
 };
 
@@ -44,7 +51,8 @@ export const WorkspaceCard = ({
     className,
     colorName = "default",
     layout = "grid",
-    onEdit
+    onEdit,
+    onDelete
 }: WorkspaceCardProps) => {
     const styles = getVisualStylesForZoneColor(colorName);
 
@@ -52,6 +60,37 @@ export const WorkspaceCard = ({
     const truncatedDescription = description && description.length > 120 
         ? `${description.substring(0, 120)}...` 
         : description;
+        
+    const renderActions = () => {
+        if (!onDelete) return null;
+        return (
+            <div className="absolute top-3 right-3 z-40">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button 
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                            className="p-1.5 rounded-md hover:bg-white/20 bg-black/40 text-zinc-300 hover:text-white transition-colors backdrop-blur-sm"
+                        >
+                            <MoreVertical className="w-4 h-4" />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                            variant="destructive"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onDelete(e);
+                            }}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        );
+    };
     
     // --- AGENT VARIANT: GRID (Poster style) ---
     if (variant === "agent" && layout === "grid") {
@@ -68,6 +107,8 @@ export const WorkspaceCard = ({
             >
                 <Card className="aspect-[1694/2528] w-full border-zinc-200 dark:border-zinc-800 bg-black flex flex-col transition-all group-hover:border-zinc-400 dark:group-hover:border-zinc-600 group-hover:shadow-xl rounded-2xl overflow-hidden active:scale-[0.98] relative">
                     
+                    {renderActions()}
+
                     {/* Visual Area (AI Avatar style human) - Always black background */}
                     <div className="absolute inset-0 z-0 bg-black transition-colors">
                         {visualArea}
@@ -125,6 +166,8 @@ export const WorkspaceCard = ({
             >
                 <Card className="flex flex-row items-stretch p-0 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative min-h-[120px]">
                     
+                    {renderActions()}
+
                     {/* Left Side: Avatar Box */}
                     {visualArea && (
                         <div className="w-[120px] shrink-0 relative bg-black border-r border-zinc-900 overflow-hidden">
@@ -183,7 +226,10 @@ export const WorkspaceCard = ({
             }}
         >
             <Card className="h-full border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col transition-all group-hover:border-zinc-400 dark:group-hover:border-zinc-600 group-hover:shadow-md rounded-2xl overflow-hidden active:scale-[0.98] relative">
-                <CardHeader className="pb-2 pt-4 flex flex-col items-start gap-2">
+                
+                {renderActions()}
+
+                <CardHeader className="pb-2 pt-4 flex flex-col items-start gap-2 pr-10">
                     {/* Title Block */}
                     <div className="min-h-[40px] w-full flex items-start">
                         <div className="flex items-start gap-2">

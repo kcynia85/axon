@@ -11,8 +11,7 @@ import { AutomationsSection } from "@/modules/workspaces/ui/AutomationsSection";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Button } from "@/shared/ui/ui/Button";
-import { ChevronRight, Filter, ArrowUpDown } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
@@ -60,7 +59,11 @@ const PreviewSection = ({
   </section>
 );
 
-export default function WorkspaceOverviewPage() {
+/**
+ * WorkspaceOverviewPage: Entry point for a specific workspace.
+ * Standard: 0% useEffect, arrow functions.
+ */
+const WorkspaceOverviewPage = () => {
   const params = useParams();
   const workspaceId = params.workspace as string;
   const { data: workspace, isLoading } = useWorkspace(workspaceId);
@@ -106,7 +109,7 @@ export default function WorkspaceOverviewPage() {
   return (
     <PageLayout
       title={workspace.name}
-      description={workspace.description}
+      description={workspace.description || ""}
       breadcrumbs={[
         { label: "Home", href: "/home" },
         { label: "Workspaces", href: "/workspaces" },
@@ -141,4 +144,6 @@ export default function WorkspaceOverviewPage() {
       </BrowserLayout>
     </PageLayout>
   );
-}
+};
+
+export default WorkspaceOverviewPage;

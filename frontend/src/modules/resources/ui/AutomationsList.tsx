@@ -8,6 +8,10 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { Zap, Clock, MoreHorizontal, Play, BarChart3 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 
+/**
+ * AutomationsList: UI component for displaying a list of automations.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const AutomationsList = () => {
     const { data: automations, isLoading } = useAutomations();
 
@@ -43,7 +47,7 @@ export const AutomationsList = () => {
                                 <div className="text-[8px] uppercase font-bold text-muted-foreground flex items-center gap-1">
                                     <Clock className="w-2 h-2" /> Recent Trigger
                                 </div>
-                                <div className="text-[10px] font-mono">2h ago SUCCESS</div>
+                                <div className="text-[10px] font-mono">SUCCESS</div>
                             </div>
                             <div className="h-8 w-[1px] bg-muted" />
                             <div className="space-y-1 text-right">

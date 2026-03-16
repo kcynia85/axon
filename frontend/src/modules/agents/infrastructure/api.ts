@@ -2,7 +2,7 @@ import { authenticatedClient } from "@/shared/lib/api-client/authenticated-clien
 import { Agent, AgentSchema } from "@/shared/domain/workspaces";
 import { mockApi } from "@/modules/workspaces/infrastructure/mockApi";
 
-// Set to false to use real backend
+// Set to true to use real backend
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 
 export const agentsApi = {
@@ -14,8 +14,7 @@ export const agentsApi = {
 
   getAgent: async (id: string): Promise<Agent> => {
     if (USE_MOCK) {
-        // Find agent in mockApi workspaces if needed, or implement mockApi.getAgent
-        const agent = await mockApi.getAgents("", 100, 0).then(agents => agents.find(a => a.id === id));
+        const agent = await mockApi.getAgent(id);
         return agent!;
     }
     const data = await authenticatedClient.get<unknown>(`/agents/${id}`);

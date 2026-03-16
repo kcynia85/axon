@@ -1,14 +1,18 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LucideIcon, ChevronRight, ArrowRight } from "lucide-react";
+import { LucideIcon, ChevronRight, ArrowRight, MoreVertical, Trash2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Card } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { TagChip } from "@/shared/ui/ui/TagChip";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/ui/ui/DropdownMenu";
 
 type WorkspaceCardHorizontalProps = {
     readonly title: string;
@@ -22,6 +26,8 @@ type WorkspaceCardHorizontalProps = {
     readonly className?: string;
     readonly colorName?: string;
     readonly onEdit?: (e: React.MouseEvent) => void;
+    readonly onDelete?: (templateId: string) => void; // Expects templateId
+    readonly templateId?: string; // Accept templateId prop
     readonly agentIds?: readonly string[];
     readonly agentVisualsMap?: Record<string, string>;
 };
@@ -43,6 +49,8 @@ export const WorkspaceCardHorizontal = ({
     className,
     colorName = "default",
     onEdit,
+    onDelete, // Expects templateId: string
+    templateId, // Accept templateId prop
     agentIds = [],
     agentVisualsMap = {}
 }: WorkspaceCardHorizontalProps) => {
@@ -52,6 +60,39 @@ export const WorkspaceCardHorizontal = ({
     const truncatedDescription = description && description.length > 90 
         ? `${description.substring(0, 90)}...` 
         : description;
+
+    const renderActions = () => {
+        // Ensure onDelete and templateId are present
+        if (!onDelete || !templateId) return null; 
+        return (
+            <div className="absolute top-3 right-3 z-40">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button 
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                            className="p-1.5 rounded-md hover:bg-white/20 bg-black/40 text-zinc-300 hover:text-white transition-colors backdrop-blur-sm"
+                        >
+                            <MoreVertical className="w-4 h-4" />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                            variant="destructive"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                // Call onDelete with templateId
+                                onDelete(templateId as string); 
+                            }}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        );
+    };
 
     // --- CREW / POSTER VARIANT ---
     if (variant === "crew") {
@@ -65,17 +106,20 @@ export const WorkspaceCardHorizontal = ({
                 onClick={(e) => {
                     if (onEdit) {
                         e.preventDefault();
+                        e.stopPropagation(); // Prevent event propagation to avoid conflicts
                         onEdit(e);
                     }
                 }}
             >
                 <Card className="flex flex-col h-full p-6 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-xl transition-all rounded-2xl overflow-hidden active:scale-[0.98] relative min-h-[200px] justify-between">
                     
+                    {renderActions()}
+
                     {/* Background Soft Glow */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900/20 via-transparent to-transparent pointer-events-none opacity-60 transition-opacity" />
 
                     {/* TOP ROW: Visual (Left) and Type Chip (Right) */}
-                    <div className="flex justify-between items-center z-10 w-full">
+                    <div className="flex justify-between items-center z-10 w-full pr-8">
                         {/* Overlapping Avatars or Icon */}
                         <div className="flex items-center transition-transform duration-500 ease-out origin-left">
                             {agentIds.length > 0 ? (
@@ -178,12 +222,15 @@ export const WorkspaceCardHorizontal = ({
             onClick={(e) => {
                 if (onEdit) {
                     e.preventDefault();
+                    e.stopPropagation();
                     onEdit(e);
                 }
             }}
         >
             <Card className="flex items-start p-5 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative min-h-[120px]">
                 
+                {renderActions()}
+
                 {/* Visual / Icon */}
                 {Icon && (
                     <div className={cn("flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-900 border flex items-center justify-center mr-4 group-hover:scale-105 transition-transform duration-300", styles.textClassName.replace('text-', 'border-'))}>
@@ -193,7 +240,7 @@ export const WorkspaceCardHorizontal = ({
 
                 {/* Content */}
                 <div className="flex-1 min-w-0 pr-10">
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center justify-between mb-1.5 pr-8">
                         <h4 className="text-[16px] font-bold tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2">
                             {title}
                         </h4>

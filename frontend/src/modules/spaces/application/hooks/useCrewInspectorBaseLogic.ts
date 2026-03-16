@@ -123,9 +123,15 @@ export const useCrewInspectorBaseLogic = (
         missingFields.length === 0,
     [missingFields]);
 
+    const consultationQuestions = data.consultation_questions || [];
+    const allQuestionsAnswered = consultationQuestions.length > 0 && 
+        consultationQuestions.every(q => !!consultationAnswers[q.id] || !!q.answer);
+
     return {
         consultationAnswers,
         setConsultationAnswers,
+        consultationQuestions,
+        allQuestionsAnswered,
         isLogsOpen,
         setIsLogsOpen,
         isDetailsOpen,
@@ -159,6 +165,7 @@ export const useCrewInspectorBaseLogic = (
         toggleVersionHistory,
         handleRestoreVersion,
         transitionTo,
+        onStatusChange: transitionTo,
         handleAnswerChange,
         isContextComplete,
         contextRequirements,

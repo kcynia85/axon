@@ -2,6 +2,8 @@ import { z } from "zod";
 
 // --- Enums to match Backend ---
 export const ProcessTypeSchema = z.enum(["Sequential", "Hierarchical", "Parallel"]);
+export const AutomationPlatformSchema = z.enum(["n8n", "Zapier", "Make", "Custom"]);
+export const ValidationStatusSchema = z.enum(["Valid", "Invalid", "Untested"]);
 
 // --- Domain Entities ---
 
@@ -18,7 +20,7 @@ export const DataInterfaceSchema = z.object({
 });
 
 export const AgentSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   agent_name: z.string().nullable(),
   agent_role_text: z.string().nullable(),
   agent_goal: z.string().nullable(),
@@ -27,7 +29,7 @@ export const AgentSchema = z.object({
     instructions: z.array(z.string()),
     constraints: z.array(z.string()),
   }).default({ instructions: [], constraints: [] }),
-  few_shot_examples: z.array(z.unknown()).default([]),
+  few_shot_examples: z.array(z.record(z.any())).default([]),
   reflexion: z.boolean().default(false),
   temperature: z.number().min(0).max(2).default(0.7),
   rag_enforcement: z.boolean().default(false),
@@ -53,14 +55,15 @@ export const AgentSchema = z.object({
 export type Agent = z.infer<typeof AgentSchema>;
 
 export const CrewSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   crew_name: z.string(),
   crew_description: z.string().nullable().optional(),
   crew_process_type: ProcessTypeSchema,
-  manager_agent_id: z.string().uuid().nullable().optional(),
+  manager_agent_id: z.string().nullable().optional(),
   crew_keywords: z.array(z.string()).default([]),
   availability_workspace: z.array(z.string()).default([]),
-  agent_member_ids: z.array(z.string().uuid()).default([]),
+  agent_member_ids: z.array(z.string()).default([]),
+  metadata: z.record(z.any()).optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
@@ -68,7 +71,7 @@ export const CrewSchema = z.object({
 export type Crew = z.infer<typeof CrewSchema>;
 
 export const PatternSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   pattern_name: z.string(),
   pattern_okr_context: z.string().nullable().optional(),
   pattern_graph_structure: z.record(z.unknown()),
@@ -83,7 +86,7 @@ export const PatternSchema = z.object({
 export type Pattern = z.infer<typeof PatternSchema>;
 
 export const TemplateSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   template_name: z.string(),
   template_description: z.string().nullable().optional(),
   template_markdown_content: z.string(),
@@ -119,44 +122,36 @@ export const TemplateSchema = z.object({
 
 export type Template = z.infer<typeof TemplateSchema>;
 
-// === New Entities for vNext ===
-
 export const WorkspaceSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().nullable().optional(),
-  created_at: z.string().datetime().optional(),
-  updated_at: z.string().datetime().optional(),
+  created_at: z.string().datetime().nullable().optional(),
+  updated_at: z.string().datetime().nullable().optional(),
 });
 
 export type Workspace = z.infer<typeof WorkspaceSchema>;
 
-export const ServiceSchema = z.object({
-  id: z.string().uuid(),
-  service_name: z.string(),
-  service_description: z.string().nullable().optional(),
-  service_category: z.string(),
-  service_url: z.string().url().optional(),
-  capabilities: z.array(z.string()).default([]),
-  availability_workspace: z.array(z.string()).default([]),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
-});
-
-export type Service = z.infer<typeof ServiceSchema>;
-
+/**
+ * AutomationSchema: Operational rules in a workspace.
+ */
 export const AutomationSchema = z.object({
-  id: z.string().uuid(),
-  automation_name: z.string(),
-  automation_description: z.string().nullable().optional(),
-  automation_platform: z.string(),
-  automation_status: z.enum(["Active", "Draft", "Paused"]).default("Draft"),
-  automation_webhook_url: z.string().url().optional(),
-  automation_http_method: z.string().default("POST"),
-  automation_keywords: z.array(z.string()).default([]),
-  availability_workspace: z.array(z.string()).default([]),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime(),
+    id: z.string(),
+    automation_name: z.string(),
+    automation_description: z.string().nullable().optional(),
+    automation_platform: AutomationPlatformSchema,
+    automation_status: z.enum(["Active", "Draft", "Paused"]).default("Draft"),
+    automation_webhook_url: z.string().url().optional(),
+    automation_http_method: z.enum(["GET", "POST", "PUT"]).default("POST"),
+    automation_auth_config: z.record(z.any()).nullable().optional(),
+    automation_input_schema: z.record(z.any()).nullable().optional(),
+    automation_output_schema: z.record(z.any()).nullable().optional(),
+    automation_validation_status: ValidationStatusSchema.default("Untested"),
+    automation_last_validated_at: z.string().datetime().nullable().optional(),
+    automation_keywords: z.array(z.string()).default([]),
+    availability_workspace: z.array(z.string()).default([]),
+    created_at: z.string().datetime(),
+    updated_at: z.string().datetime(),
 });
 
 export type Automation = z.infer<typeof AutomationSchema>;

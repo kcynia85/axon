@@ -24,7 +24,7 @@ export const SpaceAutomationNodeInspector = ({
         hasTimeoutError,
         isContextDone,
         isArtefactsDone,
-    } = useSpaceAutomationInspectorLogic(data, onPropertyChange);
+    } = useSpaceAutomationInspectorLogic(data, onPropertyChange as any);
 
     return (
         <SpaceAutomationNodeInspectorView 

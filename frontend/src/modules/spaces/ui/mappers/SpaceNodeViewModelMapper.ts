@@ -52,7 +52,7 @@ const mapVisualProperties = (
 
 export const mapAgentToViewModel = (data: SpaceAgentDomainData, isSelected: boolean): SpaceAgentViewModel => {
     return {
-        visual: mapVisualProperties(data.zoneColor, isSelected),
+        visual: mapVisualProperties(data.zoneColor as any, isSelected),
         zoneColor: data.zoneColor,
         displayName: data.label,
         statusText: data.state.replace('_', ' ').toUpperCase(),
@@ -65,6 +65,7 @@ export const mapAgentToViewModel = (data: SpaceAgentDomainData, isSelected: bool
         isAlignment: data.state === 'alignment',
         isCritique: data.state === 'critique',
         isMissingContext: data.state === 'missing_context',
+        VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.agent,
     };
 };
 
@@ -76,7 +77,7 @@ export const mapAutomationToViewModel = (data: SpaceAutomationDomainData, isSele
     const styles = getVisualStylesForZoneColor(data.zoneColor);
 
     return {
-        visual: mapVisualProperties(data.zoneColor, isSelected),
+        visual: mapVisualProperties(data.zoneColor as any, isSelected),
         displayName: data.label,
         statusText: data.state.toUpperCase(),
         artifactLabel: outputArtefact?.label || 'no results',
@@ -84,11 +85,12 @@ export const mapAutomationToViewModel = (data: SpaceAutomationDomainData, isSele
         hasArtifact: !!outputArtefact,
         hasOutputArtefacts,
         activeOutputClassName: styles.activeOutputClassName,
+        VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.automation,
     };
 };
 
 export const mapCrewToViewModel = (data: SpaceCrewDomainData, isSelected: boolean): SpaceCrewViewModel => {
-    const visual = mapVisualProperties(data.zoneColor, isSelected);
+    const visual = mapVisualProperties(data.zoneColor as any, isSelected);
     // Overriding container width for Crew
     const crewVisual = { ...visual, containerClassName: visual.containerClassName.replace('w-[280px]', 'w-[320px]') };
 
@@ -122,16 +124,18 @@ export const mapCrewToViewModel = (data: SpaceCrewDomainData, isSelected: boolea
         isDone: data.state === 'done',
         progressValue,
         progressLabel: `${progressValue}%`,
+        VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.crew,
     };
 };
 
 export const mapPatternToViewModel = (data: SpacePatternDomainData, isSelected: boolean): SpacePatternViewModel => {
     const styles = getVisualStylesForZoneColor(data.zoneColor);
     return {
-        visual: mapVisualProperties(data.zoneColor, isSelected),
+        visual: mapVisualProperties(data.zoneColor as any, isSelected),
         displayName: data.label,
         categoryText: 'STANDARD PATTERN',
         iconBackgroundClassName: styles.iconBackgroundClassName || 'bg-zinc-900',
+        VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.pattern,
     };
 };
 
@@ -140,7 +144,7 @@ export const mapServiceToViewModel = (data: SpaceServiceDomainData, isSelected: 
     const styles = getVisualStylesForZoneColor(data.zoneColor);
 
     return {
-        visual: mapVisualProperties(data.zoneColor, isSelected),
+        visual: mapVisualProperties(data.zoneColor as any, isSelected),
         displayName: data.label,
         actionName: data.actionName,
         isProcessing: data.status === 'in_progress',
@@ -151,6 +155,7 @@ export const mapServiceToViewModel = (data: SpaceServiceDomainData, isSelected: 
         })),
         hasOutputArtefacts,
         activeOutputClassName: styles.activeOutputClassName,
+        VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.service,
     };
 };
 
@@ -166,7 +171,7 @@ export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected
     const styles = getVisualStylesForZoneColor(data.zoneColor);
 
     return {
-        visual: mapVisualProperties(data.zoneColor, isSelected),
+        visual: mapVisualProperties(data.zoneColor as any, isSelected),
         displayName: data.label,
         statusText: (data.status || 'Active').toUpperCase(),
         progressText: `${completedActions}/${totalActions} ACTIONS`,
@@ -176,6 +181,7 @@ export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected
         hasArtifact: !!outputArtefact,
         hasOutputArtefacts,
         activeOutputClassName: styles.activeOutputClassName,
+        VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.template,
     };
 };
 
@@ -184,6 +190,7 @@ export const mapZoneToViewModel = (data: SpaceZoneDomainData, isSelected: boolea
     const styles = getVisualStylesForZoneColor(color);
 
     return {
+        visual: mapVisualProperties(color, isSelected),
         isSelected,
         displayName: (data.label || 'Unit').toUpperCase(),
         containerClassName: `h-full w-full rounded-[2rem] border-2 border-dashed transition-all p-8 flex flex-col relative group ${styles.borderClassName?.split(' ')[0]} ${isSelected ? styles.backgroundClassName : 'bg-transparent'}`,
@@ -192,6 +199,7 @@ export const mapZoneToViewModel = (data: SpaceZoneDomainData, isSelected: boolea
         resizerHandleClassName: styles.resizerHandleClassName || 'border-blue-500',
         handleClassName: `!w-6 !h-6 !border-2 !border-zinc-800 ${styles.handleBackgroundClassName?.replace('border-', 'bg-')} !opacity-100 hover:scale-110 transition-all !z-50 !cursor-pointer`,
         ports: data.ports || [],
+        VisualIcon: Box,
     };
 };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Automation } from "@/shared/domain/resources";
+import { Automation } from "@/shared/domain/workspaces";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
 import { Zap } from "lucide-react";
 

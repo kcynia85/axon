@@ -6,13 +6,14 @@ import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { useAgentsBrowser } from "../application/useAgentsBrowser";
 import { Agent } from "@/shared/domain/workspaces";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { SortOption } from "@/shared/domain/filters";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
 import { AgentProfilePeek } from "@/modules/workspaces/ui/AgentProfilePeek";
 import { cn, getDeterministicImgId } from "@/shared/lib/utils";
 import { AGENT_REAL_NAMES } from "@/modules/workspaces/domain/constants";
+import { useDeleteAgent } from "@/modules/agents/infrastructure/useAgents";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -27,6 +28,7 @@ type AgentsBrowserProps = {
 
 export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBrowserProps) => {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
   const {
     processedAgents,
@@ -53,6 +55,14 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
     getPreviewCount,
     setPendingFilterIds,
   } = filterConfig;
+
+  const { mutate: deleteAgent } = useDeleteAgent();
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this agent?")) {
+      deleteAgent(id);
+    }
+  };
 
   const selectedAgent = initialAgents.find(a => a.id === selectedAgentId) || null;
 
@@ -110,6 +120,7 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                   badgeLabel={agent.agent_role_text || "AI Agent"}
                   tags={agent.agent_keywords}
                   onEdit={() => handleViewDetails(agent.id)}
+                  onDelete={() => handleDelete(agent.id)}
                   colorName={colorName}
                   className={viewMode === "grid" ? "w-[252px] shrink-0" : ""}
                   visualArea={
@@ -124,7 +135,7 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                           <div className="relative w-full h-full flex justify-center">
                               <Image 
                                   src={`/images/avatars/agent-${imgId}.png`}
-                                  alt={agent.agent_name}
+                                  alt={agent.agent_name || "Agent"}
                                   fill
                                   sizes={viewMode === "grid" ? "252px" : "140px"}
                                   priority={index < 4}
@@ -146,7 +157,11 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
         agent={selectedAgent}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
-        onEdit={() => {}} // TODO: Handle edit
+        onEdit={() => {
+          if (selectedAgentId) {
+            router.push(`/workspaces/${workspaceId}/agents/studio/${selectedAgentId}`);
+          }
+        }}
       />
     </BrowserLayout>
   );

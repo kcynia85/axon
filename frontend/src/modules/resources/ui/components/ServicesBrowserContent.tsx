@@ -6,14 +6,21 @@ import { ViewMode } from "@/shared/lib/hooks/useViewMode";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Globe, ShieldCheck, Activity, Settings, ExternalLink } from "lucide-react";
+import { Globe, ShieldCheck, Activity, Settings, ExternalLink, MoreVertical, Trash2 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/ui/ui/DropdownMenu";
 
 interface ServicesBrowserContentProps {
   services: ExternalService[];
   viewMode: ViewMode;
   onViewDetails: (id: string) => void;
+  onDelete?: (id: string) => void;
   isLoading: boolean;
   isError: boolean;
 }
@@ -22,6 +29,7 @@ export const ServicesBrowserContent = ({
   services,
   viewMode,
   onViewDetails,
+  onDelete,
   isLoading,
   isError
 }: ServicesBrowserContentProps) => {
@@ -52,10 +60,38 @@ export const ServicesBrowserContent = ({
         {services.map((service) => (
           <Card 
             key={service.id} 
-            className="group hover:border-primary/50 transition-all flex flex-col cursor-pointer"
+            className="group relative hover:border-primary/50 transition-all flex flex-col cursor-pointer"
             onClick={() => onViewDetails(service.id)}
           >
-            <CardHeader className="pb-3 bg-muted/20">
+            {onDelete && (
+                <div className="absolute top-2 right-2 z-10">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                onClick={(e) => { e.stopPropagation(); }}
+                            >
+                                <MoreVertical className="w-4 h-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem 
+                                variant="destructive"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDelete(service.id);
+                                }}
+                            >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            )}
+            <CardHeader className="pb-3 bg-muted/20 pr-12">
                 <div className="flex justify-between items-start">
                     <div className="p-2 rounded bg-background border">
                         <Globe className="w-4 h-4 text-primary" />
@@ -75,9 +111,9 @@ export const ServicesBrowserContent = ({
                         <ShieldCheck className="w-2 h-2" /> Capabilities
                     </div>
                     <div className="flex flex-wrap gap-1">
-                        {service.capabilities?.map((capability, index) => (
+                        {service.capabilities?.map((capability: any, index: number) => (
                             <span key={index} className="px-1.5 py-0.5 rounded-full bg-primary/5 border border-primary/10 text-[8px] font-bold">
-                                {capability}
+                                {capability.name || capability}
                             </span>
                         ))}
                     </div>
@@ -105,7 +141,7 @@ export const ServicesBrowserContent = ({
       {services.map((service) => (
         <div 
           key={service.id}
-          className="flex items-center justify-between p-4 rounded-xl border bg-card hover:border-primary/50 transition-all cursor-pointer"
+          className="flex items-center justify-between p-4 rounded-xl border bg-card hover:border-primary/50 transition-all cursor-pointer relative"
           onClick={() => onViewDetails(service.id)}
         >
           <div className="flex items-center gap-4">
@@ -120,8 +156,34 @@ export const ServicesBrowserContent = ({
           <div className="flex items-center gap-6">
             <Badge variant="secondary" className="text-[10px]">{service.service_category}</Badge>
             <div className="flex gap-2">
-              <Button variant="ghost" size="icon" className="h-8 w-8"><Settings className="w-4 h-4" /></Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8"><ExternalLink className="w-4 h-4" /></Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); }}><Settings className="w-4 h-4" /></Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); }}><ExternalLink className="w-4 h-4" /></Button>
+              {onDelete && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                            onClick={(e) => { e.stopPropagation(); }}
+                        >
+                            <MoreVertical className="w-4 h-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                            variant="destructive"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete(service.id);
+                            }}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
         </div>

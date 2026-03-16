@@ -14,6 +14,7 @@ interface Props {
 
 /**
  * TemplateStudioContainer: Handles client-side state and data fetching for the studio.
+ * Standard: 0% useEffect, arrow function.
  */
 export const TemplateStudioContainer = ({ workspaceId, templateId }: Props) => {
 	const router = useRouter();
@@ -27,7 +28,6 @@ export const TemplateStudioContainer = ({ workspaceId, templateId }: Props) => {
 
 		return {
 			name: template.template_name || "",
-			goal: template.template_goal || template.template_name || "",
 			description: template.template_description || "",
 			keywords: template.template_keywords || [],
 			markdown: template.template_markdown_content || "",
@@ -47,21 +47,25 @@ export const TemplateStudioContainer = ({ workspaceId, templateId }: Props) => {
 
 	const handleSave = async (data: TemplateStudioFormData) => {
 		try {
-			const apiData = {
+			const apiData: any = {
 				template_name: data.name,
-				template_goal: data.goal,
 				template_description: data.description,
 				template_keywords: data.keywords,
 				template_markdown_content: data.markdown,
 				availability_workspace: data.availability_workspace,
 				template_inputs: data.context_items.map(i => ({
+					id: Math.random().toString(36).substr(2, 9),
 					label: i.name,
 					expectedType: i.field_type,
+					isRequired: i.is_required
 				})),
 				template_outputs: data.artefact_items.map(o => ({
+					id: Math.random().toString(36).substr(2, 9),
 					label: o.name,
 					outputType: o.field_type,
+					isRequired: o.is_required
 				})),
+				template_checklist_items: []
 			};
 
 			if (templateId) {

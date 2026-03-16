@@ -9,7 +9,7 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 
-const SpaceCanvasCustomEdge = ({
+export const SpaceCanvasCustomEdge = memo(({
   id: edgeUniqueIdentifier,
   sourceX: horizontalCoordinateOfSourceNode,
   sourceY: verticalCoordinateOfSourceNode,
@@ -69,6 +69,6 @@ const SpaceCanvasCustomEdge = ({
       </EdgeLabelRenderer>
     </>
   );
-};
+});
 
-export default memo(SpaceCanvasCustomEdge);
+SpaceCanvasCustomEdge.displayName = "SpaceCanvasCustomEdge";

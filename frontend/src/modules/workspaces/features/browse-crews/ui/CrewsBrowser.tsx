@@ -6,10 +6,12 @@ import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { useCrewsBrowser } from "../application/useCrewsBrowser";
 import { Crew } from "@/shared/domain/workspaces";
 import { Workflow } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { SortOption } from "@/shared/domain/filters";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
+import { useDeleteCrew } from "@/modules/workspaces/application/useCrews";
+import { CrewProfilePeek } from "@/modules/workspaces/ui/CrewProfilePeek";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -24,11 +26,16 @@ type CrewsBrowserProps = {
 
 export const CrewsBrowser = ({ initialCrews, colorName = "default" }: CrewsBrowserProps) => {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
   const {
     processedCrews,
     viewMode,
     setViewMode,
+    selectedCrewId,
+    isSidebarOpen,
+    setIsSidebarOpen,
+    handleViewDetails,
     filterConfig,
   } = useCrewsBrowser(initialCrews);
 
@@ -46,6 +53,16 @@ export const CrewsBrowser = ({ initialCrews, colorName = "default" }: CrewsBrows
     getPreviewCount,
     setPendingFilterIds,
   } = filterConfig;
+
+  const { mutate: deleteCrew } = useDeleteCrew();
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this crew?")) {
+      deleteCrew({ workspaceId, id });
+    }
+  };
+
+  const selectedCrew = initialCrews.find(c => c.id === selectedCrewId) || null;
 
   return (
     <BrowserLayout
@@ -96,6 +113,8 @@ export const CrewsBrowser = ({ initialCrews, colorName = "default" }: CrewsBrows
                 tags={crew.crew_keywords}
                 colorName={colorName}
                 agentIds={crew.agent_member_ids}
+                onEdit={() => handleViewDetails(crew.id)}
+                onDelete={() => handleDelete(crew.id)}
                 footerContent={
                     <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-mono">
                         <Workflow className="w-3 h-3" />
@@ -106,6 +125,17 @@ export const CrewsBrowser = ({ initialCrews, colorName = "default" }: CrewsBrows
           ))}
         </div>
       )}
+
+      <CrewProfilePeek 
+        crew={selectedCrew}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onEdit={() => {
+          if (selectedCrewId) {
+            router.push(`/workspaces/${workspaceId}/crews/studio/${selectedCrewId}`);
+          }
+        }}
+      />
     </BrowserLayout>
   );
 };

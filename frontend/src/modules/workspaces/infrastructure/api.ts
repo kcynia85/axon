@@ -9,16 +9,14 @@ import {
   PatternSchema,
   TemplateSchema,
   Workspace,
-  Service,
   Automation,
   WorkspaceSchema,
-  ServiceSchema,
   AutomationSchema
 } from "@/shared/domain/workspaces";
 import { mockApi } from "./mockApi";
 
-// Set to false to use real backend
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
+// Set to true to use real backend
+const USE_MOCK = false;
 
 export const workspacesApi = {
   // --- Workspaces ---
@@ -44,6 +42,15 @@ export const workspacesApi = {
     return data.map((agentRaw) => AgentSchema.parse(agentRaw));
   },
 
+  getAgent: async (id: string): Promise<Agent> => {
+    if (USE_MOCK) {
+      const agent = await mockApi.getAgent(id);
+      return agent!;
+    }
+    const data = await authenticatedClient.get<unknown>(`/agents/${id}`);
+    return AgentSchema.parse(data);
+  },
+
   createAgent: async (agent: Partial<Agent>): Promise<Agent> => {
     const data = await authenticatedClient.post<unknown>("/agents/", agent);
     return AgentSchema.parse(data);
@@ -67,7 +74,7 @@ export const workspacesApi = {
 
   getCrew: async (workspaceId: string, crewId: string): Promise<Crew> => {
     if (USE_MOCK) {
-      const crew = await mockApi.getCrews(workspaceId, 100, 0).then(crews => crews.find(c => c.id === crewId));
+      const crew = await mockApi.getCrew(crewId);
       return crew!;
     }
     const data = await authenticatedClient.get<unknown>(`/workspaces/${workspaceId}/crews/${crewId}`);
@@ -97,7 +104,7 @@ export const workspacesApi = {
 
   createPattern: async (workspaceId: string, pattern: Omit<Pattern, "id" | "created_at" | "updated_at">): Promise<Pattern> => {
     const data = await authenticatedClient.post<unknown>(`/workspaces/${workspaceId}/patterns`, pattern);
-    return CrewSchema.parse(data);
+    return PatternSchema.parse(data);
   },
 
   // --- Templates ---
@@ -109,7 +116,7 @@ export const workspacesApi = {
 
   getTemplate: async (workspaceId: string, templateId: string): Promise<Template> => {
     if (USE_MOCK) {
-      const template = await mockApi.getTemplates(workspaceId, 100, 0).then(templates => templates.find(t => t.id === templateId));
+      const template = await mockApi.getTemplate(templateId);
       return template!;
     }
     const data = await authenticatedClient.get<unknown>(`/workspaces/${workspaceId}/templates/${templateId}`);
@@ -130,36 +137,6 @@ export const workspacesApi = {
     await authenticatedClient.delete(`/workspaces/${workspaceId}/templates/${templateId}`);
   },
 
-  // --- Services ---
-  getServices: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Service[]> => {
-    if (USE_MOCK) return mockApi.getServices(workspaceId, limit, offset);
-    const data = await authenticatedClient.get<unknown[]>(`/workspaces/${workspaceId}/services?limit=${limit}&offset=${offset}`);
-    return data.map((serviceRaw) => ServiceSchema.parse(serviceRaw));
-  },
-
-  getService: async (workspaceId: string, serviceId: string): Promise<Service> => {
-    if (USE_MOCK) {
-      const service = await mockApi.getServices(workspaceId, 100, 0).then(services => services.find(s => s.id === serviceId));
-      return service!;
-    }
-    const data = await authenticatedClient.get<unknown>(`/workspaces/${workspaceId}/services/${serviceId}`);
-    return ServiceSchema.parse(data);
-  },
-
-  createService: async (workspaceId: string, service: Omit<Service, "id" | "created_at" | "updated_at">): Promise<Service> => {
-    const data = await authenticatedClient.post<unknown>(`/workspaces/${workspaceId}/services`, service);
-    return ServiceSchema.parse(data);
-  },
-
-  updateService: async (workspaceId: string, serviceId: string, service: Partial<Service>): Promise<Service> => {
-    const data = await authenticatedClient.put<unknown>(`/workspaces/${workspaceId}/services/${serviceId}`, service);
-    return ServiceSchema.parse(data);
-  },
-
-  deleteService: async (workspaceId: string, serviceId: string): Promise<void> => {
-    await authenticatedClient.delete(`/workspaces/${workspaceId}/services/${serviceId}`);
-  },
-
   // --- Automations ---
   getAutomations: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Automation[]> => {
     if (USE_MOCK) return mockApi.getAutomations(workspaceId, limit, offset);
@@ -169,7 +146,7 @@ export const workspacesApi = {
 
   getAutomation: async (workspaceId: string, automationId: string): Promise<Automation> => {
     if (USE_MOCK) {
-      const automation = await mockApi.getAutomations(workspaceId, 100, 0).then(automations => automations.find(a => a.id === automationId));
+      const automation = await mockApi.getAutomation(automationId);
       return automation!;
     }
     const data = await authenticatedClient.get<unknown>(`/workspaces/${workspaceId}/automations/${automationId}`);

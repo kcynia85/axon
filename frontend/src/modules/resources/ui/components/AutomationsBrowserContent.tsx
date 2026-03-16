@@ -1,15 +1,22 @@
 import React from "react";
-import { Automation } from "@/shared/domain/resources";
+import { Automation } from "@/shared/domain/workspaces";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Zap, Clock, BarChart3, Play, MoreHorizontal } from "lucide-react";
+import { Zap, Clock, BarChart3, Play, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/ui/ui/DropdownMenu";
 
 export type AutomationsBrowserContentProps = {
   readonly automations: readonly Automation[];
   readonly viewMode: "grid" | "list";
   readonly onViewDetails: (automationIdentifier: string) => void;
+  readonly onDelete?: (automationIdentifier: string) => void;
   readonly isLoading?: boolean;
   readonly isError?: boolean;
 };
@@ -21,6 +28,7 @@ export const AutomationsBrowserContent = ({
   automations,
   viewMode,
   onViewDetails,
+  onDelete,
   isLoading,
   isError
 }: AutomationsBrowserContentProps) => {
@@ -48,7 +56,7 @@ export const AutomationsBrowserContent = ({
         {automations.map((automation) => (
           <Card 
             key={automation.id} 
-            className="group hover:border-primary/50 transition-all flex items-center justify-between p-4 bg-muted/5 cursor-pointer"
+            className="group hover:border-primary/50 transition-all flex items-center justify-between p-4 bg-muted/5 cursor-pointer relative"
             onClick={() => onViewDetails(automation.id)}
           >
             <div className="flex items-center gap-4">
@@ -62,7 +70,32 @@ export const AutomationsBrowserContent = ({
               <Badge variant={automation.automation_validation_status === "Valid" ? "default" : "secondary"} className="text-[8px]">
                 {automation.automation_validation_status}
               </Badge>
-              <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100"><MoreHorizontal className="w-4 h-4" /></Button>
+              {onDelete && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                            onClick={(e) => { e.stopPropagation(); }}
+                        >
+                            <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                            variant="destructive"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete(automation.id);
+                            }}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </Card>
         ))}
@@ -113,7 +146,32 @@ export const AutomationsBrowserContent = ({
               <Button variant="default" size="sm" className="flex-1 h-7 text-[10px] gap-2" onClick={(clickEvent) => { clickEvent.stopPropagation(); /* handle run */ }}>
                 <Play className="w-3 h-3" /> Test Run
               </Button>
-              <Button variant="outline" size="icon" className="h-7 w-7" onClick={(clickEvent) => { clickEvent.stopPropagation(); /* handle menu */ }}><MoreHorizontal className="w-3 h-3" /></Button>
+              {onDelete && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-7 w-7" 
+                            onClick={(clickEvent) => { clickEvent.stopPropagation(); }}
+                        >
+                            <MoreHorizontal className="w-3 h-3" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem 
+                            variant="destructive"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete(automation.id);
+                            }}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </CardContent>
         </Card>

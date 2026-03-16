@@ -35,7 +35,7 @@ export const AutomationStudioView = ({
                 tabIndex={0}
             >
                 <StudioLayout
-                    setCanvasRef={setCanvasContainerReference}
+                    canvasRef={setCanvasContainerReference}
                     exitButton={
                         <Button
                             variant="ghost"

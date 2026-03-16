@@ -13,35 +13,35 @@ export const AVATARS: readonly AvatarItem[] = [
 ];
 
 export const ALL_MODELS: readonly LLMModel[] = [
-	{ id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", cost: "High" },
-	{ id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", cost: "Low" },
-	{ id: "gpt-4o", name: "GPT-4o", cost: "Mid" },
-	{ id: "gpt-4-turbo", name: "GPT-4 Turbo", cost: "High" },
-	{ id: "claude-3-5-sonnet", name: "Claude 3.5 Sonnet", cost: "Mid" },
-	{ id: "claude-3-opus", name: "Claude 3 Opus", cost: "High" },
+	{ id: "123e4567-e89b-12d3-a456-426614174000", name: "Gemini 2.5 Pro", cost: "High" },
+	{ id: "123e4567-e89b-12d3-a456-426614174001", name: "Gemini 2.0 Flash", cost: "Low" },
+	{ id: "123e4567-e89b-12d3-a456-426614174002", name: "GPT-4o", cost: "Mid" },
+	{ id: "123e4567-e89b-12d3-a456-426614174003", name: "GPT-4-turbo", cost: "High" },
+	{ id: "123e4567-e89b-12d3-a456-426614174004", name: "Claude 3.5 Sonnet", cost: "Mid" },
+	{ id: "123e4567-e89b-12d3-a456-426614174005", name: "Claude 3 Opus", cost: "High" },
 ];
 
 export const ALL_HUBS: readonly KnowledgeHub[] = [
 	{
-		id: "hub-1",
+		id: "123e4567-e89b-12d3-a456-426614174010",
 		name: "Internal Wiki",
 		type: "Project Docs",
 		index: "vector-index-titan-v2",
 	},
 	{
-		id: "hub-2",
+		id: "123e4567-e89b-12d3-a456-426614174011",
 		name: "Product Specs",
 		type: "Technical",
 		index: "vector-index-specs-v1",
 	},
 	{
-		id: "hub-3",
+		id: "123e4567-e89b-12d3-a456-426614174012",
 		name: "Customer Feedback",
 		type: "Research",
 		index: "vector-index-feedback",
 	},
 	{
-		id: "hub-4",
+		id: "123e4567-e89b-12d3-a456-426614174013",
 		name: "Market Reports",
 		type: "Research",
 		index: "vector-index-market",
@@ -141,7 +141,10 @@ export const IDENTITY_FIELDS: readonly FormFieldConfig[] = [
 ];
 
 export const MODEL_NAMES: Record<string, string> = {
-	"gemini-2.5-pro": "Gemini 2.5 Pro",
-	"gemini-2.0-flash": "Gemini 2.0 Flash",
-	"gpt-4o": "GPT-4o",
+	"123e4567-e89b-12d3-a456-426614174000": "Gemini 2.5 Pro",
+	"123e4567-e89b-12d3-a456-426614174001": "Gemini 2.0 Flash",
+	"123e4567-e89b-12d3-a456-426614174002": "GPT-4o",
+	"123e4567-e89b-12d3-a456-426614174003": "GPT-4-turbo",
+	"123e4567-e89b-12d3-a456-426614174004": "Claude 3.5 Sonnet",
+	"123e4567-e89b-12d3-a456-426614174005": "Claude 3 Opus",
 };

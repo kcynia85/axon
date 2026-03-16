@@ -9,9 +9,11 @@ import { useAutomationsBrowser } from "../application/useAutomationsBrowser";
 import { AutomationsBrowserContent } from "./components/AutomationsBrowserContent";
 import { RecentlyUsedAutomations } from "./components/RecentlyUsedAutomations";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
-import { Automation } from "@/shared/domain/resources";
+import { Automation } from "@/shared/domain/workspaces";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Zap, Globe, Clock, ShieldCheck, Activity } from "lucide-react";
+import { Zap, Globe, Clock, Activity } from "lucide-react";
+import { useDeleteAutomation } from "../application/useAutomations";
+import { useParams, useRouter } from "next/navigation";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -26,10 +28,18 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
 ];
 
 interface AutomationsBrowserProps {
-  initialAutomations?: Automation[];
+  readonly initialAutomations?: Automation[];
 }
 
+/**
+ * AutomationsBrowser: Global UI for browsing automations.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const AutomationsBrowser = ({ initialAutomations = [] }: AutomationsBrowserProps) => {
+  const params = useParams();
+  const router = useRouter();
+  const workspaceId = (params?.workspace as string) || "ws-product";
+
   const {
     automations,
     processedAutomations,
@@ -59,6 +69,20 @@ export const AutomationsBrowser = ({ initialAutomations = [] }: AutomationsBrows
     getPreviewCount,
     setPendingFilterIds,
   } = filterConfig;
+
+  const { mutate: deleteAutomation } = useDeleteAutomation();
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this automation?")) {
+      deleteAutomation(id);
+    }
+  };
+
+  const handleEdit = () => {
+    if (selectedAutomation) {
+      router.push(`/workspaces/${workspaceId}/automations/studio/${selectedAutomation.id}`);
+    }
+  };
 
   return (
     <>
@@ -101,6 +125,7 @@ export const AutomationsBrowser = ({ initialAutomations = [] }: AutomationsBrows
             automations={processedAutomations}
             viewMode={viewMode}
             onViewDetails={handleViewDetails}
+            onDelete={handleDelete}
             isLoading={isLoading}
             isError={isError}
         />
@@ -120,7 +145,7 @@ export const AutomationsBrowser = ({ initialAutomations = [] }: AutomationsBrows
                             {selectedAutomation.automation_platform}
                         </Badge>
                         <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                            <Clock className="w-3 h-3" /> Updated 2h ago
+                            <Clock className="w-3 h-3" /> Updated
                         </div>
                     </div>
                     <h3 className="text-2xl font-black tracking-tight">{selectedAutomation.automation_name}</h3>
@@ -135,9 +160,9 @@ export const AutomationsBrowser = ({ initialAutomations = [] }: AutomationsBrows
                             <Activity className="w-3 h-3" /> Runtime Status
                         </h4>
                         <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium">Validation</span>
-                            <Badge variant={selectedAutomation.automation_validation_status === "Valid" ? "default" : "secondary"}>
-                                {selectedAutomation.automation_validation_status}
+                            <span className="text-sm font-medium">Status</span>
+                            <Badge variant={selectedAutomation.automation_status === "Active" ? "default" : "secondary"}>
+                                {selectedAutomation.automation_status}
                             </Badge>
                         </div>
                     </div>
@@ -166,6 +191,15 @@ export const AutomationsBrowser = ({ initialAutomations = [] }: AutomationsBrows
                             </Badge>
                         ))}
                     </div>
+                </div>
+
+                <div className="mt-6">
+                    <button 
+                        onClick={handleEdit}
+                        className="w-full py-4 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:opacity-90 transition-all"
+                    >
+                        Edytuj w Studio
+                    </button>
                 </div>
             </div>
         )}

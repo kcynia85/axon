@@ -1,6 +1,7 @@
 // frontend/src/modules/spaces/domain/types.ts
 
 import { WorkspaceColor } from './constants';
+import { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from '@xyflow/react';
 
 export type PatternInterfacePort = {
   readonly id: string;
@@ -239,3 +240,74 @@ export type SpaceCanvasNodeProperties = {
     readonly data: Record<string, unknown>;
     readonly selected?: boolean;
 };
+
+export type SpaceCanvasConnectionManagementLogic = {
+    readonly handleNewConnectionCreated: (connection: Connection) => void;
+    readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
+};
+
+export type SpaceCanvasStateConfiguration = {
+    readonly canvasNodes: Node[];
+    readonly canvasEdges: Edge[];
+    readonly updateCanvasNodes: (nodes: Node[] | ((current: Node[]) => Node[])) => void;
+    readonly updateCanvasEdges: (edges: Edge[] | ((current: Edge[]) => Edge[])) => void;
+    readonly handleCanvasNodesChange: OnNodesChange;
+    readonly handleCanvasEdgesChange: OnEdgesChange;
+    readonly currentlySelectedNode: Node | null;
+};
+
+// UI Models
+export type NodeVisualProperties = {
+    readonly containerClassName: string;
+    readonly headerClassName: string;
+    readonly iconClassName: string;
+    readonly titleClassName: string;
+    readonly subtitleClassName: string;
+    readonly handleClassName: string;
+};
+
+export type SpaceNodeViewModel = {
+    readonly visual: NodeVisualProperties;
+    readonly displayName: string;
+    readonly statusText?: string;
+    readonly progressValue?: number;
+    readonly progressLabel?: string;
+    readonly isWorking?: boolean;
+    readonly isDone?: boolean;
+    readonly isConsultation?: boolean;
+    readonly isBriefing?: boolean;
+    readonly isMissingContext?: boolean;
+    readonly zoneColor?: string;
+    readonly artifactLabel?: string;
+    readonly artifactStatusText?: string;
+    readonly hasArtifact?: boolean;
+    readonly teamRoles?: readonly string[];
+    readonly activeAgentTitle?: string;
+    readonly categoryText?: string;
+    readonly iconBackgroundClassName?: string;
+    readonly artefacts?: readonly { id: string; label: string; status: string }[];
+    readonly isProcessing?: boolean;
+    readonly hasOutputArtefacts?: boolean;
+    readonly activeOutputClassName?: string;
+    readonly progressText?: string;
+    readonly isSelected?: boolean;
+    readonly containerClassName?: string;
+    readonly labelClassName?: string;
+    readonly resizerLineClassName?: string;
+    readonly resizerHandleClassName?: string;
+    readonly ports?: readonly any[];
+    readonly componentType?: string;
+    readonly description?: string;
+    readonly statusLabel?: string;
+    readonly isStatusActive?: boolean;
+    readonly VisualIcon?: any;
+};
+
+export type SpaceAgentViewModel = SpaceNodeViewModel;
+export type SpaceAutomationViewModel = SpaceNodeViewModel;
+export type SpaceCrewViewModel = SpaceNodeViewModel;
+export type SpacePatternViewModel = SpaceNodeViewModel;
+export type SpaceServiceViewModel = SpaceNodeViewModel;
+export type SpaceTemplateViewModel = SpaceNodeViewModel;
+export type SpaceZoneViewModel = SpaceNodeViewModel;
+export type SpaceEntityViewModel = SpaceNodeViewModel;

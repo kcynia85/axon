@@ -98,8 +98,11 @@ export const CognitionSection = (props: CognitionSectionProps) => {
 									placeholder="Input examples of desired output format... (e.g. User: Hello -> Agent: Greetings!)"
 									className="min-h-[100px] leading-relaxed text-sm focus:placeholder:text-zinc-900 dark:focus:placeholder:text-white transition-opacity"
 									{...field}
-									value={Array.isArray(field.value) ? field.value.join("\n") : ""}
-									onChange={(e) => field.onChange(e.target.value.split("\n"))}
+									value={Array.isArray(field.value) ? field.value.map((v: any) => v.content || "").join("\n") : ""}
+									onChange={(e) => {
+										const lines = e.target.value.split("\n");
+										field.onChange(lines.map(line => ({ content: line })));
+									}}
 									onBlur={syncDraft}
 								/>
 							</FormItemField>

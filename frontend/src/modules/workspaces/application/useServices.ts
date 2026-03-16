@@ -1,50 +1,65 @@
 import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResult } from "@tanstack/react-query";
-import { workspacesApi } from "../infrastructure/api";
-import { Service } from "@/shared/domain/workspaces";
+import { resourcesApi } from "@/modules/resources/infrastructure/api";
+import { ExternalService as Service } from "@/shared/domain/resources";
 
-export const useServices = (workspaceId: string): UseQueryResult<Service[]> => {
+/**
+ * useServices: Hook for fetching all available service definitions (global).
+ */
+export const useServices = (_workspaceId?: string): UseQueryResult<Service[]> => {
     return useQuery({
-        queryKey: ["services", workspaceId],
-        queryFn: async (): Promise<Service[]> => await workspacesApi.getServices(workspaceId),
-        enabled: !!workspaceId,
+        queryKey: ["external-services"],
+        queryFn: async (): Promise<Service[]> => await resourcesApi.getExternalServices(),
     });
 };
 
-export const useService = (workspaceId: string, serviceId: string): UseQueryResult<Service> => {
+/**
+ * useService: Hook for fetching a single service definition.
+ */
+export const useService = (_workspaceId: string, serviceId: string): UseQueryResult<Service> => {
     return useQuery({
-        queryKey: ["service", workspaceId, serviceId],
-        queryFn: async (): Promise<Service> => await workspacesApi.getService(workspaceId, serviceId),
-        enabled: !!workspaceId && !!serviceId,
+        queryKey: ["external-service", serviceId],
+        queryFn: async (): Promise<Service> => await resourcesApi.getExternalService(serviceId),
+        enabled: !!serviceId,
     });
 };
 
-export const useCreateService = (workspaceId: string): UseMutationResult<Service, Error, Omit<Service, "id" | "created_at" | "updated_at">> => {
+/**
+ * useCreateService: Hook for creating a new service definition.
+ */
+export const useCreateService = (_workspaceId: string): UseMutationResult<Service, Error, Omit<Service, "id" | "created_at" | "updated_at">> => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (service: Omit<Service, "id" | "created_at" | "updated_at">): Promise<Service> => await workspacesApi.createService(workspaceId, service),
+        mutationFn: async (service: Omit<Service, "id" | "created_at" | "updated_at">): Promise<Service> => await resourcesApi.createExternalService(service),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["services", workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ["external-services"] });
         },
     });
 };
 
-export const useUpdateService = (workspaceId: string): UseMutationResult<Service, Error, { serviceId: string; service: Partial<Service> }> => {
+/**
+ * useUpdateService: Hook for updating an existing service definition.
+ */
+export const useUpdateService = (_workspaceId: string): UseMutationResult<Service, Error, { serviceId: string; service: Partial<Service> }> => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async ({ serviceId, service }: { serviceId: string; service: Partial<Service> }): Promise<Service> =>
-            await workspacesApi.updateService(workspaceId, serviceId, service),
+            await resourcesApi.updateExternalService(serviceId, service),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["services", workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ["external-services"] });
+            queryClient.invalidateQueries({ queryKey: ["external-service"] });
         },
     });
 };
 
-export const useDeleteService = (workspaceId: string): UseMutationResult<void, Error, string> => {
+/**
+ * useDeleteService: Hook for deleting a service definition.
+ */
+export const useDeleteService = (_workspaceId: string): UseMutationResult<void, Error, string> => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (serviceId: string): Promise<void> => await workspacesApi.deleteService(workspaceId, serviceId),
+        mutationFn: async (serviceId: string): Promise<void> => await resourcesApi.deleteExternalService(serviceId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["services", workspaceId] });
+            queryClient.invalidateQueries({ queryKey: ["external-services"] });
         },
     });
 };

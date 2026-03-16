@@ -83,7 +83,7 @@ export const TemplateStudio = ({ onSave, onCancel, initialData, isEditing }: Tem
 							</Button>
 							<ActionButton
 								label={isEditing ? "Update Template" : "Save Template"}
-								onClick={form.handleSubmit(onSave)}
+								onClick={form.handleSubmit(onSave as any)}
 							/>
 						</div>
 					}

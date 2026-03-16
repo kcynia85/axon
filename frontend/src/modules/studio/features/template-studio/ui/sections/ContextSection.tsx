@@ -23,7 +23,7 @@ export const ContextSection = () => {
 						<FormItemField>
 							<FormPropertyTable
 								items={field.value || []}
-								onItemsChange={field.onChange}
+								onChange={field.onChange}
 								typeOptions={CONTEXT_PROPERTY_TYPES}
 								addPlaceholder="Add Context (e.g. brand_guidelines)..."
 							/>

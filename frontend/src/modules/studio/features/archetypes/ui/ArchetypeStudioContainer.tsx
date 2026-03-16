@@ -24,8 +24,7 @@ export const ArchetypeStudioContainer = ({ archetypeId }: Props) => {
 			knowledgeHubIds: [], // To be mapped if available in DTO
 			instructions: archetype.archetype_guardrails?.instructions || [],
 			constraints: archetype.archetype_guardrails?.constraints || [],
-			isGlobalAccess: true,
-			workspaceIds: [],
+			workspaceIds: ["Global Availability"],
 		} as Partial<ArchetypeFormValues>;
 	}, [archetype]);
 

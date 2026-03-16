@@ -86,9 +86,8 @@ export const CrewStudioView = ({
                             <ActionButton
                                 label="Save Team"
                                 onClick={onSave}
-                                isLoading={isSaving}
-                            />
-                        </div>
+                                loading={isSaving}
+                            />                        </div>
                     }
                 />
             </div>

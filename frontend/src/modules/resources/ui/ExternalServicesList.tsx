@@ -8,6 +8,10 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { Globe, ShieldCheck, Activity, Settings, ExternalLink } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 
+/**
+ * ExternalServicesList: UI component for displaying available external services.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const ExternalServicesList = () => {
     const { data: services, isLoading } = useExternalServices();
 
@@ -28,8 +32,8 @@ export const ExternalServicesList = () => {
                             <div className="p-2 rounded bg-background border">
                                 <Globe className="w-4 h-4 text-primary" />
                             </div>
-                            <Badge variant={service.service_status === "Active" ? "default" : "secondary"} className="text-[8px] h-4">
-                                {service.service_status || "Registered"}
+                            <Badge variant="secondary" className="text-[8px] h-4">
+                                {service.service_category}
                             </Badge>
                         </div>
                         <CardTitle className="text-sm font-bold mt-4">{service.service_name}</CardTitle>
@@ -43,9 +47,9 @@ export const ExternalServicesList = () => {
                                 <ShieldCheck className="w-2 h-2" /> Capabilities
                             </div>
                             <div className="flex flex-wrap gap-1">
-                                {service.capabilities?.map((cap: string, i: number) => (
+                                {service.capabilities?.map((cap, i) => (
                                     <span key={i} className="px-1.5 py-0.5 rounded-full bg-primary/5 border border-primary/10 text-[8px] font-bold">
-                                        {cap}
+                                        {cap.name}
                                     </span>
                                 ))}
                             </div>
@@ -54,7 +58,7 @@ export const ExternalServicesList = () => {
                         <div className="flex items-center justify-between pt-4 border-t border-muted/50 mt-auto">
                             <div className="flex items-center gap-2">
                                 <Activity className="w-3 h-3 text-green-500" />
-                                <span className="text-[10px] font-bold">99.9% Uptime</span>
+                                <span className="text-[10px] font-bold">Connected</span>
                             </div>
                             <div className="flex gap-2">
                                 <Button variant="ghost" size="icon" className="h-7 w-7"><Settings className="w-3 h-3" /></Button>

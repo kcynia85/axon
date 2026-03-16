@@ -32,7 +32,7 @@ export const ArchetypeStudioView = ({
         <FormProvider {...form}>
             <div className="outline-none h-full w-full" tabIndex={0}>
                 <StudioLayout
-                    setCanvasRef={setCanvasContainerReference}
+                    canvasRef={setCanvasContainerReference}
                     exitButton={
                         <Button
                             variant="ghost"

@@ -23,7 +23,7 @@ export const ArtefactsSection = () => {
 						<FormItemField>
 							<FormPropertyTable
 								items={field.value || []}
-								onItemsChange={field.onChange}
+								onChange={field.onChange}
 								typeOptions={ARTEFACT_PROPERTY_TYPES}
 								addPlaceholder="Add Artefact (e.g. competitors_list)..."
 							/>

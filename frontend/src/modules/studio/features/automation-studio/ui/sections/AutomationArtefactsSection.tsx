@@ -6,11 +6,11 @@ import { useFormContext } from "react-hook-form";
 import type { AutomationFormData } from "../../types/automation-schema";
 
 const PROPERTY_TYPE_OPTIONS = [
-	{ value: "text", label: "Text" },
-	{ value: "link", label: "Link/URL" },
-	{ value: "number", label: "Number" },
-	{ value: "boolean", label: "Boolean" },
-	{ value: "date", label: "Date" },
+	{ value: "string" as const, label: "Text" },
+	{ value: "string" as const, label: "Link/URL" },
+	{ value: "number" as const, label: "Number" },
+	{ value: "boolean" as const, label: "Boolean" },
+	{ value: "string" as const, label: "Date" },
 ];
 
 /**

@@ -66,6 +66,18 @@ class ResourcesService:
     async def list_external_services(self) -> List[ExternalService]:
         return await self.repo.list_external_services()
 
+    async def get_external_service(self, id: UUID) -> Optional[ExternalService]:
+        return await self.repo.get_external_service(id)
+
+    async def update_external_service(self, id: UUID, request: Any) -> Optional[ExternalService]:
+        # Using Any for request type to handle different update schemas if needed
+        # Or just use model_dump if it's a Pydantic model
+        update_data = request.model_dump(exclude_unset=True) if hasattr(request, 'model_dump') else request
+        return await self.repo.update_external_service(id, update_data)
+
+    async def delete_external_service(self, id: UUID) -> bool:
+        return await self.repo.delete_external_service(id)
+
     async def add_service_capability(self, service_id: UUID, request: CreateCapabilityRequest) -> ServiceCapability:
         capability = ServiceCapability(
             id=uuid4(),
@@ -111,8 +123,18 @@ class ResourcesService:
         )
         return await self.repo.create_automation(automation)
 
-    async def list_automations(self) -> List[Automation]:
-        return await self.repo.list_automations()
+    async def list_automations(self, workspace_id: Optional[str] = None) -> List[Automation]:
+        return await self.repo.list_automations(workspace_id)
+
+    async def get_automation(self, id: UUID) -> Optional[Automation]:
+        return await self.repo.get_automation(id)
+
+    async def update_automation(self, id: UUID, request: Any) -> Optional[Automation]:
+        update_data = request.model_dump(exclude_unset=True) if hasattr(request, 'model_dump') else request
+        return await self.repo.update_automation(id, update_data)
+
+    async def delete_automation(self, id: UUID) -> bool:
+        return await self.repo.delete_automation(id)
 
     async def test_automation(self, id: UUID, payload: TestPayload) -> SimulatorResultResponse:
         # TODO: Implement real HTTP call using httpx

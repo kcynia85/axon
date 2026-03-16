@@ -1,47 +1,65 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, UseQueryResult, UseMutationResult } from "@tanstack/react-query";
 import { resourcesApi } from "../infrastructure/api";
+import { PromptArchetype } from "@/shared/domain/resources";
 
-export const usePromptArchetypes = () => {
+/**
+ * usePromptArchetypes: Hook for fetching all available prompt archetypes.
+ */
+export const usePromptArchetypes = (): UseQueryResult<PromptArchetype[]> => {
     return useQuery({
         queryKey: ["prompt-archetypes"],
-        queryFn: () => resourcesApi.getPromptArchetypes(),
+        queryFn: async (): Promise<PromptArchetype[]> => await resourcesApi.getPromptArchetypes(),
     });
-}
+};
 
-export const usePromptArchetype = (id: string) => {
+/**
+ * usePromptArchetype: Hook for fetching a single prompt archetype by ID.
+ */
+export const usePromptArchetype = (id: string): UseQueryResult<PromptArchetype> => {
     return useQuery({
         queryKey: ["prompt-archetype", id],
-        queryFn: () => resourcesApi.getPromptArchetype(id),
+        queryFn: async (): Promise<PromptArchetype> => await resourcesApi.getPromptArchetype(id),
         enabled: !!id,
     });
-}
+};
 
-export const useCreatePromptArchetype = () => {
+/**
+ * useCreatePromptArchetype: Hook for creating a new prompt archetype.
+ */
+export const useCreatePromptArchetype = (): UseMutationResult<PromptArchetype, Error, unknown> => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (archetype: unknown) => resourcesApi.createPromptArchetype(archetype as unknown),
+        mutationFn: async (archetype: unknown): Promise<PromptArchetype> => await resourcesApi.createPromptArchetype(archetype),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["prompt-archetypes"] });
         },
     });
-}
+};
 
-export const useUpdatePromptArchetype = () => {
+/**
+ * useUpdatePromptArchetype: Hook for updating an existing prompt archetype.
+ */
+export const useUpdatePromptArchetype = (): UseMutationResult<PromptArchetype, Error, { id: string; archetype: unknown }> => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, archetype }: { id: string; archetype: unknown }) => resourcesApi.updatePromptArchetype(id, archetype),
+        mutationFn: async ({ id, archetype }: { id: string; archetype: unknown }): Promise<PromptArchetype> =>
+            await resourcesApi.updatePromptArchetype(id, archetype),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["prompt-archetypes"] });
+            queryClient.invalidateQueries({ queryKey: ["prompt-archetype"] });
+        },
+    });
+};
+
+/**
+ * useDeletePromptArchetype: Hook for deleting a prompt archetype.
+ */
+export const useDeletePromptArchetype = (): UseMutationResult<void, Error, string> => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id: string): Promise<void> => await resourcesApi.deletePromptArchetype(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["prompt-archetypes"] });
         },
     });
-}
-
-export const useDeletePromptArchetype = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (id: string) => resourcesApi.deletePromptArchetype(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["prompt-archetypes"] });
-        },
-    });
-}
+};

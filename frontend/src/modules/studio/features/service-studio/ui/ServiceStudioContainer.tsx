@@ -12,6 +12,10 @@ interface Props {
 	serviceId?: string;
 }
 
+/**
+ * ServiceStudioContainer: Manages data for service definition studio.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const ServiceStudioContainer = ({ workspaceId, serviceId }: Props) => {
 	const router = useRouter();
 	const { data: service, isLoading, isError } = useService(workspaceId, serviceId as string);
@@ -21,29 +25,35 @@ export const ServiceStudioContainer = ({ workspaceId, serviceId }: Props) => {
 	const initialData = useMemo(() => {
 		if (!serviceId || !service) return undefined;
 		return {
-			service_name: service.service_name || "",
-			service_description: service.service_description || "",
-			service_url: service.service_url || "",
-			service_auth_type: (service.service_auth_type as any) || "none",
-			service_capabilities: service.service_capabilities?.map(cap => ({
-				name: cap.name,
-				description: cap.description,
-				method: cap.method as any,
-				path: cap.path,
+			name: service.service_name || "",
+			business_context: service.service_description || "",
+			url: service.service_url || "",
+			keywords: service.service_keywords || [],
+			categories: [service.service_category],
+			capabilities: service.capabilities?.map(cap => ({
+				name: (cap as any).name || cap,
+				description: (cap as any).description || "",
+				method: (cap as any).method || "GET",
+				path: (cap as any).path || "",
 			})) || [],
-			availability_workspace: service.availability_workspace || [workspaceId],
+			availability: service.availability_workspace || [workspaceId],
 		} as Partial<ServiceStudioFormData>;
 	}, [serviceId, service, workspaceId]);
 
 	const handleSave = async (data: ServiceStudioFormData) => {
 		try {
-			const apiData = {
-				service_name: data.service_name,
-				service_description: data.service_description,
-				service_url: data.service_url,
-				service_auth_type: data.service_auth_type,
-				service_capabilities: data.service_capabilities,
-				availability_workspace: data.availability_workspace,
+			const apiData: any = {
+				service_name: data.name,
+				service_description: data.business_context,
+				service_url: data.url,
+				service_category: data.categories[0] || "Business",
+				capabilities: data.capabilities.map(cap => ({
+					name: cap.name,
+					description: cap.description,
+					method: (cap as any).method,
+					path: (cap as any).path
+				})),
+				availability_workspace: data.availability,
 			};
 
 			if (serviceId) {

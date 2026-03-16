@@ -11,6 +11,10 @@ import { toast } from "sonner";
 
 export type ArchetypeStudioSectionId = "IDENTITY" | "MEMORY" | "ACCESS";
 
+/**
+ * useArchetypeStudioView: Application logic for archetype studio.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const useArchetypeStudioView = (initialData?: Partial<ArchetypeFormValues>, archetypeId?: string) => {
 	const router = useRouter();
 	const [activeSection, setActiveSection] = useState<ArchetypeStudioSectionId>("IDENTITY");
@@ -19,21 +23,19 @@ export const useArchetypeStudioView = (initialData?: Partial<ArchetypeFormValues
 	const { mutateAsync: updateArchetype, isPending: isUpdating } = useUpdatePromptArchetype();
 
 	const form = useForm<ArchetypeFormValues>({
-		resolver: zodResolver(archetypeSchema),
+		resolver: zodResolver(archetypeSchema) as any,
 		defaultValues: {
-			name: "",
-			description: "",
-			role: "",
-			goal: "",
-			backstory: "",
-			keywords: [],
-			knowledgeHubIds: [],
-			instructions: [],
-			constraints: [],
-			isGlobalAccess: true,
-			workspaceIds: [],
-			...initialData,
-		},
+			name: initialData?.name ?? "",
+			description: initialData?.description ?? "",
+			role: initialData?.role ?? "",
+			goal: initialData?.goal ?? "",
+			backstory: initialData?.backstory ?? "",
+			keywords: initialData?.keywords ?? [],
+			knowledgeHubIds: initialData?.knowledgeHubIds ?? [],
+			instructions: initialData?.instructions ?? [],
+			constraints: initialData?.constraints ?? [],
+			workspaceIds: initialData?.workspaceIds ?? ["Global Availability"],
+		} as ArchetypeFormValues,
 	});
 
 	const handleSubmit = async (data: ArchetypeFormValues) => {
@@ -50,7 +52,6 @@ export const useArchetypeStudioView = (initialData?: Partial<ArchetypeFormValues
 					constraints: data.constraints,
 				},
 				archetype_keywords: data.keywords,
-				// workspace_domain: data.isGlobalAccess ? "General" : "Custom", // example logic
 			};
 
 			if (archetypeId) {

@@ -1,8 +1,26 @@
 import { Space } from "../domain";
+import { Node, Edge, OnNodesChange, OnEdgesChange, Connection } from "@xyflow/react";
+import { 
+    SpaceCanvasNodeInformation,
+    SpaceAgentDomainData,
+    SpaceCrewDomainData,
+    SpaceAutomationDomainData,
+    SpaceServiceDomainData,
+    SpaceTemplateDomainData,
+    SpaceZoneDomainData,
+    SpacePatternBlueprint,
+    SpaceCanvasNodeProperties
+} from "../domain/types";
+
+export type { SpaceCanvasNodeInformation, SpaceCanvasNodeProperties };
 
 export type SpaceListProps = {
   readonly spaces: readonly Space[];
   readonly viewMode: "grid" | "list";
+};
+
+export type SpacesBrowserProps = {
+    readonly initialSpaces: Space[];
 };
 
 export type RecentlyUsedProps = {
@@ -22,45 +40,183 @@ export type SpaceCanvasHeaderProps = {
   readonly spaceName: string;
 };
 
+export type SpaceCanvasHeaderProperties = {
+    readonly activeSpaceDisplayName: string;
+    readonly parentProjectDisplayName: string;
+    readonly parentProjectIdentifier?: string;
+};
+
 export type SpaceCanvasSidebarProps = {
   readonly className?: string;
   readonly children?: React.ReactNode;
+  readonly currentlySelectedNodeInformation: SpaceCanvasNodeInformation | null;
+  readonly handleNodeDataPropertyChange: (nodeId: string, updatedData: any) => void;
+  readonly canvasNodes: Node[];
+};
+
+export type SpaceCanvasRightSidebarViewProperties = {
+    readonly currentlySelectedNodeInformation: SpaceCanvasNodeInformation | null;
+    readonly effectiveNodeType: string;
+    readonly isNodeSelectedRepresentingAZone: boolean;
+    readonly handleStatusChange: (nodeId: string, status: string) => void;
+    readonly handleArtifactStatusChange: (nodeId: string, artifactId: string, status: string) => void;
+    readonly handlePropertyChange: (name: string, value: any) => void;
+    readonly canvasNodes: Node[];
 };
 
 export type SpaceAgentInspectorProperties = {
-    readonly data: any;
+    readonly data: SpaceAgentDomainData;
     readonly nodeId: string;
-    readonly onPropertyChange: (props: any) => void;
+    readonly onStatusChange: (nodeId: string, status: string) => void;
+    readonly onPropertyChange: (name: string, value: any) => void;
 };
 
 export type SpaceCrewInspectorProperties = {
-    readonly data: any;
+    readonly data: SpaceCrewDomainData;
     readonly nodeId: string;
-    readonly onStatusChange?: (status: string) => void;
-    readonly onPropertyChange: (props: any) => void;
+    readonly onStatusChange: (nodeId: string, status: string) => void;
+    readonly onPropertyChange: (name: string, value: any) => void;
 };
 
 export type SpaceAutomationInspectorProperties = {
-    readonly data: any;
-    readonly onPropertyChange: (props: any) => void;
+    readonly data: SpaceAutomationDomainData;
+    readonly nodeId: string;
+    readonly onPropertyChange: (name: string, value: any) => void;
 };
 
 export type SpaceServiceInspectorProperties = {
-    readonly data: any;
-    readonly onPropertyChange: (props: any) => void;
+    readonly data: SpaceServiceDomainData;
+    readonly nodeId: string;
+    readonly onArtifactStatusChange: (nodeId: string, artifactId: string, status: string) => void;
+    readonly onPropertyChange: (name: string, value: any) => void;
 };
 
 export type SpaceTemplateInspectorProperties = {
-    readonly data: any;
-    readonly onPropertyChange: (props: any) => void;
+    readonly data: SpaceTemplateDomainData;
+    readonly nodeId: string;
+    readonly onPropertyChange: (name: string, value: any) => void;
 };
 
 export type SpacePatternInspectorProperties = {
     readonly data: any;
-    readonly onPropertyChange: (props: any) => void;
+    readonly onPropertyChange: (name: string, value: any) => void;
 };
 
 export type SpaceZoneInspectorProperties = {
-    readonly data: any;
-    readonly onPropertyChange: (props: any) => void;
+    readonly data: SpaceZoneDomainData;
+    readonly nodeId: string;
+    readonly onPropertyChange: (name: string, value: any) => void;
+    readonly canvasNodes: Node[];
+};
+
+export type SpaceCanvasOrchestrationLogic = {
+    readonly canvasNodes: Node[];
+    readonly canvasEdges: Edge[];
+    readonly handleCanvasNodesChange: OnNodesChange;
+    readonly handleCanvasEdgesChange: OnEdgesChange;
+    readonly handleNewConnectionCreated: (connection: Connection) => void;
+    readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
+    readonly handleDragOverEvent: (event: React.DragEvent) => void;
+    readonly handleDropEvent: (event: React.DragEvent) => void;
+    readonly addNewNodeToCanvas: (nodeType: string, initialNodeData: Record<string, unknown>, targetWorkspaceId: string) => void;
+    readonly updateNodeDataOnCanvas: (nodeId: string, updatedData: any) => void;
+    readonly currentlySelectedNode: Node | null;
+    readonly duplicateNode: (node: Node) => void;
+    readonly deleteNodes: (nodeIds: string[]) => void;
+    readonly updateNodesStatus: (nodeIds: string[], status: string) => void;
+    readonly copyNodes: (nodes: Node[]) => void;
+    readonly cutNodes: (nodes: Node[]) => void;
+    readonly pasteNodes: (position?: { x: number; y: number }) => void;
+    readonly createPatternFromSelection: (name: string, description: string, type: 'pattern' | 'super-pattern') => SpacePatternBlueprint;
+    readonly instantiatePatternFromBlueprint: (blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => void;
+    readonly handleKeyDown: (event: React.KeyboardEvent) => void;
+};
+
+export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogic & {
+    readonly workspaceId: string;
+};
+
+export type SpaceCanvasViewProperties = {
+    readonly initialConfiguration?: unknown;
+    readonly workspaceId: string;
+};
+
+// UI Models
+export type VisualStyleForZoneColor = {
+    readonly borderClassName: string;
+    readonly shadowClassName: string;
+    readonly handleBackgroundClassName: string;
+    readonly backgroundClassName: string;
+    readonly iconBackgroundClassName: string;
+    readonly borderSelectedClassName: string;
+    readonly textClassName: string;
+    readonly resizerLineClassName: string;
+    readonly resizerHandleClassName: string;
+    readonly hoverBackgroundClassName: string;
+    readonly level1HoverBackgroundClassName: string;
+    readonly activeOutputClassName: string;
+};
+
+export type NodeVisualProperties = {
+    readonly containerClassName: string;
+    readonly headerClassName: string;
+    readonly iconClassName: string;
+    readonly titleClassName: string;
+    readonly subtitleClassName: string;
+    readonly handleClassName: string;
+};
+
+export type SpaceNodeViewModel = {
+    readonly visual: NodeVisualProperties;
+    readonly displayName: string;
+    readonly statusText?: string;
+    readonly progressValue?: number;
+    readonly progressLabel?: string;
+    readonly isWorking?: boolean;
+    readonly isDone?: boolean;
+    readonly isConsultation?: boolean;
+    readonly isBriefing?: boolean;
+    readonly isAlignment?: boolean;
+    readonly isCritique?: boolean;
+    readonly isMissingContext?: boolean;
+    readonly zoneColor?: string;
+    readonly artifactLabel?: string;
+    readonly artifactStatusText?: string;
+    readonly hasArtifact?: boolean;
+    readonly teamRoles?: readonly string[];
+    readonly activeAgentTitle?: string;
+    readonly alertMessage?: string;
+    readonly categoryText?: string;
+    readonly iconBackgroundClassName?: string;
+    readonly artefacts?: readonly { id: string; label: string; status: string }[];
+    readonly actionName?: string;
+    readonly isProcessing?: boolean;
+    readonly hasOutputArtefacts?: boolean;
+    readonly activeOutputClassName?: string;
+    readonly progressText?: string;
+    readonly isSelected?: boolean;
+    readonly containerClassName?: string;
+    readonly labelClassName?: string;
+    readonly resizerLineClassName?: string;
+    readonly resizerHandleClassName?: string;
+    readonly handleClassName?: string;
+    readonly ports?: readonly any[];
+    readonly componentType?: string;
+    readonly description?: string;
+    readonly statusLabel?: string;
+    readonly isStatusActive?: boolean;
+    readonly VisualIcon?: any;
+};
+
+export type SpaceAgentViewModel = SpaceNodeViewModel;
+export type SpaceAutomationViewModel = SpaceNodeViewModel;
+export type SpaceCrewViewModel = SpaceNodeViewModel;
+export type SpacePatternViewModel = SpaceNodeViewModel;
+export type SpaceServiceViewModel = SpaceNodeViewModel;
+export type SpaceTemplateViewModel = SpaceNodeViewModel;
+export type SpaceZoneViewModel = SpaceNodeViewModel;
+export type SpaceEntityViewModel = SpaceNodeViewModel;
+
+export type SpaceCanvasLeftSidebarProperties = {
+    readonly onAddComponent: (nodeType: string, initialNodeData: Record<string, unknown>, targetWorkspaceId: string) => void;
 };

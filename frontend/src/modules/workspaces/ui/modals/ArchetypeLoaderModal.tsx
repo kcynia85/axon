@@ -9,7 +9,7 @@ import {
     DialogTitle,
 } from "@/shared/ui/ui/Dialog";
 import { useRouter, useSearchParams } from "next/navigation";
-import { usePromptArchetypes } from "@/modules/resources/application/use-prompt-archetypes";
+import { usePromptArchetypes } from "@/modules/resources/application/usePromptArchetypes";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";

@@ -54,6 +54,13 @@ class CreateExternalServiceRequest(BaseModel):
     service_keywords: List[str] = Field(default_factory=list)
     availability_workspace: List[str] = Field(default_factory=list)
 
+class UpdateExternalServiceRequest(BaseModel):
+    service_name: Optional[str] = None
+    service_category: Optional[ServiceCategory] = None
+    service_url: Optional[str] = None
+    service_keywords: Optional[List[str]] = None
+    availability_workspace: Optional[List[str]] = None
+
 class ExternalServiceResponse(CreateExternalServiceRequest):
     id: UUID
     created_at: datetime
@@ -95,6 +102,18 @@ class CreateAutomationRequest(BaseModel):
     automation_output_schema: Optional[Dict[str, Any]] = None
     automation_keywords: List[str] = Field(default_factory=list)
     availability_workspace: List[str] = Field(default_factory=list)
+
+class UpdateAutomationRequest(BaseModel):
+    automation_name: Optional[str] = None
+    automation_description: Optional[str] = None
+    automation_platform: Optional[AutomationPlatform] = None
+    automation_webhook_url: Optional[str] = None
+    automation_http_method: Optional[AutomationHttpMethod] = None
+    automation_auth_config: Optional[Dict[str, Any]] = None
+    automation_input_schema: Optional[Dict[str, Any]] = None
+    automation_output_schema: Optional[Dict[str, Any]] = None
+    automation_keywords: Optional[List[str]] = None
+    availability_workspace: Optional[List[str]] = None
 
 class AutomationResponse(CreateAutomationRequest):
     id: UUID

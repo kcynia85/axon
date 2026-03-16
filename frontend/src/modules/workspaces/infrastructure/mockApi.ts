@@ -1,11 +1,11 @@
 import {
-  Workspace,
   Agent,
   Crew,
   Pattern,
   Template,
-  Service,
+  Workspace,
   Automation,
+  Service
 } from "@/shared/domain/workspaces";
 
 // --- Mock Data ---
@@ -51,7 +51,7 @@ const MOCK_WORKSPACES: Workspace[] = [
 const MOCK_AGENTS: Record<string, Agent[]> = {
   "ws-product": [
     {
-      id: "a-product-owner",
+      id: "123e4567-e89b-12d3-a456-426614174020",
       agent_name: "Product Owner",
       agent_role_text: "Lead Product Strategy",
       agent_goal: "Define requirements, prioritize backlog, and align stakeholders.",
@@ -63,10 +63,15 @@ const MOCK_AGENTS: Record<string, Agent[]> = {
       rag_enforcement: true,
       input_schema: { user_research_summary: "json", market_segment: "string", okr_context: "string" },
       output_schema: { prd_document: "markdown", backlog_items: "json", priority_matrix: "json" },
-      knowledge_hub_ids: ["kh-product-management", "kh-strategy-frameworks"],
-      llm_model_id: "model-gpt4o",
+      knowledge_hub_ids: ["123e4567-e89b-12d3-a456-426614174030", "123e4567-e89b-12d3-a456-426614174030"],
+      llm_model_id: "123e4567-e89b-12d3-a456-426614174000",
       availability_workspace: ["ws-product", "ws-discovery"],
       agent_keywords: ["product", "strategy", "prd", "requirements"],
+      auto_start: false,
+      grounded_mode: true,
+      native_skills: [],
+      custom_functions: [],
+      data_interface: { context: [], artefacts: [] },
       created_at: "2026-01-10T09:00:00Z",
       updated_at: "2026-02-20T12:00:00Z",
     },
@@ -83,10 +88,15 @@ const MOCK_AGENTS: Record<string, Agent[]> = {
       rag_enforcement: true,
       input_schema: { source_code: "string", api_endpoints: "json", architecture_notes: "string" },
       output_schema: { documentation: "markdown", api_reference: "json" },
-      knowledge_hub_ids: ["kh-product-management"],
-      llm_model_id: "model-gpt4o",
+      knowledge_hub_ids: ["123e4567-e89b-12d3-a456-426614174030"],
+      llm_model_id: "123e4567-e89b-12d3-a456-426614174000",
       availability_workspace: ["ws-product"],
       agent_keywords: ["documentation", "writing", "api-docs"],
+      auto_start: false,
+      grounded_mode: false,
+      native_skills: [],
+      custom_functions: [],
+      data_interface: { context: [], artefacts: [] },
       created_at: "2026-01-11T09:00:00Z",
       updated_at: "2026-02-18T10:00:00Z",
     },
@@ -105,10 +115,15 @@ const MOCK_AGENTS: Record<string, Agent[]> = {
       rag_enforcement: true,
       input_schema: { interview_transcripts: "json", survey_responses: "csv", persona_profiles: "json" },
       output_schema: { research_findings: "json", insight_map: "json", recommendations: "markdown" },
-      knowledge_hub_ids: ["kh-discovery-hub", "kh-jtbd-library"],
-      llm_model_id: "model-claude-sonnet",
+      knowledge_hub_ids: ["123e4567-e89b-12d3-a456-426614174030", "123e4567-e89b-12d3-a456-426614174030"],
+      llm_model_id: "123e4567-e89b-12d3-a456-426614174001",
       availability_workspace: ["ws-discovery"],
       agent_keywords: ["research", "ux", "interviews", "jtbd"],
+      auto_start: false,
+      grounded_mode: false,
+      native_skills: [],
+      custom_functions: [],
+      data_interface: { context: [], artefacts: [] },
       created_at: "2026-01-12T09:00:00Z",
       updated_at: "2026-02-19T10:00:00Z",
     },
@@ -125,10 +140,15 @@ const MOCK_AGENTS: Record<string, Agent[]> = {
       rag_enforcement: true,
       input_schema: { competitors_list: "json", market_data: "csv" },
       output_schema: { competitive_matrix: "json", opportunity_report: "markdown" },
-      knowledge_hub_ids: ["kh-discovery-hub"],
-      llm_model_id: "model-gpt4o",
+      knowledge_hub_ids: ["123e4567-e89b-12d3-a456-426614174030"],
+      llm_model_id: "123e4567-e89b-12d3-a456-426614174000",
       availability_workspace: ["ws-discovery", "ws-product"],
       agent_keywords: ["competitors", "market", "analysis"],
+      auto_start: false,
+      grounded_mode: false,
+      native_skills: [],
+      custom_functions: [],
+      data_interface: { context: [], artefacts: [] },
       created_at: "2026-01-13T09:00:00Z",
       updated_at: "2026-02-21T10:00:00Z",
     },
@@ -147,10 +167,15 @@ const MOCK_AGENTS: Record<string, Agent[]> = {
       rag_enforcement: false,
       input_schema: { brand_guidelines: "json", figma_tokens: "json" },
       output_schema: { component_spec: "json", design_tokens: "json" },
-      knowledge_hub_ids: ["kh-design-system"],
-      llm_model_id: "model-claude-sonnet",
+      knowledge_hub_ids: ["123e4567-e89b-12d3-a456-426614174030"],
+      llm_model_id: "123e4567-e89b-12d3-a456-426614174001",
       availability_workspace: ["ws-design"],
       agent_keywords: ["ui", "design", "figma", "accessibility"],
+      auto_start: false,
+      grounded_mode: false,
+      native_skills: [],
+      custom_functions: [],
+      data_interface: { context: [], artefacts: [] },
       created_at: "2026-01-15T09:00:00Z",
       updated_at: "2026-02-22T10:00:00Z",
     },
@@ -169,10 +194,15 @@ const MOCK_AGENTS: Record<string, Agent[]> = {
       rag_enforcement: true,
       input_schema: { feature_spec: "markdown", acceptance_criteria: "json", design_tokens: "json" },
       output_schema: { source_code: "string", test_suite: "string", migration_files: "string" },
-      knowledge_hub_ids: ["kh-engineering-standards", "kh-architecture-patterns"],
-      llm_model_id: "model-gpt4o",
+      knowledge_hub_ids: ["123e4567-e89b-12d3-a456-426614174030", "123e4567-e89b-12d3-a456-426614174030"],
+      llm_model_id: "123e4567-e89b-12d3-a456-426614174000",
       availability_workspace: ["ws-delivery"],
       agent_keywords: ["coding", "typescript", "python", "testing"],
+      auto_start: false,
+      grounded_mode: false,
+      native_skills: [],
+      custom_functions: [],
+      data_interface: { context: [], artefacts: [] },
       created_at: "2026-01-18T09:00:00Z",
       updated_at: "2026-02-24T08:00:00Z",
     },
@@ -189,10 +219,15 @@ const MOCK_AGENTS: Record<string, Agent[]> = {
       rag_enforcement: false,
       input_schema: { source_code: "string", test_plan: "json" },
       output_schema: { test_results: "json", coverage_report: "json", bug_report: "markdown" },
-      knowledge_hub_ids: ["kh-engineering-standards"],
-      llm_model_id: "model-gpt4o-mini",
+      knowledge_hub_ids: ["123e4567-e89b-12d3-a456-426614174030"],
+      llm_model_id: "123e4567-e89b-12d3-a456-426614174002",
       availability_workspace: ["ws-delivery"],
       agent_keywords: ["qa", "testing", "automation", "ci"],
+      auto_start: false,
+      grounded_mode: false,
+      native_skills: [],
+      custom_functions: [],
+      data_interface: { context: [], artefacts: [] },
       created_at: "2026-01-19T09:00:00Z",
       updated_at: "2026-02-23T10:00:00Z",
     },
@@ -211,10 +246,15 @@ const MOCK_AGENTS: Record<string, Agent[]> = {
       rag_enforcement: false,
       input_schema: { brand_voice: "string", target_audience: "json", campaign_brief: "markdown" },
       output_schema: { ad_copy: "string", landing_page_copy: "markdown", social_posts: "json" },
-      knowledge_hub_ids: ["kh-brand-guidelines", "kh-seo-playbook"],
-      llm_model_id: "model-claude-sonnet",
+      knowledge_hub_ids: ["123e4567-e89b-12d3-a456-426614174030", "123e4567-e89b-12d3-a456-426614174030"],
+      llm_model_id: "123e4567-e89b-12d3-a456-426614174001",
       availability_workspace: ["ws-growth"],
       agent_keywords: ["copy", "marketing", "content", "seo"],
+      auto_start: false,
+      grounded_mode: false,
+      native_skills: [],
+      custom_functions: [],
+      data_interface: { context: [], artefacts: [] },
       created_at: "2026-01-20T09:00:00Z",
       updated_at: "2026-02-20T10:00:00Z",
     },
@@ -228,9 +268,10 @@ const MOCK_CREWS: Record<string, Crew[]> = {
       crew_name: "PRD Production Crew",
       crew_description: "Creates comprehensive Product Requirements Documents from discovery insights.",
       crew_process_type: "Sequential",
-      agent_member_ids: ["a-product-owner", "a-tech-writer", "a-user-researcher", "a-competitor-analyst", "a-ui-designer"],
+      agent_member_ids: ["123e4567-e89b-12d3-a456-426614174020", "a-tech-writer", "a-user-researcher", "a-competitor-analyst", "a-ui-designer"],
       availability_workspace: ["ws-product"],
       crew_keywords: ["prd", "writing", "strategy"],
+      metadata: {},
       created_at: "2026-01-15T09:00:00Z",
       updated_at: "2026-02-20T12:00:00Z",
     },
@@ -244,6 +285,7 @@ const MOCK_CREWS: Record<string, Crew[]> = {
       agent_member_ids: ["a-user-researcher", "a-competitor-analyst"],
       availability_workspace: ["ws-discovery"],
       crew_keywords: ["research", "analysis", "market"],
+      metadata: {},
       created_at: "2026-01-16T09:00:00Z",
       updated_at: "2026-02-21T10:00:00Z",
     },
@@ -258,6 +300,7 @@ const MOCK_CREWS: Record<string, Crew[]> = {
       agent_member_ids: ["a-developer", "a-qa-engineer"],
       availability_workspace: ["ws-delivery"],
       crew_keywords: ["delivery", "implementation", "qa"],
+      metadata: {},
       created_at: "2026-01-20T09:00:00Z",
       updated_at: "2026-02-24T08:00:00Z",
     },
@@ -463,9 +506,9 @@ const MOCK_SERVICES: Record<string, Service[]> = {
       id: "s-figma",
       service_name: "Figma",
       service_description: "Design and prototyping platform.",
-      service_category: "Utility",
+      service_category: "Utility" as any,
       service_url: "https://figma.com",
-      capabilities: ["Prototyping", "Vector Design", "Collaboration"],
+      capabilities: [{ name: "Prototyping", description: "Design prototyping" }],
       availability_workspace: ["ws-design"],
       created_at: "2026-01-20T09:00:00Z",
       updated_at: "2026-02-22T10:00:00Z",
@@ -476,9 +519,9 @@ const MOCK_SERVICES: Record<string, Service[]> = {
       id: "s-github",
       service_name: "GitHub",
       service_description: "Code hosting and collaboration platform.",
-      service_category: "Utility",
+      service_category: "Utility" as any,
       service_url: "https://github.com",
-      capabilities: ["CI/CD", "Version Control", "Issue Tracking"],
+      capabilities: [{ name: "CI/CD", description: "Deployment" }],
       availability_workspace: ["ws-delivery"],
       created_at: "2026-01-22T09:00:00Z",
       updated_at: "2026-02-23T10:00:00Z",
@@ -489,9 +532,9 @@ const MOCK_SERVICES: Record<string, Service[]> = {
       id: "s-elevenlabs",
       service_name: "ElevenLabs",
       service_description: "AI voice generation platform for podcasts and video.",
-      service_category: "GenAI",
+      service_category: "GenAI" as any,
       service_url: "https://elevenlabs.io",
-      capabilities: ["Text-to-Speech", "Voice Cloning"],
+      capabilities: [{ name: "TTS", description: "Text to speech" }],
       availability_workspace: ["ws-growth"],
       created_at: "2026-01-25T09:00:00Z",
       updated_at: "2026-02-20T10:00:00Z",
@@ -513,6 +556,7 @@ const MOCK_AUTOMATIONS: Record<string, Automation[]> = {
       automation_webhook_url: "https://n8n.axon.ai/webhook/deploy",
       automation_http_method: "POST",
       automation_keywords: ["deploy", "ci-cd", "production"],
+      automation_validation_status: "Valid",
       availability_workspace: ["ws-delivery"],
       created_at: "2026-01-28T09:00:00Z",
       updated_at: "2026-02-24T08:00:00Z",
@@ -528,6 +572,7 @@ const MOCK_AUTOMATIONS: Record<string, Automation[]> = {
       automation_webhook_url: "https://hooks.zapier.com/v1/event",
       automation_http_method: "POST",
       automation_keywords: ["social", "marketing", "autopilot"],
+      automation_validation_status: "Valid",
       availability_workspace: ["ws-growth"],
       created_at: "2026-02-01T09:00:00Z",
       updated_at: "2026-02-20T10:00:00Z",
@@ -541,7 +586,6 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const mockApi = {
   getWorkspaces: async (limit: number = 100, offset: number = 0): Promise<Workspace[]> => {
-    await delay(600);
     return MOCK_WORKSPACES.slice(offset, offset + limit);
   },
 
@@ -556,10 +600,28 @@ export const mockApi = {
     return items.slice(offset, offset + limit);
   },
 
+  getAgent: async (id: string): Promise<Agent | null> => {
+    await delay(300);
+    for (const workspaceId in MOCK_AGENTS) {
+      const agent = MOCK_AGENTS[workspaceId].find(a => a.id === id);
+      if (agent) return agent;
+    }
+    return null;
+  },
+
   getCrews: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Crew[]> => {
     await delay(500);
     const items = MOCK_CREWS[workspaceId] ?? [];
     return items.slice(offset, offset + limit);
+  },
+
+  getCrew: async (id: string): Promise<Crew | null> => {
+    await delay(300);
+    for (const workspaceId in MOCK_CREWS) {
+      const crew = MOCK_CREWS[workspaceId].find(c => c.id === id);
+      if (crew) return crew;
+    }
+    return null;
   },
 
   getPatterns: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Pattern[]> => {
@@ -574,10 +636,28 @@ export const mockApi = {
     return items.slice(offset, offset + limit);
   },
 
+  getTemplate: async (id: string): Promise<Template | null> => {
+    await delay(300);
+    for (const workspaceId in MOCK_TEMPLATES) {
+      const template = MOCK_TEMPLATES[workspaceId].find(t => t.id === id);
+      if (template) return template;
+    }
+    return null;
+  },
+
   getServices: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Service[]> => {
     await delay(300);
     const items = MOCK_SERVICES[workspaceId] ?? [];
     return items.slice(offset, offset + limit);
+  },
+
+  getService: async (id: string): Promise<Service | null> => {
+    await delay(300);
+    for (const workspaceId in MOCK_SERVICES) {
+      const service = MOCK_SERVICES[workspaceId].find(s => s.id === id);
+      if (service) return service;
+    }
+    return null;
   },
 
   getAutomations: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Automation[]> => {
@@ -585,4 +665,13 @@ export const mockApi = {
     const items = MOCK_AUTOMATIONS[workspaceId] ?? [];
     return items.slice(offset, offset + limit);
   },
+
+  getAutomation: async (id: string): Promise<Automation | null> => {
+    await delay(300);
+    for (const workspaceId in MOCK_AUTOMATIONS) {
+      const automation = MOCK_AUTOMATIONS[workspaceId].find(a => a.id === id);
+      if (automation) return automation;
+    }
+    return null;
+  }
 };

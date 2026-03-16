@@ -11,9 +11,10 @@ import {
  */
 export const useAutomationForm = (initialData?: Partial<AutomationFormData>) => {
 	const form = useForm<AutomationFormData>({
-		resolver: zodResolver(automationFormSchema),
+		resolver: zodResolver(automationFormSchema) as any,
 		defaultValues: {
 			definition: {
+				name: "",
 				semanticDescription: "",
 				keywords: [],
 			},

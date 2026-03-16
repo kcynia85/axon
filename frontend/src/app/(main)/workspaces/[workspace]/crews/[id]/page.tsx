@@ -20,7 +20,7 @@ export default function CrewSidePeekPage() {
       crew={crew}
       isOpen={true}
       onClose={() => router.push(`/workspaces/${workspaceId}/crews`)}
-      onEdit={() => router.push(`/workspaces/${workspaceId}/crews/${crewId}/edit`)}
+      onEdit={() => router.push(`/workspaces/${workspaceId}/crews/studio/${crewId}`)}
     />
   );
 }

@@ -1,11 +1,22 @@
 import { useState, useCallback } from "react";
 import { useAgentStudio } from "../useAgentStudio";
 import { useStudioShortcuts } from "./useStudioShortcuts";
-import { AGENT_STUDIO_SECTIONS } from "../../types/sections.constants";
+import { AGENT_STUDIO_SECTIONS, AgentStudioSectionId } from "../../types/sections.constants";
 import type { StudioArchetype } from "@/modules/studio/types/discovery.types";
 import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
 import { Shield, Code, Globe, Database, Zap, Search, Info } from "lucide-react";
 import * as React from "react";
+import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";
+
+const AGENT_STUDIO_SECTION_IDENTIFIERS: readonly AgentStudioSectionId[] = [
+    "IDENTITY",
+    "MEMORY",
+    "ENGINE",
+    "SKILLS",
+    "CONTEXT",
+    "ARTEFACTS",
+    "AVAILABILITY"
+];
 
 /**
  * useAgentStudioView: Orchestrates the high-level steps and interactions of Agent Studio.
@@ -25,13 +36,22 @@ export const useAgentStudioView = (initialData?: Partial<CreateAgentFormData>, a
 		isActive: isDesignStep,
 	});
 
+    const { 
+        activeSectionIdentifier: activeSection, 
+        setCanvasContainerReference: setCanvasRef, 
+        scrollToSectionIdentifier: scrollToSection 
+    } = useStudioScrollSpy<AgentStudioSectionId>(
+        AGENT_STUDIO_SECTION_IDENTIFIERS,
+        "IDENTITY"
+    );
+
 	const handleSelectEmpty = useCallback(() => {
 		setStep("design");
 	}, []);
 
 	const handleSelectArchetype = useCallback((archetype: StudioArchetype) => {
 		for (const [key, value] of Object.entries(archetype.config)) {
-			form.setValue(key as keyof CreateAgentFormData, value);
+			form.setValue(key as keyof CreateAgentFormData, value as any);
 		}
 		setStep("design");
 		syncDraft();
@@ -64,5 +84,8 @@ export const useAgentStudioView = (initialData?: Partial<CreateAgentFormData>, a
 		handleSelectArchetype,
 		renderIcon,
 		sections: AGENT_STUDIO_SECTIONS,
+        setCanvasRef,
+        activeSection,
+        scrollToSection,
 	};
 };

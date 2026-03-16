@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import type React from "react";
-import type { ArchetypeCardProps } from "../../../types/studio.types";
+import type { ArchetypeCardProps } from "../../../types/discovery.types";
 
 export const ArchetypeCard = ({
 	archetype,

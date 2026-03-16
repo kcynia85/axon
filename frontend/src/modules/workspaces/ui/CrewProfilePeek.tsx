@@ -8,30 +8,24 @@ import { Button } from "@/shared/ui/ui/Button";
 import { HelpCircle } from "lucide-react";
 import { Crew } from "@/shared/domain/workspaces";
 
+type AgentInfo = {
+  name: string;
+  visualUrl?: string | null;
+}
+
 type CrewProfilePeekProps = {
   readonly crew: Crew | null;
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly onEdit?: () => void;
+  readonly agentsMap?: Record<string, AgentInfo>;
 }
-
-/** Human-friendly names for Agents */
-const AGENT_NAMES: Record<string, string> = {
-  "a-product-owner": "Product Owner",
-  "a-tech-writer": "Technical Writer",
-  "a-user-researcher": "User Researcher",
-  "a-competitor-analyst": "Competitive Analyst",
-  "a-ui-designer": "UI Designer",
-  "a-developer": "Full-Stack Developer",
-  "a-qa-engineer": "QA Engineer",
-  "a-copywriter": "Copywriter",
-};
 
 const getDeterministicImgId = (id: string, index: number): number => {
   return ((id.charCodeAt(id.length - 1) + index) % 5) + 1;
 };
 
-export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit }: CrewProfilePeekProps) => {
+export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit, agentsMap = {} }: CrewProfilePeekProps) => {
   if (!crew) return null;
 
   return (
@@ -80,19 +74,23 @@ export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit }: CrewProfilePe
           <h4 className="text-base font-bold text-muted-foreground">Team</h4>
           <div className="space-y-1.5">
             {crew.agent_member_ids.map((id, index) => {
+              const agent = agentsMap[id];
               const imgId = getDeterministicImgId(id, index);
+              const avatarUrl = agent?.visualUrl || `/images/avatars/agent-${imgId}.png`;
+              const agentName = agent?.name || "Specialist Agent";
+
               return (
                 <div key={id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full border border-primary/10 overflow-hidden bg-black relative">
                       <Image 
-                        src={`/images/avatars/agent-${imgId}.png`}
-                        alt={AGENT_NAMES[id] || "Agent"}
+                        src={avatarUrl}
+                        alt={agentName}
                         fill
                         className="object-cover object-top scale-110"
                       />
                     </div>
-                    <span className="text-base font-semibold">{AGENT_NAMES[id] || "Specialist Agent"}</span>
+                    <span className="text-base font-semibold">{agentName}</span>
                   </div>
                   {id === crew.manager_agent_id && (
                     <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">Manager</Badge>

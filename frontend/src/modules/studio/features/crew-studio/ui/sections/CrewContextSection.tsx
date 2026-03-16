@@ -3,9 +3,9 @@ import { FormPropertyTable } from "@/shared/ui/form/FormPropertyTable";
 import { useFormContext, Controller } from "react-hook-form";
 
 const DATA_TYPE_OPTIONS = [
-	{ label: "Link", value: "Link" },
-	{ label: "File", value: "File" },
-	{ label: "String", value: "String" },
+	{ label: "Link", value: "string" as const },
+	{ label: "File", value: "file" as const },
+	{ label: "String", value: "string" as const },
 ];
 
 /**

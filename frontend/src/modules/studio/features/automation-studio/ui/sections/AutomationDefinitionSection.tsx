@@ -2,6 +2,7 @@ import { FormField } from "@/shared/ui/ui/Form";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormTextarea } from "@/shared/ui/form/FormTextarea";
+import { FormTextField } from "@/shared/ui/form/FormTextField";
 import { FormTagInput } from "@/shared/ui/form/FormTagInput";
 import { useFormContext } from "react-hook-form";
 import type { AutomationFormData } from "../../types/automation-schema";
@@ -21,6 +22,23 @@ export const AutomationDefinitionSection = () => {
 			description="Describe the purpose and semantics of this automation for AI discovery"
 		>
 			<div className="space-y-12">
+				<FormField
+					control={control}
+					name="definition.name"
+					render={({ field, fieldState }) => (
+						<FormItemField 
+							label="Automation Name" 
+							error={fieldState.error?.message}
+						>
+							<FormTextField
+								{...field}
+								placeholder="e.g. Lead Extractor v2"
+								className="bg-transparent border-zinc-800 focus:border-zinc-700 text-white"
+							/>
+						</FormItemField>
+					)}
+				/>
+
 				<FormField
 					control={control}
 					name="definition.semanticDescription"

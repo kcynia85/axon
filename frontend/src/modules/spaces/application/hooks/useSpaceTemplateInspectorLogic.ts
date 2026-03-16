@@ -1,7 +1,7 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceTemplateInspectorLogic.ts
 
 import { useCallback, useMemo } from "react";
-import { SpaceTemplateDomainData, TemplateAction, TemplateArtefact } from "../types";
+import { SpaceTemplateDomainData, TemplateAction, TemplateArtefact } from "../../domain/types";
 
 export const useSpaceTemplateInspectorLogic = (
     data: SpaceTemplateDomainData,

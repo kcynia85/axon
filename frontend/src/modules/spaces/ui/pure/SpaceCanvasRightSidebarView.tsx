@@ -21,7 +21,7 @@ import {
     SpaceTemplateDomainData,
     SpaceZoneDomainData
 } from "../../domain/types";
-import { SpaceCanvasRightSidebarProperties } from "../types";
+import { SpaceCanvasRightSidebarViewProperties } from "../types";
 import { Node } from "@xyflow/react";
 
 const GenericNodeInspector = ({ nodeInformation }: { readonly nodeInformation: SpaceCanvasNodeInformation }) => (
@@ -73,7 +73,8 @@ export const SpaceCanvasRightSidebarView = ({
                     />
                 ) : effectiveNodeType === 'pattern' ? (
                     <SpacePatternNodeInspector
-                        patternNodeInformation={currentlySelectedNodeInformation}
+                        data={currentlySelectedNodeInformation}
+                        onPropertyChange={handlePropertyChange}
                     />
                 ) : effectiveNodeType === 'automation' ? (
                     <SpaceAutomationNodeInspector

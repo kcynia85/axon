@@ -1,6 +1,6 @@
 "use client";
 
-import { useAutomation, useCreateAutomation, useUpdateAutomation } from "@/modules/resources/application/useAutomations";
+import { useAutomation, useCreateAutomation, useUpdateAutomation } from "@/modules/workspaces/application/useAutomations";
 import { AutomationStudio } from "./AutomationStudio";
 import { useRouter } from "next/navigation";
 import { AutomationFormData } from "../types/automation-schema";
@@ -12,45 +12,52 @@ interface Props {
 	automationId?: string;
 }
 
+/**
+ * AutomationStudioContainer: Handles data orchestration for automation design.
+ * Standard: 0% useEffect, arrow function.
+ */
 export const AutomationStudioContainer = ({ workspaceId, automationId }: Props) => {
 	const router = useRouter();
-	const { data: automation, isLoading, isError } = useAutomation(automationId as string);
-	const { mutateAsync: createAutomation } = useCreateAutomation();
-	const { mutateAsync: updateAutomation } = useUpdateAutomation();
+	const { data: automation, isLoading, isError } = useAutomation(workspaceId, automationId as string);
+	const { mutateAsync: createAutomation } = useCreateAutomation(workspaceId);
+	const { mutateAsync: updateAutomation } = useUpdateAutomation(workspaceId);
 
 	const initialData = useMemo(() => {
 		if (!automationId || !automation) return undefined;
 		return {
 			definition: {
-				semanticDescription: automation.description || "",
-				keywords: automation.keywords || [],
+				name: automation.automation_name || "",
+				semanticDescription: automation.automation_description || "",
+				keywords: automation.automation_keywords || [],
 			},
 			connection: {
-				platform: "n8n", // Default or extract from automation
-				method: "POST",
-				url: automation.webhook_url || "",
+				platform: automation.automation_platform || "n8n",
+				method: automation.automation_http_method || "POST",
+				url: automation.automation_webhook_url || "",
 				auth: { type: "header" },
 			},
 			dataInterface: {
 				context: [],
 				artefacts: [],
 			},
-			availability: [],
+			availability: automation.availability_workspace || [],
 		} as Partial<AutomationFormData>;
 	}, [automationId, automation]);
 
 	const handleSave = async (data: AutomationFormData) => {
 		try {
-			const apiData = {
-				name: data.definition.semanticDescription.slice(0, 50),
-				description: data.definition.semanticDescription,
-				keywords: data.definition.keywords,
-				webhook_url: data.connection.url,
-				workspace_id: workspaceId,
+			const apiData: any = {
+				automation_name: data.definition.name,
+				automation_description: data.definition.semanticDescription,
+				automation_keywords: data.definition.keywords,
+				automation_webhook_url: data.connection.url,
+				automation_platform: data.connection.platform,
+				automation_http_method: data.connection.method,
+				availability_workspace: data.availability.length > 0 ? data.availability : [workspaceId],
 			};
 
 			if (automationId) {
-				await updateAutomation({ id: automationId, data: apiData });
+				await updateAutomation({ automationId, automation: apiData });
 				toast.success("Zaktualizowano automatyzację");
 			} else {
 				await createAutomation(apiData);

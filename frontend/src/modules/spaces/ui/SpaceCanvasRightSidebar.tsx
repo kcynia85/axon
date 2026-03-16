@@ -23,7 +23,7 @@ export const SpaceCanvasRightSidebar = ({
     return (
         <SpaceCanvasRightSidebarView 
             currentlySelectedNodeInformation={currentlySelectedNodeInformation}
-            effectiveNodeType={effectiveNodeType}
+            effectiveNodeType={effectiveNodeType || 'unknown'}
             isNodeSelectedRepresentingAZone={isNodeSelectedRepresentingAZone}
             handleStatusChange={handleStatusChange}
             handleArtifactStatusChange={handleArtifactStatusChange}
