@@ -34,4 +34,8 @@ export const agentsApi = {
   deleteAgent: async (id: string): Promise<void> => {
     await authenticatedClient.delete(`/agents/${id}`);
   },
+
+  inspectDeletion: async (id: string): Promise<Array<{ id: string; name: string; role: string }>> => {
+    return await authenticatedClient.get<Array<{ id: string; name: string; role: string }>>(`/agents/${id}/inspect-deletion`);
+  },
 };

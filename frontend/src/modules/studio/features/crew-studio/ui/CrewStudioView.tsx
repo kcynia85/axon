@@ -30,6 +30,7 @@ export const CrewStudioView = ({
     onTypeChange,
     onSave,
     onCancel,
+    onSyncDraft,
     setCanvasContainerReference,
     isSaving
 }: CrewStudioViewProps) => {
@@ -59,12 +60,12 @@ export const CrewStudioView = ({
                     canvas={
                         <div className="px-24 pb-48">
                             <form className="space-y-0" onSubmit={(e) => e.preventDefault()}>
-                                <CrewBasicInfoSection />
-                                <CrewTypeSelectionSection onTypeChange={onTypeChange} />
-                                <CrewExecutionSection availableAgents={availableAgents as any} />
-                                <CrewContextSection />
-                                <CrewArtefactsSection />
-                                <CrewAvailabilitySection />
+                                <CrewBasicInfoSection onSyncDraft={onSyncDraft} />
+                                <CrewTypeSelectionSection onTypeChange={onTypeChange} onSyncDraft={onSyncDraft} />
+                                <CrewExecutionSection availableAgents={availableAgents as any} onSyncDraft={onSyncDraft} />
+                                <CrewContextSection onSyncDraft={onSyncDraft} />
+                                <CrewArtefactsSection onSyncDraft={onSyncDraft} />
+                                <CrewAvailabilitySection onSyncDraft={onSyncDraft} />
                             </form>
                         </div>
                     }

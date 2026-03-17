@@ -53,6 +53,8 @@ class CrewTable(Base):
     manager_agent_id = Column(UUID(as_uuid=True), ForeignKey("agent_configs.id"), nullable=True)
     crew_keywords = Column(ARRAY(String), nullable=True)
     availability_workspace = Column(ARRAY(String), nullable=False)
+    data_interface = Column(JSONB, nullable=False, server_default='{"context": [], "artefacts": []}')
+    metadata_ = Column("metadata", JSONB, nullable=False, server_default='{}')
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
     deleted_at = Column(DateTime(timezone=True), nullable=True)

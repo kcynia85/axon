@@ -7,6 +7,8 @@ export type UseCrewFormResult = {
 	readonly currentType: CrewStudioFormData["crew_process_type"];
 	readonly estimatedCost: number;
 	readonly handleTypeChange: (type: CrewStudioFormData["crew_process_type"]) => void;
+	readonly syncDraft: () => void;
+	readonly clearDraft: () => void;
 };
 
 export type AvailableAgent = {
@@ -32,6 +34,7 @@ export type CrewStudioViewProps = {
     readonly onTypeChange: (type: CrewStudioFormData["crew_process_type"]) => void;
     readonly onSave: () => void;
     readonly onCancel: () => void;
+    readonly onSyncDraft: () => void;
     readonly setCanvasContainerReference: (node: HTMLDivElement | null) => void;
     readonly isSaving?: boolean;
 };

@@ -16,3 +16,14 @@ export const getDeterministicImgId = (id: string): number => {
   }
   return (Math.abs(hash) % 5) + 1;
 };
+
+/**
+ * Returns the correct avatar URL for an agent ID, 
+ * relying strictly on provided customUrl or a deterministic fallback.
+ */
+export const getAgentAvatarUrl = (id: string, customUrl?: string | null): string => {
+  if (customUrl) return customUrl;
+
+  const imgId = getDeterministicImgId(id);
+  return `/images/avatars/agent-${imgId}.webp`;
+};

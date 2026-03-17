@@ -9,7 +9,9 @@ import { Workflow } from "lucide-react";
 import { SortOption } from "@/shared/domain/filters";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useDeletePattern } from "../../../application/usePatterns";
+import { PatternProfilePeek } from "@/modules/workspaces/ui/PatternProfilePeek";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -24,13 +26,23 @@ type PatternsBrowserProps = {
 
 export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: PatternsBrowserProps) => {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspace as string;
+  const [selectedPatternId, setSelectedPatternId] = React.useState<string | null>(null);
   const {
     processedPatterns,
     viewMode,
     setViewMode,
     filterConfig,
   } = usePatternsBrowser(initialPatterns);
+
+  const { mutate: deletePattern } = useDeletePattern(workspaceId);
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this pattern?")) {
+      deletePattern(id);
+    }
+  };
 
   const {
     searchQuery,
@@ -95,10 +107,21 @@ export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: Patt
                 badgeLabel="Pattern"
                 tags={pattern.pattern_keywords}
                 colorName={colorName}
+                resourceId={pattern.id}
+                onEdit={() => setSelectedPatternId(pattern.id)}
+                onDelete={handleDelete}
             />
           ))}
         </div>
       )}
+
+      <PatternProfilePeek 
+        pattern={initialPatterns.find(p => p.id === selectedPatternId) || null}
+        isOpen={!!selectedPatternId}
+        onClose={() => setSelectedPatternId(null)}
+        onDelete={handleDelete}
+        onInstantiate={() => {}} // TODO: Handle instantiate
+      />
     </BrowserLayout>
   );
 };

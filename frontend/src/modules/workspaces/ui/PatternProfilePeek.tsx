@@ -13,6 +13,7 @@ type PatternProfilePeekProps = {
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly onInstantiate?: () => void;
+  readonly onDelete?: (id: string) => void;
 }
 
 const FALLBACK_COMPONENTS = [
@@ -24,7 +25,7 @@ const FALLBACK_COMPONENTS = [
   "Slack Notify"
 ];
 
-export const PatternProfilePeek = ({ pattern, isOpen, onClose, onInstantiate }: PatternProfilePeekProps) => {
+export const PatternProfilePeek = ({ pattern, isOpen, onClose, onInstantiate, onDelete }: PatternProfilePeekProps) => {
   if (!pattern) return null;
 
   const patternNodes = pattern.pattern_graph_structure?.nodes 
@@ -52,9 +53,23 @@ export const PatternProfilePeek = ({ pattern, isOpen, onClose, onInstantiate }: 
       }
       modal={false}
       footer={
-        <Button className="w-full bg-primary hover:bg-primary/90 text-base py-6" onClick={onInstantiate}>
-          Edytuj w Space
-        </Button>
+        <div className="flex w-full gap-3">
+          <Button 
+            variant="outline" 
+            className="flex-1 text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20 h-14 font-bold uppercase tracking-widest text-[11px]" 
+            onClick={() => {
+              if (pattern.id && onDelete && window.confirm("Are you sure you want to delete this pattern?")) {
+                onDelete(pattern.id);
+                onClose();
+              }
+            }}
+          >
+            Usuń Pattern
+          </Button>
+          <Button className="flex-[2] bg-primary hover:bg-primary/90 text-base py-6 h-14" onClick={onInstantiate}>
+            Edytuj w Space
+          </Button>
+        </div>
       }
     >
       <div className="space-y-12">

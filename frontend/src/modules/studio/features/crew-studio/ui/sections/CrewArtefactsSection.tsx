@@ -8,10 +8,14 @@ const DATA_TYPE_OPTIONS = [
 	{ label: "String", value: "string" as const },
 ];
 
+interface Props {
+	onSyncDraft: () => void;
+}
+
 /**
  * CrewArtefactsSection: Manages expected team artefacts.
  */
-export const CrewArtefactsSection = () => {
+export const CrewArtefactsSection = ({ onSyncDraft }: Props) => {
 	const { control } = useFormContext();
 
 	return (
@@ -23,8 +27,11 @@ export const CrewArtefactsSection = () => {
 					render={({ field }) => (
 						<FormPropertyTable
 							items={field.value || []}
-							onChange={field.onChange}
-							onBlur={field.onBlur}
+							onChange={(val) => {
+								field.onChange(val);
+								onSyncDraft();
+							}}
+							onBlur={onSyncDraft}
 							typeOptions={DATA_TYPE_OPTIONS}
 							namePlaceholder="artefact name (e.g. synthesis.md)"
 							addPlaceholder="+ Add Artefact"

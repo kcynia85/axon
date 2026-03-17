@@ -7,21 +7,31 @@ import { FormCheckbox } from "@/shared/ui/form/FormCheckbox";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { NATIVE_SKILLS, CUSTOM_FUNCTIONS } from "../../types/agent-studio.constants";
+import { NATIVE_SKILLS } from "../../types/agent-studio.constants";
 import type { SkillsSectionProps } from "../../types/sections/skills.types";
 import { useSkillsSection } from "../../application/hooks/sections/useSkillsSection";
 import { InternalSkillsModal } from "../components/InternalSkillsModal";
 import { useInternalSkillsModal } from "../../application/hooks/sections/useInternalSkillsModal";
+import { useInternalTools } from "@/modules/resources/application/useInternalTools";
 
 export const SkillsSection = (props: SkillsSectionProps) => {
 	const { control, syncDraft } = useSkillsSection(props);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
+	const { data: internalTools = [] } = useInternalTools();
+
+	const availableSkills = internalTools.map(tool => ({
+		id: tool.tool_function_name,
+		name: tool.tool_display_name,
+		desc: tool.tool_description,
+		category: tool.tool_category
+	}));
+
 	const currentCustomFunctions = useWatch({ control, name: "custom_functions" }) || [];
 	const modalProps = useInternalSkillsModal(
 		isModalOpen,
 		setIsModalOpen,
-		CUSTOM_FUNCTIONS,
+		availableSkills,
 		currentCustomFunctions
 	);
 
@@ -81,7 +91,7 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 							name="custom_functions"
 							render={({ field }) => {
 								const current = field.value || [];
-								const addedFunctions = CUSTOM_FUNCTIONS.filter((fn) => current.includes(fn.id));
+								const addedFunctions = availableSkills.filter((fn) => current.includes(fn.id));
 
 								return (
 									<FormItemField>
@@ -138,4 +148,3 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 		</FormSection>
 	);
 };
-

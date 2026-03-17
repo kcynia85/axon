@@ -8,10 +8,14 @@ const DATA_TYPE_OPTIONS = [
 	{ label: "String", value: "string" as const },
 ];
 
+interface Props {
+	onSyncDraft: () => void;
+}
+
 /**
  * CrewContextSection: Manages team contexts.
  */
-export const CrewContextSection = () => {
+export const CrewContextSection = ({ onSyncDraft }: Props) => {
 	const { control } = useFormContext();
 
 	return (
@@ -23,8 +27,11 @@ export const CrewContextSection = () => {
 					render={({ field }) => (
 						<FormPropertyTable
 							items={field.value || []}
-							onChange={field.onChange}
-							onBlur={field.onBlur}
+							onChange={(val) => {
+								field.onChange(val);
+								onSyncDraft();
+							}}
+							onBlur={onSyncDraft}
 							typeOptions={DATA_TYPE_OPTIONS}
 							namePlaceholder="context name (e.g. competitors_list)"
 							addPlaceholder="+ Add Context"

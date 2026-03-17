@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import { 
+  useWorkspace, 
+  useAgents, 
+  useCrews, 
+  usePatterns, 
+  useTemplates, 
+  useServices, 
+  useAutomations 
+} from "@/modules/workspaces/application/useWorkspaces";
 import { AgentsSection } from "@/modules/workspaces/ui/AgentsSection";
 import { CrewsSection } from "@/modules/workspaces/ui/CrewsSection";
 import { PatternsSection } from "@/modules/workspaces/ui/PatternsSection";
@@ -18,8 +26,8 @@ import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/
 
 const SECTIONS = [
   { id: "agents", label: "Agents", href: "agents", Component: AgentsSection },
-  { id: "crews", label: "Crews", count: 5, href: "crews", Component: CrewsSection },
-  { id: "patterns", label: "Patterns", count: 3, href: "patterns", Component: PatternsSection },
+  { id: "crews", label: "Crews", href: "crews", Component: CrewsSection },
+  { id: "patterns", label: "Patterns", href: "patterns", Component: PatternsSection },
   { id: "templates", label: "Templates", href: "templates", Component: TemplatesSection },
   { id: "services", label: "Services", href: "services", Component: ServicesSection },
   { id: "automations", label: "Automations", href: "automations", Component: AutomationsSection },
@@ -68,6 +76,23 @@ const WorkspaceOverviewPage = () => {
   const workspaceId = params.workspace as string;
   const { data: workspace, isLoading } = useWorkspace(workspaceId);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Dynamic counts for each section
+  const agents = useAgents(workspaceId);
+  const crews = useCrews(workspaceId);
+  const patterns = usePatterns(workspaceId);
+  const templates = useTemplates(workspaceId);
+  const services = useServices(workspaceId);
+  const automations = useAutomations(workspaceId);
+
+  const sectionCounts: Record<string, number | undefined> = {
+    agents: agents.data?.length,
+    crews: crews.data?.length,
+    patterns: patterns.data?.length,
+    templates: templates.data?.length,
+    services: services.data?.length,
+    automations: automations.data?.length,
+  };
 
   const colorKey = workspaceId.replace("ws-", "");
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
@@ -128,7 +153,7 @@ const WorkspaceOverviewPage = () => {
                     key={section.id} 
                     id={section.id} 
                     label={section.label}
-                    count={section.count}
+                    count={sectionCounts[section.id]}
                     href={section.href}
                     workspaceId={workspaceId}
                 >

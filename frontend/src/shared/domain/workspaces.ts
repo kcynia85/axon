@@ -63,6 +63,7 @@ export const CrewSchema = z.object({
   crew_keywords: z.array(z.string()).default([]),
   availability_workspace: z.array(z.string()).default([]),
   agent_member_ids: z.array(z.string()).default([]),
+  data_interface: DataInterfaceSchema.default({ context: [], artefacts: [] }),
   metadata: z.record(z.any()).optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),

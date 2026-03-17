@@ -17,7 +17,12 @@ export const useFormPropertyTable = ({
 		if (val) {
 			onChange([
 				...items,
-				{ name: val, field_type: typeOptions[0].value, is_required: true },
+				{ 
+					id: crypto.randomUUID(),
+					name: val, 
+					field_type: typeOptions[0].value, 
+					is_required: true 
+				},
 			]);
 			setInputValue("");
 			onBlur?.();

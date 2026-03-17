@@ -66,9 +66,10 @@ async def get_available_tools() -> List[Tool]:
 # --- Agent CRUD ---
 
 async def list_agents_use_case(
+    workspace: Optional[str] = None,
     repo: AgentConfigRepository = Depends(get_agent_repo)
 ) -> List[AgentConfig]:
-    return await repo.list_all()
+    return await repo.list_all(workspace=workspace)
 
 async def create_agent_use_case(
     agent: AgentConfig,
@@ -94,6 +95,13 @@ async def delete_agent_use_case(
     repo: AgentConfigRepository = Depends(get_agent_repo)
 ) -> bool:
     return await repo.delete(id)
+
+async def inspect_agent_deletion_use_case(
+    id: UUID,
+    repo: AgentConfigRepository = Depends(get_agent_repo)
+) -> List[dict]:
+    """Returns assignments that would be affected by deleting this agent."""
+    return await repo.get_assigned_crews(id)
 
 async def estimate_cost_use_case(
     id: UUID,

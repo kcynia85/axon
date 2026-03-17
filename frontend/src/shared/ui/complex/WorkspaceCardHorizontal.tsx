@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LucideIcon, ChevronRight, ArrowRight, MoreVertical, Trash2 } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
+import { LucideIcon, ChevronRight, ArrowRight, MoreVertical, Trash2, Users } from "lucide-react";
+import { cn, getDeterministicImgId } from "@/shared/lib/utils";
 import { Card } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { TagChip } from "@/shared/ui/ui/TagChip";
@@ -26,10 +26,11 @@ type WorkspaceCardHorizontalProps = {
     readonly className?: string;
     readonly colorName?: string;
     readonly onEdit?: (e: React.MouseEvent) => void;
-    readonly onDelete?: (templateId: string) => void; // Expects templateId
-    readonly templateId?: string; // Accept templateId prop
+    readonly onDelete?: (id: string) => void; 
+    readonly resourceId?: string;
     readonly agentIds?: readonly string[];
     readonly agentVisualsMap?: Record<string, string>;
+    readonly isDraft?: boolean;
 };
 
 /**
@@ -49,10 +50,11 @@ export const WorkspaceCardHorizontal = ({
     className,
     colorName = "default",
     onEdit,
-    onDelete, // Expects templateId: string
-    templateId, // Accept templateId prop
+    onDelete, 
+    resourceId,
     agentIds = [],
-    agentVisualsMap = {}
+    agentVisualsMap = {},
+    isDraft = false
 }: WorkspaceCardHorizontalProps) => {
     const styles = getVisualStylesForZoneColor(colorName);
 
@@ -62,8 +64,8 @@ export const WorkspaceCardHorizontal = ({
         : description;
 
     const renderActions = () => {
-        // Ensure onDelete and templateId are present
-        if (!onDelete || !templateId) return null; 
+        // Ensure onDelete and resourceId are present
+        if (!onDelete || !resourceId) return null; 
         return (
             <div className="absolute top-3 right-3 z-40">
                 <DropdownMenu>
@@ -81,8 +83,7 @@ export const WorkspaceCardHorizontal = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                // Call onDelete with templateId
-                                onDelete(templateId as string); 
+                                onDelete(resourceId); 
                             }}
                         >
                             <Trash2 className="w-4 h-4 mr-2" />
@@ -122,11 +123,11 @@ export const WorkspaceCardHorizontal = ({
                     <div className="flex justify-between items-center z-10 w-full pr-8">
                         {/* Overlapping Avatars or Icon */}
                         <div className="flex items-center transition-transform duration-500 ease-out origin-left">
-                            {agentIds.length > 0 ? (
+                            {agentIds.length > 0 && !isDraft ? (
                                 <div className="flex -space-x-3 mr-3">
                                     {displayedAgents.map((agentId, i) => {
-                                        const imgId = ((agentId.charCodeAt(agentId.length - 1) + i) % 5) + 1;
-                                        const avatarUrl = agentVisualsMap[agentId] || `/images/avatars/agent-${imgId}.png`;
+                                        const imgId = getDeterministicImgId(agentId);
+                                        const avatarUrl = agentVisualsMap[agentId] || `/images/avatars/agent-${imgId}.webp`;
                                         return (
                                             <div key={agentId} className={cn(
                                                 "w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative",
@@ -135,7 +136,7 @@ export const WorkspaceCardHorizontal = ({
                                             )}>
                                                 <Image 
                                                     src={avatarUrl} 
-                                                    alt={`Agent ${imgId}`}
+                                                    alt={`Agent`}
                                                     fill
                                                     sizes="40px"
                                                     className="object-cover object-top scale-110 transition-all duration-500 bg-black"
@@ -150,40 +151,37 @@ export const WorkspaceCardHorizontal = ({
                                     )}
                                 </div>
                             ) : Icon ? (
-                                <div className={cn("w-10 h-10 rounded-xl bg-zinc-900 border flex items-center justify-center shadow-inner", styles.textClassName.replace('text-', 'border-'))}>
-                                    <Icon className={cn("w-5 h-5", styles.textClassName)} />
+                                <div className={cn(
+                                    "w-10 h-10 rounded-xl bg-zinc-900 border flex items-center justify-center shadow-inner", 
+                                    isDraft ? "border-zinc-800" : styles.textClassName.replace('text-', 'border-')
+                                )}>
+                                    <Icon className={cn("w-5 h-5", isDraft ? "text-zinc-500" : styles.textClassName)} />
                                 </div>
                             ) : (
-                                // Fallback deterministic avatars
-                                <div className="flex -space-x-3 mr-3">
-                                    {[1, 2, 3].map((i) => {
-                                        const imgId = ((title.charCodeAt(0) + i) % 5) + 1;
-                                        return (
-                                            <div key={i} className={cn(
-                                                "w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative",
-                                                styles.textClassName.replace('text-', 'border-'),
-                                                i === 1 ? "z-30" : i === 2 ? "z-20" : "z-10"
-                                            )}>
-                                                <Image 
-                                                    src={`/images/avatars/agent-${imgId}.png`} 
-                                                    alt={`Agent ${imgId}`}
-                                                    fill
-                                                    sizes="40px"
-                                                    className="object-cover object-top scale-110 transition-all duration-500 bg-black"
-                                                />
-                                            </div>
-                                        );
-                                    })}
+                                // Fallback icon when no agents and no specific icon
+                                <div className={cn(
+                                    "w-10 h-10 rounded-xl bg-zinc-900 border flex items-center justify-center shadow-inner", 
+                                    isDraft ? "border-zinc-800" : styles.textClassName.replace('text-', 'border-')
+                                )}>
+                                    <Users className={cn("w-5 h-5", isDraft ? "text-zinc-500" : styles.textClassName)} />
                                 </div>
                             )}
                         </div>
 
                         {/* Type Chip */}
-                        {badgeLabel && (
-                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-white border-white px-2.5 py-0.5 rounded-lg text-black">
-                                {badgeLabel}
-                            </Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                            {isDraft ? (
+                                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.2em] bg-zinc-500/10 border-zinc-500/20 px-2.5 py-0.5 rounded-lg text-zinc-500 shadow-none">
+                                    Draft
+                                </Badge>
+                            ) : (
+                                badgeLabel && (
+                                    <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-white border-white px-2.5 py-0.5 rounded-lg text-black">
+                                        {badgeLabel}
+                                    </Badge>
+                                )
+                            )}
+                        </div>
                     </div>
 
                     {/* MIDDLE: Name & Description */}
@@ -208,7 +206,10 @@ export const WorkspaceCardHorizontal = ({
                     </div>
 
                     {/* Bottom Accent Bar */}
-                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
+                    <div className={cn(
+                        "absolute bottom-0 left-0 right-0 h-1 z-30", 
+                        isDraft ? "bg-zinc-800" : styles.hoverBackgroundClassName
+                    )} />
                 </Card>
             </Link>
         );
@@ -233,8 +234,11 @@ export const WorkspaceCardHorizontal = ({
 
                 {/* Visual / Icon */}
                 {Icon && (
-                    <div className={cn("flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-900 border flex items-center justify-center mr-4 group-hover:scale-105 transition-transform duration-300", styles.textClassName.replace('text-', 'border-'))}>
-                        <Icon className={cn("w-6 h-6", styles.textClassName)} />
+                    <div className={cn(
+                        "flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-900 border flex items-center justify-center mr-4 group-hover:scale-105 transition-transform duration-300", 
+                        isDraft ? "border-zinc-800" : styles.textClassName.replace('text-', 'border-')
+                    )}>
+                        <Icon className={cn("w-6 h-6", isDraft ? "text-zinc-500" : styles.textClassName)} />
                     </div>
                 )}
 

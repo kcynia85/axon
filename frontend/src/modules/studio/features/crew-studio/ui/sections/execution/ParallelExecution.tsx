@@ -4,18 +4,19 @@ import { useFormContext, Controller } from "react-hook-form";
 
 interface Props {
 	agents: { id: string; name: string; subtitle?: string }[];
+	onSyncDraft: () => void;
 }
 
 /**
- * ParallelExecution: Simple list of agents working concurrently on the goal.
+ * ParallelExecution: Standard team structure where multiple agents work together.
  */
-export const ParallelExecution = ({ agents }: Props) => {
+export const ParallelExecution = ({ agents, onSyncDraft }: Props) => {
 	const { control, formState: { errors } } = useFormContext();
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-12">
 			<FormItemField 
-				label="Select Team Members"
+				label="Team Members (Agents)"
 				error={errors.agent_member_ids?.message as string}
 			>
 				<Controller
@@ -26,8 +27,12 @@ export const ParallelExecution = ({ agents }: Props) => {
 							multiple
 							options={agents}
 							value={field.value || []}
-							onChange={field.onChange}
-							placeholder="Click to add agents to the parallel team..."
+							onChange={(val) => {
+								field.onChange(val);
+								onSyncDraft();
+							}}
+							onBlur={onSyncDraft}
+							placeholder="Select agents who will perform the tasks..."
 						/>
 					)}
 				/>

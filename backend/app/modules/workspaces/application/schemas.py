@@ -3,7 +3,7 @@ from typing import List, Optional, Any, Dict
 from uuid import UUID
 from datetime import datetime
 from app.modules.workspaces.domain.enums import PatternType, ProcessType
-from app.modules.workspaces.domain.models import Pattern, Template, Crew
+from app.modules.workspaces.domain.models import Pattern, Template, Crew, DataInterface
 
 class WorkspaceResponse(BaseModel):
     id: str
@@ -61,6 +61,8 @@ class CreateCrewRequest(BaseModel):
     manager_agent_id: Optional[UUID] = None
     crew_keywords: List[str] = []
     availability_workspace: List[str]
+    data_interface: Optional[DataInterface] = None
+    metadata: Dict[str, Any] = {}
     agent_member_ids: List[UUID] = []
 
 class CrewResponse(Crew):
@@ -73,4 +75,6 @@ class UpdateCrewRequest(BaseModel):
     manager_agent_id: Optional[UUID] = None
     crew_keywords: Optional[List[str]] = None
     availability_workspace: Optional[List[str]] = None
+    data_interface: Optional[DataInterface] = None
+    metadata: Optional[Dict[str, Any]] = None
     agent_member_ids: Optional[List[UUID]] = None

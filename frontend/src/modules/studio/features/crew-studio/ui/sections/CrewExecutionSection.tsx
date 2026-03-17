@@ -7,13 +7,14 @@ import type { CrewStudioFormData } from "../../types/crew-schema";
 
 interface Props {
 	availableAgents: { id: string; name: string; subtitle?: string }[];
+	onSyncDraft: () => void;
 }
 
 /**
  * CrewExecutionSection: Dynamic form section changing its layout 
  * depending on the selected collaboration mode.
  */
-export const CrewExecutionSection = ({ availableAgents }: Props) => {
+export const CrewExecutionSection = ({ availableAgents, onSyncDraft }: Props) => {
 	const { control } = useFormContext<CrewStudioFormData>();
 	const currentType = useWatch({
 		control,
@@ -24,13 +25,13 @@ export const CrewExecutionSection = ({ availableAgents }: Props) => {
 	const renderExecution = () => {
 		switch (currentType) {
 			case "Hierarchical":
-				return <HierarchicalExecution agents={availableAgents} />;
+				return <HierarchicalExecution agents={availableAgents} onSyncDraft={onSyncDraft} />;
 			case "Parallel":
-				return <ParallelExecution agents={availableAgents} />;
+				return <ParallelExecution agents={availableAgents} onSyncDraft={onSyncDraft} />;
 			case "Sequential":
-				return <SequentialExecution agents={availableAgents} />;
+				return <SequentialExecution agents={availableAgents} onSyncDraft={onSyncDraft} />;
 			default:
-				return <HierarchicalExecution agents={availableAgents} />;
+				return <HierarchicalExecution agents={availableAgents} onSyncDraft={onSyncDraft} />;
 		}
 	};
 

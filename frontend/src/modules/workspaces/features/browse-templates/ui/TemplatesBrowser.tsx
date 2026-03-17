@@ -113,8 +113,9 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
                 badgeLabel="Structure"
                 tags={template.template_keywords}
                 colorName={colorName}
+                resourceId={template.id}
                 onEdit={() => setSelectedTemplateId(template.id)}
-                onDelete={() => handleDelete(template.id)}
+                onDelete={handleDelete}
             />
           ))}
         </div>
@@ -124,6 +125,7 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
         template={selectedTemplate}
         isOpen={!!selectedTemplateId}
         onClose={() => setSelectedTemplateId(null)}
+        onDelete={handleDelete}
         onEdit={() => {
           if (selectedTemplateId) {
             router.push(`/workspaces/${workspaceId}/templates/studio/${selectedTemplateId}`);

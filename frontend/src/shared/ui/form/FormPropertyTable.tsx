@@ -36,9 +36,8 @@ export const FormPropertyTable = (props: FormPropertyTableProps) => {
 			</div>
 
 			{items.map((item, index) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: items might not have stable ids
 				<div
-					key={`${item.name}-${index}`}
+					key={item.id || `${item.name}-${index}`}
 					className="grid grid-cols-[1fr_150px_100px_50px] gap-4 items-center p-4 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 rounded-2xl group hover:border-zinc-900 dark:hover:border-zinc-600 transition-all focus-within:border-zinc-900 dark:focus-within:border-zinc-200 shadow-inner"
 				>
 					<Input
@@ -58,8 +57,9 @@ export const FormPropertyTable = (props: FormPropertyTableProps) => {
 						}}
 						className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-[10px] h-8 px-2 focus:border-zinc-900 dark:focus:border-zinc-200 outline-none transition-colors appearance-none font-mono text-zinc-900 dark:text-white shadow-sm"
 					>
-						{typeOptions.map((opt) => (
-							<option key={opt.value} value={opt.value}>
+						{typeOptions.map((opt, optIndex) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: opt.value might not be unique
+							<option key={`${opt.value}-${optIndex}`} value={opt.value}>
 								{opt.label}
 							</option>
 						))}

@@ -35,7 +35,7 @@ export const ServiceCategoriesSection = () => {
 
 					return (
 						<FormItemField error={errors.categories?.message}>
-							<div className="grid grid-cols-2 gap-4">
+							<div className="grid grid-cols-1 gap-4">
 								{CATEGORIES.map((category) => (
 									<FormCheckbox
 										key={category.id}

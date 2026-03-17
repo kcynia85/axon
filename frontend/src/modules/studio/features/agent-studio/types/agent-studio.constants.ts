@@ -5,11 +5,11 @@ import type { LLMModel, KnowledgeHub } from "./agent-studio.types";
 import type { AvatarItem } from "./components.types";
 
 export const AVATARS: readonly AvatarItem[] = [
-	{ id: 1, url: "/images/avatars/agent-1.png" },
-	{ id: 2, url: "/images/avatars/agent-2.png" },
-	{ id: 3, url: "/images/avatars/agent-3.png" },
-	{ id: 4, url: "/images/avatars/agent-4.png" },
-	{ id: 5, url: "/images/avatars/agent-5.png" },
+	{ id: 1, url: "/images/avatars/agent-1.webp" },
+	{ id: 2, url: "/images/avatars/agent-2.webp" },
+	{ id: 3, url: "/images/avatars/agent-3.webp" },
+	{ id: 4, url: "/images/avatars/agent-4.webp" },
+	{ id: 5, url: "/images/avatars/agent-5.webp" },
 ];
 
 export const ALL_MODELS: readonly LLMModel[] = [

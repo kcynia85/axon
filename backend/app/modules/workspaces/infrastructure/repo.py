@@ -1,7 +1,7 @@
 from uuid import UUID, uuid4
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete, func, union
+from sqlalchemy import select, update, delete, func, union, or_
 from sqlalchemy.orm import selectinload
 from app.modules.workspaces.domain.models import Pattern, Template, Crew
 from app.modules.workspaces.infrastructure.tables import PatternTable, TemplateTable, CrewTable, crew_agents_association
@@ -15,7 +15,10 @@ class WorkspaceRepository:
     async def list_patterns(self, workspace: Optional[str] = None, limit: int = 100, offset: int = 0) -> List[Pattern]:
         stmt = select(PatternTable).where(PatternTable.deleted_at == None).order_by(PatternTable.created_at.desc())
         if workspace:
-             stmt = stmt.where(PatternTable.availability_workspace.contains([workspace]))
+             stmt = stmt.where(or_(
+                 PatternTable.availability_workspace.contains([workspace]),
+                 PatternTable.availability_workspace.contains(["Global Availability"])
+             ))
         stmt = stmt.limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return [self._pattern_to_domain(row) for row in result.scalars().all()]
@@ -62,7 +65,10 @@ class WorkspaceRepository:
     async def list_templates(self, workspace: Optional[str] = None, limit: int = 100, offset: int = 0) -> List[Template]:
         stmt = select(TemplateTable).where(TemplateTable.deleted_at == None).order_by(TemplateTable.created_at.desc())
         if workspace:
-             stmt = stmt.where(TemplateTable.availability_workspace.contains([workspace]))
+             stmt = stmt.where(or_(
+                 TemplateTable.availability_workspace.contains([workspace]),
+                 TemplateTable.availability_workspace.contains(["Global Availability"])
+             ))
         stmt = stmt.limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return [self._template_to_domain(row) for row in result.scalars().all()]
@@ -109,7 +115,10 @@ class WorkspaceRepository:
     async def list_crews(self, workspace: Optional[str] = None, limit: int = 100, offset: int = 0) -> List[Crew]:
         stmt = select(CrewTable).options(selectinload(CrewTable.agents)).where(CrewTable.deleted_at == None).order_by(CrewTable.created_at.desc())
         if workspace:
-             stmt = stmt.where(CrewTable.availability_workspace.contains([workspace]))
+             stmt = stmt.where(or_(
+                 CrewTable.availability_workspace.contains([workspace]),
+                 CrewTable.availability_workspace.contains(["Global Availability"])
+             ))
         stmt = stmt.limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return [self._crew_to_domain(row) for row in result.scalars().all()]
@@ -131,7 +140,10 @@ class WorkspaceRepository:
             return None
             
         for key, value in data.items():
-            setattr(row, key, value)
+            if key == "metadata":
+                setattr(row, "metadata_", value)
+            else:
+                setattr(row, key, value)
             
         if agent_ids is not None:
              agents_stmt = select(AgentConfigTable).where(AgentConfigTable.id.in_(agent_ids))
@@ -150,6 +162,9 @@ class WorkspaceRepository:
     async def create_crew(self, crew: Crew, agent_ids: List[UUID]) -> Crew:
         # Pydantic model doesn't store relationship directly in DB table schema
         data = crew.model_dump(exclude={"agent_member_ids"})
+        if "metadata" in data:
+            data["metadata_"] = data.pop("metadata")
+            
         new_row = CrewTable(**data)
         
         # Link agents
@@ -185,6 +200,8 @@ class WorkspaceRepository:
             manager_agent_id=row.manager_agent_id,
             crew_keywords=row.crew_keywords or [],
             availability_workspace=row.availability_workspace,
+            data_interface=row.data_interface or {"context": [], "artefacts": []},
+            metadata=row.metadata_ or {},
             created_at=row.created_at,
             updated_at=row.updated_at,
             agent_member_ids=[a.id for a in row.agents] if hasattr(row, "agents") and row.agents else []

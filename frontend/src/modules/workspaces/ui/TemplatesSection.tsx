@@ -65,7 +65,7 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
             tags={template.template_keywords}
             onEdit={() => setSelectedTemplateId(template.id)}
             onDelete={handleDelete} // Pass the handleDelete function
-            templateId={template.id} // Pass template.id here
+            resourceId={template.id} // Pass template.id here
             colorName={colorName}
           />
           ))}

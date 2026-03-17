@@ -5,12 +5,13 @@ import { useFormContext, Controller } from "react-hook-form";
 
 interface Props {
 	agents: { id: string; name: string; subtitle?: string }[];
+	onSyncDraft: () => void;
 }
 
 /**
  * HierarchicalExecution: Managed structure with a lead/manager and team members.
  */
-export const HierarchicalExecution = ({ agents }: Props) => {
+export const HierarchicalExecution = ({ agents, onSyncDraft }: Props) => {
 	const { register, control, formState: { errors } } = useFormContext();
 
 	return (
@@ -26,7 +27,11 @@ export const HierarchicalExecution = ({ agents }: Props) => {
 						<FormSelect
 							options={agents}
 							value={field.value || ""}
-							onChange={field.onChange}
+							onChange={(val) => {
+								field.onChange(val);
+								onSyncDraft();
+							}}
+							onBlur={onSyncDraft}
 							placeholder="Select the agent who will manage this crew..."
 						/>
 					)}
@@ -41,6 +46,7 @@ export const HierarchicalExecution = ({ agents }: Props) => {
 					{...register("synthesis_instruction" as any)} 
 					placeholder="Describe how the manager should coordinate and synthesize the work of other agents..." 
 					className="min-h-[100px]"
+					onBlur={onSyncDraft}
 				/>
 			</FormItemField>
 
@@ -56,7 +62,11 @@ export const HierarchicalExecution = ({ agents }: Props) => {
 							multiple
 							options={agents}
 							value={field.value || []}
-							onChange={field.onChange}
+							onChange={(val) => {
+								field.onChange(val);
+								onSyncDraft();
+							}}
+							onBlur={onSyncDraft}
 							placeholder="Select agents who will perform the tasks..."
 						/>
 					)}

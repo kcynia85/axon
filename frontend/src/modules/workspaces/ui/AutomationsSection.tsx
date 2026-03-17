@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useAutomations } from "../application/useAutomations";
+import { useAutomations, useDeleteAutomation } from "../application/useAutomations";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
@@ -26,7 +26,14 @@ type AutomationsSectionProps = {
 export const AutomationsSection = ({ workspaceId, colorName = "default" }: AutomationsSectionProps) => {
   const router = useRouter();
   const { data: automations, isLoading } = useAutomations(workspaceId);
+  const { mutate: deleteAutomation } = useDeleteAutomation(workspaceId);
   const [selectedAutomationId, setSelectedAutomationId] = React.useState<string | null>(null);
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this automation?")) {
+      deleteAutomation(id);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -63,7 +70,9 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
             href={`/workspaces/${workspaceId}/automations/${automation.id}`}
             badgeLabel={automation.automation_status}
             icon={Zap}
+            resourceId={automation.id}
             onEdit={() => setSelectedAutomationId(automation.id)}
+            onDelete={handleDelete}
             colorName={colorName}
             footerContent={
                 <div className="flex items-center gap-2">
@@ -107,7 +116,17 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
               <Button variant="outline" size="icon">
                 <Settings className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-destructive hover:bg-destructive/10"
+                onClick={() => {
+                  if (selectedAutomationId) {
+                    handleDelete(selectedAutomationId);
+                    setSelectedAutomationId(null);
+                  }
+                }}
+              >
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>

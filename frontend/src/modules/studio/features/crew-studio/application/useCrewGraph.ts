@@ -141,9 +141,10 @@ export const useCrewGraph = ({ availableAgents }: UseCrewGraphProps): GraphData 
 
 			tasks.forEach((task, index) => {
 				const agent = getAgent(task.specialist_id || "");
-				
+				const nodeId = task.id || `task-${index}`;
+
 				nodes.push({
-					id: `task-${index}`,
+					id: nodeId,
 					type: "task",
 					name: agent?.name || "Assign Specialist",
 					avatarUrl: agent?.avatarUrl,
@@ -153,15 +154,17 @@ export const useCrewGraph = ({ availableAgents }: UseCrewGraphProps): GraphData 
 				});
 
 				if (index > 0) {
+					const prevNodeId = tasks[index-1].id || `task-${index-1}`;
 					edges.push({
 						id: `edge-task-${index-1}-${index}`,
-						from: `task-${index-1}`,
-						to: `task-${index}`,
+						from: prevNodeId,
+						to: nodeId,
 						type: "solid",
 					});
 				}
 			});
 		}
+
 
 		return { nodes, edges };
 	}, [type, name, members, tasks, ownerId, availableAgents]);

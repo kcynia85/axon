@@ -19,6 +19,7 @@ export const useStudioScrollSpy = <SectionId extends string>(
     }, []);
 
     const getActiveSectionSnapshot = useCallback(() => activeSectionIdentifierReference.current, []);
+    const getServerSnapshot = useCallback(() => initialSectionIdentifier, [initialSectionIdentifier]);
 
     const setCanvasContainerReference = useCallback((scrollContainerNode: HTMLDivElement | null) => {
         if (!scrollContainerNode) return;
@@ -55,7 +56,11 @@ export const useStudioScrollSpy = <SectionId extends string>(
         return () => intersectionObserver.disconnect();
     }, [sectionIdentifiers, intersectionOptions]);
 
-    const activeSectionIdentifier = useSyncExternalStore(subscribeToSectionChanges, getActiveSectionSnapshot);
+    const activeSectionIdentifier = useSyncExternalStore(
+        subscribeToSectionChanges, 
+        getActiveSectionSnapshot,
+        getServerSnapshot
+    );
 
     const scrollToSectionIdentifier = useCallback((sectionIdentifier: SectionId) => {
         const targetSectionElement = document.getElementById(sectionIdentifier);

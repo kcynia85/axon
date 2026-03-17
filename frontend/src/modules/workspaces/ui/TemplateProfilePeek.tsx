@@ -14,9 +14,10 @@ type TemplateProfilePeekProps = {
   readonly onClose: () => void;
   readonly onInstantiate?: () => void;
   readonly onEdit?: () => void;
+  readonly onDelete?: (id: string) => void;
 }
 
-export const TemplateProfilePeek = ({ template, isOpen, onClose, onEdit }: TemplateProfilePeekProps) => {
+export const TemplateProfilePeek = ({ template, isOpen, onClose, onEdit, onDelete }: TemplateProfilePeekProps) => {
   if (!template) return null;
 
   // Logic to determine if we should show numbering for actions with subactions
@@ -38,9 +39,23 @@ export const TemplateProfilePeek = ({ template, isOpen, onClose, onEdit }: Templ
       }
       modal={false}
       footer={
-        <Button className="w-full bg-primary hover:bg-primary/90 text-base py-6" onClick={onEdit}>
-          Edytuj Template
-        </Button>
+        <div className="flex w-full gap-3">
+          <Button 
+            variant="outline" 
+            className="flex-1 text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20 h-14 font-bold uppercase tracking-widest text-[11px]" 
+            onClick={() => {
+              if (template.id && onDelete && window.confirm("Are you sure you want to delete this template?")) {
+                onDelete(template.id);
+                onClose();
+              }
+            }}
+          >
+            Usuń Template
+          </Button>
+          <Button className="flex-[2] bg-primary hover:bg-primary/90 text-base py-6 h-14" onClick={onEdit}>
+            Edytuj Template
+          </Button>
+        </div>
       }
     >
       <div className="space-y-12">

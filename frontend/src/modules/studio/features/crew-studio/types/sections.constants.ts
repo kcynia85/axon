@@ -40,3 +40,21 @@ export const CREW_STUDIO_SECTIONS = [
 		icon: ShieldCheck,
 	},
 ];
+
+export const CREW_TYPE_OPTIONS = [
+	{
+		id: "Hierarchical" as const,
+		title: "Hierarchical",
+		description: "Managed structure with a Lead/Manager agent who orchestrates the process.",
+	},
+	{
+		id: "Parallel" as const,
+		title: "Parallel",
+		description: "Standard team structure where multiple agents work concurrently on objectives.",
+	},
+	{
+		id: "Sequential" as const,
+		title: "Sequential",
+		description: "Strict step-by-step process where tasks are performed in a defined order.",
+	},
+];

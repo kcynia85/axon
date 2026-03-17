@@ -3,8 +3,7 @@
 import { createClient } from "@/shared/infrastructure/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { CrewStudioFormData } from "../types/crew-schema";
-import { getDeterministicImgId } from "@/shared/lib/utils";
-import { AGENT_REAL_NAMES } from "@/modules/workspaces/domain/constants";
+import { getAgentAvatarUrl } from "@/shared/lib/utils";
 
 /**
  * createCrewAction: Server Action to save a new crew.
@@ -20,22 +19,31 @@ export async function createCrewAction(workspaceId: string, data: CrewStudioForm
 
 	const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
+	// Ensure the current workspace is included in availability
+	const availability = new Set(data.availability_workspace || []);
+	availability.add(workspaceId);
+
 	// Map data based on the active type branch
 	const apiData: any = {
 		crew_name: data.crew_name,
 		crew_description: data.crew_description,
 		crew_process_type: data.crew_process_type,
 		crew_keywords: data.crew_keywords,
-		availability_workspace: data.availability_workspace,
-		metadata: {
-			contexts: data.contexts,
+		availability_workspace: Array.from(availability),
+		data_interface: {
+			context: data.contexts,
 			artefacts: data.artefacts,
-		}
+		},
+		metadata: {}
 	};
 
 	if (data.crew_process_type === "Hierarchical") {
-		apiData.agent_member_ids = data.agent_member_ids;
-		apiData.metadata.owner_agent_id = data.owner_agent_id;
+		// Ensure manager is included in the team members list
+		const members = new Set(data.agent_member_ids);
+		if (data.owner_agent_id) members.add(data.owner_agent_id);
+		
+		apiData.agent_member_ids = Array.from(members);
+		apiData.manager_agent_id = data.owner_agent_id;
 		apiData.metadata.synthesis_instruction = data.synthesis_instruction;
 	} else if (data.crew_process_type === "Parallel") {
 		apiData.agent_member_ids = data.agent_member_ids;
@@ -43,12 +51,6 @@ export async function createCrewAction(workspaceId: string, data: CrewStudioForm
 		// In Sequential, members are derived from task specialists
 		apiData.agent_member_ids = Array.from(new Set(data.tasks.map(t => t.specialist_id).filter(Boolean)));
 		apiData.metadata.tasks = data.tasks;
-	}
-
-	// In mock mode, just log the data
-	if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-		console.log("MOCK SAVE CREW:", apiData);
-		return { id: 'mock-crew-id', ...apiData };
 	}
 
 	const response = await fetch(`${baseUrl}/workspaces/${workspaceId}/crews`, {
@@ -83,33 +85,37 @@ export async function updateCrewAction(workspaceId: string, crewId: string, data
 
 	const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
+	// Ensure the current workspace is included in availability
+	const availability = new Set(data.availability_workspace || []);
+	availability.add(workspaceId);
+
 	// Map data based on the active type branch
 	const apiData: any = {
 		crew_name: data.crew_name,
 		crew_description: data.crew_description,
 		crew_process_type: data.crew_process_type,
 		crew_keywords: data.crew_keywords,
-		availability_workspace: data.availability_workspace,
-		metadata: {
-			contexts: data.contexts,
+		availability_workspace: Array.from(availability),
+		data_interface: {
+			context: data.contexts,
 			artefacts: data.artefacts,
-		}
+		},
+		metadata: {}
 	};
 
 	if (data.crew_process_type === "Hierarchical") {
-		apiData.agent_member_ids = data.agent_member_ids;
-		apiData.metadata.owner_agent_id = data.owner_agent_id;
+		// Ensure manager is included in the team members list
+		const members = new Set(data.agent_member_ids);
+		if (data.owner_agent_id) members.add(data.owner_agent_id);
+		
+		apiData.agent_member_ids = Array.from(members);
+		apiData.manager_agent_id = data.owner_agent_id;
 		apiData.metadata.synthesis_instruction = data.synthesis_instruction;
 	} else if (data.crew_process_type === "Parallel") {
 		apiData.agent_member_ids = data.agent_member_ids;
 	} else if (data.crew_process_type === "Sequential") {
 		apiData.agent_member_ids = Array.from(new Set(data.tasks.map(t => t.specialist_id).filter(Boolean)));
 		apiData.metadata.tasks = data.tasks;
-	}
-
-	if (process.env.NEXT_PUBLIC_USE_MOCK === 'true') {
-		console.log("MOCK UPDATE CREW:", crewId, apiData);
-		return { id: crewId, ...apiData };
 	}
 
 	const response = await fetch(`${baseUrl}/workspaces/${workspaceId}/crews/${crewId}`, {
@@ -131,8 +137,7 @@ export async function updateCrewAction(workspaceId: string, crewId: string, data
 }
 
 /**
- * getAvailableAgents: Fetches the list of agents.
- * Added support for MOCK mode to always return data to the UI.
+ * getAvailableAgents: Fetches the list of agents strictly from the database.
  */
 export async function getAvailableAgents(workspaceId: string) {
 	try {
@@ -140,34 +145,8 @@ export async function getAvailableAgents(workspaceId: string) {
 		const { data: { session } } = await supabase.auth.getSession();
 		const token = session?.access_token;
 
-		// MOCK FALLBACK: If mock mode or no token
-		if (process.env.NEXT_PUBLIC_USE_MOCK === 'true' || !token) {
-			return [
-				{ 
-					id: "00000000-0000-0000-0000-000000000001", 
-					name: "Product Owner", 
-					subtitle: "Alex Morgan", 
-					avatarUrl: `/images/avatars/agent-1.png` 
-				},
-				{ 
-					id: "00000000-0000-0000-0000-000000000002", 
-					name: "Technical Writer", 
-					subtitle: "Elena Vance", 
-					avatarUrl: `/images/avatars/agent-2.png` 
-				},
-				{ 
-					id: "00000000-0000-0000-0000-000000000003", 
-					name: "User Researcher", 
-					subtitle: "Marcus Chen", 
-					avatarUrl: `/images/avatars/agent-3.png` 
-				},
-				{ 
-					id: "00000000-0000-0000-0000-000000000004", 
-					name: "Full-Stack Developer", 
-					subtitle: "David Kessler", 
-					avatarUrl: `/images/avatars/agent-4.png` 
-				},
-			];
+		if (!token && process.env.NODE_ENV === 'production') {
+			return [];
 		}
 
 		const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
@@ -184,12 +163,11 @@ export async function getAvailableAgents(workspaceId: string) {
 		return (data as any[]).map(agent => ({
 			id: agent.id,
 			name: agent.agent_role_text || agent.agent_name || "Unnamed Agent",
-			subtitle: AGENT_REAL_NAMES[agent.id] || agent.agent_name || "Agent Person",
-			avatarUrl: agent.agent_visual_url || `/images/avatars/agent-${getDeterministicImgId(agent.id)}.png`
+			subtitle: agent.agent_name || "Specialist",
+			avatarUrl: getAgentAvatarUrl(agent.id, agent.agent_visual_url)
 		}));
 	} catch (error) {
 		console.error("Fetch Agents Error:", error);
-		// Return an empty list instead of throwing an error to avoid breaking the entire page
 		return [];
 	}
 }

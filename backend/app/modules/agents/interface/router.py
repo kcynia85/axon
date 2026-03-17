@@ -40,16 +40,17 @@ async def list_tools(
 
 @router.get("/", response_model=List[AgentConfig])
 async def list_agents(
+    workspace: Optional[str] = None,
     agents: List[AgentConfig] = Depends(service.list_agents_use_case)
 ):
-    """List all agents."""
+    """List all agents, optionally filtered by workspace."""
     return agents
 
 @router.post("/", response_model=AgentConfig, status_code=status.HTTP_201_CREATED)
 async def create_agent(
     agent: AgentConfig = Depends(service.create_agent_use_case)
 ):
-    """Create a new agent."""
+    """Create a new agent configuration."""
     return agent
 
 @router.get("/{id}", response_model=AgentConfig)
@@ -78,6 +79,14 @@ async def delete_agent(
     if not deleted:
         raise HTTPException(status_code=404, detail="Agent not found")
     return
+
+@router.get("/{id}/inspect-deletion", response_model=List[dict])
+async def inspect_agent_deletion(
+    id: UUID,
+    assignments: List[dict] = Depends(service.inspect_agent_deletion_use_case)
+):
+    """Check what crews will be affected by deleting this agent."""
+    return assignments
 
 @router.post("/{id}/cost-estimate")
 async def estimate_cost(

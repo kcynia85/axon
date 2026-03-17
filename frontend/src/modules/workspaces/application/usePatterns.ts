@@ -19,3 +19,13 @@ export const useCreatePattern = (workspaceId: string): UseMutationResult<Pattern
         },
     });
 };
+
+export const useDeletePattern = (workspaceId: string): UseMutationResult<void, Error, string> => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (patternId: string): Promise<void> => await workspacesApi.deletePattern(workspaceId, patternId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["patterns", workspaceId] });
+        },
+    });
+};

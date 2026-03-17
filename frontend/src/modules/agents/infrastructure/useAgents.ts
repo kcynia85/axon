@@ -49,3 +49,11 @@ export const useDeleteAgent = (): UseMutationResult<void, Error, string> => {
         },
     });
 };
+
+export const useInspectAgentDeletion = (agentId: string | null) => {
+    return useQuery({
+        queryKey: ["agent-inspect-deletion", agentId],
+        queryFn: async () => agentId ? await agentsApi.inspectDeletion(agentId) : [],
+        enabled: !!agentId,
+    });
+};

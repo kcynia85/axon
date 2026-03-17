@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useServices } from "../application/useServices";
+import { useServices, useDeleteService } from "../application/useServices";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import {
@@ -23,7 +23,14 @@ type ServicesSectionProps = {
 export const ServicesSection = ({ workspaceId, colorName = "default" }: ServicesSectionProps) => {
   const router = useRouter();
   const { data: services, isLoading } = useServices(workspaceId);
+  const { mutate: deleteService } = useDeleteService(workspaceId);
   const [selectedServiceId, setSelectedServiceId] = React.useState<string | null>(null);
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this service?")) {
+      deleteService(id);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -60,7 +67,9 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
             href={`/workspaces/${workspaceId}/services/${service.id}`}
             badgeLabel={service.service_category}
             icon={Cloud}
+            resourceId={service.id}
             onEdit={() => setSelectedServiceId(service.id)}
+            onDelete={handleDelete}
             colorName={colorName}
             footerContent={
                 <div className="flex items-center gap-2">
@@ -98,8 +107,19 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
             </section>
 
             <div className="flex gap-3 pt-6 border-t border-muted">
-              <Button className="flex-1 bg-primary hover:bg-primary/90" onClick={handleEdit}>Edytuj Usługę</Button>
-              <Button variant="outline" className="flex-1">Settings</Button>
+              <Button 
+                variant="outline" 
+                className="flex-1 text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20" 
+                onClick={() => {
+                  if (selectedServiceId) {
+                    handleDelete(selectedServiceId);
+                    setSelectedServiceId(null);
+                  }
+                }}
+              >
+                Usuń Usługę
+              </Button>
+              <Button className="flex-[2] bg-primary hover:bg-primary/90" onClick={handleEdit}>Edytuj Usługę</Button>
             </div>
           </div>
         )}

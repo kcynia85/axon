@@ -6,10 +6,14 @@ import { FormTagInput } from "@/shared/ui/form/FormTagInput";
 import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 import { useFormContext, Controller } from "react-hook-form";
 
+interface Props {
+	onSyncDraft: () => void;
+}
+
 /**
  * CrewBasicInfoSection: The first section of the form collecting crew foundations.
  */
-export const CrewBasicInfoSection = () => {
+export const CrewBasicInfoSection = ({ onSyncDraft }: Props) => {
 	const { register, control, formState: { errors } } = useFormContext();
 
 	return (
@@ -22,6 +26,7 @@ export const CrewBasicInfoSection = () => {
 					<FormTextField 
 						{...register("crew_name")} 
 						placeholder="e.g. Research Team" 
+						onBlur={onSyncDraft}
 					/>
 				</FormItemField>
 
@@ -33,6 +38,7 @@ export const CrewBasicInfoSection = () => {
 						{...register("crew_description")} 
 						placeholder="Describe the main task and purpose of this crew..." 
 						className="min-h-[120px]"
+						onBlur={onSyncDraft}
 					/>
 				</FormItemField>
 
@@ -44,8 +50,11 @@ export const CrewBasicInfoSection = () => {
 						render={({ field }) => (
 							<FormTagInput 
 								value={field.value || []} 
-								onChange={field.onChange}
-								onBlur={field.onBlur}
+								onChange={(val) => {
+									field.onChange(val);
+									onSyncDraft();
+								}}
+								onBlur={onSyncDraft}
 								placeholder="e.g. research, analysis, scraping..." 
 							/>
 						)}

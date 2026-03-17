@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/shared/lib/utils";
 import type { AvatarGallerySliderProps } from "../../types/components.types";
 import { useAvatarGallerySlider } from "../application/hooks/useAvatarGallerySlider";
@@ -22,15 +23,16 @@ export const AvatarGallerySlider = (props: AvatarGallerySliderProps) => {
 								: "border-zinc-800 grayscale hover:grayscale-0 hover:border-zinc-600 opacity-40 hover:opacity-100",
 						)}
 					>
-						{/* biome-ignore lint/performance/noImgElement: intentional */}
-						<img
+						<Image
 							src={avatar.url}
 							alt={`Agent Archetype ${avatar.id}`}
-							className="w-full h-full object-cover"
+							fill
+							sizes="192px"
+							className="object-cover object-top scale-110"
 						/>
 						{value === avatar.url && (
 							<div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
-								<div className="bg-primary text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
+								<div className="bg-primary text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter shadow-xl">
 									Selected
 								</div>
 							</div>

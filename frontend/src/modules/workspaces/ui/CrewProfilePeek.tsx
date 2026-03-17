@@ -5,8 +5,10 @@ import Image from "next/image";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, FileText, Link as LinkIcon, Type } from "lucide-react";
 import { Crew } from "@/shared/domain/workspaces";
+import { getDeterministicImgId } from "@/shared/lib/utils";
+import { getWorkspaceLabel } from "../domain/constants";
 
 type AgentInfo = {
   name: string;
@@ -18,15 +20,35 @@ type CrewProfilePeekProps = {
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly onEdit?: () => void;
+  readonly onDelete?: (id: string) => void;
   readonly agentsMap?: Record<string, AgentInfo>;
 }
 
-const getDeterministicImgId = (id: string, index: number): number => {
-  return ((id.charCodeAt(id.length - 1) + index) % 5) + 1;
+const FieldTypeIcon = ({ type }: { type: string }) => {
+  switch (type.toLowerCase()) {
+    case 'file':
+    case 'pdf':
+    case 'md':
+      return <FileText className="w-4 h-4 text-muted-foreground/70" />;
+    case 'link':
+    case 'url':
+      return <LinkIcon className="w-4 h-4 text-muted-foreground/70" />;
+    default:
+      return <Type className="w-4 h-4 text-muted-foreground/70" />;
+  }
 };
 
-export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit, agentsMap = {} }: CrewProfilePeekProps) => {
+export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit, onDelete, agentsMap = {} }: CrewProfilePeekProps) => {
   if (!crew) return null;
+
+  // Compatibility logic for Context & Artefacts
+  const contexts = crew.data_interface?.context || (crew.metadata as any)?.contexts || [];
+  const artefacts = crew.data_interface?.artefacts || (crew.metadata as any)?.artefacts || [];
+
+  // Deduplicate and sort workspace labels
+  const availabilityLabels = Array.from(new Set(
+    (crew.availability_workspace || []).map(getWorkspaceLabel)
+  )).sort();
 
   return (
     <SidePeek
@@ -40,9 +62,23 @@ export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit, agentsMap = {} 
       }
       modal={false}
       footer={
-        <Button className="w-full bg-primary hover:bg-primary/90 text-base py-6" onClick={onEdit}>
-          Edytuj Crew
-        </Button>
+        <div className="flex w-full gap-3">
+          <Button 
+            variant="outline" 
+            className="flex-1 text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20 h-14 font-bold uppercase tracking-widest text-[11px]" 
+            onClick={() => {
+              if (crew.id && onDelete && window.confirm("Are you sure you want to delete this crew?")) {
+                onDelete(crew.id);
+                onClose();
+              }
+            }}
+          >
+            Usuń Crew
+          </Button>
+          <Button className="flex-[2] bg-primary hover:bg-primary/90 text-base py-6 h-14" onClick={onEdit}>
+            Edytuj Crew
+          </Button>
+        </div>
       }
     >
       <div className="space-y-12">
@@ -73,31 +109,47 @@ export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit, agentsMap = {} 
         <section className="space-y-4">
           <h4 className="text-base font-bold text-muted-foreground">Team</h4>
           <div className="space-y-1.5">
-            {crew.agent_member_ids.map((id, index) => {
-              const agent = agentsMap[id];
-              const imgId = getDeterministicImgId(id, index);
-              const avatarUrl = agent?.visualUrl || `/images/avatars/agent-${imgId}.png`;
-              const agentName = agent?.name || "Specialist Agent";
+            {crew.agent_member_ids && crew.agent_member_ids.length > 0 ? (
+              crew.agent_member_ids
+                .filter(id => !!agentsMap[id]) // Only show agents we have data for
+                .map((id) => {
+                  const agent = agentsMap[id];
+                  const imgId = getDeterministicImgId(id);
+                  const avatarUrl = agent?.visualUrl || `/images/avatars/agent-${imgId}.webp`;
+                  const agentName = agent?.name || "Specialist Agent";
 
-              return (
-                <div key={id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full border border-primary/10 overflow-hidden bg-black relative">
-                      <Image 
-                        src={avatarUrl}
-                        alt={agentName}
-                        fill
-                        className="object-cover object-top scale-110"
-                      />
+                  return (
+                    <div key={id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full border border-primary/10 overflow-hidden bg-black relative">
+                          <Image 
+                            src={avatarUrl}
+                            alt={agentName}
+                            fill
+                            className="object-cover object-top scale-110"
+                          />
+                        </div>
+                        <span className="text-base font-semibold">{agentName}</span>
+                      </div>
+                      {id === crew.manager_agent_id && (
+                        <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold text-primary border-primary/20 bg-primary/5">Manager</Badge>
+                      )}
                     </div>
-                    <span className="text-base font-semibold">{agentName}</span>
-                  </div>
-                  {id === crew.manager_agent_id && (
-                    <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">Manager</Badge>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })
+            ) : (
+              <div className="flex items-center p-3 rounded-lg bg-muted/30 border border-primary/5 text-sm text-muted-foreground italic">
+                No team members assigned to this crew.
+              </div>
+            )}
+            
+            {/* Fallback if all members were filtered out but list wasn't empty */}
+            {crew.agent_member_ids && crew.agent_member_ids.length > 0 && 
+             crew.agent_member_ids.filter(id => !!agentsMap[id]).length === 0 && (
+              <div className="text-sm text-muted-foreground italic px-1">
+                No matching agents found in this workspace.
+              </div>
+            )}
           </div>
         </section>
 
@@ -108,12 +160,21 @@ export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit, agentsMap = {} 
             <HelpCircle className="w-4 h-4 text-muted-foreground/50 cursor-help" />
           </h4>
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
-              <span className="text-base font-mono font-semibold">research_brief</span>
-              <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
-                pdf
-              </Badge>
-            </div>
+            {contexts.length > 0 ? (
+              contexts.map((item: any, i: number) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                  <div className="flex items-center gap-2">
+                    <FieldTypeIcon type={item.field_type} />
+                    <span className="text-base font-mono font-semibold">{item.name}</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                    {item.field_type}
+                  </Badge>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-muted-foreground italic px-1">No context items defined.</div>
+            )}
           </div>
         </section>
 
@@ -123,25 +184,34 @@ export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit, agentsMap = {} 
             <HelpCircle className="w-4 h-4 text-muted-foreground/50 cursor-help" />
           </h4>
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
-              <span className="text-base font-mono font-semibold">synteza_results</span>
-              <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
-                md
-              </Badge>
-            </div>
+            {artefacts.length > 0 ? (
+              artefacts.map((item: any, i: number) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                  <div className="flex items-center gap-2">
+                    <FieldTypeIcon type={item.field_type} />
+                    <span className="text-base font-mono font-semibold">{item.name}</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                    {item.field_type}
+                  </Badge>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-muted-foreground italic px-1">No artefacts defined.</div>
+            )}
           </div>
         </section>
 
         {/* ── Availability ── */}
-        {crew.availability_workspace && crew.availability_workspace.length > 0 && (
+        {availabilityLabels.length > 0 && (
           <section className="space-y-4">
             <h4 className="text-base font-bold text-muted-foreground">
               Availability
             </h4>
             <div className="flex flex-wrap gap-1.5">
-              {crew.availability_workspace.map((wsId) => (
-                <Badge key={wsId} variant="outline" className="text-base font-normal">
-                  {wsId.replace("ws-", "").replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+              {availabilityLabels.map((label) => (
+                <Badge key={label} variant="outline" className="text-base font-normal">
+                  {label}
                 </Badge>
               ))}
             </div>

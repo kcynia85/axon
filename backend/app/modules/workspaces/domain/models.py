@@ -5,6 +5,16 @@ from typing import Optional, List, Dict, Any
 from app.modules.workspaces.domain.enums import PatternType, ProcessType
 from app.shared.utils.time import now_utc
 
+class DataInterfaceItem(BaseModel):
+    name: str
+    field_type: str # e.g. "link", "text", "file"
+    is_required: bool = True
+    value: Optional[str] = None
+
+class DataInterface(BaseModel):
+    context: List[DataInterfaceItem] = Field(default_factory=list)
+    artefacts: List[DataInterfaceItem] = Field(default_factory=list)
+
 class Pattern(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     pattern_name: str
@@ -40,6 +50,8 @@ class Crew(BaseModel):
     manager_agent_id: Optional[UUID] = None
     crew_keywords: List[str] = Field(default_factory=list)
     availability_workspace: List[str]
+    data_interface: DataInterface = Field(default_factory=DataInterface)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
     deleted_at: Optional[datetime] = None

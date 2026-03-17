@@ -18,6 +18,7 @@ interface Props {
     availableAgents: AvailableAgent[];
     onSave: (data: CrewStudioFormData) => void;
     onCancel: () => void;
+    onSyncDraft?: (data: CrewStudioFormData) => void;
     initialData?: Partial<CrewStudioFormData>;
     isSaving?: boolean;
 }
@@ -27,8 +28,21 @@ interface Props {
  * Adheres to Pure View and Zero useEffect principles.
  * Standard: Container pattern, 0% UI declaration.
  */
-export const CrewStudio = ({ availableAgents, onSave, onCancel, initialData, isSaving }: Props) => {
-    const { form, estimatedCost, handleTypeChange, currentType } = useCrewForm(initialData);
+export const CrewStudio = ({ 
+    availableAgents, 
+    onSave, 
+    onCancel, 
+    onSyncDraft,
+    initialData, 
+    isSaving 
+}: Props) => {
+    const { 
+        form, 
+        estimatedCost, 
+        handleTypeChange, 
+        currentType, 
+        syncDraft 
+    } = useCrewForm(initialData, onSyncDraft);
 
     // Navigation items with dynamic titles based on type
     const navigationItems = useMemo(() => {
@@ -74,6 +88,7 @@ export const CrewStudio = ({ availableAgents, onSave, onCancel, initialData, isS
             onTypeChange={handleTypeChange}
             onSave={handleSave}
             onCancel={onCancel}
+            onSyncDraft={syncDraft}
             setCanvasContainerReference={setCanvasContainerReference}
             isSaving={isSaving}
         />

@@ -13,7 +13,7 @@ interface Props {
 
 /**
  * SharedAvailabilitySection: Unified access control for all entities.
- * Determines which Workspaces an entity belongs to.
+ * Enhanced to handle migration from labels to IDs and case-sensitivity issues.
  */
 export const SharedAvailabilitySection = ({ name, number = 4 }: Props) => {
   const { control } = useFormContext();
@@ -29,17 +29,29 @@ export const SharedAvailabilitySection = ({ name, number = 4 }: Props) => {
         control={control}
         name={name}
         render={({ field }) => {
-          const selectedWorkspaces = field.value || [];
-          const isGlobalSelected = selectedWorkspaces.includes(GLOBAL_AVAILABILITY);
+          const selectedWorkspaces: string[] = field.value || [];
+          
+          const isMatch = (workspace: { id: string; label: string }, input: string) => {
+            const normalizedInput = input.trim().toLowerCase();
+            return workspace.id.toLowerCase() === normalizedInput || workspace.label.toLowerCase() === normalizedInput;
+          };
 
-          const toggleWorkspace = (workspace: string) => {
+          const isGlobalSelected = selectedWorkspaces.some(val => isMatch({ id: GLOBAL_AVAILABILITY, label: GLOBAL_AVAILABILITY }, val));
+
+          const toggleWorkspace = (workspace: { id: string; label: string }) => {
             let next: string[] = [];
-            if (workspace === GLOBAL_AVAILABILITY) {
+            
+            if (workspace.id === GLOBAL_AVAILABILITY) {
               next = isGlobalSelected ? [] : [GLOBAL_AVAILABILITY];
             } else {
-              next = selectedWorkspaces.includes(workspace)
-                ? selectedWorkspaces.filter((id: string) => id !== workspace)
-                : [...selectedWorkspaces, workspace];
+              const alreadyPresent = selectedWorkspaces.some(val => isMatch(workspace, val));
+
+              if (alreadyPresent) {
+                // Remove all variants (ID, Label, different cases)
+                next = selectedWorkspaces.filter(val => !isMatch(workspace, val));
+              } else {
+                next = [...selectedWorkspaces, workspace.id];
+              }
             }
             field.onChange(next);
           };
@@ -48,13 +60,13 @@ export const SharedAvailabilitySection = ({ name, number = 4 }: Props) => {
             <FormItemField>
               <div className="grid grid-cols-1 gap-4">
                 {ALL_WORKSPACE_OPTIONS.map((workspace) => {
-                  const isSelected = selectedWorkspaces.includes(workspace);
-                  const isDisabled = isGlobalSelected && workspace !== GLOBAL_AVAILABILITY;
+                  const isSelected = selectedWorkspaces.some(val => isMatch(workspace, val));
+                  const isDisabled = isGlobalSelected && workspace.id !== GLOBAL_AVAILABILITY;
 
                   return (
                     <FormCheckbox
-                      key={workspace}
-                      title={workspace}
+                      key={workspace.id}
+                      title={workspace.label}
                       checked={isSelected}
                       disabled={isDisabled}
                       onChange={() => toggleWorkspace(workspace)}

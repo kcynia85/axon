@@ -1,13 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Resolver } from "react-hook-form";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { CrewStudioFormSchema, type CrewStudioFormData } from "../types/crew-schema";
 
 /**
  * useCrewForm: The main logical heart of Crew Studio.
  * Manages form state, validation, and derived calculations (e.g., cost).
  */
-export const useCrewForm = (initialData?: Partial<CrewStudioFormData>) => {
+export const useCrewForm = (
+	initialData?: Partial<CrewStudioFormData>,
+	onSyncDraft?: (data: CrewStudioFormData) => void
+) => {
 	const form = useForm<CrewStudioFormData>({
 		resolver: zodResolver(CrewStudioFormSchema) as unknown as Resolver<CrewStudioFormData>,
 		mode: "onChange",
@@ -21,42 +24,54 @@ export const useCrewForm = (initialData?: Partial<CrewStudioFormData>) => {
 			availability_workspace: [],
 			agent_member_ids: [],
 			owner_agent_id: "",
+			tasks: [{ description: "", specialist_id: "" }],
 			cost: 0,
 			...initialData,
-		} as CrewStudioFormData, // Asserting as the specific union type since owner_agent_id is provided
+		} as any,
 	});
 
-	const { watch, setValue } = form;
+	const { watch, setValue, getValues } = form;
 
 	// Subscription to fields for dynamic calculations
 	const formValues = watch();
 	const currentType = formValues.crew_process_type;
 	const members = formValues.agent_member_ids || [];
-	const tasks = currentType === "Sequential" && "tasks" in formValues ? formValues.tasks : [];
+	const tasks = (formValues as any).tasks || [];
+
+	/**
+	 * Manual trigger for UI persistence
+	 */
+	const syncDraft = useCallback(() => {
+		if (onSyncDraft) {
+			onSyncDraft(getValues());
+		}
+	}, [getValues, onSyncDraft]);
 
 	/**
 	 * DERIVED STATE: Dynamic Cost Calculation
-	 * Calculated on the fly without useEffect.
 	 */
 	const estimatedCost = useMemo(() => {
 		const BASE_AGENT_RATE = 45.0; // Sample fixed rate
 		
 		if (currentType === "Sequential") {
-			// In sequential, cost is based on number of tasks/steps
 			return tasks.length * BASE_AGENT_RATE;
 		}
 		
-		// In other modes, based on number of unique members
 		return members.length * BASE_AGENT_RATE;
 	}, [currentType, members.length, tasks.length]);
 
 	/**
-	 * Action to change collaboration type while maintaining data consistency.
-	 * We no longer reset fields here to allow users to switch back and forth 
-	 * without losing their progress (Better UX).
+	 * Action to change collaboration type
 	 */
 	const handleTypeChange = (type: CrewStudioFormData["crew_process_type"]) => {
 		setValue("crew_process_type", type, { shouldValidate: true });
+		
+		// If switching to Sequential and tasks are empty, add an initial task
+		if (type === "Sequential" && (!tasks || tasks.length === 0)) {
+			setValue("tasks" as any, [{ description: "", specialist_id: "" }]);
+		}
+		
+		syncDraft();
 	};
 
 	return {
@@ -64,5 +79,6 @@ export const useCrewForm = (initialData?: Partial<CrewStudioFormData>) => {
 		currentType,
 		estimatedCost,
 		handleTypeChange,
+		syncDraft,
 	};
 };

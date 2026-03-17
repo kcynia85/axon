@@ -189,10 +189,22 @@ Strictly follow these domain guidelines:
                     </div>
                 </div>
 
-                <div className="mt-6">
+                <div className="flex gap-3 mt-6">
+                    <Button 
+                        variant="outline"
+                        onClick={() => {
+                            if (selectedPrompt?.id) {
+                                handleDelete(selectedPrompt.id);
+                                setIsSidebarOpen(false);
+                            }
+                        }}
+                        className="flex-1 py-6 text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20 rounded-2xl font-black uppercase tracking-widest transition-all"
+                    >
+                        Usuń
+                    </Button>
                     <Button 
                         onClick={handleEdit}
-                        className="w-full py-6 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:opacity-90 transition-all gap-3"
+                        className="flex-[2] py-6 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:opacity-90 transition-all gap-3"
                     >
                         <Edit2 className="w-5 h-5" /> Edytuj Archetyp
                     </Button>

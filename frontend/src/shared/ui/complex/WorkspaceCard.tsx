@@ -30,9 +30,11 @@ type WorkspaceCardProps = {
     readonly className?: string;
     readonly colorName?: string;
     readonly onEdit?: (e: React.MouseEvent) => void;
-    readonly onDelete?: (e: React.MouseEvent) => void;
+    readonly onDelete?: (id: string) => void;
+    readonly resourceId?: string;
     readonly layout?: "grid" | "list";
-};
+    readonly isDraft?: boolean;
+}
 
 /**
  * WorkspaceCard - Reusable card based on the Spaces overview / MainCard aesthetic.
@@ -52,7 +54,9 @@ export const WorkspaceCard = ({
     colorName = "default",
     layout = "grid",
     onEdit,
-    onDelete
+    onDelete,
+    resourceId,
+    isDraft = false
 }: WorkspaceCardProps) => {
     const styles = getVisualStylesForZoneColor(colorName);
 
@@ -62,7 +66,7 @@ export const WorkspaceCard = ({
         : description;
         
     const renderActions = () => {
-        if (!onDelete) return null;
+        if (!onDelete || !resourceId) return null;
         return (
             <div className="absolute top-3 right-3 z-40">
                 <DropdownMenu>
@@ -80,7 +84,7 @@ export const WorkspaceCard = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                onDelete(e);
+                                onDelete(resourceId);
                             }}
                         >
                             <Trash2 className="w-4 h-4 mr-2" />
@@ -121,6 +125,11 @@ export const WorkspaceCard = ({
                     <div className="absolute bottom-0 left-0 right-0 p-6 z-20 flex flex-col items-start justify-end text-left pointer-events-none h-1/2">
                         
                         <div className="flex flex-col items-start w-full mb-4 mt-auto">
+                            {isDraft && (
+                                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.2em] bg-zinc-500/10 border-zinc-500/20 px-2.5 py-0.5 rounded-lg text-zinc-500 mb-3 shadow-none">
+                                    Draft
+                                </Badge>
+                            )}
                             {/* 1. Role Heading (16px) */}
                             <div className="h-[24px] w-full flex items-end justify-start mb-1">
                                 <h4 className="text-[16px] font-bold tracking-tight text-white group-hover:text-primary transition-colors leading-tight whitespace-nowrap truncate w-full capitalize">
@@ -145,7 +154,10 @@ export const WorkspaceCard = ({
                     </div>
 
                     {/* Bottom Accent Bar */}
-                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
+                    <div className={cn(
+                        "absolute bottom-0 left-0 right-0 h-1 z-30", 
+                        isDraft ? "bg-zinc-800" : styles.hoverBackgroundClassName
+                    )} />
                 </Card>
             </Link>
         );
@@ -181,9 +193,16 @@ export const WorkspaceCard = ({
                     {/* Right Side: Content */}
                     <div className="flex-1 p-5 min-w-0 pr-12 flex flex-col justify-center">
                         <div className="flex flex-col items-start mb-2">
-                            <h4 className="text-[15px] font-black tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2 capitalize">
-                                {badgeLabel || "AI Agent"}
-                            </h4>
+                            <div className="flex items-center gap-2 mb-1">
+                                <h4 className="text-[15px] font-black tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2 capitalize">
+                                    {badgeLabel || "AI Agent"}
+                                </h4>
+                                {isDraft && (
+                                    <Badge variant="outline" className="text-[9px] font-black uppercase tracking-wider bg-zinc-500/10 border-zinc-500/20 px-1.5 py-0 rounded text-zinc-500 shrink-0 shadow-none">
+                                        Draft
+                                    </Badge>
+                                )}
+                            </div>
                             <span className="text-[13px] font-bold text-zinc-500 group-hover:text-zinc-400 transition-colors">
                                 {title}
                             </span>
@@ -207,7 +226,10 @@ export const WorkspaceCard = ({
                     </div>
 
                     {/* Bottom Accent Bar */}
-                    <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
+                    <div className={cn(
+                        "absolute bottom-0 left-0 right-0 h-1 z-30", 
+                        isDraft ? "bg-zinc-800" : styles.hoverBackgroundClassName
+                    )} />
                 </Card>
             </Link>
         );
@@ -233,7 +255,7 @@ export const WorkspaceCard = ({
                     {/* Title Block */}
                     <div className="min-h-[40px] w-full flex items-start">
                         <div className="flex items-start gap-2">
-                            {Icon && <Icon className="h-3.5 w-3.5 text-zinc-400 mt-0.5 shrink-0 group-hover:text-primary transition-colors" />}
+                            {Icon && <Icon className={cn("h-3.5 w-3.5 mt-0.5 shrink-0 transition-colors", isDraft ? "text-zinc-500" : "text-zinc-400 group-hover:text-primary")} />}
                             <h3 className="text-[13px] font-bold leading-tight group-hover:text-primary transition-colors">{title}</h3>
                         </div>
                     </div>
@@ -271,7 +293,10 @@ export const WorkspaceCard = ({
                 </CardFooter>
 
                 {/* Bottom Accent Bar */}
-                <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
+                <div className={cn(
+                    "absolute bottom-0 left-0 right-0 h-1 z-30", 
+                    isDraft ? "bg-zinc-800" : styles.hoverBackgroundClassName
+                )} />
             </Card>
         </Link>
     );

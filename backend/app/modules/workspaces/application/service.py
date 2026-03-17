@@ -23,12 +23,12 @@ async def get_unique_workspaces_use_case(
 # --- Patterns ---
 
 async def list_patterns_use_case(
-    workspace: Optional[str] = None, 
+    workspace_id: Optional[str] = None, 
     limit: int = 100, 
     offset: int = 0,
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> List[Pattern]:
-    return await repo.list_patterns(workspace, limit=limit, offset=offset)
+    return await repo.list_patterns(workspace_id, limit=limit, offset=offset)
 
 async def get_pattern_use_case(
     pattern_id: UUID,
@@ -60,12 +60,12 @@ async def delete_pattern_use_case(
 # --- Templates ---
 
 async def list_templates_use_case(
-    workspace: Optional[str] = None, 
+    workspace_id: Optional[str] = None, 
     limit: int = 100, 
     offset: int = 0,
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> List[Template]:
-    return await repo.list_templates(workspace, limit=limit, offset=offset)
+    return await repo.list_templates(workspace_id, limit=limit, offset=offset)
 
 async def get_template_use_case(
     template_id: UUID,
@@ -97,12 +97,12 @@ async def delete_template_use_case(
 # --- Crews ---
 
 async def list_crews_use_case(
-    workspace: Optional[str] = None, 
+    workspace_id: Optional[str] = None, 
     limit: int = 100, 
     offset: int = 0,
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> List[Crew]:
-    return await repo.list_crews(workspace, limit=limit, offset=offset)
+    return await repo.list_crews(workspace_id, limit=limit, offset=offset)
 
 async def get_crew_use_case(
     crew_id: UUID,
