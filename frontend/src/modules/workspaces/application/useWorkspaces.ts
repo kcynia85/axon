@@ -1,6 +1,5 @@
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { workspacesApi } from "../infrastructure/api";
-import { resourcesApi } from "@/modules/resources/infrastructure/api";
 import { Workspace } from "@/shared/domain/workspaces";
 
 export const workspaceKeys = {
@@ -16,10 +15,6 @@ export const workspaceKeys = {
   automations: (workspaceId: string) => [...workspaceKeys.detail(workspaceId), "automations"] as const,
 };
 
-/**
- * useWorkspaces: Hook for fetching all available workspaces.
- * Standard: 0% useEffect, arrow function.
- */
 export const useWorkspaces = (limit: number = 100) => {
   return useQuery<Workspace[]>({
     queryKey: workspaceKeys.lists(),
@@ -28,9 +23,6 @@ export const useWorkspaces = (limit: number = 100) => {
   });
 };
 
-/**
- * useWorkspace: Hook for fetching a single workspace by ID.
- */
 export const useWorkspace = (id: string) => {
   return useQuery<Workspace>({
     queryKey: workspaceKeys.detail(id),
@@ -39,9 +31,6 @@ export const useWorkspace = (id: string) => {
   });
 };
 
-/**
- * useAgents: Hook for fetching agents in a workspace.
- */
 export const useAgents = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.agents(workspaceId),
@@ -50,9 +39,6 @@ export const useAgents = (workspaceId: string) => {
   });
 };
 
-/**
- * useCrews: Hook for fetching crews in a workspace.
- */
 export const useCrews = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.crews(workspaceId),
@@ -61,9 +47,6 @@ export const useCrews = (workspaceId: string) => {
   });
 };
 
-/**
- * usePatterns: Hook for fetching patterns in a workspace.
- */
 export const usePatterns = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.patterns(workspaceId),
@@ -72,9 +55,6 @@ export const usePatterns = (workspaceId: string) => {
   });
 };
 
-/**
- * useTemplates: Hook for fetching templates in a workspace.
- */
 export const useTemplates = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.templates(workspaceId),
@@ -83,20 +63,14 @@ export const useTemplates = (workspaceId: string) => {
   });
 };
 
-/**
- * useServices: Hook for fetching services (mapped to global resources).
- */
 export const useServices = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.services(workspaceId),
-    queryFn: async () => await resourcesApi.getExternalServices(),
+    queryFn: async () => await workspacesApi.getExternalServices(workspaceId),
     enabled: !!workspaceId,
   });
 };
 
-/**
- * useAutomations: Hook for fetching automations in a workspace.
- */
 export const useAutomations = (workspaceId: string) => {
   return useQuery({
     queryKey: workspaceKeys.automations(workspaceId),

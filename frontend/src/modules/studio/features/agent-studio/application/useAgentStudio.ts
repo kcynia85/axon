@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useAgentDraft } from "@/modules/agents/application/useAgentDraft";
 import {
@@ -23,9 +23,35 @@ export const useAgentStudio = (initialData?: Partial<CreateAgentFormData>, agent
 	const { mutateAsync: createAgent, isPending: isCreating } = useCreateAgent();
 	const { mutateAsync: updateAgent, isPending: isUpdating } = useUpdateAgent();
 
+	const effectiveData = useMemo(() => {
+		const base = initialData || draft;
+		if (!base) return undefined;
+
+		return {
+			agent_name: base.agent_name || "",
+			agent_role_text: base.agent_role_text || "",
+			agent_goal: base.agent_goal || "",
+			agent_backstory: base.agent_backstory || "",
+			guardrails: base.guardrails || { instructions: [], constraints: [] },
+			few_shot_examples: base.few_shot_examples || [],
+			reflexion: base.reflexion ?? false,
+			temperature: base.temperature ?? 0.7,
+			rag_enforcement: base.rag_enforcement ?? false,
+			availability_workspace: base.availability_workspace || [workspaceId],
+			agent_keywords: base.agent_keywords || [],
+			native_skills: base.native_skills || [],
+			auto_start: base.auto_start ?? false,
+			grounded_mode: base.grounded_mode ?? false,
+			data_interface: base.data_interface || { context: [], artefacts: [] },
+			agent_visual_url: base.agent_visual_url || null,
+			llm_model_id: base.llm_model_id || null,
+			knowledge_hub_ids: base.knowledge_hub_ids || [],
+		} as CreateAgentFormData;
+	}, [initialData, draft, workspaceId]);
+
 	const form = useForm<CreateAgentFormData>({
 		resolver: zodResolver(CreateAgentFormSchema) as any,
-		defaultValues: initialData || draft || {
+		values: effectiveData || {
 			agent_name: "",
 			agent_role_text: "",
 			agent_goal: "",

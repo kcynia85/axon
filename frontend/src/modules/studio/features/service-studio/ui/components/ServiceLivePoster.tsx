@@ -58,13 +58,6 @@ export const ServiceLivePoster = () => {
 							{business_context || `Integration with ${name || 'external'} platform for automated workflows.`}
 						</CardDescription>
 					</CardHeader>
-
-					<CardContent className="relative z-10 mt-auto pt-0 pb-4 px-5">
-						<div className="flex items-center gap-2">
-							<Activity className="h-3 w-3 text-muted-foreground opacity-40" />
-							<span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">Connected</span>
-						</div>
-					</CardContent>
 				</Card>
 
 				<div className="mt-12 space-y-4 px-2">

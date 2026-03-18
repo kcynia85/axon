@@ -102,9 +102,9 @@ export const AgentStudioView = ({
                         <div className="flex items-center gap-4">
                             <Button
                                 variant="ghost"
-                                size="sm"
+                                size="lg"
                                 onClick={onExit}
-                                className="hover:bg-zinc-900 h-9 font-mono text-base tracking-widest px-6 text-zinc-500 hover:text-white transition-all"
+                                className="hover:bg-zinc-900 h-11 font-mono text-base tracking-widest px-6 text-zinc-500 hover:text-white transition-all"
                             >
                                 Anuluj
                             </Button>

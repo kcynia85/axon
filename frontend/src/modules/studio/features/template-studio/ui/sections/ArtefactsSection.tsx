@@ -5,7 +5,11 @@ import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormPropertyTable } from "@/shared/ui/form/FormPropertyTable";
 import { ARTEFACT_PROPERTY_TYPES } from "../../types/template-studio.constants";
 
-export const ArtefactsSection = () => {
+interface Props {
+	onSyncDraft: () => void;
+}
+
+export const ArtefactsSection = ({ onSyncDraft }: Props) => {
 	const { control } = useFormContext();
 
 	return (
@@ -23,7 +27,11 @@ export const ArtefactsSection = () => {
 						<FormItemField>
 							<FormPropertyTable
 								items={field.value || []}
-								onChange={field.onChange}
+								onChange={(val) => {
+									field.onChange(val);
+									onSyncDraft();
+								}}
+								onBlur={onSyncDraft}
 								typeOptions={ARTEFACT_PROPERTY_TYPES}
 								addPlaceholder="Add Artefact (e.g. competitors_list)..."
 							/>

@@ -22,8 +22,10 @@ export const useCreateTemplate = (workspaceId: string): UseMutationResult<Templa
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: async (template: Omit<Template, "id" | "created_at" | "updated_at">): Promise<Template> => await workspacesApi.createTemplate(workspaceId, template),
-        onSuccess: () => {
+        onSuccess: (newTemplate) => {
             queryClient.invalidateQueries({ queryKey: ["templates", workspaceId] });
+            // Invalidate the specific template query to refetch
+            queryClient.invalidateQueries({ queryKey: ["template", workspaceId, newTemplate.id] });
         },
     });
 };
@@ -33,8 +35,10 @@ export const useUpdateTemplate = (workspaceId: string): UseMutationResult<Templa
     return useMutation({
         mutationFn: async ({ templateId, template }: { templateId: string; template: Partial<Template> }): Promise<Template> =>
             await workspacesApi.updateTemplate(workspaceId, templateId, template),
-        onSuccess: () => {
+        onSuccess: (updatedTemplate) => {
             queryClient.invalidateQueries({ queryKey: ["templates", workspaceId] });
+            // Invalidate the specific template query to refetch
+            queryClient.invalidateQueries({ queryKey: ["template", workspaceId, updatedTemplate.id] });
         },
     });
 };

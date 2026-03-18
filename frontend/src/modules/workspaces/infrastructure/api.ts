@@ -13,6 +13,10 @@ import {
   WorkspaceSchema,
   AutomationSchema
 } from "@/shared/domain/workspaces";
+import {
+  ExternalService,
+  ExternalServiceSchema
+} from "@/shared/domain/resources";
 import { mockApi } from "./mockApi";
 
 // Set to true to use real backend
@@ -165,5 +169,30 @@ export const workspacesApi = {
 
   deleteAutomation: async (workspaceId: string, automationId: string): Promise<void> => {
     await authenticatedClient.delete(`/workspaces/${workspaceId}/automations/${automationId}`);
+  },
+
+  // --- Services ---
+  getExternalServices: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<ExternalService[]> => {
+    const data = await authenticatedClient.get<unknown[]>(`/workspaces/${workspaceId}/services?limit=${limit}&offset=${offset}`);
+    return data.map((serviceRaw) => ExternalServiceSchema.parse(serviceRaw));
+  },
+
+  getExternalService: async (workspaceId: string, serviceId: string): Promise<ExternalService> => {
+    const data = await authenticatedClient.get<unknown>(`/workspaces/${workspaceId}/services/${serviceId}`);
+    return ExternalServiceSchema.parse(data);
+  },
+
+  createExternalService: async (workspaceId: string, service: Omit<ExternalService, "id" | "created_at" | "updated_at">): Promise<ExternalService> => {
+    const data = await authenticatedClient.post<unknown>(`/workspaces/${workspaceId}/services`, service);
+    return ExternalServiceSchema.parse(data);
+  },
+
+  updateExternalService: async (workspaceId: string, serviceId: string, service: Partial<ExternalService>): Promise<ExternalService> => {
+    const data = await authenticatedClient.put<unknown>(`/workspaces/${workspaceId}/services/${serviceId}`, service);
+    return ExternalServiceSchema.parse(data);
+  },
+
+  deleteExternalService: async (workspaceId: string, serviceId: string): Promise<void> => {
+    await authenticatedClient.delete(`/workspaces/${workspaceId}/services/${serviceId}`);
   }
 };

@@ -3,7 +3,7 @@ from typing import List, Optional, Any, Dict
 from uuid import UUID
 from datetime import datetime
 from app.modules.workspaces.domain.enums import PatternType, ProcessType
-from app.modules.workspaces.domain.models import Pattern, Template, Crew, DataInterface
+from app.modules.workspaces.domain.models import Pattern, Template, Crew, DataInterface, ExternalService, Automation, ServiceCapability
 
 class WorkspaceResponse(BaseModel):
     id: str
@@ -78,3 +78,60 @@ class UpdateCrewRequest(BaseModel):
     data_interface: Optional[DataInterface] = None
     metadata: Optional[Dict[str, Any]] = None
     agent_member_ids: Optional[List[UUID]] = None
+
+# --- External Service ---
+
+class CreateCapabilityRequest(BaseModel):
+    capability_name: str
+    capability_description: Optional[str] = None
+
+class ServiceCapabilityResponse(ServiceCapability):
+    pass
+
+class CreateExternalServiceRequest(BaseModel):
+    service_name: str
+    service_category: str
+    service_url: str
+    service_keywords: List[str] = []
+    availability_workspace: List[str] = []
+    capabilities: List[CreateCapabilityRequest] = []
+
+class UpdateExternalServiceRequest(BaseModel):
+    service_name: Optional[str] = None
+    service_category: Optional[str] = None
+    service_url: Optional[str] = None
+    service_keywords: Optional[List[str]] = None
+    availability_workspace: Optional[List[str]] = None
+    capabilities: Optional[List[CreateCapabilityRequest]] = None
+
+class ExternalServiceResponse(ExternalService):
+    pass
+
+# --- Automation ---
+
+class CreateAutomationRequest(BaseModel):
+    automation_name: str
+    automation_description: Optional[str] = None
+    automation_platform: str
+    automation_webhook_url: str
+    automation_http_method: str = "POST"
+    automation_auth_config: Optional[Dict[str, Any]] = None
+    automation_input_schema: Optional[Dict[str, Any]] = None
+    automation_output_schema: Optional[Dict[str, Any]] = None
+    automation_keywords: List[str] = []
+    availability_workspace: List[str] = []
+
+class UpdateAutomationRequest(BaseModel):
+    automation_name: Optional[str] = None
+    automation_description: Optional[str] = None
+    automation_platform: Optional[str] = None
+    automation_webhook_url: Optional[str] = None
+    automation_http_method: Optional[str] = None
+    automation_auth_config: Optional[Dict[str, Any]] = None
+    automation_input_schema: Optional[Dict[str, Any]] = None
+    automation_output_schema: Optional[Dict[str, Any]] = None
+    automation_keywords: Optional[List[str]] = None
+    availability_workspace: Optional[List[str]] = None
+
+class AutomationResponse(Automation):
+    pass

@@ -9,13 +9,14 @@ import { ALL_WORKSPACE_OPTIONS, GLOBAL_AVAILABILITY } from "@/modules/workspaces
 interface Props {
   name: string;
   number?: number;
+  onSyncDraft?: () => void;
 }
 
 /**
  * SharedAvailabilitySection: Unified access control for all entities.
  * Enhanced to handle migration from labels to IDs and case-sensitivity issues.
  */
-export const SharedAvailabilitySection = ({ name, number = 4 }: Props) => {
+export const SharedAvailabilitySection = ({ name, number = 4, onSyncDraft }: Props) => {
   const { control } = useFormContext();
 
   return (
@@ -54,6 +55,7 @@ export const SharedAvailabilitySection = ({ name, number = 4 }: Props) => {
               }
             }
             field.onChange(next);
+            onSyncDraft?.();
           };
 
           return (

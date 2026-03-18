@@ -13,8 +13,11 @@ import { PromptArchetype } from "@/shared/domain/resources";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Sparkles, Clock, Globe, ShieldCheck, Tag, Edit2 } from "lucide-react";
 import { useDeletePromptArchetype } from "../application/usePromptArchetypes";
+import { useArchetypeDraft } from "@/modules/studio/features/archetypes/application/useArchetypeDraft";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/ui/Button";
+import { toast } from "sonner";
+import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -36,6 +39,8 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
   const params = useParams();
   const router = useRouter();
   const workspaceId = (params?.workspace as string) || "ws-product";
+
+  const { draft, clearDraft } = useArchetypeDraft(workspaceId);
 
   const {
     prompts,
@@ -68,18 +73,66 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
   } = filterConfig;
 
   const { mutate: deletePrompt } = useDeletePromptArchetype();
+  const [promptToDeleteId, setPromptToDeleteId] = React.useState<string | null>(null);
 
   const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this archetype?")) {
-      deletePrompt(id);
+    if (id === "draft") {
+      if (window.confirm("Are you sure you want to discard this draft?")) {
+        clearDraft();
+        toast.success("Szkic archetypu usunięty");
+      }
+      return;
+    }
+
+    setPromptToDeleteId(id);
+  };
+
+  const confirmDelete = () => {
+    if (promptToDeleteId) {
+      deletePrompt(promptToDeleteId);
+      setPromptToDeleteId(null);
+      toast.success("Archetyp usunięty");
     }
   };
 
   const handleEdit = () => {
     if (selectedPrompt) {
-      router.push(`/workspaces/${workspaceId}/archetypes/studio/${selectedPrompt.id}`);
+      const id = selectedPrompt.id === "draft" ? "" : selectedPrompt.id;
+      router.push(`/resources/archetypes/studio/${id}`);
     }
   };
+
+  // Prepend draft to processed prompts
+  const displayPrompts = React.useMemo(() => {
+    if (!draft) return processedPrompts;
+    
+    const draftItem: any = {
+      id: "draft",
+      archetype_name: draft.name || "New Archetype",
+      archetype_description: draft.description || "Resume design...",
+      workspace_domain: "Draft",
+      archetype_keywords: draft.keywords || [],
+      isDraft: true
+    };
+    
+    return [draftItem, ...processedPrompts];
+  }, [draft, processedPrompts]);
+
+  const activePrompt = React.useMemo(() => {
+    if (selectedPrompt?.id === "draft") {
+        return {
+            id: "draft",
+            archetype_name: draft?.name || "New Archetype",
+            archetype_description: draft?.description || "Resume design...",
+            workspace_domain: "Draft",
+            archetype_keywords: draft?.keywords || [],
+            archetype_role: draft?.role || "",
+            archetype_goal: draft?.goal || "",
+            isDraft: true
+        } as any;
+    }
+    return selectedPrompt;
+  }, [selectedPrompt, draft]);
 
   return (
     <>
@@ -109,7 +162,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
             onApplyFilters={handleApplyFilters}
             onClearAllFilters={handleClearAll}
             onPendingFilterIdsChange={setPendingFilterIds}
-            resultsCount={getPreviewCount(prompts)}
+            resultsCount={getPreviewCount(prompts) + (draft ? 1 : 0)}
             sortOptions={SORT_OPTIONS}
             sortBy={sortBy}
             onSortChange={setSortBy}
@@ -119,7 +172,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
         }
       >
         <PromptsBrowserContent 
-            prompts={processedPrompts}
+            prompts={displayPrompts}
             viewMode={viewMode}
             onViewDetails={handleViewDetails}
             onDelete={handleDelete}
@@ -130,24 +183,24 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
 
       {/* Prompt Details Sidebar */}
       <SidePeek 
-        title={selectedPrompt?.archetype_name || "Archetype Details"}
+        title={activePrompt?.archetype_name || "Archetype Details"}
         open={isSidebarOpen} 
         onOpenChange={setIsSidebarOpen}
       >
-        {selectedPrompt && (
+        {activePrompt && (
             <div className="p-8 space-y-8">
                 <div className="flex flex-col gap-4">
                     <div className="flex justify-between items-center">
-                        <Badge variant="outline" className="px-3 py-1 font-mono text-[10px] tracking-widest uppercase bg-primary/5 text-primary border-primary/20">
-                            {selectedPrompt.workspace_domain}
+                        <Badge variant={activePrompt.isDraft ? "default" : "outline"} className={`px-3 py-1 font-mono text-[10px] tracking-widest uppercase ${activePrompt.isDraft ? "bg-amber-500/20 text-amber-600" : "bg-primary/5 text-primary border-primary/20"}`}>
+                            {activePrompt.workspace_domain}
                         </Badge>
                         <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                            <Clock className="w-3 h-3" /> Updated 1d ago
+                            <Clock className="w-3 h-3" /> {activePrompt.isDraft ? "Currently working" : "Updated 1d ago"}
                         </div>
                     </div>
-                    <h3 className="text-2xl font-black tracking-tight">{selectedPrompt.archetype_name}</h3>
+                    <h3 className="text-2xl font-black tracking-tight">{activePrompt.archetype_name}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                        {selectedPrompt.archetype_description || "No description provided for this archetype."}
+                        {activePrompt.archetype_description || "No description provided for this archetype."}
                     </p>
                 </div>
 
@@ -167,7 +220,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
                             <Tag className="w-3 h-3" /> Capabilities
                         </h4>
                         <div className="flex flex-wrap gap-2">
-                            {selectedPrompt.archetype_keywords?.map((kw, i) => (
+                            {activePrompt.archetype_keywords?.map((kw: string, i: number) => (
                                 <Badge key={i} variant="secondary" className="bg-background text-zinc-400 border-none px-3 py-1 text-[10px] font-bold lowercase">
                                     #{kw}
                                 </Badge>
@@ -179,11 +232,11 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
                 <div className="space-y-4 pt-4 border-t border-muted">
                     <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">System Prompt Blueprint</h4>
                     <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-900 font-mono text-[11px] leading-relaxed text-zinc-400 overflow-x-auto">
-                        <pre>{`You are an AI-native agent specializing in ${selectedPrompt.archetype_name}. 
-Your goal is to ${selectedPrompt.archetype_description}. 
+                        <pre>{`You are an AI-native agent specializing in ${activePrompt.archetype_name}. 
+Your goal is to ${activePrompt.archetype_description}. 
 
 Strictly follow these domain guidelines:
-- Maintain ${selectedPrompt.workspace_domain} context at all times.
+- Maintain ${activePrompt.workspace_domain} context at all times.
 - Prioritize high-signal output.
 - Avoid redundant reasoning.`}</pre>
                     </div>
@@ -193,8 +246,8 @@ Strictly follow these domain guidelines:
                     <Button 
                         variant="outline"
                         onClick={() => {
-                            if (selectedPrompt?.id) {
-                                handleDelete(selectedPrompt.id);
+                            if (activePrompt?.id) {
+                                handleDelete(activePrompt.id);
                                 setIsSidebarOpen(false);
                             }
                         }}
@@ -206,12 +259,21 @@ Strictly follow these domain guidelines:
                         onClick={handleEdit}
                         className="flex-[2] py-6 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:opacity-90 transition-all gap-3"
                     >
-                        <Edit2 className="w-5 h-5" /> Edytuj Archetyp
+                        <Edit2 className="w-5 h-5" /> {activePrompt.isDraft ? "Kontynuuj projektowanie" : "Edytuj Archetyp"}
                     </Button>
                 </div>
             </div>
         )}
       </SidePeek>
+
+      <DestructiveDeleteModal
+        isOpen={!!promptToDeleteId}
+        onClose={() => setPromptToDeleteId(null)}
+        onConfirm={confirmDelete}
+        title="Delete Archetype"
+        resourceName={processedPrompts.find(p => p.id === promptToDeleteId)?.archetype_name || "this archetype"}
+        affectedResources={[]}
+      />
     </>
   );
 };

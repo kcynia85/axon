@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { LucideIcon, ChevronRight, ArrowRight, MoreVertical, Trash2, Users } from "lucide-react";
+import { LucideIcon, ChevronRight, ArrowRight, MoreVertical, Trash2, Users, Edit2 } from "lucide-react";
 import { cn, getDeterministicImgId } from "@/shared/lib/utils";
 import { Card } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/ui/DropdownMenu";
+import { Button } from "@/shared/ui/ui/Button";
 
 type WorkspaceCardHorizontalProps = {
     readonly title: string;
@@ -27,10 +28,12 @@ type WorkspaceCardHorizontalProps = {
     readonly colorName?: string;
     readonly onEdit?: (e: React.MouseEvent) => void;
     readonly onDelete?: (id: string) => void; 
+    readonly onClick?: (e: React.MouseEvent) => void;
     readonly resourceId?: string;
     readonly agentIds?: readonly string[];
     readonly agentVisualsMap?: Record<string, string>;
     readonly isDraft?: boolean;
+    readonly useDirectHoverMenu?: boolean;
 };
 
 /**
@@ -51,10 +54,12 @@ export const WorkspaceCardHorizontal = ({
     colorName = "default",
     onEdit,
     onDelete, 
+    onClick,
     resourceId,
     agentIds = [],
     agentVisualsMap = {},
-    isDraft = false
+    isDraft = false,
+    useDirectHoverMenu = true
 }: WorkspaceCardHorizontalProps) => {
     const styles = getVisualStylesForZoneColor(colorName);
 
@@ -66,6 +71,32 @@ export const WorkspaceCardHorizontal = ({
     const renderActions = () => {
         // Ensure onDelete and resourceId are present
         if (!onDelete || !resourceId) return null; 
+
+        if (useDirectHoverMenu) {
+            return (
+                <div className="absolute top-3 right-3 z-40 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {onEdit && (
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 bg-black/40 backdrop-blur-sm text-white hover:bg-white/20"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(e); }}
+                        >
+                            <Edit2 className="w-4 h-4" />
+                        </Button>
+                    )}
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 bg-black/40 backdrop-blur-sm text-red-400 hover:bg-red-500/20 hover:text-red-500"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(resourceId); }}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </div>
+            );
+        }
+
         return (
             <div className="absolute top-3 right-3 z-40">
                 <DropdownMenu>
@@ -78,6 +109,18 @@ export const WorkspaceCardHorizontal = ({
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                        {onEdit && (
+                            <DropdownMenuItem 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onEdit(e);
+                                }}
+                            >
+                                <ChevronRight className="w-4 h-4 mr-2" />
+                                Edit
+                            </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem 
                             variant="destructive"
                             onClick={(e) => {
@@ -105,10 +148,10 @@ export const WorkspaceCardHorizontal = ({
                 href={href} 
                 className={cn("group block w-full outline-none h-full", className)}
                 onClick={(e) => {
-                    if (onEdit) {
+                    if (onClick) {
                         e.preventDefault();
-                        e.stopPropagation(); // Prevent event propagation to avoid conflicts
-                        onEdit(e);
+                        e.stopPropagation();
+                        onClick(e);
                     }
                 }}
             >
@@ -119,8 +162,8 @@ export const WorkspaceCardHorizontal = ({
                     {/* Background Soft Glow */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900/20 via-transparent to-transparent pointer-events-none opacity-60 transition-opacity" />
 
-                    {/* TOP ROW: Visual (Left) and Type Chip (Right) */}
-                    <div className="flex justify-between items-center z-10 w-full pr-8">
+                    {/* TOP ROW: Visual Area */}
+                    <div className="flex justify-between items-center z-10 w-full">
                         {/* Overlapping Avatars or Icon */}
                         <div className="flex items-center transition-transform duration-500 ease-out origin-left">
                             {agentIds.length > 0 && !isDraft ? (
@@ -145,7 +188,7 @@ export const WorkspaceCardHorizontal = ({
                                         );
                                     })}
                                     {remainingCount > 0 && (
-                                        <div className="w-10 h-10 flex items-center justify-center text-[13px] font-black tracking-tighter z-40 text-zinc-500 pl-2 border-2 border-transparent">
+                                        <div className="w-10 h-10 flex items-center justify-center text-[11px] font-black tracking-tighter z-40 text-zinc-500 pl-3 border-2 border-transparent">
                                             +{remainingCount}
                                         </div>
                                     )}
@@ -168,15 +211,15 @@ export const WorkspaceCardHorizontal = ({
                             )}
                         </div>
 
-                        {/* Type Chip */}
-                        <div className="flex items-center gap-2">
+                        {/* Status/Type Badge - Positioned Absolutely in corner */}
+                        <div className="absolute top-3 right-3 z-30">
                             {isDraft ? (
                                 <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.2em] bg-zinc-500/10 border-zinc-500/20 px-2.5 py-0.5 rounded-lg text-zinc-500 shadow-none">
                                     Draft
                                 </Badge>
                             ) : (
                                 badgeLabel && (
-                                    <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-white border-white px-2.5 py-0.5 rounded-lg text-black">
+                                    <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-white border-white px-2.5 py-0.5 rounded-lg text-black whitespace-nowrap">
                                         {badgeLabel}
                                     </Badge>
                                 )
@@ -185,8 +228,8 @@ export const WorkspaceCardHorizontal = ({
                     </div>
 
                     {/* MIDDLE: Name & Description */}
-                    <div className="flex-1 flex flex-col items-start justify-center py-4 z-10 pr-10">
-                        <h4 className="text-[16px] font-bold text-white group-hover:text-primary transition-colors leading-tight text-left max-w-[95%]">
+                    <div className="flex-1 flex flex-col items-start justify-center py-4 z-10 pr-10 min-w-0">
+                        <h4 className="text-[16px] font-bold text-white group-hover:text-primary transition-colors leading-tight text-left max-w-[95%] truncate w-full">
                             {title}
                         </h4>
                         {description && (
@@ -208,7 +251,7 @@ export const WorkspaceCardHorizontal = ({
                     {/* Bottom Accent Bar */}
                     <div className={cn(
                         "absolute bottom-0 left-0 right-0 h-1 z-30", 
-                        isDraft ? "bg-zinc-800" : styles.hoverBackgroundClassName
+                        isDraft ? "bg-transparent" : styles.hoverBackgroundClassName
                     )} />
                 </Card>
             </Link>
@@ -219,60 +262,80 @@ export const WorkspaceCardHorizontal = ({
     return (
         <Link 
             href={href} 
-            className={cn("group block w-full outline-none", className)}
+            className={cn("group block w-full outline-none h-full", className)}
             onClick={(e) => {
-                if (onEdit) {
+                if (onClick) {
                     e.preventDefault();
                     e.stopPropagation();
-                    onEdit(e);
+                    onClick(e);
                 }
             }}
         >
-            <Card className="flex items-start p-5 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative min-h-[120px]">
+            <Card className="flex items-start p-5 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative min-h-[160px] h-full">
                 
                 {renderActions()}
+
+                {/* Status/Type Badge - Positioned Absolutely in corner */}
+                <div className="absolute top-3 right-3 z-30">
+                    {isDraft ? (
+                        <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.2em] bg-zinc-500/10 border-zinc-500/20 px-2.5 py-0.5 rounded-lg text-zinc-500 shadow-none shrink-0">
+                            Draft
+                        </Badge>
+                    ) : (
+                        badgeLabel && (
+                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 h-3.5 px-1 py-0 whitespace-nowrap">
+                                {badgeLabel}
+                            </Badge>
+                        )
+                    )}
+                </div>
 
                 {/* Visual / Icon */}
                 {Icon && (
                     <div className={cn(
-                        "flex-shrink-0 w-12 h-12 rounded-xl bg-zinc-900 border flex items-center justify-center mr-4 group-hover:scale-105 transition-transform duration-300", 
+                        "flex-shrink-0 w-8 h-8 rounded-lg bg-zinc-900 border flex items-center justify-center mr-4 group-hover:scale-105 transition-transform duration-300", 
                         isDraft ? "border-zinc-800" : styles.textClassName.replace('text-', 'border-')
                     )}>
-                        <Icon className={cn("w-6 h-6", isDraft ? "text-zinc-500" : styles.textClassName)} />
+                        <Icon className={cn("w-4 h-4", isDraft ? "text-zinc-500" : styles.textClassName)} />
                     </div>
                 )}
 
                 {/* Content */}
-                <div className="flex-1 min-w-0 pr-10">
-                    <div className="flex items-center justify-between mb-1.5 pr-8">
+                <div className="flex-1 min-w-0 pr-10 flex flex-col h-full">
+                    <div className="flex items-center gap-2 mb-1.5 pr-8">
                         <h4 className="text-[16px] font-bold tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2">
                             {title}
                         </h4>
                     </div>
                     {description && (
-                        <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed mb-6 font-medium">
+                        <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed mb-4 font-medium">
                             {truncatedDescription}
                         </p>
                     )}
                     
-                    {/* Tags */}
-                    {tags && tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-1">
-                            {tags.slice(0, 2).map(tag => (
-                                <TagChip key={tag} label={tag} />
-                            ))}
-                        </div>
-                    )}
-                    
-                    {footerContent && (
-                        <div className="mt-3 opacity-60">
-                            {footerContent}
-                        </div>
-                    )}
+                    <div className="mt-auto">
+                        {/* Tags */}
+                        {tags && tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                                {tags.slice(0, 2).map(tag => (
+                                    <TagChip key={tag} label={tag} />
+                                ))}
+                            </div>
+                        )}
+                        
+                        {footerContent && (
+                            <div className="mt-3 opacity-60">
+                                {footerContent}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Bottom Accent Bar */}
-                <div className={cn("absolute bottom-0 left-0 right-0 h-1 z-30", styles.hoverBackgroundClassName)} />
+                <div className={cn(
+                    "absolute bottom-0 left-0 right-0 h-1 z-30", 
+                    isDraft ? "bg-transparent" : styles.hoverBackgroundClassName
+                )} />
             </Card>
         </Link>
     );

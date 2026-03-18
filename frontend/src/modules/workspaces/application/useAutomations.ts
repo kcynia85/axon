@@ -34,6 +34,7 @@ export const useCreateAutomation = (workspaceId: string): UseMutationResult<Auto
             return await workspacesApi.createAutomation(workspaceId, data);
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["workspaces", "detail", workspaceId, "automations"] });
             queryClient.invalidateQueries({ queryKey: ["automations", workspaceId] });
         },
     });

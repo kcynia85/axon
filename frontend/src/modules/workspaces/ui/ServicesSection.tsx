@@ -3,34 +3,57 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useServices, useDeleteService } from "../application/useServices";
+import { useServiceDraft } from "@/modules/studio/features/service-studio/application/hooks/useServiceDraft";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Badge } from "@/shared/ui/ui/Badge";
-import {
-  Cloud,
-  Activity,
-  Zap,
-} from "lucide-react";
-import { SidePeek } from "@/shared/ui/layout/SidePeek";
-import { Button } from "@/shared/ui/ui/Button";
+import { Cloud } from "lucide-react";
 import { Card } from "@/shared/ui/ui/Card";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
+import { toast } from "sonner";
+import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { ServiceProfilePeek } from "./ServiceProfilePeek";
 
 type ServicesSectionProps = {
   readonly workspaceId: string;
   readonly colorName?: string;
-}
+};
 
 export const ServicesSection = ({ workspaceId, colorName = "default" }: ServicesSectionProps) => {
   const router = useRouter();
   const { data: services, isLoading } = useServices(workspaceId);
+  const { draft, clearDraft } = useServiceDraft(workspaceId);
   const { mutate: deleteService } = useDeleteService(workspaceId);
   const [selectedServiceId, setSelectedServiceId] = React.useState<string | null>(null);
+  const [serviceToDeleteId, setServiceToDeleteId] = React.useState<string | null>(null);
 
   const handleDelete = (id: string) => {
-    if (window.confirm("Are you sure you want to delete this service?")) {
-      deleteService(id);
+    if (id === "draft") {
+      if (window.confirm("Are you sure you want to discard this draft?")) {
+        clearDraft();
+        toast.success("Szkic usługi usunięty");
+      }
+      return;
+    }
+    setServiceToDeleteId(id);
+  };
+
+  const confirmDelete = () => {
+    if (serviceToDeleteId) {
+      deleteService(serviceToDeleteId);
+      setServiceToDeleteId(null);
+      toast.success("Usługa usunięta");
     }
   };
+
+  const selectedService = (services as any)?.find((s: any) => s.id === selectedServiceId);
+
+  const handleEdit = (id: string) => {
+    router.push(`/workspaces/${workspaceId}/services/studio/${id}`);
+  };
+
+  const displayServices = React.useMemo(() => {
+    if (!services) return [];
+    return (services as any).slice(0, 3);
+  }, [services]);
 
   if (isLoading) {
     return (
@@ -40,90 +63,43 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
     );
   }
 
-  if (!services || services.length === 0) {
-    return (
-      <Card className="border-dashed h-32 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5">
-        No external services connected. Scale with APIs.
-      </Card>
-    );
-  }
-
-  const selectedService = services.find((s) => s.id === selectedServiceId);
-
-  const handleEdit = () => {
-    if (selectedServiceId) {
-      router.push(`/workspaces/${workspaceId}/services/studio/${selectedServiceId}`);
-    }
-  };
-
   return (
     <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {services.map((service) => (
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {displayServices.map((service: any) => (
           <WorkspaceCardHorizontal 
             key={service.id}
             title={service.service_name}
             description={service.service_description || `Integration with ${service.service_category} platform.`}
-            href={`/workspaces/${workspaceId}/services/${service.id}`}
-            badgeLabel={service.service_category}
+            href="#"
             icon={Cloud}
             resourceId={service.id}
-            onEdit={() => setSelectedServiceId(service.id)}
+            onEdit={() => {
+              handleEdit(service.id);
+            }}
+            onClick={() => setSelectedServiceId(service.id)}
             onDelete={handleDelete}
             colorName={colorName}
-            footerContent={
-                <div className="flex items-center gap-2">
-                    <Activity className="h-3 w-3 text-green-500" />
-                    <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest">Active</span>
-                </div>
-            }
           />
         ))}
       </div>
 
-      <SidePeek
-        open={!!selectedServiceId}
-        onOpenChange={(open) => !open && setSelectedServiceId(null)}
-        title={selectedService?.service_name || "Service Details"}
-        description={selectedService?.service_description || `${selectedService?.service_category} Integration`}
-        modal={false}
-      >
-        {selectedService && (
-          <div className="space-y-6">
-            <section className="space-y-3">
-              <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                <Zap className="w-3 h-3" /> Connectivity
-              </h4>
-              <div className="bg-muted/30 p-4 rounded-lg border border-primary/5 space-y-2.5">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-muted-foreground">Category</span>
-                  <span className="font-bold">{selectedService.service_category}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-muted-foreground">Status</span>
-                  <Badge variant="secondary" className="text-[10px]">Connected</Badge>
-                </div>
-              </div>
-            </section>
+      <ServiceProfilePeek 
+        service={selectedService}
+        isOpen={!!selectedServiceId}
+        onClose={() => setSelectedServiceId(null)}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
-            <div className="flex gap-3 pt-6 border-t border-muted">
-              <Button 
-                variant="outline" 
-                className="flex-1 text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20" 
-                onClick={() => {
-                  if (selectedServiceId) {
-                    handleDelete(selectedServiceId);
-                    setSelectedServiceId(null);
-                  }
-                }}
-              >
-                Usuń Usługę
-              </Button>
-              <Button className="flex-[2] bg-primary hover:bg-primary/90" onClick={handleEdit}>Edytuj Usługę</Button>
-            </div>
-          </div>
-        )}
-      </SidePeek>
+      <DestructiveDeleteModal
+        isOpen={!!serviceToDeleteId}
+        onClose={() => setServiceToDeleteId(null)}
+        onConfirm={confirmDelete}
+        title="Delete Service"
+        resourceName={selectedService?.service_name || "this service"}
+        affectedResources={[]}
+      />
     </>
   );
 };

@@ -11,8 +11,8 @@ class PatternTable(Base):
     id = Column(UUID(as_uuid=True), primary_key=True)
     pattern_name = Column(String, nullable=False)
     pattern_type = Column(SAEnum(PatternType), default=PatternType.PATTERN)
-    pattern_okr_context = Column(String, nullable=True) # Enum?
-    pattern_graph_structure = Column(JSONB, nullable=False) # nodes, edges, zones
+    pattern_okr_context = Column(String, nullable=True) 
+    pattern_graph_structure = Column(JSONB, nullable=False) 
     pattern_keywords = Column(ARRAY(String), nullable=True)
     availability_workspace = Column(ARRAY(String), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
@@ -61,3 +61,55 @@ class CrewTable(Base):
     
     # Relationships
     agents = relationship("AgentConfigTable", secondary=crew_agents_association, backref="crews")
+
+class ExternalServiceTable(Base):
+    __tablename__ = "external_services"
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    service_name = Column(String, nullable=False)
+    service_description = Column(String, nullable=True)
+    service_category = Column(String, nullable=False)
+    service_url = Column(String, nullable=False)
+    service_keywords = Column(ARRAY(String), nullable=True)
+    availability_workspace = Column(ARRAY(String), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=now_utc)
+    updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    capabilities = relationship("ServiceCapabilityTable", back_populates="service", cascade="all, delete-orphan")
+
+class ServiceCapabilityTable(Base):
+    __tablename__ = "service_capabilities"
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    capability_name = Column(String, nullable=False)
+    capability_description = Column(String, nullable=True)
+    external_service_id = Column(UUID(as_uuid=True), ForeignKey("external_services.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=now_utc)
+    service = relationship("ExternalServiceTable", back_populates="capabilities")
+
+class AutomationTable(Base):
+    __tablename__ = "automations"
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    automation_name = Column(String, nullable=False)
+    automation_description = Column(String, nullable=True)
+    automation_platform = Column(String, nullable=False)
+    automation_webhook_url = Column(String, nullable=False)
+    automation_http_method = Column(String, default="POST", nullable=False)
+    automation_auth_config = Column(JSONB, nullable=True)
+    automation_input_schema = Column(JSONB, nullable=True)
+    automation_output_schema = Column(JSONB, nullable=True)
+    automation_keywords = Column(ARRAY(String), nullable=True)
+    availability_workspace = Column(ARRAY(String), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=now_utc)
+    updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+    executions = relationship("AutomationExecutionTable", back_populates="automation", cascade="all, delete-orphan")
+
+class AutomationExecutionTable(Base):
+    __tablename__ = "automation_executions"
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    automation_id = Column(UUID(as_uuid=True), ForeignKey("automations.id"), nullable=False)
+    status = Column(String, nullable=False)
+    payload = Column(JSONB, nullable=True)
+    response = Column(JSONB, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=now_utc)
+    automation = relationship("AutomationTable", back_populates="executions")
+

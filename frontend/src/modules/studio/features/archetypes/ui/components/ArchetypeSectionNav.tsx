@@ -3,7 +3,7 @@ import { FormNavFooter } from "@/shared/ui/form/FormNavFooter";
 import { FormNavList } from "@/shared/ui/form/FormNavList";
 import { FormNavLibraryButton } from "@/shared/ui/form/FormNavLibraryButton";
 import { FormNavContainer } from "@/shared/ui/form/FormNavContainer";
-import type { ArchetypeStudioSectionId } from "../../application/useArchetypeStudioView";
+import type { ArchetypeStudioSectionId } from "../../types/archetype-studio.types";
 
 interface ArchetypeSectionNavProps {
 	sections: {

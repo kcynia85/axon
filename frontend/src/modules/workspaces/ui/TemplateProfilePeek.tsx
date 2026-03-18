@@ -4,7 +4,7 @@ import React from "react";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, Edit2, Trash2 } from "lucide-react";
 import { Template } from "@/shared/domain/workspaces";
 import { cn } from "@/shared/lib/utils";
 
@@ -39,10 +39,11 @@ export const TemplateProfilePeek = ({ template, isOpen, onClose, onEdit, onDelet
       }
       modal={false}
       footer={
-        <div className="flex w-full gap-3">
+        <div className="flex w-full justify-between items-center">
           <Button 
-            variant="outline" 
-            className="flex-1 text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20 h-14 font-bold uppercase tracking-widest text-[11px]" 
+            variant="ghost" 
+            size="icon-lg"
+            className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0" 
             onClick={() => {
               if (template.id && onDelete && window.confirm("Are you sure you want to delete this template?")) {
                 onDelete(template.id);
@@ -50,10 +51,14 @@ export const TemplateProfilePeek = ({ template, isOpen, onClose, onEdit, onDelet
               }
             }}
           >
-            Usuń Template
+            <Trash2 className="w-5 h-5" />
           </Button>
-          <Button className="flex-[2] bg-primary hover:bg-primary/90 text-base py-6 h-14" onClick={onEdit}>
-            Edytuj Template
+          <Button 
+            className="bg-primary hover:bg-primary/90 font-bold" 
+            size="lg"
+            onClick={onEdit}
+          >
+            <Edit2 className="w-4 h-4 mr-2" /> {template.id === "draft" ? "Kontynuuj projektowanie" : "Edytuj Szablon"}
           </Button>
         </div>
       }
@@ -204,11 +209,11 @@ export const TemplateProfilePeek = ({ template, isOpen, onClose, onEdit, onDelet
           </div>
         </section>
 
-        {/* ── Shared with ── */}
+        {/* ── Availability ── */}
         {template.availability_workspace && template.availability_workspace.length > 0 && (
           <section className="space-y-4">
             <h4 className="text-base font-bold text-muted-foreground">
-             Avaiability
+             Availability
             </h4>
             <div className="flex flex-wrap gap-1.5">
               {template.availability_workspace.map((wsId) => (

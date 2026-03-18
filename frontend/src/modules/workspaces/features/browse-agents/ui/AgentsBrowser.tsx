@@ -106,6 +106,11 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
 
   const activeAgent = isDraftSelected ? draftAgent : (selectedAgent || null);
 
+  const displayAgents = React.useMemo(() => {
+    const limit = draft ? 3 : 4;
+    return processedAgents.slice(0, limit);
+  }, [processedAgents, draft]);
+
   return (
     <BrowserLayout
       searchQuery={searchQuery}
@@ -138,12 +143,12 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
         />
       }
     >
-      {processedAgents.length === 0 && !draft ? (
+      {displayAgents.length === 0 && !draft ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-muted-foreground italic">No agents found matching your criteria.</p>
         </div>
       ) : (
-        <div className={viewMode === "grid" ? "flex flex-wrap gap-6" : "flex flex-col gap-8"}>
+        <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" : "flex flex-col gap-8"}>
           {/* Render Draft Card if exists and no search query or matches search */}
           {draft && (!searchQuery || draft.agent_name?.toLowerCase().includes(searchQuery.toLowerCase())) && (
             <WorkspaceCard 
@@ -153,7 +158,7 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                 layout={viewMode}
                 title={draft.agent_name || "New Agent"}
                 description={draft.agent_goal || "Resume creating this agent..."}
-                href={`/workspaces/${workspaceId}/agents/studio`}
+                href="#"
                 badgeLabel={draft.agent_role_text || "Draft Agent"}
                 tags={draft.agent_keywords}
                 resourceId="draft"
@@ -161,9 +166,13 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                     setIsDraftSelected(true);
                     setIsSidebarOpen(true);
                 }}
+                onClick={() => {
+                    setIsDraftSelected(true);
+                    setIsSidebarOpen(true);
+                }}
                 onDelete={() => handleDeleteClick("draft")}
                 colorName="default"
-                className={viewMode === "grid" ? "w-[252px] shrink-0" : ""}
+                className="w-full"
                 visualArea={
                     <div className={cn(
                         "absolute inset-0 flex items-center justify-center overflow-hidden bg-zinc-900/50 group-hover:bg-zinc-900/40 transition-colors",
@@ -179,7 +188,7 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
             />
           )}
 
-          {processedAgents.map((agent, index) => {
+          {displayAgents.map((agent, index) => {
             const avatarUrl = getAgentAvatarUrl(agent.id, agent.agent_visual_url);
             
             return (
@@ -189,7 +198,7 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                   layout={viewMode}
                   title={agent.agent_role_text || agent.agent_name || "Agent Person"}
                   description={agent.agent_goal}
-                  href={`/workspaces/${workspaceId}/agents/${agent.id}`}
+                  href="#"
                   badgeLabel={agent.agent_role_text || "AI Agent"}
                   tags={agent.agent_keywords}
                   resourceId={agent.id}
@@ -197,9 +206,13 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                       setIsDraftSelected(false);
                       handleViewDetails(agent.id);
                   }}
+                  onClick={() => {
+                      setIsDraftSelected(false);
+                      handleViewDetails(agent.id);
+                  }}
                   onDelete={handleDeleteClick}
                   colorName={colorName}
-                  className={viewMode === "grid" ? "w-[252px] shrink-0" : ""}
+                  className="w-full"
                   visualArea={
                       <div className={cn(
                           "absolute inset-0 flex items-start justify-center overflow-hidden",
@@ -212,7 +225,7 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
                                   src={avatarUrl}
                                   alt={agent.agent_name || "Agent"}
                                   fill
-                                  sizes={viewMode === "grid" ? "252px" : "140px"}
+                                  sizes={viewMode === "grid" ? "(max-width: 768px) 100vw, 252px" : "140px"}
                                   priority={index < 4}
                                   className={cn(
                                       "object-contain transition-all duration-500 group-hover:-translate-y-2",

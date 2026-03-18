@@ -22,6 +22,7 @@ export const ArchetypeStudioView = ({
     onSectionClick,
     onExit,
     onSave,
+    onBlur,
     setCanvasContainerReference,
     sections,
     isEditing
@@ -53,10 +54,13 @@ export const ArchetypeStudioView = ({
                     }
                     canvas={
                         <div className="px-24 pb-48">
-                            <form className="space-y-0" onSubmit={(submitEvent) => submitEvent.preventDefault()}>
-                                <ArchetypeIdentitySection />
-                                <ArchetypeMemorySection />
-                                <ArchetypeAccessSection />
+                            <form 
+                                className="space-y-0" 
+                                onSubmit={(submitEvent) => submitEvent.preventDefault()}
+                            >
+                                <ArchetypeIdentitySection syncDraft={onBlur} />
+                                <ArchetypeMemorySection syncDraft={onBlur} />
+                                <ArchetypeAccessSection syncDraft={onBlur} />
                             </form>
                         </div>
                     }
@@ -65,9 +69,9 @@ export const ArchetypeStudioView = ({
                         <div className="flex items-center gap-4">
                             <Button
                                 variant="ghost"
-                                size="sm"
+                                size="lg"
                                 onClick={onExit}
-                                className="hover:bg-zinc-900 h-9 font-mono text-base tracking-widest px-6 text-zinc-500 hover:text-white transition-all"
+                                className="hover:bg-zinc-900 h-11 font-mono text-base tracking-widest px-6 text-zinc-500 hover:text-white transition-all"
                             >
                                 Anuluj
                             </Button>

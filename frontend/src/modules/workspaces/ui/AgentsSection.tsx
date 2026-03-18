@@ -76,11 +76,16 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
 
   const activeAgent = isDraftSelected ? draftAgent : (selectedAgent || null);
 
+  const displayAgents = React.useMemo(() => {
+    if (!agents) return [];
+    return agents.slice(0, 4);
+  }, [agents]);
+
   if (isAgentsLoading) {
     return (
-      <div className="flex flex-wrap gap-6">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((index) => (
-          <Skeleton key={index} className="aspect-[1694/2528] w-[252px] shadow-sm rounded-xl" />
+          <Skeleton key={index} className="aspect-[1694/2528] w-full shadow-sm rounded-xl" />
         ))}
       </div>
     );
@@ -88,33 +93,8 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
 
   return (
     <>
-      <div className="flex flex-wrap gap-6">
-        {/* Render Draft if exists */}
-        {draft && (
-          <WorkspaceCard
-            key="agent-draft"
-            variant="agent"
-            isDraft
-            title={draft.agent_name || "New Agent"}
-            description={draft.agent_goal || "Resume creating this agent..."}
-            href={`/workspaces/${workspaceId}/agents/studio`}
-            badgeLabel={draft.agent_role_text || "Draft Agent"}
-            tags={draft.agent_keywords}
-            className="w-[252px] shrink-0"
-            colorName="default"
-            onEdit={() => setIsDraftSelected(true)}
-            onDelete={() => handleDeleteClick("draft")}
-            resourceId="draft"
-            visualArea={
-              <div className="absolute inset-0 flex items-center justify-center overflow-hidden bg-zinc-900/50 group-hover:bg-zinc-900/40 transition-colors">
-                <UserCircle className="w-24 h-24 text-zinc-800" />
-                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-zinc-500/10 via-transparent to-transparent pointer-events-none" />
-              </div>
-            }
-          />
-        )}
-
-        {agents.map((agent) => {
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {displayAgents.map((agent) => {
           const avatarUrl = getAgentAvatarUrl(agent.id, agent.agent_visual_url);
 
           return (
@@ -123,16 +103,19 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
               variant="agent"
               title={agent.agent_role_text || agent.agent_name || "Agent Person"}
               description={agent.agent_goal}
-              href={`/workspaces/${workspaceId}/agents/${agent.id}`}
+              href="#"
               badgeLabel={agent.agent_role_text || "AI Agent"}
               tags={agent.agent_keywords}
               resourceId={agent.id}
               onEdit={() => {
+                router.push(`/workspaces/${workspaceId}/agents/studio/${agent.id}`);
+              }}
+              onClick={() => {
                 setIsDraftSelected(false);
                 handleSelectAgent(agent.id);
               }}
               onDelete={handleDeleteClick}
-              className="w-[252px] shrink-0"
+              className="w-full"
               colorName={colorName}
               visualArea={
                 <div className="absolute inset-0 flex items-start justify-center overflow-hidden pt-24">
@@ -145,7 +128,7 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
                       src={avatarUrl}
                       alt={agent.agent_name || "Agent"}
                       fill
-                      sizes="252px"
+                      sizes="(max-width: 768px) 100vw, 252px"
                       priority
                       className="object-contain scale-[1.25] origin-bottom transition-all duration-500 group-hover:-translate-y-2"
                     />
@@ -156,8 +139,8 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
           );
         })}
 
-        {!draft && (!agents || agents.length === 0) && (
-          <Card className="border-dashed h-24 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 w-full">
+        {(!agents || agents.length === 0) && (
+          <Card className="border-dashed h-24 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 w-full col-span-full">
             No agents defined yet. Bring in some talent.
           </Card>
         )}

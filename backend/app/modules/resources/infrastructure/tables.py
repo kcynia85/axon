@@ -24,31 +24,6 @@ class PromptArchetypeTable(Base):
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
-class ExternalServiceTable(Base):
-    __tablename__ = "external_services"
-
-    id = Column(UUID(as_uuid=True), primary_key=True)
-    service_name = Column(String, nullable=False)
-    service_category = Column(SAEnum(ServiceCategory), nullable=False)
-    service_url = Column(String, nullable=False)
-    service_keywords = Column(ARRAY(String), nullable=True)
-    availability_workspace = Column(ARRAY(String), nullable=False) # List of Enums stored as strings
-    created_at = Column(DateTime(timezone=True), default=now_utc)
-    updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
-
-    capabilities = relationship("ServiceCapabilityTable", back_populates="service", cascade="all, delete-orphan")
-
-class ServiceCapabilityTable(Base):
-    __tablename__ = "service_capabilities"
-
-    id = Column(UUID(as_uuid=True), primary_key=True)
-    capability_name = Column(String, nullable=False)
-    capability_description = Column(String, nullable=True)
-    external_service_id = Column(UUID(as_uuid=True), ForeignKey("external_services.id"), nullable=False)
-    created_at = Column(DateTime(timezone=True), default=now_utc)
-
-    service = relationship("ExternalServiceTable", back_populates="capabilities")
-
 class InternalToolTable(Base):
     __tablename__ = "internal_tools"
 
@@ -64,36 +39,3 @@ class InternalToolTable(Base):
     availability_workspace = Column(ARRAY(String), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
-
-class AutomationTable(Base):
-    __tablename__ = "automations"
-
-    id = Column(UUID(as_uuid=True), primary_key=True)
-    automation_name = Column(String, nullable=False)
-    automation_description = Column(String, nullable=True)
-    automation_platform = Column(SAEnum(AutomationPlatform), nullable=False)
-    automation_webhook_url = Column(String, nullable=False)
-    automation_http_method = Column(SAEnum(AutomationHttpMethod), default=AutomationHttpMethod.POST, nullable=False)
-    automation_auth_config = Column(JSONB, nullable=True) # {type, key, value}
-    automation_input_schema = Column(JSONB, nullable=True)
-    automation_output_schema = Column(JSONB, nullable=True)
-    automation_validation_status = Column(SAEnum(ValidationStatus), default=ValidationStatus.UNTESTED, nullable=False)
-    automation_last_validated_at = Column(DateTime(timezone=True), nullable=True)
-    automation_keywords = Column(ARRAY(String), nullable=True)
-    availability_workspace = Column(ARRAY(String), nullable=False)
-    created_at = Column(DateTime(timezone=True), default=now_utc)
-    updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
-
-    executions = relationship("AutomationExecutionTable", back_populates="automation", cascade="all, delete-orphan")
-
-class AutomationExecutionTable(Base):
-    __tablename__ = "automation_executions"
-
-    id = Column(UUID(as_uuid=True), primary_key=True)
-    automation_id = Column(UUID(as_uuid=True), ForeignKey("automations.id"), nullable=False)
-    status = Column(String, nullable=False)
-    payload = Column(JSONB, nullable=True)
-    response = Column(JSONB, nullable=True)
-    created_at = Column(DateTime(timezone=True), default=now_utc)
-
-    automation = relationship("AutomationTable", back_populates="executions")

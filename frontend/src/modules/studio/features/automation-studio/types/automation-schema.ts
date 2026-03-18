@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const propertySchema = z.object({
 	name: z.string().min(1, "Nazwa jest wymagana"),
-	field_type: z.enum(["text", "link", "number", "boolean", "date"]),
+	field_type: z.enum(["text", "string", "link", "number", "boolean", "date"]),
 	is_required: z.boolean().default(false),
 });
 
@@ -14,10 +14,10 @@ export const automationFormSchema = z.object({
 	}),
 	connection: z.object({
 		platform: z.string().min(1, "Wybierz platformę"),
-		method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
-		url: z.string().url("Podaj poprawny URL"),
+		method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]).default("POST"),
+		url: z.string().min(1, "Podaj adres URL").url("Podaj poprawny URL"),
 		auth: z.object({
-			type: z.string(),
+			type: z.string().default("none"),
 			headerName: z.string().optional(),
 			secret: z.string().optional(),
 		}),

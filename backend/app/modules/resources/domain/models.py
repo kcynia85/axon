@@ -34,6 +34,7 @@ class ServiceCapability(ResourceBase):
 
 class ExternalService(ResourceBase):
     service_name: str
+    service_description: Optional[str] = None
     service_category: ServiceCategory
     service_url: str
     service_keywords: List[str] = Field(default_factory=list)

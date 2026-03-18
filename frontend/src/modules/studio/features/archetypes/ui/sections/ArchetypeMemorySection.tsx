@@ -14,7 +14,11 @@ const KNOWLEDGE_HUBS_MOCK = [
 	{ id: "hub_design", name: "Design Hub" },
 ];
 
-export const ArchetypeMemorySection = () => {
+interface ArchetypeMemorySectionProps {
+	readonly syncDraft?: () => void;
+}
+
+export const ArchetypeMemorySection = ({ syncDraft }: ArchetypeMemorySectionProps) => {
 	const { control } = useFormContext<ArchetypeFormValues>();
 
 	return (
@@ -35,7 +39,10 @@ export const ArchetypeMemorySection = () => {
 									<FormSelect
 										multiple
 										value={field.value || []}
-										onChange={(ids) => field.onChange(ids)}
+										onChange={(ids) => {
+											field.onChange(ids);
+											syncDraft?.();
+										}}
 										options={KNOWLEDGE_HUBS_MOCK}
 										placeholder="Select Knowledge Sources..."
 										searchPlaceholder="Search hubs..."
@@ -57,7 +64,10 @@ export const ArchetypeMemorySection = () => {
 								<FormItemField error={fieldState.error?.message}>
 									<FormDynamicList
 										items={(field.value as string[]) || []}
-										onChange={field.onChange}
+										onChange={(items) => {
+											field.onChange(items);
+											syncDraft?.();
+										}}
 										placeholder="Operational guideline..."
 										addPlaceholder="Add new instruction..."
 										className="border-green-200 dark:border-green-900/30 text-green-600 dark:text-green-400 placeholder:text-green-500/50 dark:placeholder:text-green-500/30"
@@ -74,7 +84,10 @@ export const ArchetypeMemorySection = () => {
 								<FormItemField error={fieldState.error?.message}>
 									<FormDynamicList
 										items={(field.value as string[]) || []}
-										onChange={field.onChange}
+										onChange={(items) => {
+											field.onChange(items);
+											syncDraft?.();
+										}}
 										placeholder="Hard limitation..."
 										addPlaceholder="Add new constraint..."
 										className="dark:text-red-400 text-red-600 dark:border-red-900/30 placeholder:text-red-500/50 dark:placeholder:text-red-500/30"

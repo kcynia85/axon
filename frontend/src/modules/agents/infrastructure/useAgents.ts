@@ -10,6 +10,13 @@ export const useAgents = (workspaceId: string): UseQueryResult<Agent[]> => {
     });
 };
 
+export const useAllAgents = (): UseQueryResult<Agent[]> => {
+    return useQuery({
+        queryKey: ["agents", "all"],
+        queryFn: async (): Promise<Agent[]> => await agentsApi.getAgents(""),
+    });
+};
+
 export const useAgent = (agentId: string): UseQueryResult<Agent> => {
     return useQuery({
         queryKey: ["agent", agentId],

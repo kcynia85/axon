@@ -2,11 +2,10 @@
 
 import { X } from "lucide-react";
 import * as React from "react";
-import { FormProvider } from "react-hook-form";
+import { FormProvider, UseFormReturn } from "react-hook-form";
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { Button } from "@/shared/ui/ui/Button";
-import { useTemplateForm } from "../application/hooks/useTemplateForm";
 import { useTemplateStudioView } from "../application/hooks/useTemplateStudioView";
 import { StudioSectionNav } from "@/modules/studio/features/agent-studio/ui/components/StudioSectionNav";
 import { DefinitionSection } from "./sections/DefinitionSection";
@@ -18,17 +17,30 @@ import { TemplateLivePoster } from "./components/TemplateLivePoster";
 import type { TemplateStudioFormData } from "../types/template-studio.types";
 
 interface TemplateStudioProps {
-	onSave: (data: TemplateStudioFormData) => void;
+	workspaceId: string;
+	templateId?: string | null;
+	form: UseFormReturn<TemplateStudioFormData>;
+	onSave: (data: TemplateStudioFormData) => Promise<void>;
 	onCancel: () => void;
-	initialData?: Partial<TemplateStudioFormData>;
+	onSyncDraft: () => void;
+	isSaving?: boolean;
 	isEditing?: boolean;
 }
 
 /**
  * TemplateStudio: 3-column architecture for designing AXON Templates.
+ * Standard: Pure View, 0% useEffect, consistent with Agent and Crew.
  */
-export const TemplateStudio = ({ onSave, onCancel, initialData, isEditing }: TemplateStudioProps) => {
-	const { form } = useTemplateForm(initialData);
+export const TemplateStudio = ({ 
+	workspaceId, 
+	templateId, 
+	form,
+	onSave, 
+	onCancel, 
+	onSyncDraft,
+	isSaving,
+	isEditing 
+}: TemplateStudioProps) => {
 	const {
 		canvasRef,
 		scrollToSection,
@@ -62,11 +74,11 @@ export const TemplateStudio = ({ onSave, onCancel, initialData, isEditing }: Tem
 					canvas={
 						<div className="px-24 pb-48">
 							<form className="space-y-0" onSubmit={(e) => e.preventDefault()}>
-								<DefinitionSection />
-								<InstructionSection />
-								<ContextSection />
-								<ArtefactsSection />
-								<AvailabilitySection />
+								<DefinitionSection onSyncDraft={onSyncDraft} />
+								<InstructionSection onSyncDraft={onSyncDraft} />
+								<ContextSection onSyncDraft={onSyncDraft} />
+								<ArtefactsSection onSyncDraft={onSyncDraft} />
+								<AvailabilitySection onSyncDraft={onSyncDraft} />
 							</form>
 						</div>
 					}
@@ -83,7 +95,8 @@ export const TemplateStudio = ({ onSave, onCancel, initialData, isEditing }: Tem
 							</Button>
 							<ActionButton
 								label={isEditing ? "Update Template" : "Save Template"}
-								onClick={form.handleSubmit(onSave as any)}
+								onClick={form.handleSubmit(onSave)}
+								loading={isSaving}
 							/>
 						</div>
 					}

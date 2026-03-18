@@ -5,7 +5,11 @@ import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormPropertyTable } from "@/shared/ui/form/FormPropertyTable";
 import { CONTEXT_PROPERTY_TYPES } from "../../types/template-studio.constants";
 
-export const ContextSection = () => {
+interface Props {
+	onSyncDraft: () => void;
+}
+
+export const ContextSection = ({ onSyncDraft }: Props) => {
 	const { control } = useFormContext();
 
 	return (
@@ -23,7 +27,11 @@ export const ContextSection = () => {
 						<FormItemField>
 							<FormPropertyTable
 								items={field.value || []}
-								onChange={field.onChange}
+								onChange={(val) => {
+									field.onChange(val);
+									onSyncDraft();
+								}}
+								onBlur={onSyncDraft}
 								typeOptions={CONTEXT_PROPERTY_TYPES}
 								addPlaceholder="Add Context (e.g. brand_guidelines)..."
 							/>

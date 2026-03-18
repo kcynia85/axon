@@ -1,10 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { useServiceForm } from "../application/useServiceForm";
 import { ServiceStudioSectionId } from "../types/sections.constants";
 import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";
 import { ServiceStudioView } from "./ServiceStudioView";
-import { ServiceStudioProps } from "../types/service-studio.types";
 
 const SERVICE_STUDIO_SECTION_IDENTIFIERS: readonly ServiceStudioSectionId[] = [
     "basic-info",
@@ -13,14 +13,21 @@ const SERVICE_STUDIO_SECTION_IDENTIFIERS: readonly ServiceStudioSectionId[] = [
     "availability"
 ];
 
+export type ServiceStudioProps = {
+    readonly onSave: (data: any) => void;
+    readonly onCancel: () => void;
+    readonly form: any;
+    readonly isEditing?: boolean;
+    readonly isSaving?: boolean;
+    readonly syncDraft?: () => void;
+};
+
 /**
  * ServiceStudio: Container component for the service studio.
  * Adheres to Pure View and Zero useEffect principles.
  * Standard: Container pattern, 0% co-located UI.
  */
-export const ServiceStudio = ({ onSave, onCancel, initialData, isEditing }: ServiceStudioProps) => {
-    const { form } = useServiceForm(initialData);
-    
+export const ServiceStudio = ({ onSave, onCancel, form, isEditing, syncDraft }: ServiceStudioProps) => {
     const { 
         activeSectionIdentifier, 
         setCanvasContainerReference, 
@@ -39,6 +46,7 @@ export const ServiceStudio = ({ onSave, onCancel, initialData, isEditing }: Serv
             onSectionClick={scrollToSectionIdentifier}
             onCancel={onCancel}
             onSave={handleSave}
+            onBlur={syncDraft}
             setCanvasContainerReference={setCanvasContainerReference}
             isEditing={isEditing}
         />

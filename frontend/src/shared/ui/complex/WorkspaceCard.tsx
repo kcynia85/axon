@@ -31,9 +31,11 @@ type WorkspaceCardProps = {
     readonly colorName?: string;
     readonly onEdit?: (e: React.MouseEvent) => void;
     readonly onDelete?: (id: string) => void;
+    readonly onClick?: (e: React.MouseEvent) => void;
     readonly resourceId?: string;
     readonly layout?: "grid" | "list";
     readonly isDraft?: boolean;
+    readonly useDirectHoverMenu?: boolean;
 }
 
 /**
@@ -55,8 +57,10 @@ export const WorkspaceCard = ({
     layout = "grid",
     onEdit,
     onDelete,
+    onClick,
     resourceId,
-    isDraft = false
+    isDraft = false,
+    useDirectHoverMenu = true
 }: WorkspaceCardProps) => {
     const styles = getVisualStylesForZoneColor(colorName);
 
@@ -67,6 +71,32 @@ export const WorkspaceCard = ({
         
     const renderActions = () => {
         if (!onDelete || !resourceId) return null;
+
+        if (useDirectHoverMenu) {
+            return (
+                <div className="absolute top-3 right-3 z-40 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {onEdit && (
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 bg-black/40 backdrop-blur-sm text-white hover:bg-white/20"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(e); }}
+                        >
+                            <Edit2 className="w-4 h-4" />
+                        </Button>
+                    )}
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 bg-black/40 backdrop-blur-sm text-red-400 hover:bg-red-500/20 hover:text-red-500"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(resourceId); }}
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </div>
+            );
+        }
+
         return (
             <div className="absolute top-3 right-3 z-40">
                 <DropdownMenu>
@@ -103,15 +133,24 @@ export const WorkspaceCard = ({
                 href={href} 
                 className={cn("group block h-full outline-none", className)}
                 onClick={(e) => {
-                    if (onEdit) {
+                    if (onClick) {
                         e.preventDefault();
-                        onEdit(e);
+                        onClick(e);
                     }
                 }}
             >
                 <Card className="aspect-[1694/2528] w-full border-zinc-200 dark:border-zinc-800 bg-black flex flex-col transition-all group-hover:border-zinc-400 dark:group-hover:border-zinc-600 group-hover:shadow-xl rounded-2xl overflow-hidden active:scale-[0.98] relative">
                     
                     {renderActions()}
+
+                    {/* Draft Badge in corner */}
+                    {isDraft && (
+                        <div className="absolute top-3 right-3 z-30">
+                            <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.2em] bg-zinc-500/10 border-zinc-500/20 px-2.5 py-0.5 rounded-lg text-zinc-500 shadow-none shrink-0">
+                                Draft
+                            </Badge>
+                        </div>
+                    )}
 
                     {/* Visual Area (AI Avatar style human) - Always black background */}
                     <div className="absolute inset-0 z-0 bg-black transition-colors">
@@ -125,12 +164,7 @@ export const WorkspaceCard = ({
                     <div className="absolute bottom-0 left-0 right-0 p-6 z-20 flex flex-col items-start justify-end text-left pointer-events-none h-1/2">
                         
                         <div className="flex flex-col items-start w-full mb-4 mt-auto">
-                            {isDraft && (
-                                <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.2em] bg-zinc-500/10 border-zinc-500/20 px-2.5 py-0.5 rounded-lg text-zinc-500 mb-3 shadow-none">
-                                    Draft
-                                </Badge>
-                            )}
-                            {/* 1. Role Heading (16px) */}
+                            {/* Role Heading (16px) */}
                             <div className="h-[24px] w-full flex items-end justify-start mb-1">
                                 <h4 className="text-[16px] font-bold tracking-tight text-white group-hover:text-primary transition-colors leading-tight whitespace-nowrap truncate w-full capitalize">
                                     {badgeLabel}
@@ -156,7 +190,7 @@ export const WorkspaceCard = ({
                     {/* Bottom Accent Bar */}
                     <div className={cn(
                         "absolute bottom-0 left-0 right-0 h-1 z-30", 
-                        isDraft ? "bg-zinc-800" : styles.hoverBackgroundClassName
+                        isDraft ? "bg-transparent" : styles.hoverBackgroundClassName
                     )} />
                 </Card>
             </Link>
@@ -170,15 +204,24 @@ export const WorkspaceCard = ({
                 href={href} 
                 className={cn("group block w-full outline-none", className)}
                 onClick={(e) => {
-                    if (onEdit) {
+                    if (onClick) {
                         e.preventDefault();
-                        onEdit(e);
+                        onClick(e);
                     }
                 }}
             >
                 <Card className="flex flex-row items-stretch p-0 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative min-h-[120px]">
                     
                     {renderActions()}
+
+                    {/* Draft Badge in corner */}
+                    {isDraft && (
+                        <div className="absolute top-3 right-3 z-30">
+                            <Badge variant="outline" className="text-[9px] font-black uppercase tracking-wider bg-zinc-500/10 border-zinc-500/20 px-1.5 py-0 rounded text-zinc-500 shrink-0 shadow-none">
+                                Draft
+                            </Badge>
+                        </div>
+                    )}
 
                     {/* Left Side: Avatar Box */}
                     {visualArea && (
@@ -197,11 +240,6 @@ export const WorkspaceCard = ({
                                 <h4 className="text-[15px] font-black tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2 capitalize">
                                     {badgeLabel || "AI Agent"}
                                 </h4>
-                                {isDraft && (
-                                    <Badge variant="outline" className="text-[9px] font-black uppercase tracking-wider bg-zinc-500/10 border-zinc-500/20 px-1.5 py-0 rounded text-zinc-500 shrink-0 shadow-none">
-                                        Draft
-                                    </Badge>
-                                )}
                             </div>
                             <span className="text-[13px] font-bold text-zinc-500 group-hover:text-zinc-400 transition-colors">
                                 {title}
@@ -228,7 +266,7 @@ export const WorkspaceCard = ({
                     {/* Bottom Accent Bar */}
                     <div className={cn(
                         "absolute bottom-0 left-0 right-0 h-1 z-30", 
-                        isDraft ? "bg-zinc-800" : styles.hoverBackgroundClassName
+                        isDraft ? "bg-transparent" : styles.hoverBackgroundClassName
                     )} />
                 </Card>
             </Link>
@@ -241,9 +279,9 @@ export const WorkspaceCard = ({
             href={href} 
             className={cn("group block h-full outline-none", className)}
             onClick={(e) => {
-                if (onEdit) {
+                if (onClick) {
                     e.preventDefault();
-                    onEdit(e);
+                    onClick(e);
                 }
             }}
         >
@@ -295,7 +333,7 @@ export const WorkspaceCard = ({
                 {/* Bottom Accent Bar */}
                 <div className={cn(
                     "absolute bottom-0 left-0 right-0 h-1 z-30", 
-                    isDraft ? "bg-zinc-800" : styles.hoverBackgroundClassName
+                    isDraft ? "bg-transparent" : styles.hoverBackgroundClassName
                 )} />
             </Card>
         </Link>

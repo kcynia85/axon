@@ -5,22 +5,22 @@ export const ToolCategorySchema = z.enum(["Primeval", "AI_Utils", "Local", "Syst
 export const ValidationStatusSchema = z.enum(["Valid", "Invalid", "Untested"]);
 
 export const PromptArchetypeSchema = z.object({
-    id: z.string().uuid(),
-    archetype_name: z.string(),
-    archetype_description: z.string().nullable().optional(),
-    archetype_role: z.string(),
-    archetype_goal: z.string(),
-    archetype_backstory: z.string(),
+    id: z.string(),
+    archetype_name: z.string().nullish(),
+    archetype_description: z.string().nullish(),
+    archetype_role: z.string().nullish(),
+    archetype_goal: z.string().nullish(),
+    archetype_backstory: z.string().nullish(),
     archetype_guardrails: z.object({
-        instructions: z.array(z.string()),
-        constraints: z.array(z.string()),
-    }),
-    archetype_knowledge_hubs: z.array(z.any()).nullable().optional(),
-    archetype_keywords: z.array(z.string()).default([]),
-    workspace_domain: z.string(),
-    created_at: z.string().datetime(),
-    updated_at: z.string().datetime(),
-});
+        instructions: z.array(z.string()).default([]),
+        constraints: z.array(z.string()).default([]),
+    }).nullish(),
+    archetype_knowledge_hubs: z.array(z.any()).nullish(),
+    archetype_keywords: z.array(z.string()).nullish(),
+    workspace_domain: z.string().nullish(),
+    created_at: z.string().nullish(),
+    updated_at: z.string().nullish(),
+}).passthrough();
 
 export type PromptArchetype = z.infer<typeof PromptArchetypeSchema>;
 
@@ -37,8 +37,9 @@ export const ExternalServiceSchema = z.object({
     service_keywords: z.array(z.string()).default([]),
     availability_workspace: z.array(z.string()).default([]),
     capabilities: z.array(z.object({
-        name: z.string(),
-        description: z.string(),
+        id: z.string().uuid().optional(),
+        capability_name: z.string(),
+        capability_description: z.string().nullish(),
         method: z.string().optional(),
         path: z.string().optional(),
     })).default([]),

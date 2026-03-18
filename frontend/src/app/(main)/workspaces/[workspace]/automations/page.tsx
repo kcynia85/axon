@@ -1,33 +1,26 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useAutomations } from "@/modules/workspaces/application/useAutomations";
+import { useAutomations, useDeleteAutomation } from "@/modules/workspaces/application/useAutomations";
+import { useAutomationDraft } from "@/modules/studio/features/automation-studio/application/useAutomationDraft";
 import { useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
-import { Search, Zap, Clock, Plus } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
-import { Badge } from "@/shared/ui/ui/Badge";
+import { Plus, Zap, Edit2, Trash2, History, Clock } from "lucide-react";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { cn } from "@/shared/lib/utils";
-import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
-import { useState } from "react";
-
-const COLOR_TO_RGB: Record<string, string> = {
-    blue: "59, 130, 246",
-    purple: "168, 85, 247",
-    pink: "236, 72, 153",
-    green: "34, 197, 94",
-    yellow: "234, 179, 8",
-    orange: "249, 115, 22",
-    default: "113, 113, 122"
-};
+import { useState, useMemo } from "react";
+import { toast } from "sonner";
+import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { SidePeek } from "@/shared/ui/layout/SidePeek";
+import { Button } from "@/shared/ui/ui/Button";
+import { Badge } from "@/shared/ui/ui/Badge";
 
 /**
- * AutomationsListPage: Lists all automations for a given workspace.
- * Standard: 0% useEffect, Pure View architecture.
+ * AutomationsListPage: Lists all automation definitions.
+ * Standard: 0% useEffect, arrow function.
  */
 const AutomationsListPage = () => {
   const params = useParams();
@@ -36,105 +29,209 @@ const AutomationsListPage = () => {
   
   const { data: workspace } = useWorkspace(workspaceId);
   const { data: automations, isLoading } = useAutomations(workspaceId);
+  const { draft, clearDraft } = useAutomationDraft(workspaceId);
+  const { mutate: deleteAutomation } = useDeleteAutomation(workspaceId);
   const [searchQuery, setSearchQuery] = useState("");
+  const [automationToDeleteId, setAutomationToDeleteId] = useState<string | null>(null);
+  const [selectedAutomationId, setSelectedAutomationId] = useState<string | null>(null);
 
   const colorKey = workspaceId.replace("ws-", "");
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
-  const styles = getVisualStylesForZoneColor(colorName);
-  const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
   const filteredAutomations = automations?.filter(automation => 
     automation.automation_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     automation.automation_platform.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleDelete = (id: string) => {
+    if (id === "draft") {
+      if (window.confirm("Are you sure you want to discard this draft?")) {
+        clearDraft();
+        toast.success("Szkic automatyzacji usunięty");
+      }
+      return;
+    }
+
+    setAutomationToDeleteId(id);
+  };
+
+  const confirmDelete = () => {
+    if (automationToDeleteId) {
+      deleteAutomation(automationToDeleteId);
+      setAutomationToDeleteId(null);
+      toast.success("Automatyzacja usunięta");
+    }
+  };
+
   const goToAutomationStudio = () => {
     router.push(`/workspaces/${workspaceId}/automations/studio`);
   };
 
+  const selectedAutomation = useMemo(() => 
+    automations?.find((a) => a.id === selectedAutomationId), 
+    [automations, selectedAutomationId]
+  );
+
+  const handleEdit = (id: string) => {
+    router.push(`/workspaces/${workspaceId}/automations/studio/${id}`);
+  };
+
   return (
-    <PageLayout
-      title="Automations" 
-      description={`Active automations for ${workspace?.name || 'workspace'}.`}
-      breadcrumbs={[
-          { label: "Workspaces", href: "/workspaces" },
-          { label: workspace?.name || "...", href: `/workspaces/${workspaceId}` },
-          { label: "Automations" }
-      ]}
-      actions={
-        <ActionButton 
-            label="Nowa Automatyzacja" 
-            icon={Plus}
-            onClick={goToAutomationStudio} 
-        />
-      }
-      showPagination={false}
-    >
-      <BrowserLayout
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchPlaceholder="Search automations..."
+    <>
+      <PageLayout
+        title="Automations"
+        description={`Workflow triggers and scheduled tasks in ${workspace?.name || 'workspace'}.`}
+        breadcrumbs={[
+            { label: "Workspaces", href: "/workspaces" },
+            { label: workspace?.name || "...", href: `/workspaces/${workspaceId}` },
+            { label: "Automations" }
+        ]}
+        actions={
+          <ActionButton 
+              label="Nowa Automatyzacja" 
+              icon={Plus}
+              onClick={goToAutomationStudio} 
+          />
+        }
+        showPagination={false}
       >
-        {isLoading ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
-                {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full rounded-xl shadow-sm" />)}
+        <BrowserLayout
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search automations..."
+        >
+          {isLoading ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
+                  {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full rounded-xl shadow-sm" />)}
+              </div>
+          ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
+                  {/* Draft Card */}
+                  {draft && !searchQuery && (
+                      <WorkspaceCardHorizontal 
+                          key="automation-draft"
+                          isDraft
+                          title={draft.definition?.name || "New Automation"}
+                          description={draft.definition?.semanticDescription || "Resume designing logic..."}
+                          href="#"
+                          icon={Zap}
+                          resourceId="draft"
+                          onEdit={() => router.push(`/workspaces/${workspaceId}/automations/studio`)}
+                          onClick={() => router.push(`/workspaces/${workspaceId}/automations/studio`)}
+                          onDelete={() => handleDelete("draft")}
+                          colorName="default"
+                      />
+                  )}
+
+                  {filteredAutomations?.map((automation) => (
+                      <WorkspaceCardHorizontal 
+                          key={automation.id}
+                          title={automation.automation_name}
+                          description={`${automation.automation_platform} Integration`}
+                          href="#"
+                          badgeLabel={automation.automation_status}
+                          icon={Zap}
+                          resourceId={automation.id}
+                          onEdit={() => handleEdit(automation.id)}
+                          onClick={() => setSelectedAutomationId(automation.id)}
+                          onDelete={handleDelete}
+                          colorName={colorName}
+                      />
+                  ))}
+              </div>
+          )}
+        </BrowserLayout>
+      </PageLayout>
+
+      <SidePeek
+        open={!!selectedAutomationId}
+        onOpenChange={(open) => !open && setSelectedAutomationId(null)}
+        title={selectedAutomation?.automation_name || "Automation Details"}
+        description={`${selectedAutomation?.automation_platform} Integration`}
+        modal={false}
+        image={
+          <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-primary/20 bg-black flex items-center justify-center text-primary">
+            <Zap className="w-6 h-6" />
+          </div>
+        }
+        footer={
+          <div className="flex w-full justify-between items-center">
+            <Button 
+              variant="ghost" 
+              size="icon-lg"
+              className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0" 
+              onClick={() => {
+                if (selectedAutomationId) {
+                  handleDelete(selectedAutomationId);
+                  setSelectedAutomationId(null);
+                }
+              }}
+            >
+              <Trash2 className="w-5 h-5" />
+            </Button>
+            <Button 
+              className="bg-primary hover:bg-primary/90 font-bold" 
+              size="lg"
+              onClick={() => selectedAutomationId && handleEdit(selectedAutomationId)}
+            >
+              <Edit2 className="w-4 h-4 mr-2" /> Edytuj Automatyzację
+            </Button>
+          </div>
+        }
+      >
+        {selectedAutomation && (
+          <div className="space-y-12">
+            {/* ── 1. Description Block ── */}
+            <div className="bg-muted/50 p-4 rounded-xl">
+              <p className="text-base leading-relaxed text-foreground/80 font-normal">
+                Automatyzacja procesów w ramach platformy {selectedAutomation.automation_platform}. Obsługuje zdarzenia systemowe i integracje zewnętrzne.
+              </p>
             </div>
-        ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pt-4">
-                {filteredAutomations?.map((automation) => (
-                    <Card 
-                        key={automation.id} 
-                        onClick={() => router.push(`/workspaces/${workspaceId}/automations/studio/${automation.id}`)}
-                        className={cn(
-                            "relative overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200 rounded-xl",
-                        "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
-                        "hover:shadow-md",
-                        `hover:${styles.borderClassName}`
-                    )}>
-                        {/* Accent Top Bar */}
-                        <div 
-                            className={cn("absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
-                        />
 
-                        {/* Background Grid Pattern */}
-                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
-                            style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
-                        />
-
-                        <CardHeader className="relative z-10 space-y-3 pb-3 pt-4">
-                            <div className="flex justify-between items-start">
-                                <div className="flex items-center gap-2">
-                                    <div className="p-1.5 rounded bg-muted/30">
-                                        <Zap className="h-4 w-4 text-zinc-500" />
-                                    </div>
-                                    <CardTitle className="text-sm font-bold font-display group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{automation.automation_name}</CardTitle>
-                                </div>
-                                <Badge 
-                                    variant="outline" 
-                                    className={cn("text-[9px] h-4 py-0 uppercase font-bold tracking-tighter border-none", automation.automation_status === 'Active' ? "bg-blue-500/10 text-blue-600" : "bg-muted/30")}
-                                >
-                                    {automation.automation_status}
-                                </Badge>
-                            </div>
-                            <CardDescription className="flex items-center gap-1.5 mt-1 capitalize text-[11px]">
-                                <Clock className="h-3 w-3" />
-                                Platform: {automation.automation_platform}
-                            </CardDescription>
-                        </CardHeader>
-
-                        <CardContent className="relative z-10 mt-auto pt-0 pb-4">
-                            <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
-                                    Last Validated: {automation.automation_last_validated_at ? new Date(automation.automation_last_validated_at).toLocaleDateString() : 'Never'}
-                                </span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+            {/* ── 2. Metadata Summary ── */}
+            <div className="grid grid-cols-2 gap-4 pb-10 border-b border-muted">
+              <div className="space-y-2">
+                <div className="text-base font-bold text-muted-foreground">Platform</div>
+                <div className="text-base font-bold">{selectedAutomation.automation_platform}</div>
+              </div>
+              <div className="space-y-2">
+                <div className="text-base font-bold text-muted-foreground">Status</div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-sm font-bold bg-blue-500/10 text-blue-600 border-none px-2">{selectedAutomation.automation_status}</Badge>
+                </div>
+              </div>
             </div>
+
+            {/* ── 3. Execution Logic ── */}
+            <section className="space-y-4">
+              <h4 className="text-base font-bold text-muted-foreground flex items-center gap-2">
+                <History className="w-4 h-4" /> Execution Logic
+              </h4>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-4 h-4 text-primary/60 shrink-0" />
+                    <span className="text-base font-medium">Trigger Type</span>
+                  </div>
+                  <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold uppercase">
+                    Event-based
+                  </Badge>
+                </div>
+              </div>
+            </section>
+          </div>
         )}
-      </BrowserLayout>
-    </PageLayout>
+      </SidePeek>
+
+      <DestructiveDeleteModal
+        isOpen={!!automationToDeleteId}
+        onClose={() => setAutomationToDeleteId(null)}
+        onConfirm={confirmDelete}
+        title="Delete Automation"
+        resourceName={automations?.find(a => a.id === automationToDeleteId)?.automation_name || "this automation"}
+        affectedResources={[]}
+      />
+    </>
   );
 };
 

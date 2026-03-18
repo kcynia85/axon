@@ -6,7 +6,7 @@ from app.modules.resources.domain.models import (
 )
 from app.modules.resources.application.schemas import (
     CreatePromptArchetypeRequest, UpdatePromptArchetypeRequest, 
-    CreateExternalServiceRequest, CreateCapabilityRequest,
+    CreateExternalServiceRequest, UpdateExternalServiceRequest, CreateCapabilityRequest,
     CreateAutomationRequest, TestPayload, SimulatorResultResponse, SyncResultResponse
 )
 from app.modules.resources.domain.enums import ValidationStatus
@@ -51,13 +51,27 @@ class ResourcesService:
     # --- External Services ---
 
     async def create_external_service(self, request: CreateExternalServiceRequest) -> ExternalService:
+        service_id = uuid4()
+        capabilities = [
+            ServiceCapability(
+                id=uuid4(),
+                capability_name=cap.capability_name,
+                capability_description=cap.capability_description,
+                external_service_id=service_id,
+                created_at=now_utc(),
+                updated_at=now_utc()
+            ) for cap in request.capabilities
+        ]
+        
         service = ExternalService(
-            id=uuid4(),
+            id=service_id,
             service_name=request.service_name,
+            service_description=request.service_description,
             service_category=request.service_category,
             service_url=request.service_url,
             service_keywords=request.service_keywords,
             availability_workspace=request.availability_workspace,
+            capabilities=capabilities,
             created_at=now_utc(),
             updated_at=now_utc()
         )
@@ -69,10 +83,25 @@ class ResourcesService:
     async def get_external_service(self, id: UUID) -> Optional[ExternalService]:
         return await self.repo.get_external_service(id)
 
-    async def update_external_service(self, id: UUID, request: Any) -> Optional[ExternalService]:
-        # Using Any for request type to handle different update schemas if needed
-        # Or just use model_dump if it's a Pydantic model
-        update_data = request.model_dump(exclude_unset=True) if hasattr(request, 'model_dump') else request
+    async def update_external_service(self, id: UUID, request: UpdateExternalServiceRequest) -> Optional[ExternalService]:
+        update_data = request.model_dump(exclude_unset=True, exclude={"capabilities"})
+        
+        # Handle capabilities update if provided
+        if request.capabilities is not None:
+            # For simplicity, we'll replace all capabilities
+            # In a real app, you might want to sync them (update/create/delete)
+            new_capabilities = [
+                ServiceCapability(
+                    id=uuid4(),
+                    capability_name=cap.capability_name,
+                    capability_description=cap.capability_description,
+                    external_service_id=id,
+                    created_at=now_utc(),
+                    updated_at=now_utc()
+                ) for cap in request.capabilities
+            ]
+            await self.repo.sync_service_capabilities(id, new_capabilities)
+            
         return await self.repo.update_external_service(id, update_data)
 
     async def delete_external_service(self, id: UUID) -> bool:

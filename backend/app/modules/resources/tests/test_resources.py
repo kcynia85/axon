@@ -4,7 +4,8 @@ from uuid import uuid4
 from datetime import datetime
 from app.modules.resources.infrastructure.repo import ResourcesRepository
 from app.modules.resources.domain.models import PromptArchetype, ExternalService
-from app.modules.resources.infrastructure.tables import PromptArchetypeTable, ExternalServiceTable
+from app.modules.resources.infrastructure.tables import PromptArchetypeTable
+from app.modules.workspaces.infrastructure.tables import ExternalServiceTable
 from app.shared.utils.time import now_utc
 
 @pytest.fixture
@@ -77,9 +78,9 @@ async def test_list_external_services(mock_session):
         service_url=service.service_url,
         created_at=service.created_at,
         updated_at=service.updated_at,
+        availability_workspace=[],
         capabilities=[] # relationship
-    )
-    
+    )    
     mock_result = MagicMock()
     mock_result.scalars.return_value.all.return_value = [db_service]
     mock_session.execute.return_value = mock_result

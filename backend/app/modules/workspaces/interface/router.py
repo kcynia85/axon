@@ -7,17 +7,16 @@ from app.modules.workspaces.application.service import (
     get_unique_workspaces_use_case,
     list_patterns_use_case, get_pattern_use_case, create_pattern_use_case, update_pattern_use_case, delete_pattern_use_case,
     list_templates_use_case, get_template_use_case, create_template_use_case, update_template_use_case, delete_template_use_case,
-    list_crews_use_case, get_crew_use_case, create_crew_use_case, update_crew_use_case, delete_crew_use_case
+    list_crews_use_case, get_crew_use_case, create_crew_use_case, update_crew_use_case, delete_crew_use_case,
+    list_external_services_use_case, get_external_service_use_case, create_external_service_use_case, update_external_service_use_case, delete_external_service_use_case,
+    list_automations_use_case, get_automation_use_case, create_automation_use_case, update_automation_use_case, delete_automation_use_case
 )
 from app.modules.workspaces.application.schemas import (
     PatternResponse, CreatePatternRequest, UpdatePatternRequest,
     TemplateResponse, CreateTemplateRequest, UpdateTemplateRequest,
     CrewResponse, CreateCrewRequest, UpdateCrewRequest,
-    WorkspaceResponse
-)
-from app.modules.resources.application.service import ResourcesService
-from app.modules.resources.dependencies import get_resources_service
-from app.modules.resources.application.schemas import (
+    WorkspaceResponse,
+    ExternalServiceResponse, CreateExternalServiceRequest, UpdateExternalServiceRequest,
     AutomationResponse, CreateAutomationRequest, UpdateAutomationRequest
 )
 
@@ -203,4 +202,92 @@ async def delete_crew(
     """Delete a crew."""
     if not success:
         raise HTTPException(status_code=404, detail="Crew not found")
+    return
+
+# --- Services ---
+
+@router.get("/{workspace_id}/services", response_model=List[ExternalServiceResponse])
+async def list_services(
+    workspace_id: str,
+    services = Depends(list_external_services_use_case)
+):
+    """List all services for a given workspace."""
+    return services
+
+@router.get("/{workspace_id}/services/{service_id}", response_model=ExternalServiceResponse)
+async def get_service(
+    service = Depends(get_external_service_use_case)
+):
+    """Get a single service."""
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return service
+
+@router.post("/{workspace_id}/services", response_model=ExternalServiceResponse, status_code=status.HTTP_201_CREATED)
+async def create_service(
+    service = Depends(create_external_service_use_case)
+):
+    """Create a new service for a given workspace."""
+    return service
+
+@router.put("/{workspace_id}/services/{service_id}", response_model=ExternalServiceResponse)
+async def update_service(
+    result = Depends(update_external_service_use_case)
+):
+    """Update a service."""
+    if not result:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return result
+
+@router.delete("/{workspace_id}/services/{service_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_service(
+    success: bool = Depends(delete_external_service_use_case)
+):
+    """Delete a service."""
+    if not success:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return
+
+# --- Automations ---
+
+@router.get("/{workspace_id}/automations", response_model=List[AutomationResponse])
+async def list_automations(
+    workspace_id: str,
+    automations = Depends(list_automations_use_case)
+):
+    """List all automations for a given workspace."""
+    return automations
+
+@router.get("/{workspace_id}/automations/{automation_id}", response_model=AutomationResponse)
+async def get_automation(
+    automation = Depends(get_automation_use_case)
+):
+    """Get a single automation."""
+    if not automation:
+        raise HTTPException(status_code=404, detail="Automation not found")
+    return automation
+
+@router.post("/{workspace_id}/automations", response_model=AutomationResponse, status_code=status.HTTP_201_CREATED)
+async def create_automation(
+    automation = Depends(create_automation_use_case)
+):
+    """Create a new automation for a given workspace."""
+    return automation
+
+@router.put("/{workspace_id}/automations/{automation_id}", response_model=AutomationResponse)
+async def update_automation(
+    result = Depends(update_automation_use_case)
+):
+    """Update an automation."""
+    if not result:
+        raise HTTPException(status_code=404, detail="Automation not found")
+    return result
+
+@router.delete("/{workspace_id}/automations/{automation_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_automation(
+    success: bool = Depends(delete_automation_use_case)
+):
+    """Delete an automation."""
+    if not success:
+        raise HTTPException(status_code=404, detail="Automation not found")
     return

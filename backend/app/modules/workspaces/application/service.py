@@ -1,13 +1,17 @@
 from typing import List, Optional
-from uuid import UUID
-from fastapi import Depends
+from uuid import UUID, uuid4
+from fastapi import Depends, HTTPException, status
 from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
-from app.modules.workspaces.domain.models import Pattern, Template, Crew
+from app.modules.workspaces.domain.models import Pattern, Template, Crew, ExternalService, Automation, ServiceCapability
 from app.modules.workspaces.dependencies import get_workspace_repo
+from app.shared.utils.time import now_utc
 from app.modules.workspaces.application.schemas import (
     CreatePatternRequest, UpdatePatternRequest,
     CreateTemplateRequest, UpdateTemplateRequest,
-    CreateCrewRequest, UpdateCrewRequest
+    CreateCrewRequest, UpdateCrewRequest,
+    CreateExternalServiceRequest, UpdateExternalServiceRequest,
+    CreateAutomationRequest, UpdateAutomationRequest,
+    CreateCapabilityRequest
 )
 
 # Function-First Use Cases (Standard-compliant)
@@ -92,6 +96,12 @@ async def delete_template_use_case(
     template_id: UUID,
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> bool:
+    usage = await repo.check_template_usage(template_id)
+    if usage:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Cannot delete template. It is used in the following patterns: {', '.join(usage)}"
+        )
     return await repo.delete_template(template_id)
 
 # --- Crews ---
@@ -131,3 +141,115 @@ async def delete_crew_use_case(
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> bool:
     return await repo.delete_crew(crew_id)
+
+# --- External Services ---
+
+async def list_external_services_use_case(
+    workspace_id: str,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> List[ExternalService]:
+    return await repo.list_external_services(workspace_id)
+
+async def get_external_service_use_case(
+    service_id: UUID,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> Optional[ExternalService]:
+    return await repo.get_external_service(service_id)
+
+async def create_external_service_use_case(
+    workspace_id: str,
+    request: CreateExternalServiceRequest,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> ExternalService:
+    service_id = uuid4()
+    
+    capabilities = [
+        ServiceCapability(
+            id=uuid4(),
+            capability_name=cap.capability_name,
+            capability_description=cap.capability_description,
+            external_service_id=service_id,
+            created_at=now_utc()
+        ) for cap in request.capabilities
+    ]
+    
+    data = request.model_dump(exclude={"capabilities"})
+    availability = data.get("availability_workspace") or []
+    if workspace_id not in availability:
+        availability.append(workspace_id)
+    data["availability_workspace"] = availability
+    
+    service = ExternalService(
+        id=service_id,
+        capabilities=capabilities,
+        **data
+    )
+    return await repo.create_external_service(service)
+
+async def update_external_service_use_case(
+    service_id: UUID, 
+    request: UpdateExternalServiceRequest,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> Optional[ExternalService]:
+    update_data = request.model_dump(exclude_unset=True, exclude={"capabilities"})
+    
+    if request.capabilities is not None:
+        new_capabilities = [
+            ServiceCapability(
+                id=uuid4(),
+                capability_name=cap.capability_name,
+                capability_description=cap.capability_description,
+                external_service_id=service_id,
+                created_at=now_utc()
+            ) for cap in request.capabilities
+        ]
+        await repo.sync_service_capabilities(service_id, new_capabilities)
+        
+    return await repo.update_external_service(service_id, update_data)
+
+async def delete_external_service_use_case(
+    service_id: UUID,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> bool:
+    return await repo.delete_external_service(service_id)
+
+# --- Automations ---
+
+async def list_automations_use_case(
+    workspace_id: str,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> List[Automation]:
+    return await repo.list_automations(workspace_id)
+
+async def get_automation_use_case(
+    automation_id: UUID,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> Optional[Automation]:
+    return await repo.get_automation(automation_id)
+
+async def create_automation_use_case(
+    workspace_id: str,
+    request: CreateAutomationRequest,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> Automation:
+    data = request.model_dump()
+    availability = data.get("availability_workspace") or []
+    if workspace_id not in availability:
+        availability.append(workspace_id)
+    data["availability_workspace"] = availability
+    automation = Automation(**data)
+    return await repo.create_automation(automation)
+
+async def update_automation_use_case(
+    automation_id: UUID, 
+    request: UpdateAutomationRequest,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> Optional[Automation]:
+    data = request.model_dump(exclude_unset=True)
+    return await repo.update_automation(automation_id, data)
+
+async def delete_automation_use_case(
+    automation_id: UUID,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> bool:
+    return await repo.delete_automation(automation_id)

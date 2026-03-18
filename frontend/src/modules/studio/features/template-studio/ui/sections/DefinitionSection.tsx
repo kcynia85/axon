@@ -6,7 +6,11 @@ import { FormTextField } from "@/shared/ui/form/FormTextField";
 import { FormTextarea } from "@/shared/ui/form/FormTextarea";
 import { FormTagInput } from "@/shared/ui/form/FormTagInput";
 
-export const DefinitionSection = () => {
+interface Props {
+	onSyncDraft: () => void;
+}
+
+export const DefinitionSection = ({ onSyncDraft }: Props) => {
 	const { control } = useFormContext();
 
 	return (
@@ -24,6 +28,7 @@ export const DefinitionSection = () => {
 						<FormItemField label="Name">
 							<FormTextField
 								{...field}
+								onBlur={onSyncDraft}
 								placeholder="e.g. Competitive Analysis"
 							/>
 						</FormItemField>
@@ -37,6 +42,7 @@ export const DefinitionSection = () => {
 						<FormItemField label="Goal">
 							<FormTextField
 								{...field}
+								onBlur={onSyncDraft}
 								placeholder="Define the goal of this template..."
 							/>
 						</FormItemField>
@@ -50,6 +56,7 @@ export const DefinitionSection = () => {
 						<FormItemField label="Description">
 							<FormTextarea
 								{...field}
+								onBlur={onSyncDraft}
 								placeholder="Add a detailed description of the purpose..."
 								rows={4}
 							/>
@@ -64,7 +71,11 @@ export const DefinitionSection = () => {
 						<FormItemField label="Keywords">
 							<FormTagInput
 								value={field.value || []}
-								onChange={field.onChange}
+								onChange={(val) => {
+									field.onChange(val);
+									onSyncDraft();
+								}}
+								onBlur={onSyncDraft}
 								placeholder="Enter a tag and press Enter..."
 							/>
 						</FormItemField>

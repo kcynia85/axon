@@ -5,11 +5,13 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
 
 from app.modules.resources.domain.models import (
-    PromptArchetype, ExternalService, ServiceCapability, InternalTool, Automation, AutomationExecution
+    PromptArchetype, InternalTool, ExternalService, ServiceCapability, Automation
 )
 from app.modules.resources.infrastructure.tables import (
-    PromptArchetypeTable, ExternalServiceTable, ServiceCapabilityTable, 
-    InternalToolTable, AutomationTable, AutomationExecutionTable
+    PromptArchetypeTable, InternalToolTable
+)
+from app.modules.workspaces.infrastructure.tables import (
+    ExternalServiceTable, ServiceCapabilityTable, AutomationTable, AutomationExecutionTable
 )
 from app.shared.utils.time import now_utc
 
@@ -77,86 +79,6 @@ class ResourcesRepository:
             updated_at=row.updated_at
         )
 
-    # --- External Service ---
-
-    async def create_external_service(self, service: ExternalService) -> ExternalService:
-        db_obj = ExternalServiceTable(
-            id=service.id,
-            service_name=service.service_name,
-            service_category=service.service_category,
-            service_url=service.service_url,
-            service_keywords=service.service_keywords,
-            availability_workspace=service.availability_workspace,
-            created_at=service.created_at,
-            updated_at=service.updated_at
-        )
-        self.session.add(db_obj)
-        await self.session.commit()
-        await self.session.refresh(db_obj)
-        return self._to_domain_service(db_obj)
-
-    async def list_external_services(self) -> List[ExternalService]:
-        result = await self.session.execute(
-            select(ExternalServiceTable).options(selectinload(ExternalServiceTable.capabilities))
-        )
-        return [self._to_domain_service(row) for row in result.scalars().all()]
-    
-    async def get_external_service(self, id: UUID) -> Optional[ExternalService]:
-        result = await self.session.execute(
-            select(ExternalServiceTable)
-            .options(selectinload(ExternalServiceTable.capabilities))
-            .where(ExternalServiceTable.id == id)
-        )
-        row = result.scalar_one_or_none()
-        return self._to_domain_service(row) if row else None
-
-    async def update_external_service(self, id: UUID, update_data: Dict) -> Optional[ExternalService]:
-        update_data['updated_at'] = now_utc()
-        stmt = update(ExternalServiceTable).where(ExternalServiceTable.id == id).values(**update_data)
-        await self.session.execute(stmt)
-        await self.session.commit()
-        return await self.get_external_service(id)
-
-    async def delete_external_service(self, id: UUID) -> bool:
-        stmt = delete(ExternalServiceTable).where(ExternalServiceTable.id == id)
-        result = await self.session.execute(stmt)
-        await self.session.commit()
-        return result.rowcount > 0
-    
-    async def add_service_capability(self, capability: ServiceCapability) -> ServiceCapability:
-        db_obj = ServiceCapabilityTable(
-            id=capability.id,
-            capability_name=capability.capability_name,
-            capability_description=capability.capability_description,
-            external_service_id=capability.external_service_id,
-            created_at=capability.created_at
-        )
-        self.session.add(db_obj)
-        await self.session.commit()
-        return capability # Domain object already has data
-
-    def _to_domain_service(self, row: ExternalServiceTable) -> ExternalService:
-        return ExternalService(
-            id=row.id,
-            service_name=row.service_name,
-            service_category=row.service_category,
-            service_url=row.service_url,
-            service_keywords=row.service_keywords or [],
-            availability_workspace=row.availability_workspace or [],
-            created_at=row.created_at,
-            updated_at=row.updated_at,
-            capabilities=[
-                ServiceCapability(
-                    id=c.id,
-                    capability_name=c.capability_name,
-                    capability_description=c.capability_description,
-                    external_service_id=c.external_service_id,
-                    created_at=c.created_at,
-                    updated_at=c.created_at # Assuming immutable or same
-                ) for c in row.capabilities
-            ]
-        )
-
     # --- Internal Tool ---
 
     async def list_internal_tools(self) -> List[InternalTool]:
@@ -171,18 +93,12 @@ class ResourcesRepository:
         row = existing.scalar_one_or_none()
         
         if row:
-            # Update fields
             row.tool_display_name = tool.tool_display_name
             row.tool_description = tool.tool_description
             row.tool_category = tool.tool_category
             row.tool_input_schema = tool.tool_input_schema
             row.tool_output_schema = tool.tool_output_schema
             row.updated_at = now_utc()
-            # Do not overwrite user-editable fields like tool_keywords or tool_is_active if we want to preserve them
-            # But "Sync" usually implies code is SSOT for definition. 
-            # PRP says: "UI is Read-Only for definition, Write-Only for metadata".
-            # So we keep keywords if they are not in the update payload (which they are default empty).
-            # Here we just update the definition from code.
         else:
             db_obj = InternalToolTable(
                 id=tool.id,
@@ -218,72 +134,138 @@ class ResourcesRepository:
             updated_at=row.updated_at
         )
 
-    # --- Automation ---
+    # --- External Services ---
+    async def list_external_services(self, workspace: Optional[str] = None) -> List[ExternalService]:
+        stmt = select(ExternalServiceTable).options(selectinload(ExternalServiceTable.capabilities))
+        if workspace:
+            stmt = stmt.where(ExternalServiceTable.availability_workspace.contains([workspace]))
+        result = await self.session.execute(stmt)
+        return [self._service_to_domain(row) for row in result.scalars().all()]
 
-    async def create_automation(self, automation: Automation) -> Automation:
-        db_obj = AutomationTable(
-            id=automation.id,
-            automation_name=automation.automation_name,
-            automation_description=automation.automation_description,
-            automation_platform=automation.automation_platform,
-            automation_webhook_url=automation.automation_webhook_url,
-            automation_http_method=automation.automation_http_method,
-            automation_auth_config=automation.automation_auth_config,
-            automation_input_schema=automation.automation_input_schema,
-            automation_output_schema=automation.automation_output_schema,
-            automation_validation_status=automation.automation_validation_status,
-            automation_last_validated_at=automation.automation_last_validated_at,
-            automation_keywords=automation.automation_keywords,
-            availability_workspace=automation.availability_workspace,
-            created_at=automation.created_at,
-            updated_at=automation.updated_at
-        )
-        self.session.add(db_obj)
-        await self.session.commit()
-        await self.session.refresh(db_obj)
-        return self._to_domain_automation(db_obj)
-
-    async def list_automations(self, workspace_id: Optional[str] = None) -> List[Automation]:
-        query = select(AutomationTable)
-        if workspace_id:
-            query = query.where(AutomationTable.availability_workspace.any(workspace_id))
-        result = await self.session.execute(query)
-        return [self._to_domain_automation(row) for row in result.scalars().all()]
-    
-    async def get_automation(self, id: UUID) -> Optional[Automation]:
-        result = await self.session.execute(select(AutomationTable).where(AutomationTable.id == id))
+    async def get_external_service(self, service_id: UUID) -> Optional[ExternalService]:
+        stmt = select(ExternalServiceTable).where(ExternalServiceTable.id == service_id).options(selectinload(ExternalServiceTable.capabilities))
+        result = await self.session.execute(stmt)
         row = result.scalar_one_or_none()
-        return self._to_domain_automation(row) if row else None
+        return self._service_to_domain(row) if row else None
 
-    async def update_automation(self, id: UUID, update_data: Dict) -> Optional[Automation]:
-        update_data['updated_at'] = now_utc()
-        stmt = update(AutomationTable).where(AutomationTable.id == id).values(**update_data)
+    async def create_external_service(self, service: ExternalService) -> ExternalService:
+        new_row = ExternalServiceTable(
+            id=service.id,
+            service_name=service.service_name,
+            service_description=service.service_description,
+            service_category=service.service_category,
+            service_url=service.service_url,
+            service_keywords=service.service_keywords,
+            availability_workspace=service.availability_workspace,
+            created_at=service.created_at,
+            updated_at=service.updated_at
+        )
+        
+        # Add capabilities
+        for cap in service.capabilities:
+            new_row.capabilities.append(ServiceCapabilityTable(
+                id=cap.id,
+                capability_name=cap.capability_name,
+                capability_description=cap.capability_description,
+                external_service_id=service.id,
+                created_at=cap.created_at
+            ))
+            
+        self.session.add(new_row)
+        await self.session.commit()
+        return service
+
+    async def sync_service_capabilities(self, service_id: UUID, capabilities: List[ServiceCapability]):
+        # Delete old ones
+        await self.session.execute(
+            delete(ServiceCapabilityTable).where(ServiceCapabilityTable.external_service_id == service_id)
+        )
+        
+        # Add new ones
+        for cap in capabilities:
+            db_obj = ServiceCapabilityTable(
+                id=cap.id,
+                capability_name=cap.capability_name,
+                capability_description=cap.capability_description,
+                external_service_id=service_id,
+                created_at=cap.created_at
+            )
+            self.session.add(db_obj)
+            
+        await self.session.commit()
+
+    async def update_external_service(self, service_id: UUID, data: dict) -> Optional[ExternalService]:
+        stmt = update(ExternalServiceTable).where(ExternalServiceTable.id == service_id).values(**data)
         await self.session.execute(stmt)
         await self.session.commit()
-        return await self.get_automation(id)
+        return await self.get_external_service(service_id)
 
-    async def delete_automation(self, id: UUID) -> bool:
-        stmt = delete(AutomationTable).where(AutomationTable.id == id)
+    async def delete_external_service(self, service_id: UUID) -> bool:
+        stmt = delete(ExternalServiceTable).where(ExternalServiceTable.id == service_id)
         result = await self.session.execute(stmt)
         await self.session.commit()
         return result.rowcount > 0
-    
-    def _to_domain_automation(self, row: AutomationTable) -> Automation:
-        return Automation(
-            id=row.id,
-            automation_name=row.automation_name,
-            automation_description=row.automation_description,
-            automation_platform=row.automation_platform,
-            automation_webhook_url=row.automation_webhook_url,
-            automation_http_method=row.automation_http_method,
-            automation_auth_config=row.automation_auth_config,
-            automation_input_schema=row.automation_input_schema,
-            automation_output_schema=row.automation_output_schema,
-            automation_validation_status=row.automation_validation_status,
-            automation_last_validated_at=row.automation_last_validated_at,
-            automation_keywords=row.automation_keywords,
+
+    async def add_service_capability(self, capability: ServiceCapability) -> ServiceCapability:
+        new_row = ServiceCapabilityTable(
+            id=capability.id,
+            capability_name=capability.capability_name,
+            capability_description=capability.capability_description,
+            external_service_id=capability.external_service_id,
+            created_at=capability.created_at
+        )
+        self.session.add(new_row)
+        await self.session.commit()
+        return capability
+
+    def _service_to_domain(self, row: ExternalServiceTable) -> ExternalService:
+        return ExternalService(
+            id=row.id, service_name=row.service_name, 
+            service_description=row.service_description,
+            service_category=row.service_category,
+            service_url=row.service_url, service_keywords=row.service_keywords or [],
             availability_workspace=row.availability_workspace,
-            created_at=row.created_at,
-            updated_at=row.updated_at,
-            executions=[] # Not loading executions by default for list
+            capabilities=[ServiceCapability(id=c.id, capability_name=c.capability_name, capability_description=c.capability_description, external_service_id=c.external_service_id) for c in row.capabilities],
+            created_at=row.created_at, updated_at=row.updated_at
+        )
+
+    # --- Automations ---
+    async def list_automations(self, workspace: Optional[str] = None) -> List[Automation]:
+        stmt = select(AutomationTable).options(selectinload(AutomationTable.executions))
+        if workspace: stmt = stmt.where(AutomationTable.availability_workspace.contains([workspace]))
+        result = await self.session.execute(stmt)
+        return [self._automation_to_domain(row) for row in result.scalars().all()]
+
+    async def get_automation(self, automation_id: UUID) -> Optional[Automation]:
+        stmt = select(AutomationTable).where(AutomationTable.id == automation_id).options(selectinload(AutomationTable.executions))
+        result = await self.session.execute(stmt)
+        row = result.scalar_one_or_none()
+        return self._automation_to_domain(row) if row else None
+
+    async def create_automation(self, automation: Automation) -> Automation:
+        new_row = AutomationTable(**automation.model_dump(exclude={"executions"}))
+        self.session.add(new_row)
+        await self.session.commit()
+        return automation
+
+    async def update_automation(self, automation_id: UUID, data: dict) -> Optional[Automation]:
+        stmt = update(AutomationTable).where(AutomationTable.id == automation_id).values(**data)
+        await self.session.execute(stmt)
+        await self.session.commit()
+        return await self.get_automation(automation_id)
+
+    async def delete_automation(self, automation_id: UUID) -> bool:
+        stmt = delete(AutomationTable).where(AutomationTable.id == automation_id)
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        return result.rowcount > 0
+
+    def _automation_to_domain(self, row: AutomationTable) -> Automation:
+        return Automation(
+            id=row.id, automation_name=row.automation_name, automation_description=row.automation_description,
+            automation_platform=row.automation_platform, automation_webhook_url=row.automation_webhook_url,
+            automation_http_method=row.automation_http_method, automation_auth_config=row.automation_auth_config,
+            automation_input_schema=row.automation_input_schema, automation_output_schema=row.automation_output_schema,
+            automation_keywords=row.automation_keywords or [], availability_workspace=row.availability_workspace,
+            created_at=row.created_at, updated_at=row.updated_at
         )

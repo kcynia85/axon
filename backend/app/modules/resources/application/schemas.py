@@ -49,17 +49,21 @@ class ServiceCapabilityResponse(CreateCapabilityRequest):
 
 class CreateExternalServiceRequest(BaseModel):
     service_name: str
+    service_description: Optional[str] = None
     service_category: ServiceCategory
     service_url: str
     service_keywords: List[str] = Field(default_factory=list)
     availability_workspace: List[str] = Field(default_factory=list)
+    capabilities: List[CreateCapabilityRequest] = Field(default_factory=list)
 
 class UpdateExternalServiceRequest(BaseModel):
     service_name: Optional[str] = None
+    service_description: Optional[str] = None
     service_category: Optional[ServiceCategory] = None
     service_url: Optional[str] = None
     service_keywords: Optional[List[str]] = None
     availability_workspace: Optional[List[str]] = None
+    capabilities: Optional[List[CreateCapabilityRequest]] = None
 
 class ExternalServiceResponse(CreateExternalServiceRequest):
     id: UUID

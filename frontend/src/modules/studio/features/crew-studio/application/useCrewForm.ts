@@ -11,10 +11,27 @@ export const useCrewForm = (
 	initialData?: Partial<CrewStudioFormData>,
 	onSyncDraft?: (data: CrewStudioFormData) => void
 ) => {
+	const effectiveData = useMemo(() => {
+		if (!initialData) return undefined;
+		return {
+			crew_process_type: initialData.crew_process_type || "Hierarchical",
+			crew_name: initialData.crew_name || "",
+			crew_description: initialData.crew_description || "",
+			crew_keywords: initialData.crew_keywords || [],
+			contexts: initialData.contexts || [],
+			artefacts: initialData.artefacts || [],
+			availability_workspace: initialData.availability_workspace || [],
+			agent_member_ids: initialData.agent_member_ids || [],
+			owner_agent_id: initialData.owner_agent_id || "",
+			tasks: initialData.tasks || [{ description: "", specialist_id: "" }],
+			cost: initialData.cost || 0,
+		} as CrewStudioFormData;
+	}, [initialData]);
+
 	const form = useForm<CrewStudioFormData>({
 		resolver: zodResolver(CrewStudioFormSchema) as unknown as Resolver<CrewStudioFormData>,
 		mode: "onChange",
-		defaultValues: {
+		values: effectiveData || {
 			crew_process_type: "Hierarchical",
 			crew_name: "",
 			crew_description: "",
@@ -26,7 +43,6 @@ export const useCrewForm = (
 			owner_agent_id: "",
 			tasks: [{ description: "", specialist_id: "" }],
 			cost: 0,
-			...initialData,
 		} as any,
 	});
 

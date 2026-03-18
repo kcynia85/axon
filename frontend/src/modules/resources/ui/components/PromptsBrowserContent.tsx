@@ -8,6 +8,7 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { Sparkles, Edit2, Copy, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
+import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +17,7 @@ import {
 } from "@/shared/ui/ui/DropdownMenu";
 
 interface PromptsBrowserContentProps {
-  prompts: readonly PromptArchetype[];
+  prompts: readonly (PromptArchetype & { isDraft?: boolean })[];
   viewMode: "grid" | "list";
   onViewDetails: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -133,65 +134,23 @@ export const PromptsBrowserContent = ({
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {prompts.map((archetype) => (
-        <Card 
-          key={archetype.id} 
-          className="group hover:border-primary/50 transition-all overflow-hidden cursor-pointer flex flex-col h-full bg-muted/5 hover:bg-muted/10 relative"
-          onClick={() => onViewDetails(archetype.id)}
-        >
-          <CardHeader className="pb-2 pr-12">
-            <div className="flex justify-between items-start">
-              <Badge variant="outline" className="text-[9px] uppercase font-bold tracking-widest bg-primary/5 text-primary border-primary/20">
-                {archetype.workspace_domain}
-              </Badge>
-            </div>
-            {onDelete && (
-                <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="h-8 w-8"
-                                onClick={(e) => { e.stopPropagation(); }}
-                            >
-                                <MoreHorizontal className="w-4 h-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem 
-                                variant="destructive"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDelete(archetype.id);
-                                }}
-                            >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            )}
-            <CardTitle className="text-sm font-bold mt-2 group-hover:text-primary transition-colors">
-              {archetype.archetype_name}
-            </CardTitle>
-            <CardDescription className="text-[11px] line-clamp-2 leading-relaxed min-h-[2.75rem]">
-              {archetype.archetype_description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0 mt-auto">
-            <div className="flex items-center gap-2 mt-4">
-              <div className="flex -space-x-1.5 overflow-hidden">
-                {archetype.archetype_keywords?.slice(0, 3).map((kw, i) => (
-                  <div key={i} className="px-2 py-0.5 rounded-sm bg-zinc-800 text-[8px] font-mono border border-background text-zinc-400">
-                    {kw}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-          <div className="h-1 w-full bg-gradient-to-r from-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        </Card>
+        <WorkspaceCardHorizontal 
+          key={archetype.id}
+          title={archetype.archetype_name}
+          description={archetype.archetype_description}
+          href="#"
+          badgeLabel={archetype.isDraft ? null : archetype.workspace_domain}
+          tags={archetype.archetype_keywords}
+          icon={Sparkles}
+          resourceId={archetype.id}
+          isDraft={archetype.isDraft}
+          onEdit={(e) => {
+            e.preventDefault();
+            onViewDetails(archetype.id);
+          }}
+          onDelete={onDelete}
+          colorName="default"
+        />
       ))}
     </div>
   );

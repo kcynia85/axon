@@ -11,6 +11,8 @@ import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizo
 import { CrewProfilePeek } from "./CrewProfilePeek";
 import { getAgentAvatarUrl } from "@/shared/lib/utils";
 import { Workflow, Users } from "lucide-react";
+import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { toast } from "sonner";
 
 type CrewsSectionProps = {
   readonly workspaceId: string;
@@ -26,16 +28,24 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
   
   const [selectedCrewId, setSelectedCrewId] = React.useState<string | null>(null);
   const [isDraftSelected, setIsDraftSelected] = React.useState(false);
+  const [crewToDeleteId, setCrewToDeleteId] = React.useState<string | null>(null);
 
   const handleDelete = (id: string) => {
     if (id === "draft") {
       if (window.confirm("Are you sure you want to discard this draft?")) {
         clearDraft();
+        toast.success("Szkic zespołu usunięty");
       }
       return;
     }
-    if (window.confirm("Are you sure you want to delete this crew?")) {
-      deleteCrew(id);
+    setCrewToDeleteId(id);
+  };
+
+  const confirmDelete = () => {
+    if (crewToDeleteId) {
+      deleteCrew(crewToDeleteId);
+      setCrewToDeleteId(null);
+      toast.success("Zespół usunięty");
     }
   };
 
@@ -95,47 +105,27 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
 
   const activeCrew = isDraftSelected ? draftCrew : (crews?.find((crewItem) => crewItem.id === selectedCrewId) || null);
 
+  const displayCrews = React.useMemo(() => {
+    if (!crews) return [];
+    return crews.slice(0, 4);
+  }, [crews]);
+
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {/* Render Draft if exists */}
-        {draft && (
-          <WorkspaceCardHorizontal 
-            key="crew-draft"
-            variant="crew"
-            isDraft
-            icon={Users}
-            title={draft.crew_name || "New Team"}
-            description={draft.crew_description || "Resume assembling this crew..."}
-            href={`/workspaces/${workspaceId}/crews/studio`}
-            badgeLabel={draft.crew_process_type || "Draft Team"}
-            tags={draft.crew_keywords}
-            resourceId="draft"
-            onEdit={() => setIsDraftSelected(true)}
-            onDelete={() => handleDelete("draft")}
-            colorName="default"
-            agentIds={[]}
-            agentVisualsMap={{}}
-            footerContent={
-                <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-mono">
-                    <Workflow className="w-3 h-3 text-zinc-500" />
-                    <span>{(draft.agent_member_ids || []).length} Potential Nodes</span>
-                </div>
-            }
-          />
-        )}
-
-        {crews?.map((crew) => (
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {displayCrews.map((crew) => (
           <WorkspaceCardHorizontal 
             key={crew.id}
             variant="crew"
             title={crew.crew_name}
             description={crew.crew_description}
-            href={`/workspaces/${workspaceId}/crews/${crew.id}`}
-            badgeLabel={crew.crew_process_type}
+            href="#"
             tags={crew.crew_keywords}
             resourceId={crew.id}
             onEdit={() => {
+              router.push(`/workspaces/${workspaceId}/crews/studio/${crew.id}`);
+            }}
+            onClick={() => {
               setIsDraftSelected(false);
               setSelectedCrewId(crew.id);
             }}
@@ -146,7 +136,7 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
           />
         ))}
 
-        {!draft && (!crews || crews.length === 0) && (
+        {(!crews || crews.length === 0) && (
           <Card className="border-dashed h-32 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 col-span-full">
             No crews assembled. Strategy requires team effort.
           </Card>
@@ -169,6 +159,15 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
             router.push(`/workspaces/${workspaceId}/crews/studio/${selectedCrewId}`);
           }
         }}
+      />
+
+      <DestructiveDeleteModal
+        isOpen={!!crewToDeleteId}
+        onClose={() => setCrewToDeleteId(null)}
+        onConfirm={confirmDelete}
+        title="Delete Crew"
+        resourceName={crews?.find(c => c.id === crewToDeleteId)?.crew_name || "this crew"}
+        affectedResources={[]}
       />
     </>
   );

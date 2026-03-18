@@ -34,9 +34,8 @@ class Template(BaseModel):
     template_markdown_content: str
     template_checklist_items: List[Dict[str, Any]] = Field(default_factory=list)
     template_keywords: List[str] = Field(default_factory=list)
-    # Deterministic I/O: defined at template config time, used on canvas
-    template_inputs: List[Dict[str, Any]] = Field(default_factory=list)   # [{"id": str, "label": str, "expectedType": str}]
-    template_outputs: List[Dict[str, Any]] = Field(default_factory=list)  # [{"id": str, "label": str}]
+    template_inputs: List[Dict[str, Any]] = Field(default_factory=list)
+    template_outputs: List[Dict[str, Any]] = Field(default_factory=list)
     availability_workspace: List[str]
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
@@ -55,6 +54,42 @@ class Crew(BaseModel):
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
     deleted_at: Optional[datetime] = None
-    
-    # Non-persistent fields or for display
     agent_member_ids: List[UUID] = Field(default_factory=list)
+
+# --- Migrated Models ---
+
+class ServiceCapability(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    capability_name: str
+    capability_description: Optional[str] = None
+    external_service_id: UUID
+    created_at: datetime = Field(default_factory=now_utc)
+
+class ExternalService(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    service_name: str
+    service_description: Optional[str] = None
+    service_category: str
+    service_url: str
+    service_keywords: List[str] = Field(default_factory=list)
+    availability_workspace: List[str] = Field(default_factory=list)
+    capabilities: List[ServiceCapability] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=now_utc)
+    updated_at: datetime = Field(default_factory=now_utc)
+    deleted_at: Optional[datetime] = None
+
+class Automation(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    automation_name: str
+    automation_description: Optional[str] = None
+    automation_platform: str
+    automation_webhook_url: str
+    automation_http_method: str = "POST"
+    automation_auth_config: Optional[Dict[str, Any]] = None
+    automation_input_schema: Optional[Dict[str, Any]] = None
+    automation_output_schema: Optional[Dict[str, Any]] = None
+    automation_keywords: List[str] = Field(default_factory=list)
+    availability_workspace: List[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=now_utc)
+    updated_at: datetime = Field(default_factory=now_utc)
+    deleted_at: Optional[datetime] = None
