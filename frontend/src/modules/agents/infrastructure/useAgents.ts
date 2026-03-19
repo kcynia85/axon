@@ -25,13 +25,27 @@ export const useAgent = (agentId: string): UseQueryResult<Agent> => {
     });
 };
 
-export const useCreateAgent = (): UseMutationResult<Agent, Error, Partial<Agent>> => {
+export const useCreateAgent = (workspaceId: string): UseMutationResult<Agent, Error, Partial<Agent>> => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationKey: ['create-agent'],
+        mutationKey: ['create-agent', workspaceId],
         mutationFn: async (agent: Partial<Agent>): Promise<Agent> => await agentsApi.createAgent(agent),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["agents"] });
+        onMutate: async (newAgent) => {
+            await queryClient.cancelQueries({ queryKey: ["agents", workspaceId] });
+            const previousAgents = queryClient.getQueryData<Agent[]>(["agents", workspaceId]);
+            
+            queryClient.setQueryData(["agents", workspaceId], (old: Agent[] = []) => [
+                ...old,
+                { ...newAgent, id: 'temp-' + Date.now() } as Agent
+            ]);
+            
+            return { previousAgents };
+        },
+        onError: (err, newAgent, context) => {
+            queryClient.setQueryData(["agents", workspaceId], context?.previousAgents);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["agents", workspaceId] });
         },
     });
 };

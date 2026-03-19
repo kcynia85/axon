@@ -5,17 +5,23 @@ import { usePromptArchetypes, useDeletePromptArchetype } from "../application/us
 import { useArchetypeDraft } from "@/modules/studio/features/archetypes/application/useArchetypeDraft";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
-import { Sparkles, Sparkle } from "lucide-react";
+import { Sparkles, Sparkle, Plus } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { toast } from "sonner";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 
-export const PromptArchetypesList = () => {
+type PromptArchetypesListProps = {
+    readonly archetypes?: any[];
+};
+
+export const PromptArchetypesList = ({ archetypes: externalArchetypes }: PromptArchetypesListProps) => {
     const router = useRouter();
-    const { data: archetypes, isLoading } = usePromptArchetypes();
+    const { data: internalArchetypes, isLoading } = usePromptArchetypes();
+    const archetypes = externalArchetypes ?? internalArchetypes;
     const { draft, clearDraft } = useArchetypeDraft("global", "new");
     const { mutate: deleteArchetype } = useDeletePromptArchetype();
     const { deleteWithUndo } = useDeleteWithUndo();
@@ -60,6 +66,18 @@ export const PromptArchetypesList = () => {
     return (
         <>
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+                {/* Create New Card */}
+                <Link href="/resources/archetypes/studio" className="group block">
+                    <Card className="h-[160px] flex flex-col items-center justify-center border-dashed border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer rounded-xl">
+                        <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                            <Plus className="w-5 h-5 text-zinc-500 group-hover:text-primary" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-primary transition-colors">
+                            Create New Archetype
+                        </span>
+                    </Card>
+                </Link>
+
                 {/* Draft Card */}
                 {draft && (
                     <WorkspaceCardHorizontal 
@@ -78,12 +96,11 @@ export const PromptArchetypesList = () => {
                 )}
 
                 {archetypes?.map((archetype) => (
-                    <WorkspaceCardHorizontal 
+                    <WorkspaceCardHorizontal
                         key={archetype.id}
                         title={archetype.archetype_name}
                         description={archetype.archetype_description}
                         href={`/resources/archetypes/studio/${archetype.id}`}
-                        badgeLabel={archetype.workspace_domain}
                         icon={Sparkle}
                         resourceId={archetype.id}
                         onEdit={() => router.push(`/resources/archetypes/studio/${archetype.id}`)}
@@ -93,7 +110,6 @@ export const PromptArchetypesList = () => {
                         useDirectHoverMenu
                     />
                 ))}
-
                 {hasNoArchetypes && !draft && (
                     <Card className="border-dashed h-40 flex flex-col items-center justify-center text-muted-foreground col-span-full bg-muted/5">
                         <Sparkles className="w-8 h-8 mb-2 opacity-20" />

@@ -6,6 +6,9 @@ import { PageContent } from "@/shared/ui/layout/PageContent";
 const ToolsPage = () => {
     return (
         <PageContainer>
+            <div className="flex justify-between items-center mb-8">
+                <h3 className="text-xl font-black tracking-tight text-muted-foreground">Internal Tools</h3>
+            </div>
             <PageContent>
                 <InternalToolsList />
             </PageContent>

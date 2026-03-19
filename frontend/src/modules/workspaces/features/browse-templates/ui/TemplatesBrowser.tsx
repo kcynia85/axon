@@ -199,7 +199,6 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
                   title={template.template_name}
                   description={template.template_description}
                   href={`/workspaces/${workspaceId}/templates/${template.id}`}
-                  badgeLabel="Structure"
                   tags={template.template_keywords}
                   colorName={colorName}
                   icon={FileText}

@@ -27,13 +27,26 @@ export const useAutomation = (workspaceId: string, automationId: string): UseQue
 /**
  * useCreateAutomation: Mutation hook to create a new automation.
  */
-export const useCreateAutomation = (workspaceId: string): UseMutationResult<Automation, Error, Omit<Automation, "id" | "created_at" | "updated_at">> => {
+export const useCreateAutomation = (workspaceId: string): UseMutationResult<Automation, Error, any> => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (data: Omit<Automation, "id" | "created_at" | "updated_at">): Promise<Automation> => {
-            return await workspacesApi.createAutomation(workspaceId, data);
+        mutationKey: ['create-automation', workspaceId],
+        mutationFn: async (data: any): Promise<Automation> => await workspacesApi.createAutomation(workspaceId, data),
+        onMutate: async (newAutomation) => {
+            await queryClient.cancelQueries({ queryKey: ["automations", workspaceId] });
+            const previousAutomations = queryClient.getQueryData<Automation[]>(["automations", workspaceId]);
+            
+            queryClient.setQueryData(["automations", workspaceId], (old: Automation[] = []) => [
+                ...old,
+                { ...newAutomation, id: 'temp-' + Date.now() } as Automation
+            ]);
+            
+            return { previousAutomations };
         },
-        onSuccess: () => {
+        onError: (err, newAutomation, context) => {
+            queryClient.setQueryData(["automations", workspaceId], context?.previousAutomations);
+        },
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["workspaces", "detail", workspaceId, "automations"] });
             queryClient.invalidateQueries({ queryKey: ["automations", workspaceId] });
         },

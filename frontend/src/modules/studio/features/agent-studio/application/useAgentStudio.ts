@@ -20,7 +20,7 @@ export const useAgentStudio = (initialData?: Partial<CreateAgentFormData>, agent
 	const router = useRouter();
 
 	const { draft, saveDraft, clearDraft } = useAgentDraft(workspaceId);
-	const { mutateAsync: createAgent, isPending: isCreating } = useCreateAgent();
+	const { mutateAsync: createAgent, isPending: isCreating } = useCreateAgent(workspaceId);
 	const { mutateAsync: updateAgent, isPending: isUpdating } = useUpdateAgent();
 
 	const effectiveData = useMemo(() => {

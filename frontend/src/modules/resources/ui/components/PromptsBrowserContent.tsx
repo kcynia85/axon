@@ -5,10 +5,11 @@ import { PromptArchetype } from "@/shared/domain/resources";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Sparkles, Edit2, Copy, MoreHorizontal, Trash2 } from "lucide-react";
+import { Sparkles, Edit2, Copy, MoreHorizontal, Trash2, Plus } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -133,6 +134,18 @@ export const PromptsBrowserContent = ({
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Create New Card */}
+      <Link href="/resources/archetypes/studio" className="group block h-full">
+        <Card className="h-full min-h-[160px] flex flex-col items-center justify-center border-dashed border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer rounded-xl">
+          <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+            <Plus className="w-5 h-5 text-zinc-500 group-hover:text-primary" />
+          </div>
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-primary transition-colors">
+            Create New Archetype
+          </span>
+        </Card>
+      </Link>
+
       {prompts.map((archetype) => (
         <WorkspaceCardHorizontal 
           key={archetype.id}

@@ -18,11 +18,26 @@ export const useCrew = (workspaceId: string, crewId: string): UseQueryResult<Cre
     });
 };
 
-export const useCreateCrew = (workspaceId: string): UseMutationResult<Crew, Error, Omit<Crew, "id" | "created_at" | "updated_at">> => {
+export const useCreateCrew = (workspaceId: string): UseMutationResult<Crew, Error, any> => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (crew: Omit<Crew, "id" | "created_at" | "updated_at">): Promise<Crew> => await workspacesApi.createCrew(workspaceId, crew),
-        onSuccess: () => {
+        mutationKey: ['create-crew', workspaceId],
+        mutationFn: async (crew: any): Promise<Crew> => await workspacesApi.createCrew(workspaceId, crew),
+        onMutate: async (newCrew) => {
+            await queryClient.cancelQueries({ queryKey: ["crews", workspaceId] });
+            const previousCrews = queryClient.getQueryData<Crew[]>(["crews", workspaceId]);
+            
+            queryClient.setQueryData(["crews", workspaceId], (old: Crew[] = []) => [
+                ...old,
+                { ...newCrew, id: 'temp-' + Date.now() } as Crew
+            ]);
+            
+            return { previousCrews };
+        },
+        onError: (err, newCrew, context) => {
+            queryClient.setQueryData(["crews", workspaceId], context?.previousCrews);
+        },
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["crews", workspaceId] });
         },
     });

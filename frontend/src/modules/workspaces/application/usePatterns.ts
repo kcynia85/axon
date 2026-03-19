@@ -10,11 +10,26 @@ export const usePatterns = (workspaceId: string): UseQueryResult<Pattern[]> => {
     });
 };
 
-export const useCreatePattern = (workspaceId: string): UseMutationResult<Pattern, Error, Omit<Pattern, "id" | "created_at" | "updated_at">> => {
+export const useCreatePattern = (workspaceId: string): UseMutationResult<Pattern, Error, any> => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async (pattern: Omit<Pattern, "id" | "created_at" | "updated_at">): Promise<Pattern> => await workspacesApi.createPattern(workspaceId, pattern),
-        onSuccess: () => {
+        mutationKey: ['create-pattern', workspaceId],
+        mutationFn: async (pattern: any): Promise<Pattern> => await workspacesApi.createPattern(workspaceId, pattern),
+        onMutate: async (newPattern) => {
+            await queryClient.cancelQueries({ queryKey: ["patterns", workspaceId] });
+            const previousPatterns = queryClient.getQueryData<Pattern[]>(["patterns", workspaceId]);
+            
+            queryClient.setQueryData(["patterns", workspaceId], (old: Pattern[] = []) => [
+                ...old,
+                { ...newPattern, id: 'temp-' + Date.now() } as Pattern
+            ]);
+            
+            return { previousPatterns };
+        },
+        onError: (err, newPattern, context) => {
+            queryClient.setQueryData(["patterns", workspaceId], context?.previousPatterns);
+        },
+        onSettled: () => {
             queryClient.invalidateQueries({ queryKey: ["patterns", workspaceId] });
         },
     });

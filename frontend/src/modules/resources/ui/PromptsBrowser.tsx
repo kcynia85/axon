@@ -55,7 +55,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
     isSidebarOpen,
     setIsSidebarOpen,
     handleViewDetails,
-    filterConfig
+    filterConfiguration
   } = usePromptsBrowser(initialPrompts);
 
   const {
@@ -71,7 +71,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
     handleApplyFilters,
     getPreviewCount,
     setPendingFilterIds,
-  } = filterConfig;
+  } = filterConfiguration;
 
   const { mutate: deletePrompt } = useDeletePromptArchetype();
   const { deleteWithUndo } = useDeleteWithUndo();

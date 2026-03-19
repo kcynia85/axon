@@ -1,12 +1,14 @@
 "use client";
 
-import { PromptArchetypesList } from "@/modules/resources/ui/PromptArchetypesList";
+import { PromptsBrowser } from "@/modules/resources/ui/PromptsBrowser";
 import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { useRouter } from "next/navigation";
+import { usePromptArchetypes } from "@/modules/resources/application/usePromptArchetypes";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { useRouter } from "next/navigation";
 
 const PromptsPage = () => {
     const router = useRouter();
+    const { data: archetypes = [] } = usePromptArchetypes();
 
     const handleCreateNew = () => {
         router.push("/resources/archetypes/studio");
@@ -14,14 +16,9 @@ const PromptsPage = () => {
 
     return (
         <PageContainer>
-            <div className="flex justify-start mb-6">
-                <ActionButton 
-                    label="New Archetype" 
-                    onClick={handleCreateNew} 
-                    variant="secondary"
-                />
+            <div className="flex justify-end items-center mb-8">
             </div>
-            <PromptArchetypesList />
+            <PromptsBrowser initialPrompts={archetypes} />
         </PageContainer>
     );
 };

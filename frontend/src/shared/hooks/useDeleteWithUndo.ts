@@ -25,10 +25,12 @@ export const useDeleteWithUndo = () => {
     // 2. Set timer for 10 seconds
     const timeout = setTimeout(() => {
       onConfirm();
-      removePending(id);
       delete timeouts.current[id];
       // Invalidate trash query to update the count/list
       queryClient.invalidateQueries({ queryKey: ["trash"] });
+      // We do NOT call removePending(id) here, because the item should remain 
+      // visually 'deleted' (hidden) until it's truly gone from the data source 
+      // or explicitly undone.
     }, 10000);
 
     timeouts.current[id] = timeout;

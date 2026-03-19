@@ -152,8 +152,6 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
       {displayAgents.length === 0 && !draft ? (
         <BrowserEmptyState
             message={initialAgents.length === 0 ? "No agents defined yet. Bring in some talent." : "No agents found matching your criteria."}
-            buttonLabel="Add Agent"
-            onAdd={() => router.push(`/workspaces/${workspaceId}/agents/studio`)}
         />
       ) : (
         <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" : "flex flex-col gap-8"}>

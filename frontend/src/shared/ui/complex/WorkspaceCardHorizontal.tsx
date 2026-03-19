@@ -68,8 +68,8 @@ export const WorkspaceCardHorizontal = ({
     if (isPending) return null;
 
     // Helper for description truncation
-    const truncatedDescription = description && description.length > 90 
-        ? `${description.substring(0, 90)}...` 
+    const truncatedDescription = description && description.length > 200 
+        ? `${description.substring(0, 200)}...` 
         : description;
 
     const renderActions = () => {
@@ -266,7 +266,7 @@ export const WorkspaceCardHorizontal = ({
     return (
         <Link 
             href={href} 
-            className={cn("group block w-full outline-none h-full", className)}
+            className={cn("group block w-full outline-none h-[180px]", className)}
             onClick={(e) => {
                 if (onClick) {
                     e.preventDefault();
@@ -275,7 +275,7 @@ export const WorkspaceCardHorizontal = ({
                 }
             }}
         >
-            <Card className="flex items-start p-5 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative min-h-[160px] h-full">
+            <Card className="flex items-start p-5 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative h-full">
                 
                 {renderActions()}
 
@@ -285,13 +285,7 @@ export const WorkspaceCardHorizontal = ({
                         <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.2em] bg-zinc-500/10 border-zinc-500/20 px-2.5 py-0.5 rounded-lg text-zinc-500 shadow-none shrink-0">
                             Draft
                         </Badge>
-                    ) : (
-                        badgeLabel && (
-                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 h-3.5 px-1 py-0 whitespace-nowrap">
-                                {badgeLabel}
-                            </Badge>
-                        )
-                    )}
+                    ) : null}
                 </div>
 
                 {/* Visual / Icon */}
@@ -312,20 +306,18 @@ export const WorkspaceCardHorizontal = ({
                         </h4>
                     </div>
                     {description && (
-                        <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed mb-4 font-medium">
+                        <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed mb-2 font-medium">
                             {truncatedDescription}
                         </p>
                     )}
                     
-                    <div className="mt-auto">
-                        {/* Tags */}
-                        {tags && tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mt-1">
-                                {tags.slice(0, 2).map(tag => (
-                                    <TagChip key={tag} label={tag} />
-                                ))}
-                            </div>
-                        )}
+                    <div className="mt-auto pt-2">
+                        {/* Tags - Always reserved vertical space even if empty */}
+                        <div className="flex flex-wrap gap-1.5 h-auto min-h-[24px]">
+                            {tags?.slice(0, 2).map(tag => (
+                                <TagChip key={tag} label={tag} />
+                            ))}
+                        </div>
                         
                         {footerContent && (
                             <div className="mt-3 opacity-60">

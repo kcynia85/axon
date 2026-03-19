@@ -52,14 +52,14 @@ export const useTemplateStudio = (templateId?: string | null) => {
 
 	const form = useForm<TemplateStudioFormData>({
 		resolver: zodResolver(TemplateStudioSchema) as any,
-		values: initialData || draft || {
-			name: "",
-			description: "",
-			keywords: [],
-			markdown: "",
-			context_items: [],
-			artefact_items: [],
-			availability_workspace: [workspaceId],
+		values: {
+			name: initialData?.name ?? draft?.name ?? "",
+			description: initialData?.description ?? draft?.description ?? "",
+			keywords: initialData?.keywords ?? draft?.keywords ?? [],
+			markdown: initialData?.markdown ?? draft?.markdown ?? "",
+			context_items: initialData?.context_items ?? draft?.context_items ?? [],
+			artefact_items: initialData?.artefact_items ?? draft?.artefact_items ?? [],
+			availability_workspace: initialData?.availability_workspace ?? draft?.availability_workspace ?? [workspaceId],
 		},
 	});
 

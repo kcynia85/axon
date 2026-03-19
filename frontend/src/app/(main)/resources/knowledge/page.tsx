@@ -1,9 +1,11 @@
+"use client";
+
 import { PageHeader } from "@/shared/ui/layout/PageHeader";
 import { PageContainer } from "@/shared/ui/layout/PageContainer";
 import { PageContent } from "@/shared/ui/layout/PageContent";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/ui/Card";
-import { Button } from "@/shared/ui/ui/Button";
-import { Plus, Database, FolderOpen } from "lucide-react";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { Database, FolderOpen } from "lucide-react";
 import Link from "next/link";
 
 // Mock data - replace with actual API call
@@ -17,6 +19,14 @@ const knowledgeHubs = [
 const KnowledgeHubsPage = () => {
     return (
         <PageContainer>
+            <div className="flex justify-between items-center mb-8">
+                <h3 className="text-xl font-black tracking-tight text-muted-foreground">Knowledge Base</h3>
+                <ActionButton 
+                    label="New Hub" 
+                    onClick={() => {}} 
+                    variant="secondary"
+                />
+            </div>
             <PageContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {knowledgeHubs.map((hub) => (

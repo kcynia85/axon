@@ -21,7 +21,7 @@ export const ResourcesNavIsland = () => {
     return (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
             <Tabs value={activeTab} className="w-auto">
-                <TabsList className="h-14 p-1.5 bg-gradient-to-t from-zinc-950 to-black backdrop-blur-xl rounded-full border border-white/10 shadow-2xl relative">
+                <TabsList className="h-14 p-1.5 bg-zinc-950/20 backdrop-blur-3xl rounded-full border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] relative">
                     {resourcesNavItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = activeTab === item.href;
@@ -33,19 +33,19 @@ export const ResourcesNavIsland = () => {
                                 onClick={() => router.push(item.href)}
                                 className={cn(
                                     "rounded-full gap-2.5 px-6 py-2.5 text-sm transition-all duration-300 relative z-10 h-full cursor-pointer",
-                                    isActive ? "text-zinc-900" : "text-zinc-400 hover:text-zinc-200"
+                                    isActive ? "text-zinc-900" : "text-zinc-400 hover:text-zinc-100"
                                 )}
                             >
                                     {isActive && (
                                     <motion.div
                                         layoutId="activeTab"
-                                        className="absolute inset-0 bg-white rounded-full shadow-sm"
+                                        className="absolute inset-0 bg-white rounded-full shadow-lg"
                                         transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
                                     />
                                 )}
                                 <span className={cn(
                                     "relative z-10 flex items-center gap-2.5 font-medium transition-colors duration-200 text-sm",
-                                    isActive ? "text-zinc-950" : "text-zinc-400 group-hover:text-zinc-100"
+                                    isActive ? "text-zinc-950" : "text-zinc-300 group-hover:text-white"
                                 )}>
                                     <Icon className="h-4 w-4" />
                                     {item.title}
