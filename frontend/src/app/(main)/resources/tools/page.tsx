@@ -6,10 +6,6 @@ import { PageContent } from "@/shared/ui/layout/PageContent";
 const ToolsPage = () => {
     return (
         <PageContainer>
-            <PageHeader
-                title="Internal Tools"
-                description="Browse and manage native agent capabilities and MCP handlers."
-            />
             <PageContent>
                 <InternalToolsList />
             </PageContent>

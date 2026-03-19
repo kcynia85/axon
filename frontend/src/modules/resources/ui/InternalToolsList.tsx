@@ -21,16 +21,7 @@ export const InternalToolsList = () => {
     }
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                    <Layers className="w-4 h-4" /> Native Capabilities
-                </h2>
-                <Button variant="outline" size="sm" className="h-8 gap-2 text-[10px] font-bold">
-                    <RefreshCw className="w-3 h-3" /> Sync MCP Handlers
-                </Button>
-            </div>
-
+        <div className="space-y-6 pt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {tools?.map((tool: InternalTool) => (
                     <Card key={tool.id} className="group hover:border-primary/50 transition-all border-l-4" style={{ borderLeftColor: getCategoryColor(tool.tool_category) }}>

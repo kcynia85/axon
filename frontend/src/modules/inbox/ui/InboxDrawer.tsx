@@ -116,7 +116,7 @@ export const InboxDrawer = () => {
                 <SheetHeader className="px-6 pt-6 pb-4 flex flex-row items-center justify-between space-y-0">
                     <div className="flex items-center gap-3">
                         <SheetTitle className="text-[15px] font-bold text-zinc-900 dark:text-zinc-100">
-                            Inbox
+                            Notifications
                         </SheetTitle>
                         {unreadCount > 0 && (
                             <span className="px-2 py-0.5 rounded-full bg-blue-500 text-white text-[10px] font-black leading-none shadow-lg shadow-blue-500/20">

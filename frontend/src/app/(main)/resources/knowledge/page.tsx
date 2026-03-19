@@ -17,15 +17,6 @@ const knowledgeHubs = [
 const KnowledgeHubsPage = () => {
     return (
         <PageContainer>
-            <PageHeader
-                title="Knowledge Base"
-                description="Browse and manage knowledge hubs and sources."
-            >
-                <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Hub
-                </Button>
-            </PageHeader>
             <PageContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {knowledgeHubs.map((hub) => (

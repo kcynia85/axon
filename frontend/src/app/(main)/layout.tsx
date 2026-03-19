@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Inbox } from "lucide-react";
+import { Bell } from "lucide-react";
 import { Sidebar, NavigationItem } from "@/shared/ui/layout/sidebar";
 import { ModeToggle } from "@/shared/ui/ui/ModeToggle";
 import { InboxDrawer } from "@/modules/inbox/ui/InboxDrawer";
@@ -79,7 +79,7 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
             }}
             className="rounded-xl h-10 w-10 shrink-0 relative"
           >
-            <Inbox className="w-[18px] h-[18px] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors" />
+            <Bell className="w-[18px] h-[18px] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors" />
             {unreadCount > 0 && (
               <span className="absolute top-2 right-2 flex h-2 w-2 items-center justify-center rounded-full bg-blue-500 border border-white dark:border-black" />
             )}
