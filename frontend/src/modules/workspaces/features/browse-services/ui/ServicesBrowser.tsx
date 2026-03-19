@@ -16,6 +16,7 @@ import { ServiceProfilePeek } from "@/modules/workspaces/ui/ServiceProfilePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { toast } from "sonner";
+import { BrowserEmptyState } from "@/shared/ui/complex/BrowserEmptyState";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -148,9 +149,9 @@ export const ServicesBrowser = ({ initialServices, colorName = "default" }: Serv
         }
       >
         {processedServices.length === 0 && !draft ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-muted-foreground italic">No services found matching your criteria.</p>
-          </div>
+          <BrowserEmptyState
+            message={initialServices.length === 0 ? "No services found. Add an integration." : "No services found matching your criteria."}
+          />
         ) : (
           <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-8"}>
             {/* Render Draft if exists and matches search */}

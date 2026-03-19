@@ -7,12 +7,14 @@ import { useAgents } from "@/modules/agents/infrastructure/useAgents";
 import { useCrewDraft } from "@/modules/studio/features/crew-studio/application/useCrewDraft";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
+import { Button } from "@/shared/ui/ui/Button";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { CrewProfilePeek } from "./CrewProfilePeek";
 import { getAgentAvatarUrl } from "@/shared/lib/utils";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 type CrewsSectionProps = {
   readonly workspaceId: string;
@@ -140,8 +142,16 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
         ))}
 
         {(!crews || crews.length === 0) && (
-          <Card className="border-dashed h-32 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 col-span-full">
-            No crews assembled. Strategy requires team effort.
+          <Card className="border-dashed h-40 flex flex-col items-center justify-center px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 col-span-full gap-4">
+            <span>No crews assembled. Strategy requires team effort.</span>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={() => router.push(`/workspaces/${workspaceId}/crews/studio`)}
+              className="gap-2 font-semibold"
+            >
+              <Plus className="w-4 h-4" /> Add Crew
+            </Button>
           </Card>
         )}
       </div>

@@ -9,8 +9,8 @@ import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizo
 import { PatternProfilePeek } from "./PatternProfilePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
-import { toast } from "sonner";
-import { LayoutGrid } from "lucide-react";
+import { Button } from "@/shared/ui/ui/Button";
+import { LayoutGrid, Plus } from "lucide-react";
 
 type PatternsSectionProps = {
   readonly workspaceId: string;
@@ -24,6 +24,11 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
   const { deleteWithUndo } = useDeleteWithUndo();
   const [selectedPatternId, setSelectedPatternId] = React.useState<string | null>(null);
   const [patternToDeleteId, setPatternToDeleteId] = React.useState<string | null>(null);
+
+  const displayPatterns = React.useMemo(() => {
+    if (!patterns) return [];
+    return patterns.slice(0, 4);
+  }, [patterns]);
 
   const handleDelete = (id: string) => {
     setPatternToDeleteId(id);
@@ -52,18 +57,13 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
 
   if (!patterns || patterns.length === 0) {
     return (
-      <Card className="border-dashed h-32 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5">
-        No workflow patterns found. Design some sequences.
+      <Card className="border-dashed h-40 flex flex-col items-center justify-center px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 gap-4">
+        <span>No workflow patterns found. Design some sequences.</span>
       </Card>
     );
   }
 
   const selectedPattern = patterns.find((p) => p.id === selectedPatternId) || null;
-
-  const displayPatterns = React.useMemo(() => {
-    if (!patterns) return [];
-    return patterns.slice(0, 4);
-  }, [patterns]);
 
   return (
     <>

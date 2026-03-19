@@ -258,3 +258,17 @@ async def get_trash_use_case(
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> List[TrashItem]:
     return await repo.get_trash()
+
+async def restore_item_use_case(
+    item_id: UUID,
+    item_type: str,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> bool:
+    return await repo.restore_item(item_id, item_type)
+
+async def purge_item_use_case(
+    item_id: UUID,
+    item_type: str,
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> bool:
+    return await repo.purge_item(item_id, item_type)

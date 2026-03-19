@@ -10,7 +10,7 @@ from app.modules.workspaces.application.service import (
     list_crews_use_case, get_crew_use_case, create_crew_use_case, update_crew_use_case, delete_crew_use_case,
     list_external_services_use_case, get_external_service_use_case, create_external_service_use_case, update_external_service_use_case, delete_external_service_use_case,
     list_automations_use_case, get_automation_use_case, create_automation_use_case, update_automation_use_case, delete_automation_use_case,
-    get_trash_use_case
+    get_trash_use_case, restore_item_use_case, purge_item_use_case
 )
 from app.modules.workspaces.application.schemas import (
     PatternResponse, CreatePatternRequest, UpdatePatternRequest,
@@ -34,6 +34,28 @@ async def get_trash(
 ):
     """List all deleted items."""
     return trash
+
+@router.post("/trash/{item_id}/restore", status_code=status.HTTP_200_OK)
+async def restore_item(
+    item_id: UUID,
+    item_type: str,
+    success: bool = Depends(restore_item_use_case)
+):
+    """Restore a deleted item."""
+    if not success:
+        raise HTTPException(status_code=404, detail="Item not found or could not be restored")
+    return {"message": "Item restored successfully"}
+
+@router.delete("/trash/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def purge_item(
+    item_id: UUID,
+    item_type: str,
+    success: bool = Depends(purge_item_use_case)
+):
+    """Permanently delete an item."""
+    if not success:
+        raise HTTPException(status_code=404, detail="Item not found or could not be deleted")
+    return
 
 @router.get("/", response_model=List[WorkspaceResponse])
 async def list_workspaces():

@@ -16,6 +16,7 @@ import { TemplateProfilePeek } from "@/modules/workspaces/ui/TemplateProfilePeek
 import { toast } from "sonner";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
+import { BrowserEmptyState } from "@/shared/ui/complex/BrowserEmptyState";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -162,9 +163,9 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
         }
       >
         {processedTemplates.length === 0 && !draft ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-muted-foreground italic">No templates found matching your criteria.</p>
-          </div>
+          <BrowserEmptyState
+            message={initialTemplates.length === 0 ? "No templates registered. Draft some structures." : "No templates found matching your criteria."}
+          />
         ) : (
           <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-8"}>
             {/* Render Draft if exists and matches search */}

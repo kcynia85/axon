@@ -16,6 +16,7 @@ import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { AgentProfilePeek } from "@/modules/workspaces/ui/AgentProfilePeek";
 import { cn, getAgentAvatarUrl } from "@/shared/lib/utils";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { BrowserEmptyState } from "@/shared/ui/complex/BrowserEmptyState";
 import { UserCircle } from "lucide-react";
 
 const SORT_OPTIONS: readonly SortOption[] = [
@@ -149,9 +150,11 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
       }
     >
       {displayAgents.length === 0 && !draft ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="text-muted-foreground italic">No agents found matching your criteria.</p>
-        </div>
+        <BrowserEmptyState
+            message={initialAgents.length === 0 ? "No agents defined yet. Bring in some talent." : "No agents found matching your criteria."}
+            buttonLabel="Add Agent"
+            onAdd={() => router.push(`/workspaces/${workspaceId}/agents/studio`)}
+        />
       ) : (
         <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" : "flex flex-col gap-8"}>
           {/* Render Draft Card if exists and no search query or matches search */}

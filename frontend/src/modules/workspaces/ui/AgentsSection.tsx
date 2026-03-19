@@ -9,10 +9,12 @@ import { useAgentDraft } from "@/modules/agents/application/useAgentDraft";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
+import { Button } from "@/shared/ui/ui/Button";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
 import { AgentProfilePeek } from "./AgentProfilePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { getAgentAvatarUrl } from "@/shared/lib/utils";
+import { Plus } from "lucide-react";
 
 type AgentsSectionProps = {
   readonly workspaceId: string;
@@ -141,8 +143,16 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
         })}
 
         {(!agents || agents.length === 0) && (
-          <Card className="border-dashed h-24 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 w-full col-span-full">
-            No agents defined yet. Bring in some talent.
+          <Card className="border-dashed h-40 flex flex-col items-center justify-center px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 w-full col-span-full gap-4">
+            <span>No agents defined yet. Bring in some talent.</span>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={() => router.push(`/workspaces/${workspaceId}/agents/studio`)}
+              className="gap-2 font-semibold"
+            >
+              <Plus className="w-4 h-4" /> Add Agent
+            </Button>
           </Card>
         )}
       </div>

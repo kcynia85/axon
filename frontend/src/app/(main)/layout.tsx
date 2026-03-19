@@ -7,6 +7,7 @@ import { Inbox } from "lucide-react";
 import { Sidebar, NavigationItem } from "@/shared/ui/layout/sidebar";
 import { ModeToggle } from "@/shared/ui/ui/ModeToggle";
 import { InboxDrawer } from "@/modules/inbox/ui/InboxDrawer";
+import { TrashDrawer } from "@/modules/workspaces/ui/TrashDrawer";
 import { UserNav } from "@/shared/ui/layout/UserNav";
 import { Button } from "@/shared/ui/ui/Button";
 import { useUiStore } from "@/shared/lib/store/useUiStore";
@@ -19,7 +20,7 @@ type MainLayoutProps = {
 
 const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
   const pathname = usePathname();
-  const { isSidebarCollapsed, toggleSidebar, toggleInbox } = useUiStore();
+  const { isSidebarCollapsed, toggleSidebar, toggleInbox, toggleTrash } = useUiStore();
   const { data: inboxItems } = useInboxItems();
 
   const unreadCount =
@@ -37,13 +38,31 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
         hasCollapseToggle: item.name === "Home",
       }));
 
+  const mapBottomNavigationToSidebarItems = (
+    navItems: typeof bottomNavigation
+  ): NavigationItem[] =>
+    navItems.map((item) => {
+      if (item.name === "Trash") {
+        return {
+          ...item,
+          onClick: (e) => {
+            e.preventDefault();
+            toggleTrash();
+          },
+          href: "#", // Prevent navigation
+        };
+      }
+      return item;
+    });
+
   const sidebarItems = mapNavigationToSidebarItems(mainNavigation);
+  const bottomSidebarItems = mapBottomNavigationToSidebarItems(bottomNavigation);
 
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar
         items={sidebarItems}
-        bottomItems={bottomNavigation}
+        bottomItems={bottomSidebarItems}
         isCollapsed={isSidebarCollapsed}
         onToggle={toggleSidebar}
         pathname={pathname}
@@ -79,6 +98,7 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
         </main>
       </div>
       <InboxDrawer />
+      <TrashDrawer />
     </div>
   );
 };

@@ -7,8 +7,10 @@ import { useAutomationDraft } from "@/modules/studio/features/automation-studio/
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import {
   Zap,
+  Plus
 } from "lucide-react";
 import { Card } from "@/shared/ui/ui/Card";
+import { Button } from "@/shared/ui/ui/Button";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { toast } from "sonner";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
@@ -62,8 +64,16 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
 
   if (!draft && (!automations || automations.length === 0)) {
     return (
-      <Card className="border-dashed h-32 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5">
-        No automations active. Set some triggers.
+      <Card className="border-dashed h-40 flex flex-col items-center justify-center px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 gap-4">
+        <span>No automations active. Set some triggers.</span>
+        <Button 
+          variant="secondary" 
+          size="sm" 
+          onClick={() => router.push(`/workspaces/${workspaceId}/automations/studio`)}
+          className="gap-2 font-semibold"
+        >
+          <Plus className="w-4 h-4" /> Add Automation
+        </Button>
       </Card>
     );
   }

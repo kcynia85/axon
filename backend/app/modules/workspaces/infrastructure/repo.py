@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete, func, union, or_, String, cast
 from sqlalchemy.orm import selectinload
-from app.modules.workspaces.domain.models import Pattern, Template, Crew, ExternalService, ServiceCapability, Automation
+from app.modules.workspaces.domain.models import Pattern, Template, Crew, ExternalService, ServiceCapability, Automation, TrashItem
 from app.modules.workspaces.infrastructure.tables import (
     PatternTable, TemplateTable, CrewTable, crew_agents_association,
     ExternalServiceTable, ServiceCapabilityTable, AutomationTable, AutomationExecutionTable
@@ -336,6 +336,48 @@ class WorkspaceRepository:
         # Sort by deleted_at desc
         trash_items.sort(key=lambda x: x.deleted_at, reverse=True)
         return trash_items
+
+    async def restore_item(self, item_id: UUID, item_type: str) -> bool:
+        from app.modules.agents.infrastructure.tables import AgentConfigTable
+        
+        table_map = {
+            "pattern": PatternTable,
+            "template": TemplateTable,
+            "crew": CrewTable,
+            "service": ExternalServiceTable,
+            "automation": AutomationTable,
+            "agent": AgentConfigTable
+        }
+        
+        table = table_map.get(item_type.lower())
+        if not table:
+            return False
+            
+        stmt = update(table).where(table.id == item_id).values(deleted_at=None)
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        return result.rowcount > 0
+
+    async def purge_item(self, item_id: UUID, item_type: str) -> bool:
+        from app.modules.agents.infrastructure.tables import AgentConfigTable
+        
+        table_map = {
+            "pattern": PatternTable,
+            "template": TemplateTable,
+            "crew": CrewTable,
+            "service": ExternalServiceTable,
+            "automation": AutomationTable,
+            "agent": AgentConfigTable
+        }
+        
+        table = table_map.get(item_type.lower())
+        if not table:
+            return False
+            
+        stmt = delete(table).where(table.id == item_id)
+        result = await self.session.execute(stmt)
+        await self.session.commit()
+        return result.rowcount > 0
 
     def _automation_to_domain(self, row: AutomationTable) -> Automation:
         return Automation(

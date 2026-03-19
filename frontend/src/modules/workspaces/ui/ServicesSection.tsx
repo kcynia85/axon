@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useServices, useDeleteService } from "../application/useServices";
 import { useServiceDraft } from "@/modules/studio/features/service-studio/application/hooks/useServiceDraft";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Cloud } from "lucide-react";
+import { Card } from "@/shared/ui/ui/Card";
+import { Button } from "@/shared/ui/ui/Button";
+import { Cloud, Plus } from "lucide-react";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { toast } from "sonner";
 import { ServiceProfilePeek } from "./ServiceProfilePeek";
@@ -63,6 +65,22 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full shadow-sm rounded-xl" />)}
       </div>
+    );
+  }
+
+  if (!services || services.length === 0) {
+    return (
+      <Card className="border-dashed h-40 flex flex-col items-center justify-center px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 gap-4">
+        <span>No services found. Add an integration.</span>
+        <Button 
+          variant="secondary" 
+          size="sm" 
+          onClick={() => router.push(`/workspaces/${workspaceId}/services/studio`)}
+          className="gap-2 font-semibold"
+        >
+          <Plus className="w-4 h-4" /> Add Service
+        </Button>
+      </Card>
     );
   }
 

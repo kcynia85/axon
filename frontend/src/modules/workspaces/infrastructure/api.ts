@@ -201,5 +201,13 @@ export const workspacesApi = {
   getTrash: async (): Promise<TrashItem[]> => {
     const data = await authenticatedClient.get<unknown[]>("/workspaces/trash");
     return data.map((itemRaw) => TrashItemSchema.parse(itemRaw));
+  },
+
+  restoreItem: async (itemId: string, type: string): Promise<void> => {
+    await authenticatedClient.post(`/workspaces/trash/${itemId}/restore?item_type=${type}`);
+  },
+
+  purgeItem: async (itemId: string, type: string): Promise<void> => {
+    await authenticatedClient.delete(`/workspaces/trash/${itemId}?item_type=${type}`);
   }
 };

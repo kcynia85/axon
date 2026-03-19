@@ -6,10 +6,11 @@ import { useTemplates, useDeleteTemplate } from "../application/useTemplates";
 import { useTemplateDraft } from "@/modules/studio/features/template-studio/application/hooks/useTemplateDraft";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
+import { Button } from "@/shared/ui/ui/Button";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { TemplateProfilePeek } from "./TemplateProfilePeek";
 import { toast } from "sonner";
-import { FileText } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 
@@ -123,8 +124,16 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
           ))}
 
         {(!templates || templates.length === 0) && (
-          <Card className="border-dashed h-32 flex items-center justify-start px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 col-span-full">
-            No templates registered. Draft some structures.
+          <Card className="border-dashed h-40 flex flex-col items-center justify-center px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 col-span-full gap-4">
+            <span>No templates registered. Draft some structures.</span>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              onClick={() => router.push(`/workspaces/${workspaceId}/templates/studio`)}
+              className="gap-2 font-semibold"
+            >
+              <Plus className="w-4 h-4" /> Add Template
+            </Button>
           </Card>
         )}
       </div>
