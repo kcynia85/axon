@@ -151,6 +151,14 @@ export const AutomationSchema = z.object({
     automation_last_validated_at: z.string().datetime().nullable().optional(),
     automation_keywords: z.array(z.string()).default([]),
     availability_workspace: z.array(z.string()).default([]),
+    trigger_type: z.enum(["event", "cron", "manual"]).default("manual"),
+    trigger_config: z.record(z.any()).default({}),
+    steps: z.array(z.object({
+        id: z.string(),
+        type: z.string(),
+        config: z.record(z.any()),
+        name: z.string().optional(),
+    })).default([]),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
 });
@@ -172,3 +180,13 @@ export const CostEstimateSchema = z.object({
 });
 
 export type CostEstimate = z.infer<typeof CostEstimateSchema>;
+
+export const TrashItemSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  type: z.string(),
+  deleted_at: z.string().datetime(),
+  workspace_id: z.string().optional().nullable(),
+});
+
+export type TrashItem = z.infer<typeof TrashItemSchema>;

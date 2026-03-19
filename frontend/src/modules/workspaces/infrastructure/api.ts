@@ -11,7 +11,9 @@ import {
   Workspace,
   Automation,
   WorkspaceSchema,
-  AutomationSchema
+  AutomationSchema,
+  TrashItem,
+  TrashItemSchema
 } from "@/shared/domain/workspaces";
 import {
   ExternalService,
@@ -194,5 +196,10 @@ export const workspacesApi = {
 
   deleteExternalService: async (workspaceId: string, serviceId: string): Promise<void> => {
     await authenticatedClient.delete(`/workspaces/${workspaceId}/services/${serviceId}`);
+  },
+
+  getTrash: async (): Promise<TrashItem[]> => {
+    const data = await authenticatedClient.get<unknown[]>("/workspaces/trash");
+    return data.map((itemRaw) => TrashItemSchema.parse(itemRaw));
   }
 };

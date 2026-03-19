@@ -11,6 +11,7 @@ type PatternProfilePeekProps = {
   readonly isOpen: boolean;
   readonly onClose: () => void;
   readonly onInstantiate: () => void;
+  readonly onDelete?: (id: string) => void;
 };
 
 export const PatternProfilePeek = ({
@@ -18,6 +19,7 @@ export const PatternProfilePeek = ({
   isOpen,
   onClose,
   onInstantiate,
+  onDelete,
 }: PatternProfilePeekProps) => {
   return (
     <SidePeek
@@ -38,8 +40,10 @@ export const PatternProfilePeek = ({
             size="icon-lg"
             className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0" 
             onClick={() => {
-              // TODO: Implement delete logic if needed
-              onClose();
+              if (pattern?.id && onDelete) {
+                onDelete(pattern.id);
+                onClose();
+              }
             }}
           >
             <Trash2 className="w-5 h-5" />

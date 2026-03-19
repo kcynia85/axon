@@ -7,6 +7,7 @@ import {
   MousePointer2,
   ChartNoAxesColumn,
   Settings,
+  Trash2,
 } from "lucide-react";
 
 export const mainNavigation = [
@@ -21,4 +22,5 @@ export const bottomNavigation = [
   { name: "Analytics", href: "/analytics", icon: ChartNoAxesColumn },
   { name: "Resources", href: "/resources", icon: Database },
   { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Trash", href: "/trash", icon: Trash2 },
 ];

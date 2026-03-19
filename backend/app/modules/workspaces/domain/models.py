@@ -93,3 +93,10 @@ class Automation(BaseModel):
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
     deleted_at: Optional[datetime] = None
+
+class TrashItem(BaseModel):
+    id: UUID
+    name: str
+    type: str
+    deleted_at: datetime
+    workspace_id: Optional[str] = None

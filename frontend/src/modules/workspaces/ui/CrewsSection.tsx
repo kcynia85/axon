@@ -10,7 +10,7 @@ import { Card } from "@/shared/ui/ui/Card";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { CrewProfilePeek } from "./CrewProfilePeek";
 import { getAgentAvatarUrl } from "@/shared/lib/utils";
-import { Workflow, Users } from "lucide-react";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { toast } from "sonner";
 
@@ -25,6 +25,7 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
   const { mutate: deleteCrew } = useDeleteCrew(workspaceId);
   const { data: agents } = useAgents(workspaceId);
   const { draft, clearDraft } = useCrewDraft(workspaceId);
+  const { deleteWithUndo } = useDeleteWithUndo();
   
   const [selectedCrewId, setSelectedCrewId] = React.useState<string | null>(null);
   const [isDraftSelected, setIsDraftSelected] = React.useState(false);
@@ -38,15 +39,17 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
       }
       return;
     }
+    
     setCrewToDeleteId(id);
   };
 
   const confirmDelete = () => {
-    if (crewToDeleteId) {
-      deleteCrew(crewToDeleteId);
-      setCrewToDeleteId(null);
-      toast.success("Zespół usunięty");
-    }
+    if (!crewToDeleteId) return;
+    
+    const crew = crews?.find(c => c.id === crewToDeleteId);
+    const name = crew?.crew_name || "Crew";
+    deleteWithUndo(crewToDeleteId, name, () => deleteCrew(crewToDeleteId));
+    setCrewToDeleteId(null);
   };
 
   if (isCrewsLoading) {
@@ -166,7 +169,7 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
         onClose={() => setCrewToDeleteId(null)}
         onConfirm={confirmDelete}
         title="Delete Crew"
-        resourceName={crews?.find(c => c.id === crewToDeleteId)?.crew_name || "this crew"}
+        resourceName={crews?.find(c => c.id === crewToDeleteId)?.crew_name || "Crew"}
         affectedResources={[]}
       />
     </>

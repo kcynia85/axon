@@ -16,6 +16,7 @@ import { CrewProfilePeek } from "@/modules/workspaces/ui/CrewProfilePeek";
 import { useAllAgents } from "@/modules/agents/infrastructure/useAgents";
 import { getAgentAvatarUrl, getDeterministicImgId } from "@/shared/lib/utils";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { toast } from "sonner";
 
 const SORT_OPTIONS: readonly SortOption[] = [
@@ -62,6 +63,7 @@ export const CrewsBrowser = ({ initialCrews, colorName = "default" }: CrewsBrows
   const { mutate: deleteCrew } = useDeleteCrew(workspaceId);
   const { data: agents } = useAllAgents();
   const { draft, clearDraft } = useCrewDraft(workspaceId);
+  const { deleteWithUndo } = useDeleteWithUndo();
   const [isDraftSelected, setIsDraftSelected] = React.useState(false);
   const [crewToDeleteId, setCrewToDeleteId] = React.useState<string | null>(null);
 
@@ -73,7 +75,10 @@ export const CrewsBrowser = ({ initialCrews, colorName = "default" }: CrewsBrows
       }
       return;
     }
-    setCrewToDeleteId(id);
+    
+    const crew = initialCrews.find(c => c.id === id);
+    const name = crew?.crew_name || "Crew";
+    deleteWithUndo(id, name, () => deleteCrew(id));
   };
 
   const confirmDelete = () => {

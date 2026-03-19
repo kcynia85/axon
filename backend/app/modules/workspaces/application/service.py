@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import UUID, uuid4
 from fastapi import Depends, HTTPException, status
 from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
-from app.modules.workspaces.domain.models import Pattern, Template, Crew, ExternalService, Automation, ServiceCapability
+from app.modules.workspaces.domain.models import Pattern, Template, Crew, ExternalService, Automation, ServiceCapability, TrashItem
 from app.modules.workspaces.dependencies import get_workspace_repo
 from app.shared.utils.time import now_utc
 from app.modules.workspaces.application.schemas import (
@@ -253,3 +253,8 @@ async def delete_automation_use_case(
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> bool:
     return await repo.delete_automation(automation_id)
+
+async def get_trash_use_case(
+    repo: WorkspaceRepository = Depends(get_workspace_repo)
+) -> List[TrashItem]:
+    return await repo.get_trash()

@@ -14,6 +14,7 @@ import { useDeleteService } from "@/modules/workspaces/application/useServices";
 import { useServiceDraft } from "@/modules/studio/features/service-studio/application/hooks/useServiceDraft";
 import { ServiceProfilePeek } from "@/modules/workspaces/ui/ServiceProfilePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { toast } from "sonner";
 
 const SORT_OPTIONS: readonly SortOption[] = [
@@ -59,6 +60,7 @@ export const ServicesBrowser = ({ initialServices, colorName = "default" }: Serv
 
   const { mutate: deleteService } = useDeleteService(workspaceId);
   const { draft, clearDraft } = useServiceDraft(workspaceId);
+  const { deleteWithUndo } = useDeleteWithUndo();
   const [isDraftSelected, setIsDraftSelected] = React.useState(false);
   const [serviceToDeleteId, setServiceToDeleteId] = React.useState<string | null>(null);
 
@@ -70,7 +72,10 @@ export const ServicesBrowser = ({ initialServices, colorName = "default" }: Serv
       }
       return;
     }
-    setServiceToDeleteId(id);
+    
+    const service = initialServices.find(s => s.id === id);
+    const name = service?.service_name || "Service";
+    deleteWithUndo(id, name, () => deleteService(id));
   };
 
   const confirmDelete = () => {

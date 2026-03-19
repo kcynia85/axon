@@ -4,15 +4,15 @@ import * as React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAgentsSection } from "../application/useAgentsSection";
-import { useDeleteAgent, useInspectAgentDeletion } from "@/modules/agents/infrastructure/useAgents";
+import { useDeleteAgent } from "@/modules/agents/infrastructure/useAgents";
 import { useAgentDraft } from "@/modules/agents/application/useAgentDraft";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
 import { AgentProfilePeek } from "./AgentProfilePeek";
-import { getAgentAvatarUrl } from "@/shared/lib/utils";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
-import { UserCircle } from "lucide-react";
+import { getAgentAvatarUrl } from "@/shared/lib/utils";
 
 type AgentsSectionProps = {
   readonly workspaceId: string;
@@ -29,12 +29,12 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
     handleClosePeek,
   } = useAgentsSection(workspaceId);
 
+  const { deleteWithUndo } = useDeleteWithUndo();
   const { draft, clearDraft } = useAgentDraft(workspaceId);
   const [isDraftSelected, setIsDraftSelected] = React.useState(false);
-
   const [agentToDeleteId, setAgentToDeleteId] = React.useState<string | null>(null);
+
   const { mutate: deleteAgent } = useDeleteAgent();
-  const { data: affectedCrews = [], isLoading: isInspectionLoading } = useInspectAgentDeletion(agentToDeleteId);
 
   const handleDeleteClick = (id: string) => {
     if (id === "draft") {
@@ -43,17 +43,18 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
       }
       return;
     }
+    
     setAgentToDeleteId(id);
   };
 
   const confirmDelete = () => {
-    if (agentToDeleteId) {
-      deleteAgent(agentToDeleteId);
-      setAgentToDeleteId(null);
-    }
+    if (!agentToDeleteId) return;
+    
+    const agent = agents?.find(a => a.id === agentToDeleteId);
+    const name = agent?.agent_name || agent?.agent_role_text || "Agent";
+    deleteWithUndo(agentToDeleteId, name, () => deleteAgent(agentToDeleteId));
+    setAgentToDeleteId(null);
   };
-
-  const agentToDelete = agents?.find(a => a.id === agentToDeleteId);
 
   // Map draft to Agent structure for peek
   const draftAgent = React.useMemo(() => {
@@ -167,10 +168,9 @@ export const AgentsSection = ({ workspaceId, colorName = "default" }: AgentsSect
         isOpen={!!agentToDeleteId}
         onClose={() => setAgentToDeleteId(null)}
         onConfirm={confirmDelete}
-        title="Agent Deletion"
-        resourceName={agentToDelete?.agent_name || "this agent"}
-        affectedResources={affectedCrews}
-        isLoading={isInspectionLoading}
+        title="Delete Agent"
+        resourceName={agents?.find(a => a.id === agentToDeleteId)?.agent_name || agents?.find(a => a.id === agentToDeleteId)?.agent_role_text || "Agent"}
+        affectedResources={[]}
       />
     </>
   );

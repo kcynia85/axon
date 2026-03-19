@@ -8,6 +8,7 @@ import { Card } from "@/shared/ui/ui/Card";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { PatternProfilePeek } from "./PatternProfilePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { toast } from "sonner";
 import { LayoutGrid } from "lucide-react";
 
@@ -20,6 +21,7 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
   const router = useRouter();
   const { data: patterns, isLoading } = usePatterns(workspaceId);
   const { mutate: deletePattern } = useDeletePattern(workspaceId);
+  const { deleteWithUndo } = useDeleteWithUndo();
   const [selectedPatternId, setSelectedPatternId] = React.useState<string | null>(null);
   const [patternToDeleteId, setPatternToDeleteId] = React.useState<string | null>(null);
 
@@ -29,9 +31,12 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
 
   const confirmDelete = () => {
     if (patternToDeleteId) {
-      deletePattern(patternToDeleteId);
+      const id = patternToDeleteId;
+      const pattern = patterns?.find(p => p.id === id);
+      if (pattern) {
+        deleteWithUndo(id, pattern.pattern_name, () => deletePattern(id));
+      }
       setPatternToDeleteId(null);
-      toast.success("Wzorzec usunięty");
     }
   };
 

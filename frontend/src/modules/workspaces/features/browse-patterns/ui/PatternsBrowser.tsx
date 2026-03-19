@@ -13,6 +13,7 @@ import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizo
 import { useDeletePattern } from "../../../application/usePatterns";
 import { PatternProfilePeek } from "@/modules/workspaces/ui/PatternProfilePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { toast } from "sonner";
 
 const SORT_OPTIONS: readonly SortOption[] = [
@@ -56,10 +57,13 @@ export const PatternsBrowser = ({ initialPatterns, colorName = "default" }: Patt
   } = filterConfig;
 
   const { mutate: deletePattern } = useDeletePattern(workspaceId);
+  const { deleteWithUndo } = useDeleteWithUndo();
   const [patternToDeleteId, setPatternToDeleteId] = React.useState<string | null>(null);
 
   const handleDelete = (id: string) => {
-    setPatternToDeleteId(id);
+    const pattern = initialPatterns.find(p => p.id === id);
+    const name = pattern?.pattern_name || "Pattern";
+    deleteWithUndo(id, name, () => deletePattern(id));
   };
 
   const confirmDelete = () => {

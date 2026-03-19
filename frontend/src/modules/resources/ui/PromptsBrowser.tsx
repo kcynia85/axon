@@ -17,6 +17,7 @@ import { useArchetypeDraft } from "@/modules/studio/features/archetypes/applicat
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/shared/ui/ui/Button";
 import { toast } from "sonner";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 
 const SORT_OPTIONS: readonly SortOption[] = [
@@ -73,6 +74,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
   } = filterConfig;
 
   const { mutate: deletePrompt } = useDeletePromptArchetype();
+  const { deleteWithUndo } = useDeleteWithUndo();
   const [promptToDeleteId, setPromptToDeleteId] = React.useState<string | null>(null);
 
   const handleDelete = (id: string) => {
@@ -84,7 +86,9 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
       return;
     }
 
-    setPromptToDeleteId(id);
+    const prompt = prompts.find(p => p.id === id);
+    const name = prompt?.archetype_name || "Archetype";
+    deleteWithUndo(id, name, () => deletePrompt(id));
   };
 
   const confirmDelete = () => {

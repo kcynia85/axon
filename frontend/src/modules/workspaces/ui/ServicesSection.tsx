@@ -6,11 +6,11 @@ import { useServices, useDeleteService } from "../application/useServices";
 import { useServiceDraft } from "@/modules/studio/features/service-studio/application/hooks/useServiceDraft";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Cloud } from "lucide-react";
-import { Card } from "@/shared/ui/ui/Card";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { toast } from "sonner";
-import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { ServiceProfilePeek } from "./ServiceProfilePeek";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
+import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 
 type ServicesSectionProps = {
   readonly workspaceId: string;
@@ -20,8 +20,9 @@ type ServicesSectionProps = {
 export const ServicesSection = ({ workspaceId, colorName = "default" }: ServicesSectionProps) => {
   const router = useRouter();
   const { data: services, isLoading } = useServices(workspaceId);
-  const { draft, clearDraft } = useServiceDraft(workspaceId);
+  const { clearDraft } = useServiceDraft(workspaceId);
   const { mutate: deleteService } = useDeleteService(workspaceId);
+  const { deleteWithUndo } = useDeleteWithUndo();
   const [selectedServiceId, setSelectedServiceId] = React.useState<string | null>(null);
   const [serviceToDeleteId, setServiceToDeleteId] = React.useState<string | null>(null);
 
@@ -33,15 +34,17 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
       }
       return;
     }
+    
     setServiceToDeleteId(id);
   };
 
   const confirmDelete = () => {
-    if (serviceToDeleteId) {
-      deleteService(serviceToDeleteId);
-      setServiceToDeleteId(null);
-      toast.success("Usługa usunięta");
-    }
+    if (!serviceToDeleteId) return;
+    
+    const service = (services as any)?.find((s: any) => s.id === serviceToDeleteId);
+    const name = service?.service_name || "Service";
+    deleteWithUndo(serviceToDeleteId, name, () => deleteService(serviceToDeleteId));
+    setServiceToDeleteId(null);
   };
 
   const selectedService = (services as any)?.find((s: any) => s.id === selectedServiceId);
@@ -97,7 +100,7 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
         onClose={() => setServiceToDeleteId(null)}
         onConfirm={confirmDelete}
         title="Delete Service"
-        resourceName={selectedService?.service_name || "this service"}
+        resourceName={(services as any)?.find((s: any) => s.id === serviceToDeleteId)?.service_name || "Service"}
         affectedResources={[]}
       />
     </>

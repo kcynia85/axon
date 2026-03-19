@@ -11,6 +11,7 @@ import { TemplateProfilePeek } from "./TemplateProfilePeek";
 import { toast } from "sonner";
 import { FileText } from "lucide-react";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 
 type TemplatesSectionProps = {
   readonly workspaceId: string;
@@ -21,6 +22,7 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
   const router = useRouter();
   const { data: templates, isLoading } = useTemplates(workspaceId);
   const { draft, clearDraft } = useTemplateDraft(workspaceId);
+  const { deleteWithUndo } = useDeleteWithUndo();
   
   const [selectedTemplateId, setSelectedTemplateId] = React.useState<string | null>(null);
   const [isDraftSelected, setIsDraftSelected] = React.useState(false);
@@ -51,19 +53,13 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
     setTemplateToDeleteId(templateId);
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = () => {
     if (!templateToDeleteId) return;
-
-    try {
-      await deleteTemplateMutation.mutateAsync(templateToDeleteId);
-      setTemplateToDeleteId(null);
-      setSelectedTemplateId(null);
-      toast.success("Szablon usunięty");
-    } catch (error: any) {
-      console.error("Failed to delete template:", error);
-      const message = error?.response?.data?.detail || error.message || "Nie udało się usunąć szablonu";
-      toast.error(message);
-    }
+    
+    const template = templates?.find(t => t.id === templateToDeleteId);
+    const name = template?.template_name || "Template";
+    deleteWithUndo(templateToDeleteId, name, () => deleteTemplateMutation.mutate(templateToDeleteId));
+    setTemplateToDeleteId(null);
   };
 
   // Map draft to Template structure for peek

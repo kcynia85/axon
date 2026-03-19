@@ -12,6 +12,7 @@ import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
 import { useDeleteAgent, useInspectAgentDeletion } from "@/modules/agents/infrastructure/useAgents";
 import { useAgentDraft } from "@/modules/agents/application/useAgentDraft";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { AgentProfilePeek } from "@/modules/workspaces/ui/AgentProfilePeek";
 import { cn, getAgentAvatarUrl } from "@/shared/lib/utils";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
@@ -43,6 +44,7 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
     filterConfig,
   } = useAgentsBrowser(initialAgents);
 
+  const { deleteWithUndo } = useDeleteWithUndo();
   const {
     searchQuery,
     setSearchQuery,
@@ -72,7 +74,10 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
       }
       return;
     }
-    setAgentToDeleteId(id);
+    
+    const agent = initialAgents.find(a => a.id === id);
+    const name = agent?.agent_name || agent?.agent_role_text || "Agent";
+    deleteWithUndo(id, name, () => deleteAgent(id));
   };
 
   const confirmDelete = () => {

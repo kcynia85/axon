@@ -135,3 +135,10 @@ class UpdateAutomationRequest(BaseModel):
 
 class AutomationResponse(Automation):
     pass
+
+class TrashItemResponse(BaseModel):
+    id: UUID
+    name: str
+    type: str
+    deleted_at: datetime
+    workspace_id: Optional[str] = None

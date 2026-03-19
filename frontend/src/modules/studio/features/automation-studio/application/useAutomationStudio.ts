@@ -41,8 +41,16 @@ export const useAutomationStudio = (automationId?: string | null) => {
 				auth: { type: "header" },
 			},
 			dataInterface: {
-				context: [],
-				artefacts: [],
+				context: Object.entries(automation.automation_input_schema || {}).map(([name, config]) => ({
+					name,
+					field_type: (config as any).field_type || String(config),
+					is_required: (config as any).is_required || false,
+				})),
+				artefacts: Object.entries(automation.automation_output_schema || {}).map(([name, config]) => ({
+					name,
+					field_type: (config as any).field_type || String(config),
+					is_required: (config as any).is_required || false,
+				})),
 			},
 			availability: automation.availability_workspace || [workspaceId],
 		} as Partial<AutomationFormData>;
@@ -84,6 +92,14 @@ export const useAutomationStudio = (automationId?: string | null) => {
 				automation_platform: data.connection.platform,
 				automation_http_method: data.connection.method,
 				availability_workspace: data.availability,
+				automation_input_schema: data.dataInterface.context.reduce((acc, curr) => ({
+					...acc,
+					[curr.name]: { field_type: curr.field_type, is_required: curr.is_required },
+				}), {}),
+				automation_output_schema: data.dataInterface.artefacts.reduce((acc, curr) => ({
+					...acc,
+					[curr.name]: { field_type: curr.field_type, is_required: curr.is_required },
+				}), {}),
 			};
 
 			if (automationId) {

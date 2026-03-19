@@ -196,13 +196,13 @@ class WorkspaceRepository:
 
     # --- External Services ---
     async def list_external_services(self, workspace: Optional[str] = None) -> List[ExternalService]:
-        stmt = select(ExternalServiceTable).options(selectinload(ExternalServiceTable.capabilities))
+        stmt = select(ExternalServiceTable).options(selectinload(ExternalServiceTable.capabilities)).where(ExternalServiceTable.deleted_at == None)
         if workspace: stmt = stmt.where(ExternalServiceTable.availability_workspace.contains([workspace]))
         result = await self.session.execute(stmt)
         return [self._service_to_domain(row) for row in result.scalars().all()]
 
     async def get_external_service(self, service_id: UUID) -> Optional[ExternalService]:
-        stmt = select(ExternalServiceTable).options(selectinload(ExternalServiceTable.capabilities)).where(ExternalServiceTable.id == service_id)
+        stmt = select(ExternalServiceTable).options(selectinload(ExternalServiceTable.capabilities)).where(ExternalServiceTable.id == service_id, ExternalServiceTable.deleted_at == None)
         result = await self.session.execute(stmt)
         row = result.scalar_one_or_none()
         return self._service_to_domain(row) if row else None
@@ -260,7 +260,7 @@ class WorkspaceRepository:
         return await self.get_external_service(service_id)
 
     async def delete_external_service(self, service_id: UUID) -> bool:
-        stmt = delete(ExternalServiceTable).where(ExternalServiceTable.id == service_id)
+        stmt = update(ExternalServiceTable).where(ExternalServiceTable.id == service_id).values(deleted_at=now_utc())
         result = await self.session.execute(stmt)
         await self.session.commit()
         return result.rowcount > 0
@@ -278,13 +278,13 @@ class WorkspaceRepository:
 
     # --- Automations ---
     async def list_automations(self, workspace: Optional[str] = None) -> List[Automation]:
-        stmt = select(AutomationTable)
+        stmt = select(AutomationTable).where(AutomationTable.deleted_at == None)
         if workspace: stmt = stmt.where(AutomationTable.availability_workspace.contains([workspace]))
         result = await self.session.execute(stmt)
         return [self._automation_to_domain(row) for row in result.scalars().all()]
 
     async def get_automation(self, automation_id: UUID) -> Optional[Automation]:
-        stmt = select(AutomationTable).where(AutomationTable.id == automation_id)
+        stmt = select(AutomationTable).where(AutomationTable.id == automation_id, AutomationTable.deleted_at == None)
         result = await self.session.execute(stmt)
         row = result.scalar_one_or_none()
         return self._automation_to_domain(row) if row else None
@@ -302,10 +302,40 @@ class WorkspaceRepository:
         return await self.get_automation(automation_id)
 
     async def delete_automation(self, automation_id: UUID) -> bool:
-        stmt = delete(AutomationTable).where(AutomationTable.id == automation_id)
+        stmt = update(AutomationTable).where(AutomationTable.id == automation_id).values(deleted_at=now_utc())
         result = await self.session.execute(stmt)
         await self.session.commit()
         return result.rowcount > 0
+
+    async def get_trash(self) -> List[TrashItem]:
+        from app.modules.agents.infrastructure.tables import AgentConfigTable
+        
+        # Build union query for all tables
+        # Since schemas differ, we select only the common fields: id, name, type, deleted_at
+        
+        queries = [
+            select(PatternTable.id, PatternTable.pattern_name.label("name"), func.cast("pattern", String).label("type"), PatternTable.deleted_at).where(PatternTable.deleted_at != None),
+            select(TemplateTable.id, TemplateTable.template_name.label("name"), func.cast("template", String).label("type"), TemplateTable.deleted_at).where(TemplateTable.deleted_at != None),
+            select(CrewTable.id, CrewTable.crew_name.label("name"), func.cast("crew", String).label("type"), CrewTable.deleted_at).where(CrewTable.deleted_at != None),
+            select(ExternalServiceTable.id, ExternalServiceTable.service_name.label("name"), func.cast("service", String).label("type"), ExternalServiceTable.deleted_at).where(ExternalServiceTable.deleted_at != None),
+            select(AutomationTable.id, AutomationTable.automation_name.label("name"), func.cast("automation", String).label("type"), AutomationTable.deleted_at).where(AutomationTable.deleted_at != None),
+            select(AgentConfigTable.id, func.coalesce(AgentConfigTable.agent_name, AgentConfigTable.agent_role_text).label("name"), func.cast("agent", String).label("type"), AgentConfigTable.deleted_at).where(AgentConfigTable.deleted_at != None)
+        ]
+        
+        trash_items = []
+        for q in queries:
+            result = await self.session.execute(q)
+            for row in result.all():
+                trash_items.append(TrashItem(
+                    id=row.id,
+                    name=row.name or "Unnamed",
+                    type=row.type,
+                    deleted_at=row.deleted_at
+                ))
+        
+        # Sort by deleted_at desc
+        trash_items.sort(key=lambda x: x.deleted_at, reverse=True)
+        return trash_items
 
     def _automation_to_domain(self, row: AutomationTable) -> Automation:
         return Automation(

@@ -45,7 +45,7 @@ export const TemplateProfilePeek = ({ template, isOpen, onClose, onEdit, onDelet
             size="icon-lg"
             className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0" 
             onClick={() => {
-              if (template.id && onDelete && window.confirm("Are you sure you want to delete this template?")) {
+              if (template.id && onDelete) {
                 onDelete(template.id);
                 onClose();
               }

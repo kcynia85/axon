@@ -68,7 +68,7 @@ export const CrewProfilePeek = ({ crew, isOpen, onClose, onEdit, onDelete, agent
             size="icon-lg"
             className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0" 
             onClick={() => {
-              if (crew.id && onDelete && window.confirm("Are you sure you want to delete this crew?")) {
+              if (crew.id && onDelete) {
                 onDelete(crew.id);
                 onClose();
               }

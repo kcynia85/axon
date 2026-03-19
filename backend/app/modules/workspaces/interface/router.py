@@ -9,7 +9,8 @@ from app.modules.workspaces.application.service import (
     list_templates_use_case, get_template_use_case, create_template_use_case, update_template_use_case, delete_template_use_case,
     list_crews_use_case, get_crew_use_case, create_crew_use_case, update_crew_use_case, delete_crew_use_case,
     list_external_services_use_case, get_external_service_use_case, create_external_service_use_case, update_external_service_use_case, delete_external_service_use_case,
-    list_automations_use_case, get_automation_use_case, create_automation_use_case, update_automation_use_case, delete_automation_use_case
+    list_automations_use_case, get_automation_use_case, create_automation_use_case, update_automation_use_case, delete_automation_use_case,
+    get_trash_use_case
 )
 from app.modules.workspaces.application.schemas import (
     PatternResponse, CreatePatternRequest, UpdatePatternRequest,
@@ -17,7 +18,8 @@ from app.modules.workspaces.application.schemas import (
     CrewResponse, CreateCrewRequest, UpdateCrewRequest,
     WorkspaceResponse,
     ExternalServiceResponse, CreateExternalServiceRequest, UpdateExternalServiceRequest,
-    AutomationResponse, CreateAutomationRequest, UpdateAutomationRequest
+    AutomationResponse, CreateAutomationRequest, UpdateAutomationRequest,
+    TrashItemResponse
 )
 
 router = APIRouter(
@@ -25,6 +27,13 @@ router = APIRouter(
     tags=["workspaces"],
     dependencies=[Depends(get_current_user)]
 )
+
+@router.get("/trash", response_model=List[TrashItemResponse])
+async def get_trash(
+    trash = Depends(get_trash_use_case)
+):
+    """List all deleted items."""
+    return trash
 
 @router.get("/", response_model=List[WorkspaceResponse])
 async def list_workspaces():

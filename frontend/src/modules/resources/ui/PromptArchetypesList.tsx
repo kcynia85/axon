@@ -11,12 +11,14 @@ import { useRouter } from "next/navigation";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { toast } from "sonner";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 
 export const PromptArchetypesList = () => {
     const router = useRouter();
     const { data: archetypes, isLoading } = usePromptArchetypes();
     const { draft, clearDraft } = useArchetypeDraft("global", "new");
     const { mutate: deleteArchetype } = useDeletePromptArchetype();
+    const { deleteWithUndo } = useDeleteWithUndo();
     const [archetypeToDeleteId, setArchetypeToDeleteId] = React.useState<string | null>(null);
 
     const handleCreateNew = () => {
@@ -31,7 +33,10 @@ export const PromptArchetypesList = () => {
             }
             return;
         }
-        setArchetypeToDeleteId(id);
+        
+        const archetype = archetypes?.find(a => a.id === id);
+        const name = archetype?.archetype_name || "Archetype";
+        deleteWithUndo(id, name, () => deleteArchetype(id));
     };
 
     const confirmDelete = () => {

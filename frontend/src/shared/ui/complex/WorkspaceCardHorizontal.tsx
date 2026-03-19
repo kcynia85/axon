@@ -7,6 +7,7 @@ import { Card } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { TagChip } from "@/shared/ui/ui/TagChip";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import { usePendingDeletionsStore } from "../../lib/store/usePendingDeletionsStore";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,7 +62,10 @@ export const WorkspaceCardHorizontal = ({
     isDraft = false,
     useDirectHoverMenu = true
 }: WorkspaceCardHorizontalProps) => {
+    const isPending = usePendingDeletionsStore((s) => s.isPending(resourceId || ""));
     const styles = getVisualStylesForZoneColor(colorName);
+
+    if (isPending) return null;
 
     // Helper for description truncation
     const truncatedDescription = description && description.length > 90 

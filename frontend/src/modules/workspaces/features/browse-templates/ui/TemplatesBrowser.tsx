@@ -15,6 +15,7 @@ import { useTemplateDraft } from "@/modules/studio/features/template-studio/appl
 import { TemplateProfilePeek } from "@/modules/workspaces/ui/TemplateProfilePeek";
 import { toast } from "sonner";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -58,6 +59,7 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
   } = filterConfig;
 
   const { mutateAsync: deleteTemplateAsync } = useDeleteTemplate();
+  const { deleteWithUndo } = useDeleteWithUndo();
   const { draft, clearDraft } = useTemplateDraft(workspaceId);
   const [isDraftSelected, setIsDraftSelected] = React.useState(false);
   const [templateToDeleteId, setTemplateToDeleteId] = React.useState<string | null>(null);
@@ -72,7 +74,10 @@ export const TemplatesBrowser = ({ initialTemplates, colorName = "default" }: Te
         }
         return;
     }
-    setTemplateToDeleteId(id);
+    
+    const template = initialTemplates.find(t => t.id === id);
+    const name = template?.template_name || "Template";
+    deleteWithUndo(id, name, () => deleteTemplateAsync({ workspaceId, id }));
   };
 
   const confirmDelete = async () => {

@@ -98,7 +98,7 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
             size="icon-lg"
             className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0" 
             onClick={() => {
-              if (agent.id && onDelete && window.confirm("Are you sure you want to delete this agent?")) {
+              if (agent.id && onDelete) {
                 onDelete(agent.id);
                 onClose();
               }
