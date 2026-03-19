@@ -77,7 +77,7 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
               e.preventDefault();
               toggleInbox();
             }}
-            className="rounded-xl h-10 w-10 shrink-0 relative"
+            className="rounded-xl h-10 w-10 shrink-0 relative bg-white/5 backdrop-blur-md border border-white/5 hover:bg-white/10"
           >
             <Bell className="w-[18px] h-[18px] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors" />
             {unreadCount > 0 && (

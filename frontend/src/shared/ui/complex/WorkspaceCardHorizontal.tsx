@@ -266,7 +266,7 @@ export const WorkspaceCardHorizontal = ({
     return (
         <Link 
             href={href} 
-            className={cn("group block w-full outline-none h-[180px]", className)}
+            className={cn("group block w-full outline-none min-h-[180px]", className)}
             onClick={(e) => {
                 if (onClick) {
                     e.preventDefault();
@@ -305,15 +305,18 @@ export const WorkspaceCardHorizontal = ({
                             {title}
                         </h4>
                     </div>
-                    {description && (
-                        <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed mb-2 font-medium">
-                            {truncatedDescription}
-                        </p>
-                    )}
+                    {/* Description - Fixed height/lines */}
+                    <div className="min-h-[40px] mb-2">
+                        {description && (
+                            <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed font-medium">
+                                {truncatedDescription}
+                            </p>
+                        )}
+                    </div>
                     
-                    <div className="mt-auto pt-2">
-                        {/* Tags - Always reserved vertical space even if empty */}
-                        <div className="flex flex-wrap gap-1.5 h-auto min-h-[24px]">
+                    <div className="mt-auto">
+                        {/* Tags - Reserved vertical space even if empty */}
+                        <div className="flex flex-wrap gap-1.5 min-h-[24px] pt-2">
                             {tags?.slice(0, 2).map(tag => (
                                 <TagChip key={tag} label={tag} />
                             ))}

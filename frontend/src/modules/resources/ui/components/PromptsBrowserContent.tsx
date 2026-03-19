@@ -5,11 +5,12 @@ import { PromptArchetype } from "@/shared/domain/resources";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Sparkles, Edit2, Copy, MoreHorizontal, Trash2, Plus } from "lucide-react";
+import { Sparkles, Edit2, Copy, MoreHorizontal, Trash2, Plus as PlusIcon } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +35,7 @@ export const PromptsBrowserContent = ({
   isLoading,
   isError
 }: PromptsBrowserContentProps) => {
+  const router = useRouter();
   if (isLoading) {
     return (
       <div className={cn(
@@ -76,9 +78,6 @@ export const PromptsBrowserContent = ({
             onClick={() => onViewDetails(archetype.id)}
           >
             <div className="flex items-center p-4 gap-4">
-              <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center shrink-0">
-                <Sparkles className="w-5 h-5 text-primary/40" />
-              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <h4 className="font-bold text-sm truncate">{archetype.archetype_name}</h4>
@@ -137,9 +136,6 @@ export const PromptsBrowserContent = ({
       {/* Create New Card */}
       <Link href="/resources/archetypes/studio" className="group block h-full">
         <Card className="h-full min-h-[160px] flex flex-col items-center justify-center border-dashed border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer rounded-xl">
-          <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
-            <Plus className="w-5 h-5 text-zinc-500 group-hover:text-primary" />
-          </div>
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-primary transition-colors">
             Create New Archetype
           </span>
@@ -152,14 +148,14 @@ export const PromptsBrowserContent = ({
           title={archetype.archetype_name}
           description={archetype.archetype_description}
           href="#"
-          badgeLabel={archetype.isDraft ? null : archetype.workspace_domain}
-          tags={archetype.archetype_keywords}
-          icon={Sparkles}
+          badgeLabel={archetype.isDraft ? null : String(archetype.workspace_domain || "")}
+          tags={Array.isArray(archetype.archetype_keywords) ? archetype.archetype_keywords : []}
           resourceId={archetype.id}
           isDraft={archetype.isDraft}
+          onClick={() => onViewDetails(archetype.id)}
           onEdit={(e) => {
             e.preventDefault();
-            onViewDetails(archetype.id);
+            router.push(`/resources/archetypes/studio/${archetype.id}`);
           }}
           onDelete={onDelete}
           colorName="default"

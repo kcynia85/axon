@@ -38,7 +38,7 @@ export const useArchetypeStudio = (archetypeId?: string | null) => {
 			goal: archetype.archetype_goal || "",
 			backstory: archetype.archetype_backstory || "",
 			keywords: archetype.archetype_keywords || [],
-			knowledgeHubIds: [],
+			knowledgeHubIds: (archetype.archetype_knowledge_hubs || []).map((hub: { id?: string } | string) => typeof hub === "string" ? hub : (hub?.id || "")),
 			instructions: archetype.archetype_guardrails?.instructions || [],
 			constraints: archetype.archetype_guardrails?.constraints || [],
 			workspaceIds: ["Global Availability"],
@@ -46,6 +46,7 @@ export const useArchetypeStudio = (archetypeId?: string | null) => {
 	}, [isRealId, archetype]);
 
 	const form = useForm<ArchetypeFormValues>({
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		resolver: zodResolver(archetypeSchema) as any,
 		values: initialData || draft || {
 			name: "",
@@ -62,12 +63,12 @@ export const useArchetypeStudio = (archetypeId?: string | null) => {
 	});
 
 	const handleExit = useCallback(() => {
-		router.push("/resources/prompts");
+		router.push("/resources/archetypes");
 	}, [router]);
 
 	const handleSubmit = async (data: ArchetypeFormValues) => {
 		try {
-			const apiData: any = {
+			const apiData: Record<string, unknown> = {
 				archetype_name: data.name,
 				archetype_description: data.description,
 				archetype_role: data.role,
@@ -77,6 +78,7 @@ export const useArchetypeStudio = (archetypeId?: string | null) => {
 					instructions: data.instructions,
 					constraints: data.constraints,
 				},
+				archetype_knowledge_hubs: data.knowledgeHubIds.map(id => ({ id })),
 				archetype_keywords: data.keywords,
 				workspace_domain: workspaceId || "General",
 			};
@@ -91,13 +93,16 @@ export const useArchetypeStudio = (archetypeId?: string | null) => {
 			
 			clearDraft();
 			handleExit();
-		} catch (error: any) {
-			toast.error(`Wystąpił błąd: ${error.message || "Nieznany błąd"}`);
+		} catch (error: unknown) {
+			const errorMessage = error instanceof Error ? error.message : "Nieznany błąd";
+			toast.error(`Wystąpił błąd: ${errorMessage}`);
 		}
 	};
 
 	const syncDraft = useCallback(() => {
-		saveDraft(form.getValues());
+		setTimeout(() => {
+			saveDraft(form.getValues());
+		}, 0);
 	}, [form, saveDraft]);
 
 	return {

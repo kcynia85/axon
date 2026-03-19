@@ -1,6 +1,7 @@
 'use client';
 
 import React from "react";
+import { Edit2, Trash2, BookOpen } from "lucide-react";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { SortOption } from "@/shared/domain/filters";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
@@ -11,7 +12,6 @@ import { RecentlyUsedPrompts } from "./components/RecentlyUsedPrompts";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { PromptArchetype } from "@/shared/domain/resources";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Sparkles, Clock, Globe, ShieldCheck, Tag, Edit2 } from "lucide-react";
 import { useDeletePromptArchetype } from "../application/usePromptArchetypes";
 import { useArchetypeDraft } from "@/modules/studio/features/archetypes/application/useArchetypeDraft";
 import { useParams, useRouter } from "next/navigation";
@@ -19,6 +19,8 @@ import { Button } from "@/shared/ui/ui/Button";
 import { toast } from "sonner";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useQuery } from "@tanstack/react-query";
+import { getAssets } from "@/modules/knowledge/features/browse-assets/infrastructure";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -28,8 +30,8 @@ const SORT_OPTIONS: readonly SortOption[] = [
 ];
 
 const QUICK_FILTERS: readonly QuickFilter[] = [
-  { label: "Product", groupId: "domain" },
-  { label: "Marketing", groupId: "domain" },
+  { label: "Product", groupId: "domain-product" },
+  { label: "Marketing", groupId: "domain-marketing" },
 ];
 
 interface PromptsBrowserProps {
@@ -42,6 +44,18 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
   const workspaceId = (params?.workspace as string) || "ws-product";
 
   const { draft, clearDraft } = useArchetypeDraft(workspaceId);
+
+  const { data: assets = [] } = useQuery({
+    queryKey: ["assets"],
+    queryFn: async () => getAssets(),
+  });
+
+  const knowledgeHubsMap = React.useMemo(() => {
+    return assets.reduce((acc, asset) => {
+      acc[asset.id] = asset.title;
+      return acc;
+    }, {} as Record<string, string>);
+  }, [assets]);
 
   const {
     prompts,
@@ -76,6 +90,9 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
   const { mutate: deletePrompt } = useDeletePromptArchetype();
   const { deleteWithUndo } = useDeleteWithUndo();
   const [promptToDeleteId, setPromptToDeleteId] = React.useState<string | null>(null);
+  
+  const [isInstructionsExpanded, setIsInstructionsExpanded] = React.useState(false);
+  const [isConstraintsExpanded, setIsConstraintsExpanded] = React.useState(false);
 
   const handleDelete = (id: string) => {
     if (id === "draft") {
@@ -110,14 +127,22 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
   const displayPrompts = React.useMemo(() => {
     if (!draft) return processedPrompts;
     
-    const draftItem: any = {
+    const draftItem = {
       id: "draft",
       archetype_name: draft.name || "New Archetype",
       archetype_description: draft.description || "Resume design...",
       workspace_domain: "Draft",
       archetype_keywords: draft.keywords || [],
+      archetype_role: draft.role || "",
+      archetype_goal: draft.goal || "",
+      archetype_backstory: draft.backstory || "",
+      archetype_knowledge_hubs: draft.knowledgeHubIds || [],
+      archetype_guardrails: {
+          instructions: draft.instructions || [],
+          constraints: draft.constraints || []
+      },
       isDraft: true
-    };
+    } as unknown as PromptArchetype & { isDraft?: boolean };
     
     return [draftItem, ...processedPrompts];
   }, [draft, processedPrompts]);
@@ -132,8 +157,14 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
             archetype_keywords: draft?.keywords || [],
             archetype_role: draft?.role || "",
             archetype_goal: draft?.goal || "",
+            archetype_backstory: draft?.backstory || "",
+            archetype_knowledge_hubs: draft?.knowledgeHubIds || [],
+            archetype_guardrails: {
+                instructions: draft?.instructions || [],
+                constraints: draft?.constraints || []
+            },
             isDraft: true
-        } as any;
+        } as unknown as PromptArchetype & { isDraft?: boolean };
     }
     return selectedPrompt;
   }, [selectedPrompt, draft]);
@@ -187,87 +218,165 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
 
       {/* Prompt Details Sidebar */}
       <SidePeek 
-        title={activePrompt?.archetype_name || "Archetype Details"}
         open={isSidebarOpen} 
         onOpenChange={setIsSidebarOpen}
+        title={activePrompt?.archetype_name || "Archetype Details"}
+        footer={
+            <div className="flex w-full justify-between items-center gap-4">
+                <Button 
+                    variant="ghost" 
+                    size="icon-lg"
+                    className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0" 
+                    onClick={() => {
+                        if (activePrompt?.id) {
+                            handleDelete(activePrompt.id);
+                            setIsSidebarOpen(false);
+                        }
+                    }}
+                >
+                    <Trash2 className="w-5 h-5" />
+                </Button>
+                <Button 
+                    className="bg-primary hover:bg-primary/90 font-bold" 
+                    size="lg"
+                    onClick={handleEdit}
+                >
+                    <Edit2 className="w-4 h-4 mr-2" /> {activePrompt?.isDraft ? "Kontynuuj projektowanie" : "Edytuj Archetyp"}
+                </Button>
+            </div>
+        }
       >
-        {activePrompt && (
-            <div className="p-8 space-y-8">
-                <div className="flex flex-col gap-4">
-                    <div className="flex justify-between items-center">
-                        <Badge variant={activePrompt.isDraft ? "default" : "outline"} className={`px-3 py-1 font-mono text-[10px] tracking-widest uppercase ${activePrompt.isDraft ? "bg-amber-500/20 text-amber-600" : "bg-primary/5 text-primary border-primary/20"}`}>
-                            {activePrompt.workspace_domain}
-                        </Badge>
-                        <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                            <Clock className="w-3 h-3" /> {activePrompt.isDraft ? "Currently working" : "Updated 1d ago"}
-                        </div>
-                    </div>
-                    <h3 className="text-2xl font-black tracking-tight">{activePrompt.archetype_name}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                        {activePrompt.archetype_description || "No description provided for this archetype."}
+        <div className="space-y-12">
+            {/* ── Banner / Main Goal ── */}
+            {activePrompt?.archetype_goal && (
+                <div className="bg-muted/50 p-4 rounded-xl">
+                    <p className="text-base leading-relaxed text-foreground/80 font-normal">
+                        {activePrompt.archetype_goal}
                     </p>
                 </div>
+            )}
 
-                <div className="grid grid-cols-1 gap-4">
-                    <div className="bg-muted/30 p-4 rounded-xl border border-primary/5 space-y-3">
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                            <ShieldCheck className="w-3 h-3" /> Security & Policy
-                        </h4>
-                        <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium">Data Privacy</span>
-                            <Badge variant="default" className="bg-green-500/20 text-green-600 hover:bg-green-500/30 border-none">Secure</Badge>
-                        </div>
-                    </div>
-
-                    <div className="bg-muted/30 p-4 rounded-xl border border-primary/5 space-y-3">
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                            <Tag className="w-3 h-3" /> Capabilities
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                            {activePrompt.archetype_keywords?.map((kw: string, i: number) => (
-                                <Badge key={i} variant="secondary" className="bg-background text-zinc-400 border-none px-3 py-1 text-[10px] font-bold lowercase">
-                                    #{kw}
-                                </Badge>
-                            ))}
-                        </div>
-                    </div>
+            {/* ── Keywords ── */}
+            <section className="space-y-4">
+                <h4 className="text-base font-bold text-muted-foreground">Keywords</h4>
+                <div className="flex flex-wrap gap-1.5">
+                    {activePrompt?.archetype_keywords?.map((kw: string, i: number) => (
+                        <Badge key={i} variant="secondary" className="text-base font-normal">
+                            #{kw}
+                        </Badge>
+                    ))}
+                    {(!activePrompt?.archetype_keywords || activePrompt.archetype_keywords.length === 0) && (
+                        <span className="text-base text-muted-foreground italic">Brak słów kluczowych</span>
+                    )}
                 </div>
+            </section>
 
-                <div className="space-y-4 pt-4 border-t border-muted">
-                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">System Prompt Blueprint</h4>
-                    <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-900 font-mono text-[11px] leading-relaxed text-zinc-400 overflow-x-auto">
-                        <pre>{`You are an AI-native agent specializing in ${activePrompt.archetype_name}. 
-Your goal is to ${activePrompt.archetype_description}. 
+            {/* ── Knowledge Hubs ── */}
+            <section className="space-y-4">
+                <h4 className="text-base font-bold text-muted-foreground">Sugerowane Huby Wiedzy</h4>
+                <div className="space-y-2">
+                    {activePrompt?.archetype_knowledge_hubs?.map((hub: { id?: string; name?: string } | string, i: number) => {
+                        const hubId = typeof hub === "string" ? hub : hub?.id;
+                        const hubName = (typeof hub !== "string" ? hub?.name : null) || (hubId ? knowledgeHubsMap[hubId] : null) || hubId || "Nieznany Hub";
+                        return (
+                            <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-primary/5">
+                                <BookOpen className="w-4 h-4 text-primary/60 shrink-0" />
+                                <span className="text-base font-semibold text-foreground/90">{hubName}</span>
+                            </div>
+                        );
+                    })}
+                    {(!activePrompt?.archetype_knowledge_hubs || activePrompt.archetype_knowledge_hubs.length === 0) && (
+                        <span className="text-base text-muted-foreground italic pl-1">Brak przypisanych hubów</span>
+                    )}
+                </div>
+            </section>
 
-Strictly follow these domain guidelines:
-- Maintain ${activePrompt.workspace_domain} context at all times.
-- Prioritize high-signal output.
-- Avoid redundant reasoning.`}</pre>
+            {/* ── Instructions ── */}
+            {activePrompt?.archetype_guardrails?.instructions && activePrompt.archetype_guardrails.instructions.length > 0 && (
+                <section className="space-y-4">
+                    <h4 className="text-base font-bold text-muted-foreground">Zasady działania (Instructions)</h4>
+                    <div className="space-y-2">
+                        {(isInstructionsExpanded 
+                            ? activePrompt.archetype_guardrails.instructions 
+                            : activePrompt.archetype_guardrails.instructions.slice(0, 3)
+                        ).map((inst: string, i: number) => (
+                            <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-green-500/5 border border-green-500/10 dark:border-green-500/20">
+                                <span className="text-base text-green-700 dark:text-green-400 leading-relaxed font-medium">{inst}</span>
+                            </div>
+                        ))}
+                        
+                        {!isInstructionsExpanded && activePrompt.archetype_guardrails.instructions.length > 3 && (
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="w-full text-green-600 hover:text-green-700 hover:bg-green-500/5 font-bold h-10 border border-dashed border-green-500/20"
+                                onClick={() => setIsInstructionsExpanded(true)}
+                            >
+                                + {activePrompt.archetype_guardrails.instructions.length - 3} więcej
+                            </Button>
+                        )}
+                        {isInstructionsExpanded && activePrompt.archetype_guardrails.instructions.length > 3 && (
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="w-full text-green-600 hover:text-green-700 hover:bg-green-500/5 font-bold h-10 border border-dashed border-green-500/20"
+                                onClick={() => setIsInstructionsExpanded(false)}
+                            >
+                                Pokaż mniej
+                            </Button>
+                        )}
                     </div>
-                </div>
+                </section>
+            )}
 
-                <div className="flex gap-3 mt-6">
-                    <Button 
-                        variant="outline"
-                        onClick={() => {
-                            if (activePrompt?.id) {
-                                handleDelete(activePrompt.id);
-                                setIsSidebarOpen(false);
-                            }
-                        }}
-                        className="flex-1 py-6 text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/20 rounded-2xl font-black uppercase tracking-widest transition-all"
-                    >
-                        Usuń
-                    </Button>
-                    <Button 
-                        onClick={handleEdit}
-                        className="flex-[2] py-6 bg-primary text-white rounded-2xl font-black uppercase tracking-widest hover:opacity-90 transition-all gap-3"
-                    >
-                        <Edit2 className="w-5 h-5" /> {activePrompt.isDraft ? "Kontynuuj projektowanie" : "Edytuj Archetyp"}
-                    </Button>
+            {/* ── Constraints ── */}
+            {activePrompt?.archetype_guardrails?.constraints && activePrompt.archetype_guardrails.constraints.length > 0 && (
+                <section className="space-y-4">
+                    <h4 className="text-base font-bold text-muted-foreground">Ograniczenia (Constraints)</h4>
+                    <div className="space-y-2">
+                        {(isConstraintsExpanded 
+                            ? activePrompt.archetype_guardrails.constraints 
+                            : activePrompt.archetype_guardrails.constraints.slice(0, 3)
+                        ).map((cons: string, i: number) => (
+                            <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-red-500/5 border border-red-500/10 dark:border-red-500/20">
+                                <span className="text-base text-red-700 dark:text-red-400 leading-relaxed font-medium">{cons}</span>
+                            </div>
+                        ))}
+
+                        {!isConstraintsExpanded && activePrompt.archetype_guardrails.constraints.length > 3 && (
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="w-full text-red-600 hover:text-red-700 hover:bg-red-500/5 font-bold h-10 border border-dashed border-red-500/20"
+                                onClick={() => setIsConstraintsExpanded(true)}
+                            >
+                                + {activePrompt.archetype_guardrails.constraints.length - 3} więcej
+                            </Button>
+                        )}
+                        {isConstraintsExpanded && activePrompt.archetype_guardrails.constraints.length > 3 && (
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="w-full text-red-600 hover:text-red-700 hover:bg-red-500/5 font-bold h-10 border border-dashed border-red-500/20"
+                                onClick={() => setIsConstraintsExpanded(false)}
+                            >
+                                Pokaż mniej
+                            </Button>
+                        )}
+                    </div>
+                </section>
+            )}
+
+            {/* ── Availability ── */}
+            <section className="space-y-4">
+                <h4 className="text-base font-bold text-muted-foreground">Dostępność</h4>
+                <div className="flex flex-wrap gap-1.5">
+                    <Badge variant="outline" className="text-base font-normal">
+                        {activePrompt?.workspace_domain === "global" ? "Global" : activePrompt?.workspace_domain || "Global"}
+                    </Badge>
                 </div>
-            </div>
-        )}
+            </section>
+        </div>
       </SidePeek>
 
       <DestructiveDeleteModal

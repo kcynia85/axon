@@ -5,14 +5,9 @@ import { FormSelect } from "@/shared/ui/form/FormSelect";
 import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 import { FormField } from "@/shared/ui/ui/Form";
 import { useFormContext } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
+import { getAssets } from "@/modules/knowledge/features/browse-assets/infrastructure";
 import type { ArchetypeFormValues } from "../../application/archetypeSchema";
-
-// Mock data, in the future this should be passed as props or fetched
-const KNOWLEDGE_HUBS_MOCK = [
-	{ id: "hub_pm", name: "Product Management Hub" },
-	{ id: "hub_discovery", name: "Discovery Hub" },
-	{ id: "hub_design", name: "Design Hub" },
-];
 
 interface ArchetypeMemorySectionProps {
 	readonly syncDraft?: () => void;
@@ -20,6 +15,13 @@ interface ArchetypeMemorySectionProps {
 
 export const ArchetypeMemorySection = ({ syncDraft }: ArchetypeMemorySectionProps) => {
 	const { control } = useFormContext<ArchetypeFormValues>();
+
+	const { data: assets = [] } = useQuery({
+		queryKey: ["assets"],
+		queryFn: async () => getAssets(),
+	});
+
+	const knowledgeHubOptions = assets.map(asset => ({ id: asset.id, name: asset.title }));
 
 	return (
 		<FormSection
@@ -43,7 +45,7 @@ export const ArchetypeMemorySection = ({ syncDraft }: ArchetypeMemorySectionProp
 											field.onChange(ids);
 											syncDraft?.();
 										}}
-										options={KNOWLEDGE_HUBS_MOCK}
+										options={knowledgeHubOptions}
 										placeholder="Select Knowledge Sources..."
 										searchPlaceholder="Search hubs..."
 									/>

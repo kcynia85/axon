@@ -16,8 +16,8 @@ const resourcesNavItems = [
         icon: Database,
     },
     {
-        title: "Prompts",
-        href: "/resources/prompts",
+        title: "Archetypes",
+        href: "/resources/archetypes",
         icon: Sparkles,
     },
     {

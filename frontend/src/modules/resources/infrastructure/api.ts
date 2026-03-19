@@ -9,31 +9,31 @@ import {
 export const resourcesApi = {
     // --- Prompt Archetypes ---
     getPromptArchetypes: async (): Promise<PromptArchetype[]> => {
-        const res = await apiClient.get("/resources/prompts");
+        const res = await apiClient.get("/resources/archetypes");
         const data = await res.json() as unknown[];
         return data.map((a: unknown) => PromptArchetypeSchema.parse(a));
     },
 
     getPromptArchetype: async (id: string): Promise<PromptArchetype> => {
-        const res = await apiClient.get(`/resources/prompts/${id}`);
+        const res = await apiClient.get(`/resources/archetypes/${id}`);
         const data = await res.json() as unknown;
         return PromptArchetypeSchema.parse(data);
     },
 
     createPromptArchetype: async (archetype: unknown): Promise<PromptArchetype> => {
-        const res = await apiClient.post("/resources/prompts", archetype);
+        const res = await apiClient.post("/resources/archetypes", archetype);
         const data = await res.json() as unknown;
         return PromptArchetypeSchema.parse(data);
     },
 
     updatePromptArchetype: async (id: string, archetype: unknown): Promise<PromptArchetype> => {
-        const res = await apiClient.put(`/resources/prompts/${id}`, archetype);
+        const res = await apiClient.put(`/resources/archetypes/${id}`, archetype);
         const data = await res.json() as unknown;
         return PromptArchetypeSchema.parse(data);
     },
 
     deletePromptArchetype: async (id: string): Promise<void> => {
-        await apiClient.delete(`/resources/prompts/${id}`);
+        await apiClient.delete(`/resources/archetypes/${id}`);
     },
 
     // --- Internal Tools ---

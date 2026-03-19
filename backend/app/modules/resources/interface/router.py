@@ -21,14 +21,14 @@ router = APIRouter(
 
 # --- Prompt Archetypes ---
 
-@router.get("/prompts", response_model=List[PromptArchetypeResponse])
+@router.get("/archetypes", response_model=List[PromptArchetypeResponse])
 async def list_prompt_archetypes(
     service: ResourcesService = Depends(get_resources_service)
 ):
     """List all prompt archetypes available."""
     return await service.list_prompt_archetypes()
 
-@router.get("/prompts/{id}", response_model=PromptArchetypeResponse)
+@router.get("/archetypes/{id}", response_model=PromptArchetypeResponse)
 async def get_prompt_archetype(
     id: UUID,
     service: ResourcesService = Depends(get_resources_service)
@@ -39,7 +39,7 @@ async def get_prompt_archetype(
         raise HTTPException(status_code=404, detail="Prompt Archetype not found")
     return result
 
-@router.post("/prompts", response_model=PromptArchetypeResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/archetypes", response_model=PromptArchetypeResponse, status_code=status.HTTP_201_CREATED)
 async def create_prompt_archetype(
     request: CreatePromptArchetypeRequest,
     service: ResourcesService = Depends(get_resources_service)
@@ -47,7 +47,7 @@ async def create_prompt_archetype(
     """Create a new prompt archetype."""
     return await service.create_prompt_archetype(request)
 
-@router.put("/prompts/{id}", response_model=PromptArchetypeResponse)
+@router.put("/archetypes/{id}", response_model=PromptArchetypeResponse)
 async def update_prompt_archetype(
     id: UUID,
     request: UpdatePromptArchetypeRequest,
@@ -59,7 +59,7 @@ async def update_prompt_archetype(
         raise HTTPException(status_code=404, detail="Prompt Archetype not found")
     return result
 
-@router.delete("/prompts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/archetypes/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_prompt_archetype(
     id: UUID,
     service: ResourcesService = Depends(get_resources_service)

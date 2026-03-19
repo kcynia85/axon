@@ -21,7 +21,7 @@ export const ResourcesNavIsland = () => {
     return (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
             <Tabs value={activeTab} className="w-auto">
-                <TabsList className="h-14 p-1.5 bg-zinc-950/20 backdrop-blur-3xl rounded-full border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)] relative">
+                <TabsList className="h-14 p-1.5 bg-zinc-950/20 backdrop-blur-3xl rounded-full border border-white/20 shadow-none relative">
                     {resourcesNavItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = activeTab === item.href;
