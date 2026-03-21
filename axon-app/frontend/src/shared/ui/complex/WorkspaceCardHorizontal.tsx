@@ -68,8 +68,8 @@ export const WorkspaceCardHorizontal = ({
     if (isPending) return null;
 
     // Helper for description truncation
-    const truncatedDescription = description && description.length > 200 
-        ? `${description.substring(0, 200)}...` 
+    const truncatedDescription = description && description.length > 300 
+        ? `${description.substring(0, 300)}...` 
         : description;
 
     const renderActions = () => {
@@ -83,7 +83,7 @@ export const WorkspaceCardHorizontal = ({
                         <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-8 w-8 bg-black/40 backdrop-blur-sm text-white hover:bg-white/20"
+                            className="h-8 w-8 bg-black/60 text-white hover:bg-white/20"
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(e); }}
                         >
                             <Edit2 className="w-4 h-4" />
@@ -92,7 +92,7 @@ export const WorkspaceCardHorizontal = ({
                     <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-8 w-8 bg-black/40 backdrop-blur-sm text-red-400 hover:bg-red-500/20 hover:text-red-500"
+                        className="h-8 w-8 bg-black/60 text-red-400 hover:bg-red-500/20 hover:text-red-500"
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(resourceId); }}
                     >
                         <Trash2 className="w-4 h-4" />
@@ -107,7 +107,7 @@ export const WorkspaceCardHorizontal = ({
                     <DropdownMenuTrigger asChild>
                         <button 
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                            className="p-1.5 rounded-md hover:bg-white/20 bg-black/40 text-zinc-300 hover:text-white transition-colors backdrop-blur-sm"
+                            className="p-1.5 rounded-md hover:bg-white/20 bg-black/60 text-zinc-300 hover:text-white transition-colors"
                         >
                             <MoreVertical className="w-4 h-4" />
                         </button>
@@ -237,7 +237,7 @@ export const WorkspaceCardHorizontal = ({
                             {title}
                         </h4>
                         {description && (
-                            <p className="text-[13px] text-zinc-400 line-clamp-2 mt-2 text-left max-w-[95%] font-medium leading-relaxed">
+                            <p className="text-[13px] text-zinc-400 line-clamp-4 mt-2 text-left max-w-[95%] font-medium leading-relaxed">
                                 {truncatedDescription}
                             </p>
                         )}
@@ -246,7 +246,7 @@ export const WorkspaceCardHorizontal = ({
                     {/* BOTTOM: Tags */}
                     <div className="flex justify-start w-full z-10 pt-2">
                         <div className="flex flex-wrap gap-2 justify-start">
-                            {tags?.slice(0, 2).map(tag => (
+                            {tags?.slice(0, 4).map(tag => (
                                 <TagChip key={tag} label={tag} />
                             ))}
                         </div>
@@ -306,9 +306,9 @@ export const WorkspaceCardHorizontal = ({
                         </h4>
                     </div>
                     {/* Description - Fixed height/lines */}
-                    <div className="min-h-[40px] mb-2">
+                    <div className="min-h-[60px] mb-2">
                         {description && (
-                            <p className="text-[13px] text-zinc-400 line-clamp-2 leading-relaxed font-medium">
+                            <p className="text-[13px] text-zinc-400 line-clamp-4 leading-relaxed font-medium">
                                 {truncatedDescription}
                             </p>
                         )}
@@ -317,7 +317,7 @@ export const WorkspaceCardHorizontal = ({
                     <div className="mt-auto">
                         {/* Tags - Reserved vertical space even if empty */}
                         <div className="flex flex-wrap gap-1.5 min-h-[24px] pt-2">
-                            {tags?.slice(0, 2).map(tag => (
+                            {tags?.slice(0, 4).map(tag => (
                                 <TagChip key={tag} label={tag} />
                             ))}
                         </div>

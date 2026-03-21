@@ -1,3 +1,4 @@
+import * as React from "react";
 import { FormField } from "@/shared/ui/ui/Form";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormTextarea } from "@/shared/ui/form/FormTextarea";
@@ -10,7 +11,7 @@ import { ALL_HUBS } from "../../types/agent-studio.constants";
 import type { CognitionSectionProps } from "../../types/sections/cognition.types";
 import { useCognitionSection } from "../../application/hooks/sections/useCognitionSection";
 
-export const CognitionSection = (props: CognitionSectionProps) => {
+export const CognitionSection = React.memo((props: CognitionSectionProps) => {
 	const { control, syncDraft } = useCognitionSection(props);
 
 	return (
@@ -130,4 +131,6 @@ export const CognitionSection = (props: CognitionSectionProps) => {
 			</div>
 		</FormSection>
 	);
-};
+});
+
+CognitionSection.displayName = "CognitionSection";

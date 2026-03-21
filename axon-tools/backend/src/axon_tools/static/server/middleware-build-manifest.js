@@ -1,0 +1,55 @@
+globalThis.__BUILD_MANIFEST = {
+  "pages": {
+    "/_app": [
+      "static/chunks/b0ccc_next_dist_compiled_next-devtools_index_fbb9cb59.js",
+      "static/chunks/b0ccc_next_dist_compiled_7a90c56f._.js",
+      "static/chunks/b0ccc_next_dist_shared_lib_53d4105c._.js",
+      "static/chunks/b0ccc_next_dist_client_349d5f95._.js",
+      "static/chunks/b0ccc_next_dist_e6f16bad._.js",
+      "static/chunks/b0ccc_next_app_aa7283fd.js",
+      "static/chunks/[next]_entry_page-loader_ts_a3dadb87._.js",
+      "static/chunks/b0ccc_react-dom_f1005a16._.js",
+      "static/chunks/b0ccc_77ec21b9._.js",
+      "static/chunks/[root-of-the-server]__f181dedf._.js",
+      "static/chunks/axon-tools_frontend_pages__app_2da965e7._.js",
+      "static/chunks/turbopack-axon-tools_frontend_pages__app_d178f578._.js"
+    ],
+    "/_error": [
+      "static/chunks/b0ccc_next_dist_compiled_next-devtools_index_fbb9cb59.js",
+      "static/chunks/b0ccc_next_dist_compiled_7a90c56f._.js",
+      "static/chunks/b0ccc_next_dist_shared_lib_60ac3c92._.js",
+      "static/chunks/b0ccc_next_dist_client_349d5f95._.js",
+      "static/chunks/b0ccc_next_dist_b1096dcf._.js",
+      "static/chunks/b0ccc_next_error_eb977754.js",
+      "static/chunks/[next]_entry_page-loader_ts_9587b2e1._.js",
+      "static/chunks/b0ccc_react-dom_f1005a16._.js",
+      "static/chunks/b0ccc_77ec21b9._.js",
+      "static/chunks/[root-of-the-server]__21006483._.js",
+      "static/chunks/axon-tools_frontend_pages__error_2da965e7._.js",
+      "static/chunks/turbopack-axon-tools_frontend_pages__error_4d6477ba._.js"
+    ]
+  },
+  "devFiles": [],
+  "ampDevFiles": [],
+  "polyfillFiles": [
+    "static/chunks/b0ccc_next_dist_build_polyfills_polyfill-nomodule.js"
+  ],
+  "lowPriorityFiles": [],
+  "rootMainFiles": [
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_c590914b._.js",
+    "static/chunks/b0ccc_next_dist_compiled_react-dom_b0b22dce._.js",
+    "static/chunks/b0ccc_next_dist_compiled_next-devtools_index_dc22c82e.js",
+    "static/chunks/b0ccc_next_dist_compiled_c4fade56._.js",
+    "static/chunks/b0ccc_next_dist_client_df4668b5._.js",
+    "static/chunks/b0ccc_next_dist_30016e32._.js",
+    "static/chunks/b0ccc_@swc_helpers_cjs_e1a40712._.js",
+    "static/chunks/axon-tools_frontend_a0ff3932._.js",
+    "static/chunks/turbopack-axon-tools_frontend_ebb67a20._.js"
+  ],
+  "ampFirstPages": []
+};
+globalThis.__BUILD_MANIFEST.lowPriorityFiles = [
+"/static/" + process.env.__NEXT_BUILD_ID + "/_buildManifest.js",
+,"/static/" + process.env.__NEXT_BUILD_ID + "/_ssgManifest.js",
+
+];

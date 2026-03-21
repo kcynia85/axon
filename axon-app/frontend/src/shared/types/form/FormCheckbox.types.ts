@@ -6,6 +6,7 @@ export type FormCheckboxProps = {
 	readonly title: string;
 	readonly description?: string;
 	readonly icon?: LucideIcon;
-	readonly disabled?: boolean;
 	readonly className?: string;
+	readonly hideCheckbox?: boolean;
+	readonly tags?: readonly string[];
 };

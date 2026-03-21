@@ -83,6 +83,7 @@ class InternalToolResponse(BaseModel):
     tool_input_schema: Dict[str, Any]
     tool_output_schema: Dict[str, Any]
     tool_is_active: bool
+    tool_status: str
     availability_workspace: List[str]
     created_at: datetime
     updated_at: datetime
@@ -97,6 +98,7 @@ class SyncRemoteToolRequest(BaseModel):
     file_name: str
     file_content: str
     author: Optional[str] = None
+    status: Optional[str] = "draft"
 
 # --- Automation ---
 

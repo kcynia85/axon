@@ -46,6 +46,7 @@ export const AgentSchema = z.object({
   grounded_mode: z.boolean().default(false),
   native_skills: z.array(z.string()).default([]),
   custom_functions: z.array(z.string()).default([]),
+  tools: z.array(z.string()).optional().nullable(),
   data_interface: DataInterfaceSchema.default({ context: [], artefacts: [] }),
 
   created_at: z.string().datetime(),

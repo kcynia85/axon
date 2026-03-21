@@ -16,7 +16,7 @@ export default function ResourcesLayout({
     return (
         <div className="flex h-full w-full relative">
             <ResourcesNavIsland />
-            <div className="flex-1 overflow-y-auto pt-24">
+            <div className="flex-1 overflow-y-auto pt-[60px]">
                 {children}
             </div>
         </div>

@@ -5,10 +5,11 @@ import Image from "next/image";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
-import { HelpCircle, BookOpen, Edit2, Trash2, Code2, Globe, Database } from "lucide-react";
+import { HelpCircle, BookOpen, Edit2, Trash2, Code2, Globe, Database, ShieldCheck, CloudSun, Zap, Hash, FileText } from "lucide-react";
 import { KNOWLEDGE_HUB_NAMES, LLM_MODEL_NAMES, getWorkspaceLabel } from "../domain/constants";
 import { Agent } from "@/shared/domain/workspaces";
 import { getAgentAvatarUrl } from "@/shared/lib/utils";
+import { useInternalTools } from "@/modules/resources/application/useInternalTools";
 
 type AgentProfilePeekProps = {
   readonly agent: Agent | null;
@@ -19,21 +20,20 @@ type AgentProfilePeekProps = {
 }
 
 export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: AgentProfilePeekProps) => {
+  const { data: internalTools = [] } = useInternalTools();
   if (!agent) return null;
 
-  const rawInputFields = agent.input_schema
-    ? Object.entries(agent.input_schema as Record<string, string>)
-    : [];
-  const inputFields = rawInputFields.length > 0 
-    ? rawInputFields 
-    : [["income", "number"], ["business_size", "string"]];
+  const inputFields = (agent.data_interface?.context?.length ?? 0) > 0
+    ? agent.data_interface.context.map(c => [c.name, c.field_type])
+    : agent.input_schema
+      ? Object.entries(agent.input_schema as Record<string, string>)
+      : [];
 
-  const rawOutputFields = agent.output_schema
-    ? Object.entries(agent.output_schema as Record<string, string>)
-    : [];
-  const outputFields = rawOutputFields.length > 0 
-    ? rawOutputFields 
-    : [["score", "number"], ["segment", "string"]];
+  const outputFields = (agent.data_interface?.artefacts?.length ?? 0) > 0
+    ? agent.data_interface.artefacts.map(a => [a.name, a.field_type])
+    : agent.output_schema
+      ? Object.entries(agent.output_schema as Record<string, string>)
+      : [];
 
   const skillIcons: Record<string, React.ElementType | null> = {
     "web_search": Globe,
@@ -41,38 +41,46 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
     "file_browser": Database,
     "web search": Globe,
     "file browser": Database,
+    "finance": Database,
+    "security": ShieldCheck,
+    "weather": CloudSun,
+    "utility": Zap,
+    "math": Hash,
+    "text": FileText
   };
 
   const avatarUrl = getAgentAvatarUrl(agent.id, agent.agent_visual_url);
 
-  // Combine native and custom skills
+  // Combine native and custom skills (supporting both new field and legacy field)
+  const customIdsFromFunctions = agent.custom_functions || [];
+  const customIdsFromLegacy = (agent as any).tools || [];
+  const allCustomIds = Array.from(new Set([...customIdsFromFunctions, ...customIdsFromLegacy]));
+
   const rawSkills = [
     ...(agent.native_skills || []).map(id => ({ id, name: id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) })),
-    ...(agent.custom_functions || []).map(id => ({ id, name: id, isCustom: true }))
+    ...allCustomIds.map(id => {
+      const tool = internalTools.find(t => t.tool_function_name === id || t.id === id);
+      return { 
+        id, 
+        name: tool?.tool_display_name || id, 
+        isCustom: true,
+        category: tool?.tool_category,
+        keywords: (tool?.tool_keywords || []).filter(tag => tag !== "python" && tag !== "synced")
+      };
+    })
   ];
   
-  const allSkills = rawSkills.length > 0 
-    ? rawSkills 
-    : [
-        { id: "web_search", name: "Web Search" },
-        { id: "file_browser", name: "File Browser" },
-        { id: "lead_scoring", name: "lead_scoring", isCustom: true },
-        { id: "validate_nip_pl", name: "validate_nip_pl", isCustom: true }
-      ];
+  const allSkills = rawSkills;
 
   const rawAvailability = Array.from(new Set(
     (agent.availability_workspace || []).map(getWorkspaceLabel)
   )).filter(Boolean).sort();
   
-  const availabilityLabels = rawAvailability.length > 0 ? rawAvailability : ["Global"];
+  const availabilityLabels = rawAvailability;
 
-  const keywords = (agent.agent_keywords && agent.agent_keywords.length > 0) 
-    ? agent.agent_keywords 
-    : ["churnbusting"];
+  const keywords = (agent.agent_keywords || []).filter(tag => tag !== "python" && tag !== "synced");
 
-  const knowledgeHubs = (agent.knowledge_hub_ids && agent.knowledge_hub_ids.length > 0)
-    ? agent.knowledge_hub_ids.map(id => KNOWLEDGE_HUB_NAMES[id] ?? id)
-    : ["Product Management Hub", "Discovery Hub"];
+  const knowledgeHubs = (agent.knowledge_hub_ids || []).map(id => KNOWLEDGE_HUB_NAMES[id] ?? id);
 
   return (
     <SidePeek
@@ -165,6 +173,7 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
                 <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
                   {String(type)}
                 </Badge>
+
               </div>
             ))}
           </div>
@@ -183,6 +192,7 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
                 <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
                   {String(type)}
                 </Badge>
+
               </div>
             ))}
           </div>
@@ -219,7 +229,7 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
                     {Icon ? <Icon className="w-4 h-4 text-primary/60 shrink-0" /> : <Code2 className="w-4 h-4 text-primary/60 shrink-0" />}
                     <span className="text-base font-medium">{skill.name}</span>
                   </div>
-                  { (skill as any).isCustom && <Badge variant="outline" className="text-[10px] h-4 px-1.5 font-bold uppercase opacity-50">Custom</Badge> }
+                  { (skill as any).isCustom && <Badge variant="outline" className="text-[10px] h-4 px-1.5 font-bold opacity-50">Custom</Badge> }
                 </div>
               );
             })}

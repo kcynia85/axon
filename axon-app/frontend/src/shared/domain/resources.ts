@@ -59,6 +59,7 @@ export const InternalToolSchema = z.object({
     tool_input_schema: z.record(z.any()),
     tool_output_schema: z.record(z.any()),
     tool_is_active: z.boolean().default(true),
+    tool_status: z.string().default("draft"),
     availability_workspace: z.array(z.string()).default([]),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),

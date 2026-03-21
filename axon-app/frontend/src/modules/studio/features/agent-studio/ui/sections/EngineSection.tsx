@@ -1,3 +1,4 @@
+import * as React from "react";
 import { FormField } from "@/shared/ui/ui/Form";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormSelect } from "@/shared/ui/form/FormSelect";
@@ -9,7 +10,7 @@ import { ALL_MODELS } from "../../types/agent-studio.constants";
 import type { EngineSectionProps } from "../../types/sections/engine.types";
 import { useEngineSection } from "../../application/hooks/sections/useEngineSection";
 
-export const EngineSection = (props: EngineSectionProps) => {
+export const EngineSection = React.memo((props: EngineSectionProps) => {
 	const { control, syncDraft } = useEngineSection(props);
 
 	return (
@@ -103,4 +104,6 @@ export const EngineSection = (props: EngineSectionProps) => {
 			</div>
 		</FormSection>
 	);
-};
+});
+
+EngineSection.displayName = "EngineSection";

@@ -3,9 +3,11 @@ import type { FilterGroup } from "@/shared/domain/filters";
 
 export type BaseSkill = {
 	readonly id: string;
+	readonly uuid?: string; // Add optional UUID for hydration
 	readonly name: string;
 	readonly desc: string;
 	readonly category?: string;
+	readonly keywords?: readonly string[];
 };
 
 export type SkillViewItem = BaseSkill & {
@@ -73,7 +75,7 @@ export const useInternalSkillsModal = (
 			})
 			.map((fn) => ({
 				...fn,
-				isAdded: addedFunctionIds.includes(fn.id),
+				isAdded: (addedFunctionIds || []).includes(fn.id) || (fn.uuid ? (addedFunctionIds || []).includes(fn.uuid) : false),
 			}));
 	}, [availableSkills, searchQuery, selectedCategories, addedFunctionIds]);
 

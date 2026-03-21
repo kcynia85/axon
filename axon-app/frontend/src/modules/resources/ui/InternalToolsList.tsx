@@ -2,66 +2,69 @@
 
 import * as React from "react";
 import { InternalTool } from "@/shared/domain/resources";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Badge } from "@/shared/ui/ui/Badge";
+import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 
 type InternalToolsListProps = {
     readonly tools: InternalTool[];
     readonly isLoading: boolean;
+    readonly onSelect: (tool: InternalTool) => void;
 };
 
-export const InternalToolsList = ({ tools, isLoading }: InternalToolsListProps) => {
+const InternalToolsList = ({ tools, isLoading, onSelect }: InternalToolsListProps) => {
+    // Only show production tools in the browser
+    const productionTools = tools.filter(t => t.tool_status === "production");
+
     if (isLoading) {
         return (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3].map((index) => <Skeleton key={index} className="h-40 w-full" />)}
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((index) => <Skeleton key={index} className="h-[160px] w-full rounded-xl" />)}
             </div>
         );
     }
 
-    if (tools.length === 0) {
+    if (productionTools.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-64 text-muted-foreground border-2 border-dashed rounded-xl border-zinc-200 dark:border-zinc-800">
-                <p>No internal tools found.</p>
-                <p className="text-sm opacity-60">Add a Python file to <code>backend/app/tools/</code> and sync.</p>
+                <p className="font-bold text-zinc-400 uppercase tracking-widest text-[10px]">No production tools available</p>
+                <p className="text-[10px] opacity-60 mt-2 italic">Set your tools to 'Production' in local Axon Tools to see them here.</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6 pt-2 h-full overflow-y-auto pr-2 custom-scrollbar">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-10">
-                {tools.map((tool: InternalTool) => (
-                    <Card key={tool.id} className="group hover:border-primary/50 transition-all border-l-4" style={{ borderLeftColor: "#3b82f6" }}>
-                        <CardHeader className="pb-2">
-                            <div className="flex justify-between items-start">
-                                <Badge variant="secondary" className="text-[8px] h-4 leading-none uppercase font-mono">
-                                    PYTHON
-                                </Badge>
-                                <div className="text-[8px] text-muted-foreground font-mono truncate max-w-[120px]" title={tool.file_path}>
-                                    {tool.file_path || "N/A"}
-                                </div>
-                            </div>
-                            <CardTitle className="text-sm font-bold mt-3 font-display truncate" title={tool.tool_function_name}>{tool.tool_name || tool.tool_function_name}</CardTitle>
-                            <CardDescription className="text-[10px] mt-1 line-clamp-2 min-h-[32px]">
-                                {tool.tool_description || "No description provided."}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="pb-4 pt-0">
-                            <div className="mb-3 text-[10px] font-mono bg-zinc-100 dark:bg-zinc-900 p-2 rounded-md truncate">
-                                {tool.tool_function_name}(...)
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-mono opacity-60">Status: Active</span>
-                                <Badge variant="outline" className="text-[8px] h-3.5 uppercase bg-green-500/10 text-green-600 border-green-500/20">
-                                    Ready
-                                </Badge>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-10">
+            {productionTools.map((tool: InternalTool) => {
+                const cleanDescription = (tool.tool_description || "").split("Args:")[0].trim();
+                const truncatedDescription = cleanDescription.length > 50 
+                    ? `${cleanDescription.substring(0, 50)}...` 
+                    : cleanDescription;
+                
+                const allTags = [...(tool.tool_keywords || [])].filter(tag => tag !== "python" && tag !== "synced");
+                const limitedTags = allTags.slice(0, 2);
+                
+                return (
+                    <WorkspaceCardHorizontal
+                        key={tool.id}
+                        title={tool.tool_display_name || tool.tool_function_name}
+                        description={truncatedDescription}
+                        href="#"
+                        badgeLabel={tool.tool_is_active ? "Active" : "Inactive"}
+                        tags={limitedTags}
+                        colorName="default"
+                        useDirectHoverMenu
+                        resourceId={tool.id}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            onSelect(tool);
+                        }}
+                        onEdit={() => onSelect(tool)}
+                        onDelete={() => console.log("Delete tool", tool.id)}
+                    />
+                );
+            })}
         </div>
     );
 };
+
+export default InternalToolsList;

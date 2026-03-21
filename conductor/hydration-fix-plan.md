@@ -1,41 +1,45 @@
-# Plan: Fix Hydration Issues in Studio Crew Form
+# Plan: Naprawa hydracji narzędzi i synchronizacji w Studio oraz Sidepeek
 
-This plan addresses hydration mismatches in the "Studio Crew" form specifically related to the "Context", "Artefacts", and "Hierarchical Execution" (Lead Manager) sections.
+Ten plan opisuje kroki niezbędne do naprawy błędów w wyświetlaniu dodanych narzędzi w Studio oraz braku aktualizacji interfejsu danych w podglądzie Agenta (Sidepeek).
 
-## Objective
-Eliminate React hydration errors caused by inconsistent server/client rendering in the Crew Studio module.
+## Cel
+1.  Zapewnienie poprawnej hydracji (wyświetlania) dodanych narzędzi przy otwieraniu istniejącego Agenta w Studio.
+2.  Poprawa synchronizacji danych między sekcją Tools a sekcjami Context/Artefacts.
+3.  Aktualizacja `AgentProfilePeek`, aby korzystał z nowego interfejsu danych (`data_interface`) zamiast przestarzałych schematów.
 
-## Key Files & Context
-- `frontend/src/shared/ui/ui/Form.tsx`: Contains `FormItem` which uses `React.useId()`.
-- `frontend/src/shared/ui/form/FormPropertyTable.tsx`: Uses array indices as keys for inputs, which can be unstable if initial data changes.
-- `frontend/src/modules/studio/features/crew-studio/ui/sections/execution/HierarchicalExecution.tsx`: Handles the "Manager / Lead Agent" field.
-- `frontend/src/modules/studio/features/crew-studio/application/useCrewForm.ts`: Manages default form values.
-- `frontend/src/modules/studio/features/crew-studio/ui/sections/CrewContextSection.tsx` & `CrewArtefactsSection.tsx`: Form sections for context/artifacts.
+## Kroki implementacji
 
-## Proposed Changes
+### 1. Poprawa hydracji w `SkillsSection.tsx`
+Zaktualizujemy `SkillsSection`, aby:
+-   Obsługiwał zarówno UUID jak i `tool_function_name` w `custom_functions` (dla wstecznej kompatybilności).
+-   Uruchamiał synchronizację `data_interface` przy zmianach listy narzędzi.
+-   Zapewnił, że `availableSkills` poprawnie mapuje dane nawet przed pełnym załadowaniem.
 
-### 1. Fix `FormItem` Hydration (Potential `useId` issue)
-`React.useId()` is generally safe for hydration in React 18+, but if the component tree structure differs between SSR and Client, it can cause mismatches.
-- **Action:** Ensure `FormItem` is only rendered on the client if necessary, or verify that the wrapping `FormProvider` and `form` object are stable during hydration.
-- **Action:** If `useId` is still causing issues, implement a `useHasHydrated` hook to suppress rendering until the client is ready, though this is a last resort.
+### 2. Synchronizacja `input_schema` i `output_schema`
+Chociaż przechodzimy na `data_interface`, wiele części systemu nadal polega na `input_schema` i `output_schema`. Będziemy je synchronizować równolegle w `syncDataInterface`.
 
-### 2. Stabilize `FormPropertyTable` Keys
-Currently, `FormPropertyTable.tsx` uses `${item.name}-${index}` as a key. If `item.name` is empty or changes, the key becomes unstable.
-- **Action:** Introduce a stable internal `id` (e.g., using `crypto.randomUUID()` on the client or a counter) for each item in the `contexts` and `artefacts` arrays to ensure stable rendering.
+### 3. Refaktoryzacja `AgentProfilePeek.tsx`
+Zaktualizujemy komponent podglądu, aby:
+-   Priorytetyzował dane z `agent.data_interface.context` i `agent.data_interface.artefacts`.
+-   Usuwał twardo zakodowane wartości mockowe ("income", "business_size"), jeśli Agent ma zdefiniowany interfejs.
 
-### 3. Lead Manager (owner_agent_id) Field Fix
-The "Manager / Lead Agent" field in `HierarchicalExecution.tsx` uses `FormSelect`. Hydration issues here often stem from the `agents` list being empty on the server but populated on the client, or vice versa.
-- **Action:** Ensure `availableAgents` are passed correctly from the page level and that the `initialData` matches the expected format.
-- **Action:** Wrap the dynamic execution sections in a "client-only" component if they depend on state that is only available after hydration.
+### 4. Szczegóły kodu
 
-### 4. General Hydration Guard
-Apply a general pattern for complex form components that interact with browser APIs or dynamic data.
-- **Action:** Create a `HydratedOnly` wrapper component to prevent server-side rendering of parts of the form that are known to cause hydration issues due to client-side specific logic.
+#### Zmiana w `SkillsSection.tsx`:
+Dodamy efekt lub poprawimy logikę renderowania, aby `addedFunctions` znajdowało narzędzia po dowolnym z identyfikatorów (ID lub Name).
 
-## Verification & Testing
-- **Manual Verification:** Open the Studio Crew form in a browser and check the console for "Hydration failed" or "Text content did not match" errors.
-- **Environment:** Test in both development (`npm run dev`) and production build (`npm run build && npm run start`) modes.
-- **Specific Scenarios:**
-    - Creating a new crew.
-    - Editing an existing crew.
-    - Switching between "Hierarchical", "Parallel", and "Sequential" types.
+#### Zmiana w `AgentProfilePeek.tsx`:
+```tsx
+const inputFields = agent.data_interface?.context?.length > 0
+  ? agent.data_interface.context.map(c => [c.name, c.field_type])
+  : Object.entries(agent.input_schema || {});
+
+const outputFields = agent.data_interface?.artefacts?.length > 0
+  ? agent.data_interface.artefacts.map(a => [a.name, a.field_type])
+  : Object.entries(agent.output_schema || {});
+```
+
+## Weryfikacja
+1.  Otwarcie istniejącego Agenta z narzędziami -> Narzędzia powinny być widoczne w sekcji Tools (zaznaczone).
+2.  Dodanie narzędzia -> Sekcja Context i Artefacts w Sidepeek powinna się natychmiast zaktualizować.
+3.  Brak narzędzi -> Sidepeek nie powinien pokazywać mockowych danych, jeśli użytkownik wyczyścił interfejs.

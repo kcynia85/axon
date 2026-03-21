@@ -1,9 +1,10 @@
 "use client";
 
 import { PromptsBrowser } from "@/modules/resources/ui/PromptsBrowser";
-import { PageContainer } from "@/shared/ui/layout/PageContainer";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { usePromptArchetypes } from "@/modules/resources/application/usePromptArchetypes";
-import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { Button } from "@/shared/ui/ui/Button";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const PromptsPage = () => {
@@ -15,11 +16,12 @@ const PromptsPage = () => {
     };
 
     return (
-        <PageContainer>
-            <div className="flex justify-end items-center mb-8">
-            </div>
+        <PageLayout
+            title="Archetypes"
+            description="Manage and create prompt templates for your AI agents."
+        >
             <PromptsBrowser initialPrompts={archetypes} />
-        </PageContainer>
+        </PageLayout>
     );
 };
 

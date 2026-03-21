@@ -13,6 +13,8 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 		icon: Icon,
 		disabled = false,
 		className,
+		hideCheckbox = false,
+		tags,
 	} = props;
 
 	const checkboxClass =
@@ -36,13 +38,15 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 				className,
 			)}
 		>
-			<Checkbox
-				checked={checked}
-				disabled={disabled}
-				className={checkboxClass}
-			/>
+			{!hideCheckbox && (
+				<Checkbox
+					checked={checked}
+					disabled={disabled}
+					className={checkboxClass}
+				/>
+			)}
 
-			<div className="flex items-center gap-3">
+			<div className={cn("flex items-center gap-3", hideCheckbox && "w-full")}>
 				{Icon && <Icon className="w-4 h-4 opacity-70" />}
 				<div className="space-y-1">
 					<h5
@@ -60,6 +64,15 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 						<p className="text-sm text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-300 transition-colors">
 							{description}
 						</p>
+					)}
+					{tags && tags.length > 0 && (
+						<div className="flex flex-wrap gap-1.5 pt-1">
+							{tags.map((tag, idx) => (
+								<span key={idx} className="text-[10px] text-zinc-500 font-mono">
+									#{tag.toLowerCase()}
+								</span>
+							))}
+						</div>
 					)}
 				</div>
 			</div>

@@ -146,7 +146,7 @@ export const AutomationSidePeekContent = ({
                         <FieldTypeIcon type={String((config as any).field_type || config)} />
                         <span className="text-base font-mono font-semibold">{name}</span>
                       </div>
-                      <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold uppercase">
+                      <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
                         {String((config as any).field_type || config)}
                       </Badge>
                     </div>
@@ -171,7 +171,7 @@ export const AutomationSidePeekContent = ({
                         <FieldTypeIcon type={String((config as any).field_type || config)} />
                         <span className="text-base font-mono font-semibold">{name}</span>
                       </div>
-                      <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold uppercase">
+                      <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
                         {String((config as any).field_type || config)}
                       </Badge>
                     </div>

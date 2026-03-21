@@ -36,6 +36,7 @@ class InternalToolTable(Base):
     tool_input_schema = Column(JSONB, nullable=False)
     tool_output_schema = Column(JSONB, nullable=False)
     tool_is_active = Column(Boolean, default=True, nullable=False)
+    tool_status = Column(String, default="draft", nullable=False)
     availability_workspace = Column(ARRAY(String), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)

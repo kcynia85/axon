@@ -60,6 +60,7 @@ class AgentConfig(BaseModel):
     auto_start: bool = False
     grounded_mode: bool = False
     native_skills: List[str] = Field(default_factory=list) # e.g. ["WEB_SEARCH", "CODE_INTERPRETER", "FILE_BROWSER"]
+    custom_functions: List[str] = Field(default_factory=list) # e.g. ["get_weather", "calculate"]
     data_interface: DataInterface = Field(default_factory=DataInterface)
     
     created_at: datetime = Field(default_factory=now_utc)

@@ -51,7 +51,7 @@ export const CardDescription = ({ className, asChild = false, ...props }: CardPr
   return (
     <Comp
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-muted-foreground !text-base", className)}
       {...props}
     />
   )

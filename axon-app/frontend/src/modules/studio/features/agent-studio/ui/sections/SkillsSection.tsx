@@ -1,7 +1,8 @@
-import { useState } from "react";
+import * as React from "react";
+import { useState, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { FormField } from "@/shared/ui/ui/Form";
-import { useWatch } from "react-hook-form";
+import { useWatch, useFormContext } from "react-hook-form";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormCheckbox } from "@/shared/ui/form/FormCheckbox";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
@@ -11,29 +12,101 @@ import { NATIVE_SKILLS } from "../../types/agent-studio.constants";
 import type { SkillsSectionProps } from "../../types/sections/skills.types";
 import { useSkillsSection } from "../../application/hooks/sections/useSkillsSection";
 import { InternalSkillsModal } from "../components/InternalSkillsModal";
-import { useInternalSkillsModal } from "../../application/hooks/sections/useInternalSkillsModal";
 import { useInternalTools } from "@/modules/resources/application/useInternalTools";
+import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
 
-export const SkillsSection = (props: SkillsSectionProps) => {
+export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 	const { control, syncDraft } = useSkillsSection(props);
+	const { setValue, getValues } = useFormContext<CreateAgentFormData>();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const { data: internalTools = [] } = useInternalTools();
 
-	const availableSkills = internalTools.map(tool => ({
-		id: tool.tool_function_name,
-		name: tool.tool_display_name,
-		desc: tool.tool_description,
-		category: tool.tool_category
-	}));
+	const availableSkills = React.useMemo(() => internalTools.map(tool => {
+		const cleanDesc = (tool.tool_description || "").split("Args:")[0].trim();
+		const truncatedDesc = cleanDesc.length > 50 ? `${cleanDesc.substring(0, 50)}...` : cleanDesc;
+		
+		return {
+			id: tool.tool_function_name,
+			uuid: tool.id, // Keep UUID for hydration matching
+			name: tool.tool_display_name,
+			desc: truncatedDesc,
+			category: tool.tool_category,
+			keywords: tool.tool_keywords || [],
+			raw_tool: tool
+		};
+	}), [internalTools]);
 
 	const currentCustomFunctions = useWatch({ control, name: "custom_functions" }) || [];
-	const modalProps = useInternalSkillsModal(
-		isModalOpen,
-		setIsModalOpen,
-		availableSkills,
-		currentCustomFunctions
-	);
+
+	const syncDataInterface = useCallback((nextFunctions: string[]) => {
+		const currentContext = getValues("data_interface.context") || [];
+		const currentArtefacts = getValues("data_interface.artefacts") || [];
+		
+		// 1. Identify tools to add (nextFunctions can contain names OR UUIDs)
+		const addedTools = internalTools.filter(t => 
+			nextFunctions.includes(t.tool_function_name) || nextFunctions.includes(t.id)
+		);
+		
+		// 2. Map tool inputs to context
+		let newContext = [...currentContext];
+		let newInputSchema: Record<string, string> = {};
+		
+		addedTools.forEach(tool => {
+			const properties = tool.tool_input_schema?.properties || {};
+			const required = tool.tool_input_schema?.required || [];
+			
+			Object.entries(properties).forEach(([name, schema]: [string, any]) => {
+				const fieldType = schema.type || "string";
+				newInputSchema[name] = fieldType; // Sync to flat schema
+				
+				if (!newContext.find(c => c.name === name)) {
+					newContext.push({
+						name,
+						field_type: fieldType,
+						is_required: required.includes(name),
+						value: null
+					});
+				}
+			});
+		});
+
+		// 3. Map tool outputs to artefacts
+		let newArtefacts = [...currentArtefacts];
+		let newOutputSchema: Record<string, string> = {};
+		
+		addedTools.forEach(tool => {
+			const name = `${tool.tool_function_name}_output`;
+			newOutputSchema[name] = "json"; // Sync to flat schema
+			
+			if (!newArtefacts.find(a => a.name === name)) {
+				newArtefacts.push({
+					name,
+					field_type: "json",
+					is_required: true,
+					value: null
+				});
+			}
+		});
+
+		// 4. Update both data sources only if changed
+		const hasContextChanged = JSON.stringify(newContext) !== JSON.stringify(currentContext);
+		const hasArtefactsChanged = JSON.stringify(newArtefacts) !== JSON.stringify(currentArtefacts);
+		
+		if (hasContextChanged) {
+			setValue("data_interface.context", newContext);
+			setValue("input_schema", newInputSchema);
+		}
+		if (hasArtefactsChanged) {
+			setValue("data_interface.artefacts", newArtefacts);
+			setValue("output_schema", newOutputSchema);
+		}
+	}, [internalTools, getValues, setValue]);
+
+	// Filter functions (match by function_name OR uuid)
+	const addedFunctions = React.useMemo(() => availableSkills.filter((fn) => 
+		currentCustomFunctions.includes(fn.id) || currentCustomFunctions.includes(fn.uuid)
+	), [availableSkills, currentCustomFunctions]);
 
 	return (
 		<FormSection id="SKILLS" number={4} title="Skills">
@@ -78,7 +151,7 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 				<div className="space-y-8 relative z-10">
 					<div className="space-y-4">
 						<div className="flex justify-between items-center">
-							<FormSubheading>Custom Functions</FormSubheading>
+							<FormSubheading>Tools</FormSubheading>
 							<Badge
 								variant="outline"
 								className="text-[12px] border-zinc-200 dark:border-zinc-800 text-zinc-500 shadow-none"
@@ -91,7 +164,6 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 							name="custom_functions"
 							render={({ field }) => {
 								const current = field.value || [];
-								const addedFunctions = availableSkills.filter((fn) => current.includes(fn.id));
 
 								return (
 									<FormItemField>
@@ -101,10 +173,13 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 													key={fn.id}
 													title={fn.name}
 													description={fn.desc}
+													tags={fn.keywords?.filter(tag => tag !== "python" && tag !== "synced")}
 													checked={true}
+													hideCheckbox={true}
 													onChange={() => {
 														const next = current.filter((s: string) => s !== fn.id);
 														field.onChange(next);
+														syncDataInterface(next); // Sync when removed
 														syncDraft();
 													}}
 												/>
@@ -123,18 +198,21 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 
 											<InternalSkillsModal
 												isOpen={isModalOpen}
-												onOpenChange={modalProps.handleOpenChange}
-												searchQuery={modalProps.searchQuery}
-												onSearchChange={modalProps.setSearchQuery}
-												filterGroups={modalProps.filterGroups}
-												onApplyFilters={modalProps.handleApplyFilters}
-												onClearFilters={modalProps.handleClearFilters}
-												skills={modalProps.filteredSkills}
+												onOpenChange={setIsModalOpen}
+												addedFunctionIds={currentCustomFunctions}
 												onAddFunction={(functionId) => {
 													if (!current.includes(functionId)) {
-														field.onChange([...current, functionId]);
+														const next = [...current, functionId];
+														field.onChange(next);
+														syncDataInterface(next); // Sync when added
 														syncDraft();
 													}
+												}}
+												onRemoveFunction={(functionId) => {
+													const next = current.filter((s: string) => s !== functionId);
+													field.onChange(next);
+													syncDataInterface(next); // Sync when removed
+													syncDraft();
 												}}
 											/>
 										</div>
@@ -147,4 +225,6 @@ export const SkillsSection = (props: SkillsSectionProps) => {
 			</div>
 		</FormSection>
 	);
-};
+});
+
+SkillsSection.displayName = "SkillsSection";

@@ -3,8 +3,12 @@ import pkgutil
 import inspect
 import sys
 import os
+import logging
+from pathlib import Path
 from typing import List, Dict, Any
 from app.modules.resources.domain.models import InternalTool
+
+logger = logging.getLogger(__name__)
 
 # Optional import for crewai
 try:
@@ -29,21 +33,31 @@ class ToolsScannerService:
         """
         discovered_tools = []
         
-        # Ensure the path is in sys.path
-        # current_dir = os.getcwd()
-        # if current_dir not in sys.path:
-        #     sys.path.append(current_dir)
+        # Ensure the backend root directory is in sys.path
+        # Path to axon-app/backend
+        backend_root = str(Path(__file__).resolve().parent.parent.parent.parent.parent)
+        if backend_root not in sys.path:
+            sys.path.insert(0, backend_root)
+            logger.info(f"Added {backend_root} to sys.path")
+
+        # Force refresh of caches
+        importlib.invalidate_caches()
 
         # Import the package to get its path
         try:
-            package = importlib.import_module(TOOLS_DIR)
+            # We need to ensure we can import 'app.tools'
+            if TOOLS_DIR in sys.modules:
+                package = importlib.reload(sys.modules[TOOLS_DIR])
+            else:
+                package = importlib.import_module(TOOLS_DIR)
         except ImportError as e:
-            print(f"Error importing {TOOLS_DIR}: {e}")
+            logger.error(f"Error importing {TOOLS_DIR}: {e}")
             return []
 
         # Iterate over all modules in the package
         for _, module_name, _ in pkgutil.iter_modules(package.__path__):
             full_module_name = f"{TOOLS_DIR}.{module_name}"
+            logger.info(f"Scanning module: {full_module_name}")
             
             try:
                 # Reload module to ensure we get fresh code changes
@@ -54,54 +68,75 @@ class ToolsScannerService:
                 
                 # Inspect members of the module
                 for name, obj in inspect.getmembers(module):
-                    # Check if it's a Tool object (CrewAI tools are usually objects or classes)
-                    # When using @tool decorator, it returns a Tool object or similar.
-                    # We need a robust way to identify them.
+                    # Check if it has tool indicators
+                    is_tool = hasattr(obj, "is_crewai_tool") or (
+                        hasattr(obj, "name") and 
+                        hasattr(obj, "description") and 
+                        hasattr(obj, "run")
+                    )
                     
-                    # For CrewAI @tool decorator, it often returns a 'Tool' instance or wraps the function.
-                    # We check for attributes like 'name', 'description', 'args_schema' or 'func'.
-                    
-                    if hasattr(obj, "is_crewai_tool") or (hasattr(obj, "name") and hasattr(obj, "description") and hasattr(obj, "run")):
-                         # Filter out imports from other modules (ensure it's defined in this module)
-                        if hasattr(obj, "__module__") and obj.__module__ != full_module_name:
-                             # Some decorators wrap the function, so __module__ might point to the wrapper.
-                             # But usually for @tool, the object instance is created in the module.
-                             # Let's keep it simple: if it has 'name' and 'description' and is in the module scope.
-                             pass
+                    if is_tool:
+                        # Filter out imports from other modules
+                        obj_module = getattr(obj, "__module__", "")
+                        if obj_module != full_module_name:
+                             # For decorated functions, wraps preserves __module__
+                             # If it's a wrapper from another module, skip it UNLESS it wraps something in this module
+                             # We check __wrapped__ if available
+                             actual_func = getattr(obj, "__wrapped__", obj)
+                             if getattr(actual_func, "__module__", "") != full_module_name:
+                                 continue
 
-                        # We found a candidate. Let's try to extract metadata.
                         try:
                             tool_name = getattr(obj, "name", name)
                             tool_description = getattr(obj, "description", "")
+                            tool_keywords = getattr(obj, "keywords", ["python", "synced"])
                             
+                            logger.info(f"Discovered tool: {tool_name} ({name}) in {full_module_name}")
+
                             # Extract arguments schema
-                            # CrewAI tools usually have 'args_schema' (Pydantic model)
                             args_schema = {}
                             if hasattr(obj, "args_schema") and obj.args_schema:
                                 try:
-                                    args_schema = obj.args_schema.model_json_schema()
+                                    if hasattr(obj.args_schema, "model_json_schema"):
+                                        args_schema = obj.args_schema.model_json_schema()
+                                    else:
+                                        # Handle old pydantic or other objects
+                                        args_schema = {"properties": {}}
                                 except:
-                                    args_schema = {"error": "Could not serialize schema"}
-                            
-                            # Identify the function name for import
-                            # If it's a decorated function, the object name in the module is the function name.
-                            # If it's a class tool, it's the class name.
-                            func_name = name 
+                                    args_schema = {"error": "Schema serialization failed"}
+                            else:
+                                # Fallback to inspection if no args_schema (standard functions)
+                                try:
+                                    target_func = getattr(obj, "__wrapped__", obj)
+                                    from typing import get_type_hints
+                                    hints = get_type_hints(target_func)
+                                    sig = inspect.signature(target_func)
+                                    props = {}
+                                    required = []
+                                    for p_name, p in sig.parameters.items():
+                                        if p_name == "self": continue
+                                        props[p_name] = {"type": str(hints.get(p_name, "any"))}
+                                        if p.default == inspect.Parameter.empty:
+                                            required.append(p_name)
+                                    args_schema = {"properties": props, "required": required}
+                                except:
+                                    args_schema = {"properties": {}}
                             
                             discovered_tools.append({
                                 "name": tool_name,
                                 "description": tool_description,
                                 "args_schema": args_schema,
-                                "tool_function_name": func_name, # This is the symbol name in Python
+                                "tool_function_name": name,
                                 "file_path": f"app/tools/{module_name}.py",
                                 "import_path": f"{full_module_name}",
+                                "keywords": tool_keywords,
                                 "is_active": True
                             })
                             
                         except Exception as e:
-                            print(f"Error extracting metadata for {name} in {full_module_name}: {e}")
+                            logger.error(f"Error extracting metadata for {name} in {full_module_name}: {e}")
 
             except Exception as e:
-                print(f"Error scanning module {full_module_name}: {e}")
+                logger.error(f"Error scanning module {full_module_name}: {e}")
 
         return discovered_tools

@@ -105,6 +105,9 @@ export const AgentsBrowser = ({ initialAgents, colorName = "default" }: AgentsBr
       llm_model_id: draft.llm_model_id || null,
       knowledge_hub_ids: draft.knowledge_hub_ids || [],
       availability_workspace: [workspaceId],
+      native_skills: draft.native_skills || [],
+      custom_functions: draft.custom_functions || [],
+      data_interface: draft.data_interface || { context: [], artefacts: [] },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     } as any;

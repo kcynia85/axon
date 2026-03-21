@@ -51,6 +51,7 @@ class InternalTool(ResourceBase):
     tool_input_schema: Dict[str, Any]
     tool_output_schema: Dict[str, Any]
     tool_is_active: bool = True
+    tool_status: str = "draft" # draft, in_progress, testing, qa, staging, production, deprecated, disabled
     availability_workspace: List[str] = Field(default_factory=list)
 
 # --- Automation ---

@@ -1,0 +1,46 @@
+{
+    "Email Extractor": {
+        "status": "production"
+    },
+    "Crypto Price Tracker": {
+        "status": "production"
+    },
+    "BMI Calculator": {
+        "status": "production",
+        "updated_at": 1774123450.299284
+    },
+    "UUID Generator": {
+        "status": "production"
+    },
+    "Simple Calculator": {
+        "status": "draft",
+        "updated_at": 1774120579.657033
+    },
+    "Unit Converter": {
+        "status": "production"
+    },
+    "Password Generator": {
+        "status": "production"
+    },
+    "Polish Company Lookup (NIP)": {
+        "status": "production"
+    },
+    "Polish NIP Validator": {
+        "status": "production"
+    },
+    "Text Statistics": {
+        "status": "production"
+    },
+    "Currency Exchange Rates": {
+        "status": "production"
+    },
+    "Weather Checker": {
+        "status": "production"
+    },
+    "URL Status Checker": {
+        "status": "production"
+    },
+    "JSON Formatter": {
+        "status": "production"
+    }
+}

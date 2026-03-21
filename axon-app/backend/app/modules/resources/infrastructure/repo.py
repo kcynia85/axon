@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
 
+# Import all tables to ensure SQLAlchemy mappers are initialized correctly
 from app.modules.resources.domain.models import (
     PromptArchetype, InternalTool, ExternalService, ServiceCapability, Automation
 )
@@ -11,7 +12,11 @@ from app.modules.resources.infrastructure.tables import (
     PromptArchetypeTable, InternalToolTable
 )
 from app.modules.workspaces.infrastructure.tables import (
-    ExternalServiceTable, ServiceCapabilityTable, AutomationTable, AutomationExecutionTable
+    ExternalServiceTable, ServiceCapabilityTable, AutomationTable, AutomationExecutionTable,
+    CrewTable, PatternTable, TemplateTable
+)
+from app.modules.agents.infrastructure.tables import (
+    AgentConfigTable, ChatSessionTable, AgentLogTable
 )
 from app.shared.utils.time import now_utc
 
@@ -82,41 +87,69 @@ class ResourcesRepository:
     # --- Internal Tool ---
 
     async def list_internal_tools(self) -> List[InternalTool]:
-        result = await self.session.execute(select(InternalToolTable))
+        result = await self.session.execute(
+            select(InternalToolTable).where(InternalToolTable.tool_is_active == True)
+        )
         return [self._to_domain_tool(row) for row in result.scalars().all()]
     
     async def upsert_internal_tool(self, tool: InternalTool):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         # Check existing
+        try:
+            existing = await self.session.execute(
+                select(InternalToolTable).where(InternalToolTable.tool_function_name == tool.tool_function_name)
+            )
+            row = existing.scalar_one_or_none()
+            
+            if row:
+                logger.info(f"Updating existing tool in DB: {tool.tool_function_name}")
+                row.tool_display_name = tool.tool_display_name
+                row.tool_description = tool.tool_description
+                row.tool_category = tool.tool_category
+                row.tool_input_schema = tool.tool_input_schema
+                row.tool_output_schema = tool.tool_output_schema
+                row.tool_is_active = True # Re-activate if it was inactive
+                row.tool_status = tool.tool_status
+                row.tool_keywords = tool.tool_keywords
+                row.availability_workspace = tool.availability_workspace
+                row.updated_at = now_utc()
+            else:
+                logger.info(f"Inserting new tool into DB: {tool.tool_function_name}")
+                db_obj = InternalToolTable(
+                    id=tool.id,
+                    tool_function_name=tool.tool_function_name,
+                    tool_display_name=tool.tool_display_name,
+                    tool_description=tool.tool_description,
+                    tool_category=tool.tool_category,
+                    tool_keywords=tool.tool_keywords,
+                    tool_input_schema=tool.tool_input_schema,
+                    tool_output_schema=tool.tool_output_schema,
+                    tool_is_active=tool.tool_is_active,
+                    tool_status=tool.tool_status,
+                    availability_workspace=tool.availability_workspace,
+                    created_at=tool.created_at,
+                    updated_at=tool.updated_at
+                )
+                self.session.add(db_obj)
+            
+            await self.session.commit()
+            logger.info(f"Successfully committed tool: {tool.tool_function_name}")
+        except Exception as e:
+            logger.error(f"Error in upsert_internal_tool for {tool.tool_function_name}: {str(e)}")
+            await self.session.rollback()
+            raise e
+
+    async def deactivate_internal_tool(self, tool_function_name: str):
         existing = await self.session.execute(
-            select(InternalToolTable).where(InternalToolTable.tool_function_name == tool.tool_function_name)
+            select(InternalToolTable).where(InternalToolTable.tool_function_name == tool_function_name)
         )
         row = existing.scalar_one_or_none()
-        
         if row:
-            row.tool_display_name = tool.tool_display_name
-            row.tool_description = tool.tool_description
-            row.tool_category = tool.tool_category
-            row.tool_input_schema = tool.tool_input_schema
-            row.tool_output_schema = tool.tool_output_schema
+            row.tool_is_active = False
             row.updated_at = now_utc()
-        else:
-            db_obj = InternalToolTable(
-                id=tool.id,
-                tool_function_name=tool.tool_function_name,
-                tool_display_name=tool.tool_display_name,
-                tool_description=tool.tool_description,
-                tool_category=tool.tool_category,
-                tool_keywords=tool.tool_keywords,
-                tool_input_schema=tool.tool_input_schema,
-                tool_output_schema=tool.tool_output_schema,
-                tool_is_active=tool.tool_is_active,
-                availability_workspace=tool.availability_workspace,
-                created_at=tool.created_at,
-                updated_at=tool.updated_at
-            )
-            self.session.add(db_obj)
-        
-        await self.session.commit()
+            await self.session.commit()
     
     def _to_domain_tool(self, row: InternalToolTable) -> InternalTool:
         return InternalTool(
@@ -129,6 +162,7 @@ class ResourcesRepository:
             tool_input_schema=row.tool_input_schema,
             tool_output_schema=row.tool_output_schema,
             tool_is_active=row.tool_is_active,
+            tool_status=row.tool_status,
             availability_workspace=row.availability_workspace,
             created_at=row.created_at,
             updated_at=row.updated_at

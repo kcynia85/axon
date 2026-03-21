@@ -18,7 +18,7 @@ type PromptArchetypesListProps = {
     readonly archetypes?: any[];
 };
 
-export const PromptArchetypesList = ({ archetypes: externalArchetypes }: PromptArchetypesListProps) => {
+export const PromptArchetypesList = React.memo(({ archetypes: externalArchetypes }: PromptArchetypesListProps) => {
     const router = useRouter();
     const { data: internalArchetypes, isLoading } = usePromptArchetypes();
     const archetypes = externalArchetypes ?? internalArchetypes;
@@ -129,4 +129,6 @@ export const PromptArchetypesList = ({ archetypes: externalArchetypes }: PromptA
             />
         </>
     );
-};
+});
+
+PromptArchetypesList.displayName = "PromptArchetypesList";

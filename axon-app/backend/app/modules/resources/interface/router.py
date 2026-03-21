@@ -15,20 +15,19 @@ from app.modules.resources.application.schemas import (
 
 router = APIRouter(
     prefix="/resources",
-    tags=["resources"],
-    dependencies=[Depends(get_current_user)]
+    tags=["resources"]
 )
 
 # --- Prompt Archetypes ---
 
-@router.get("/archetypes", response_model=List[PromptArchetypeResponse])
+@router.get("/archetypes", response_model=List[PromptArchetypeResponse], dependencies=[Depends(get_current_user)])
 async def list_prompt_archetypes(
     service: ResourcesService = Depends(get_resources_service)
 ):
     """List all prompt archetypes available."""
     return await service.list_prompt_archetypes()
 
-@router.get("/archetypes/{id}", response_model=PromptArchetypeResponse)
+@router.get("/archetypes/{id}", response_model=PromptArchetypeResponse, dependencies=[Depends(get_current_user)])
 async def get_prompt_archetype(
     id: UUID,
     service: ResourcesService = Depends(get_resources_service)
@@ -39,7 +38,7 @@ async def get_prompt_archetype(
         raise HTTPException(status_code=404, detail="Prompt Archetype not found")
     return result
 
-@router.post("/archetypes", response_model=PromptArchetypeResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/archetypes", response_model=PromptArchetypeResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_user)])
 async def create_prompt_archetype(
     request: CreatePromptArchetypeRequest,
     service: ResourcesService = Depends(get_resources_service)
@@ -47,7 +46,7 @@ async def create_prompt_archetype(
     """Create a new prompt archetype."""
     return await service.create_prompt_archetype(request)
 
-@router.put("/archetypes/{id}", response_model=PromptArchetypeResponse)
+@router.put("/archetypes/{id}", response_model=PromptArchetypeResponse, dependencies=[Depends(get_current_user)])
 async def update_prompt_archetype(
     id: UUID,
     request: UpdatePromptArchetypeRequest,
@@ -59,7 +58,7 @@ async def update_prompt_archetype(
         raise HTTPException(status_code=404, detail="Prompt Archetype not found")
     return result
 
-@router.delete("/archetypes/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/archetypes/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_current_user)])
 async def delete_prompt_archetype(
     id: UUID,
     service: ResourcesService = Depends(get_resources_service)
@@ -72,14 +71,14 @@ async def delete_prompt_archetype(
 
 # --- External Services ---
 
-@router.get("/services", response_model=List[ExternalServiceResponse])
+@router.get("/services", response_model=List[ExternalServiceResponse], dependencies=[Depends(get_current_user)])
 async def list_external_services(
     service: ResourcesService = Depends(get_resources_service)
 ):
     """List all registered external services."""
     return await service.list_external_services()
 
-@router.get("/services/{id}", response_model=ExternalServiceResponse)
+@router.get("/services/{id}", response_model=ExternalServiceResponse, dependencies=[Depends(get_current_user)])
 async def get_external_service(
     id: UUID,
     service: ResourcesService = Depends(get_resources_service)
@@ -90,7 +89,7 @@ async def get_external_service(
         raise HTTPException(status_code=404, detail="Service not found")
     return result
 
-@router.post("/services", response_model=ExternalServiceResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/services", response_model=ExternalServiceResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_user)])
 async def create_external_service(
     request: CreateExternalServiceRequest,
     service: ResourcesService = Depends(get_resources_service)
@@ -98,7 +97,7 @@ async def create_external_service(
     """Register a new external service."""
     return await service.create_external_service(request)
 
-@router.put("/services/{id}", response_model=ExternalServiceResponse)
+@router.put("/services/{id}", response_model=ExternalServiceResponse, dependencies=[Depends(get_current_user)])
 async def update_external_service(
     id: UUID,
     request: UpdateExternalServiceRequest,
@@ -110,7 +109,7 @@ async def update_external_service(
         raise HTTPException(status_code=404, detail="Service not found")
     return result
 
-@router.delete("/services/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/services/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_current_user)])
 async def delete_external_service(
     id: UUID,
     service: ResourcesService = Depends(get_resources_service)
@@ -121,7 +120,7 @@ async def delete_external_service(
         raise HTTPException(status_code=404, detail="Service not found")
     return
 
-@router.post("/services/{id}/capabilities", response_model=ServiceCapabilityResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/services/{id}/capabilities", response_model=ServiceCapabilityResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_user)])
 async def add_service_capability(
     id: UUID,
     request: CreateCapabilityRequest,
@@ -133,14 +132,14 @@ async def add_service_capability(
 
 # --- Internal Tools ---
 
-@router.get("/internal-tools", response_model=List[InternalToolResponse])
+@router.get("/internal-tools", response_model=List[InternalToolResponse], dependencies=[Depends(get_current_user)])
 async def list_internal_tools(
     service: ResourcesService = Depends(get_resources_service)
 ):
     """List all internal tools (synced from codebase)."""
     return await service.list_internal_tools()
 
-@router.post("/internal-tools/sync", response_model=SyncResultResponse)
+@router.post("/internal-tools/sync", response_model=SyncResultResponse, dependencies=[Depends(get_current_user)])
 async def sync_internal_tools(
     service: ResourcesService = Depends(get_resources_service)
 ):
@@ -152,19 +151,19 @@ async def sync_remote_tool(
     request: SyncRemoteToolRequest,
     service: ResourcesService = Depends(get_resources_service)
 ):
-    """Sync an internal tool from remote dev environment."""
+    """Sync an internal tool from remote dev environment. No Auth required for local dev sync."""
     return await service.sync_remote_tool(request)
 
 # --- Automations ---
 
-@router.get("/automations", response_model=List[AutomationResponse])
+@router.get("/automations", response_model=List[AutomationResponse], dependencies=[Depends(get_current_user)])
 async def list_automations(
     service: ResourcesService = Depends(get_resources_service)
 ):
     """List all automations."""
     return await service.list_automations()
 
-@router.get("/automations/{id}", response_model=AutomationResponse)
+@router.get("/automations/{id}", response_model=AutomationResponse, dependencies=[Depends(get_current_user)])
 async def get_automation(
     id: UUID,
     service: ResourcesService = Depends(get_resources_service)
@@ -175,7 +174,7 @@ async def get_automation(
         raise HTTPException(status_code=404, detail="Automation not found")
     return result
 
-@router.post("/automations", response_model=AutomationResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/automations", response_model=AutomationResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_user)])
 async def create_automation(
     request: CreateAutomationRequest,
     service: ResourcesService = Depends(get_resources_service)
@@ -183,7 +182,7 @@ async def create_automation(
     """Create a new automation definition."""
     return await service.create_automation(request)
 
-@router.put("/automations/{id}", response_model=AutomationResponse)
+@router.put("/automations/{id}", response_model=AutomationResponse, dependencies=[Depends(get_current_user)])
 async def update_automation(
     id: UUID,
     request: UpdateAutomationRequest,
@@ -195,7 +194,7 @@ async def update_automation(
         raise HTTPException(status_code=404, detail="Automation not found")
     return result
 
-@router.delete("/automations/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/automations/{id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_current_user)])
 async def delete_automation(
     id: UUID,
     service: ResourcesService = Depends(get_resources_service)
@@ -206,7 +205,7 @@ async def delete_automation(
         raise HTTPException(status_code=404, detail="Automation not found")
     return
 
-@router.post("/automations/{id}/test", response_model=SimulatorResultResponse)
+@router.post("/automations/{id}/test", response_model=SimulatorResultResponse, dependencies=[Depends(get_current_user)])
 async def test_automation(
     id: UUID,
     payload: TestPayload,

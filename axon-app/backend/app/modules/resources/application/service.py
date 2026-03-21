@@ -10,7 +10,7 @@ from app.modules.resources.application.schemas import (
     CreateAutomationRequest, TestPayload, SimulatorResultResponse, SyncResultResponse, SyncRemoteToolRequest
 )
 from app.modules.resources.application.tools_scanner import ToolsScannerService
-from app.modules.resources.domain.enums import ValidationStatus
+from app.modules.resources.domain.enums import ValidationStatus, ToolCategory
 from app.shared.utils.time import now_utc
 
 class ResourcesService:
@@ -124,70 +124,137 @@ class ResourcesService:
     async def list_internal_tools(self) -> List[InternalTool]:
         return await self.repo.list_internal_tools()
 
-    async def sync_tools(self) -> SyncResultResponse:
-        """
-        Scans the codebase for tools and updates the database.
-        """
-        # 1. Scan tools
-        discovered_tools_data = self.scanner.scan_tools()
-        
-        added = 0
-        updated = 0
-        errors = []
-        
-        # 2. Update/Insert in DB
-        for tool_data in discovered_tools_data:
-            try:
-                # We need to adapt the data to match what the repo expects
-                tool = InternalTool(
-                    id=uuid4(),
-                    tool_function_name=tool_data["tool_function_name"],
-                    tool_display_name=tool_data["name"],
-                    tool_description=tool_data["description"] or "No description",
-                    tool_category=ToolCategory.AI_UTILS, # Default category
-                    tool_keywords=["python", "synced"],
-                    tool_input_schema=tool_data["args_schema"] or {},
-                    tool_output_schema={"type": "string"}, # Default output schema
-                    tool_is_active=True,
-                    availability_workspace=["Global Availability"],
-                    created_at=now_utc(),
-                    updated_at=now_utc()
-                )
-                
-                await self.repo.upsert_internal_tool(tool)
-                updated += 1
-            except Exception as e:
-                errors.append(f"Failed to upsert {tool_data.get('name')}: {str(e)}")
-
-        return SyncResultResponse(
-            added=added, # We don't distinguish yet
-            updated=updated,
-            removed=0, # Not implemented yet
-            errors=errors
-        )
-
     async def sync_remote_tool(self, request: SyncRemoteToolRequest) -> SyncResultResponse:
         """
         Receives a tool from the remote dev environment, saves it, and triggers a sync.
+        Uses absolute path to avoid issues with current working directory.
         """
         import os
         from pathlib import Path
+        import logging
         
-        tools_dir = Path("app/tools")
-        tools_dir.mkdir(parents=True, exist_ok=True)
+        logger = logging.getLogger(__name__)
         
-        file_path = tools_dir / request.file_name
+        # service.py is in app/modules/resources/application/
+        # we need to go up 4 levels to get to the root 'backend' folder
+        base_dir = Path(__file__).resolve().parent.parent.parent.parent.parent
+        tools_dir = base_dir / "app" / "tools"
+        
+        logger.info(f"Syncing remote tool {request.file_name} to {tools_dir}")
+        logger.info(f"Content length: {len(request.file_content)} bytes")
+        
+        if not request.file_content:
+            logger.error("Received empty file content for sync")
+            return SyncResultResponse(
+                added=0, updated=0, removed=0,
+                errors=[f"Received empty file content for {request.file_name}"]
+            )
         
         try:
+            if not tools_dir.exists():
+                logger.info(f"Creating tools directory: {tools_dir}")
+                tools_dir.mkdir(parents=True, exist_ok=True)
+                
+            file_path = tools_dir / request.file_name
+            
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(request.file_content)
+                
+            logger.info(f"Successfully saved tool file: {file_path} ({len(request.file_content)} bytes)")
         except Exception as e:
+            logger.error(f"Failed to save tool file: {str(e)}")
             return SyncResultResponse(
                 added=0, updated=0, removed=0,
                 errors=[f"Failed to save file {request.file_name}: {str(e)}"]
             )
             
-        return await self.sync_tools()
+        return await self.sync_tools(status_override=request.status)
+
+    async def sync_tools(self, status_override: Optional[str] = None) -> SyncResultResponse:
+        """
+        Scans the codebase for tools and updates the database.
+        Deactivates tools that are no longer present in the codebase.
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # 1. Scan tools
+        discovered_tools_data = self.scanner.scan_tools()
+        logger.info(f"Discovered {len(discovered_tools_data)} tools in codebase")
+        
+        added = 0
+        updated = 0
+        removed = 0
+        errors = []
+        
+        # Track which function names we found in the codebase
+        discovered_func_names = [t["tool_function_name"] for t in discovered_tools_data]
+
+        # 2. Update/Insert in DB
+        if discovered_tools_data:
+            for tool_data in discovered_tools_data:
+                try:
+                    # Check if tool already exists to count added vs updated
+                    existing_tools = await self.repo.list_internal_tools()
+                    existing_func_names = [t.tool_function_name for t in existing_tools]
+                    
+                    is_new = tool_data["tool_function_name"] not in existing_func_names
+
+                    # We need to adapt the data to match what the repo expects
+                    # Use override if provided, otherwise check tool_data, otherwise default
+                    final_status = status_override or tool_data.get("status") or "production"
+                    
+                    tool = InternalTool(
+                        id=uuid4(),
+                        tool_function_name=tool_data["tool_function_name"],
+                        tool_display_name=tool_data["name"],
+                        tool_description=tool_data["description"] or "No description",
+                        tool_category=ToolCategory.AI_UTILS, # Default category
+                        tool_keywords=tool_data.get("keywords", ["python", "synced"]),
+                        tool_input_schema=tool_data["args_schema"] or {},
+                        tool_output_schema={"type": "string"}, # Default output schema
+                        tool_is_active=True,
+                        tool_status=final_status,
+                        availability_workspace=["Global Availability"],
+                        created_at=now_utc(),
+                        updated_at=now_utc()
+                    )
+                    await self.repo.upsert_internal_tool(tool)
+                    
+                    if is_new:
+                        added += 1
+                        logger.info(f"Successfully added new tool: {tool.tool_display_name}")
+                    else:
+                        updated += 1
+                        logger.info(f"Successfully updated existing tool: {tool.tool_display_name}")
+                        
+                except Exception as e:
+                    err_msg = f"Failed to upsert {tool_data.get('name')}: {str(e)}"
+                    logger.error(err_msg)
+                    errors.append(err_msg)
+        else:
+            logger.warning("No tools discovered during scan. Skipping DB update to avoid accidental deactivation.")
+
+        # 3. Deactivate missing tools (only if we found at least one tool, to be safe)
+        if discovered_func_names:
+            try:
+                db_tools = await self.repo.list_internal_tools()
+                for db_tool in db_tools:
+                    if db_tool.tool_function_name not in discovered_func_names and db_tool.tool_is_active:
+                        await self.repo.deactivate_internal_tool(db_tool.tool_function_name)
+                        removed += 1
+                        logger.info(f"Deactivated tool: {db_tool.tool_display_name}")
+            except Exception as e:
+                err_msg = f"Failed to deactivate missing tools: {str(e)}"
+                logger.error(err_msg)
+                errors.append(err_msg)
+
+        return SyncResultResponse(
+            added=added,
+            updated=updated,
+            removed=removed,
+            errors=errors
+        )
 
     # --- Automations ---
 

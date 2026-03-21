@@ -1,3 +1,4 @@
+import * as React from "react";
 import { FormField } from "@/shared/ui/ui/Form";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormTextField } from "@/shared/ui/form/FormTextField";
@@ -9,7 +10,7 @@ import type { IdentitySectionProps } from "../../types/sections/identity.types";
 import { useIdentitySection } from "../../application/hooks/sections/useIdentitySection";
 import { IDENTITY_FIELDS } from "../../types/agent-studio.constants";
 
-export const IdentitySection = (props: IdentitySectionProps) => {
+export const IdentitySection = React.memo((props: IdentitySectionProps) => {
 	const { control, syncDraft } = useIdentitySection(props);
 
 	return (
@@ -79,4 +80,6 @@ export const IdentitySection = (props: IdentitySectionProps) => {
 			</div>
 		</FormSection>
 	);
-};
+});
+
+IdentitySection.displayName = "IdentitySection";

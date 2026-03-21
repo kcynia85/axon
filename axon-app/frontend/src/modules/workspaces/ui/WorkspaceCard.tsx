@@ -5,6 +5,7 @@ import { Workspace } from "@/shared/domain/workspaces";
 import { cn } from "@/shared/lib/utils";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import { formatDistanceToNow } from "date-fns";
 
 type WorkspaceCardProps = {
     readonly workspace: Workspace;
@@ -29,15 +30,25 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
     const styles = getVisualStylesForZoneColor(colorName);
     const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
+    const hoverBorderClass = {
+        blue: "group-hover:border-blue-500/50",
+        purple: "group-hover:border-purple-500/50",
+        pink: "group-hover:border-pink-500/50",
+        green: "group-hover:border-green-500/50",
+        yellow: "group-hover:border-yellow-500/50",
+        orange: "group-hover:border-orange-500/50",
+        default: "group-hover:border-zinc-400"
+    }[colorName] || "group-hover:border-zinc-400";
+
     return (
-        <Link href={`/workspaces/${id}`} className="block h-full group transition-transform active:scale-[0.98]">
+        <Link href={`/workspaces/${id}`} className="block h-full group outline-none">
             <Card 
                 className={cn(
-                    "relative h-full overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-200",
+                    "relative h-full overflow-hidden cursor-pointer flex flex-col pt-2 transition-all duration-300",
                     "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950",
-                    "group-hover:shadow-md",
-                    // Hover border color based on workspace color
-                    `group-hover:${styles.borderClassName}`
+                    "group-hover:shadow-2xl group-hover:shadow-black/5 dark:group-hover:shadow-white/5",
+                    "group-hover:-translate-y-1 group-active:scale-[0.98]",
+                    hoverBorderClass
                 )}
             >
                 {/* Background Grid Pattern (Static, kept for subtle texture) */}
@@ -63,7 +74,7 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
                     <div className="flex items-center gap-2.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 transition-colors duration-200 group-hover:bg-zinc-600 dark:group-hover:bg-zinc-400" />
                         <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500 transition-colors duration-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-400" suppressHydrationWarning>
-                            <span className="text-zinc-400 dark:text-zinc-600 font-medium">Last update:</span> {updated_at ? new Date(updated_at).toLocaleDateString() : "—"}
+                            <span className="text-zinc-400 dark:text-zinc-600 font-medium">Last update:</span> {updated_at ? formatDistanceToNow(new Date(updated_at), { addSuffix: true }) : "—"}
                         </p>
                     </div>
                 </CardContent>

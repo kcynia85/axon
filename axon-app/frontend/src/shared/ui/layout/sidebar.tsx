@@ -175,7 +175,7 @@ export const Sidebar = ({
   return (
     <aside
       className={cn(
-        "h-screen flex-shrink-0 transition-all duration-300 ease-in-out p-4 pr-2",
+        "h-screen flex-shrink-0 transition-all duration-300 ease-in-out p-4 pr-2 will-change-[width]",
         isCollapsed ? "w-[90px]" : "w-[260px]",
         className
       )}

@@ -12,6 +12,7 @@ import { resourcesApi } from "@/modules/resources/infrastructure/api";
 import { InternalTool } from "@/shared/domain/resources";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { toast } from "sonner";
+import { Checkbox } from "@/shared/ui/ui/Checkbox";
 
 export interface InternalSkillsModalProps {
 	readonly isOpen: boolean;
@@ -51,12 +52,16 @@ export const InternalSkillsModal = ({
 
 	const availableSkills: BaseSkill[] = useMemo(() => {
 		if (!tools) return [];
-		return tools.map((tool: InternalTool) => ({
-			id: tool.id,
-			name: tool.tool_name || tool.tool_function_name,
-			desc: tool.tool_description || "No description provided",
-			category: "Internal"
-		}));
+		return tools
+			.filter((tool: InternalTool) => tool.tool_status === "production")
+			.map((tool: InternalTool) => ({
+				id: tool.tool_function_name, // Use function name as ID for consistency
+				uuid: tool.id, // Pass UUID for hydration matching
+				name: tool.tool_display_name,
+				desc: tool.tool_description || "No description provided",
+				category: tool.tool_category || "Internal",
+				keywords: tool.tool_keywords || []
+			}));
 	}, [tools]);
 
 	const {
@@ -136,62 +141,59 @@ export const InternalSkillsModal = ({
 										{filteredSkills.map((fn) => (
 											<div
 												key={fn.id}
+												onClick={() =>
+													fn.isAdded ? onRemoveFunction(fn.id) : onAddFunction(fn.id)
+												}
 												className={cn(
-													"group relative flex flex-col gap-3 p-4 rounded-xl border transition-all duration-200",
+													"group relative flex items-start gap-4 p-4 rounded-xl border transition-all duration-200 cursor-pointer select-none",
 													fn.isAdded
 														? "bg-primary/5 border-primary/20 hover:bg-primary/10"
 														: "bg-zinc-900/30 border-zinc-800/60 hover:border-zinc-700 hover:bg-zinc-900/50"
 												)}
 											>
-												<div className="flex items-start justify-between gap-3">
-													<div className="space-y-1.5 min-w-0">
-														<div className="flex items-center gap-2">
-															<h4 className={cn(
-																"text-sm font-semibold truncate",
-																fn.isAdded ? "text-primary-foreground" : "text-zinc-200"
-															)}>
-																{fn.name}
-															</h4>
-															{fn.category && (
-																<Badge 
-																	variant="secondary" 
-																	className="text-[10px] h-5 px-1.5 bg-zinc-800/50 text-zinc-400 border-none"
-																>
-																	{fn.category}
-																</Badge>
-															)}
+												{/* Checkbox for selection - purely visual, pointer-events-none */}
+												<div className="pt-0.5 shrink-0 pointer-events-none">
+													<Checkbox
+														checked={fn.isAdded}
+														onCheckedChange={() => {}} 
+														className="w-5 h-5 rounded-md border-zinc-700 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+													/>
+												</div>
+
+												<div className="flex-1 min-w-0 space-y-1.5">
+													<div className="flex items-center gap-2">
+														<h4 className={cn(
+															"text-sm font-semibold truncate transition-colors",
+															fn.isAdded ? "text-primary" : "text-zinc-200"
+														)}>
+															{fn.name}
+														</h4>
+														{fn.category && (
+															<Badge
+																variant="secondary"
+																className="text-[10px] h-5 px-1.5 bg-zinc-800/50 text-zinc-400 border-none"
+															>
+																{fn.category}
+															</Badge>
+														)}
+													</div>
+													<p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+														{fn.desc}
+													</p>
+													
+													{/* Tags/Keywords */}
+													{fn.keywords && fn.keywords.length > 0 && (
+														<div className="flex flex-wrap gap-1 mt-1">
+															{fn.keywords
+																.filter(tag => tag !== "python" && tag !== "synced")
+																.slice(0, 3)
+																.map((tag, idx) => (
+																	<span key={idx} className="text-[10px] text-zinc-500 font-mono">
+																		#{tag.toLowerCase()}
+																	</span>
+																))}
 														</div>
-														<p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
-															{fn.desc}
-														</p>
-													</div>
-													<div className="shrink-0">
-														<Button
-															size="sm"
-															variant={fn.isAdded ? "secondary" : "default"}
-															className={cn(
-																"h-8 px-3 rounded-lg text-xs font-medium transition-all shadow-none",
-																fn.isAdded
-																	? "bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary border-transparent"
-																	: "bg-white text-black hover:bg-zinc-200 dark:bg-zinc-100 dark:text-zinc-900 border-none"
-															)}
-															onClick={() =>
-																fn.isAdded ? onRemoveFunction(fn.id) : onAddFunction(fn.id)
-															}
-														>
-															{fn.isAdded ? (
-																<>
-																	<Check className="w-3.5 h-3.5 mr-1.5" />
-																	Added
-																</>
-															) : (
-																<>
-																	<Plus className="w-3.5 h-3.5 mr-1.5" />
-																	Add
-																</>
-															)}
-														</Button>
-													</div>
+													)}
 												</div>
 											</div>
 										))}
@@ -202,9 +204,9 @@ export const InternalSkillsModal = ({
 											<AlertCircle className="w-8 h-8 text-zinc-600" />
 										</div>
 										<div className="space-y-1">
-											<h3 className="text-lg font-medium text-zinc-300">No functions found</h3>
+											<h3 className="text-lg font-medium text-zinc-300">No production functions found</h3>
 											<p className="text-zinc-500 text-sm max-w-sm mx-auto">
-												We couldn't find any functions matching your search. Try different keywords or sync your tools.
+												Only tools set to 'Production' in local Axon Tools are available here. Sync your tools if you just changed status.
 											</p>
 										</div>
 										<Button 

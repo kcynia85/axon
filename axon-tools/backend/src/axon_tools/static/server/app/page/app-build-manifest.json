@@ -1,0 +1,24 @@
+{
+  "pages": {
+    "/page": [
+      "static/chunks/b0ccc_next_dist_99edffa0._.js",
+      "static/chunks/axon-tools_frontend_src_app_favicon_ico_mjs_40ff7a8d._.js",
+      "static/chunks/[root-of-the-server]__77afc5d4._.css",
+      "static/chunks/b0ccc_f18403d0._.js",
+      "static/chunks/axon-tools_frontend_src_app_providers_tsx_90482bc8._.js",
+      "static/chunks/axon-tools_frontend_src_app_layout_tsx_dfa3f2eb._.js",
+      "static/chunks/b0ccc_next_dist_client_components_builtin_global-error_1e719dbf.js",
+      "static/chunks/axon-tools_frontend_0b0fe795._.js",
+      "static/chunks/axon-tools_frontend_src_app_page_tsx_1e719dbf._.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_c590914b._.js",
+      "static/chunks/b0ccc_next_dist_compiled_react-dom_b0b22dce._.js",
+      "static/chunks/b0ccc_next_dist_compiled_next-devtools_index_dc22c82e.js",
+      "static/chunks/b0ccc_next_dist_compiled_c4fade56._.js",
+      "static/chunks/b0ccc_next_dist_client_df4668b5._.js",
+      "static/chunks/b0ccc_next_dist_30016e32._.js",
+      "static/chunks/b0ccc_@swc_helpers_cjs_e1a40712._.js",
+      "static/chunks/axon-tools_frontend_a0ff3932._.js",
+      "static/chunks/turbopack-axon-tools_frontend_ebb67a20._.js"
+    ]
+  }
+}

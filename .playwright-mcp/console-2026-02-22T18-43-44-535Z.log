@@ -1,2 +1,0 @@
-[     966ms] [WARNING] Image with src "/logo-symbol-axon.svg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading @ http://localhost:3000/_next/static/chunks/9e883_next_dist_4c1928ef._.js:2287

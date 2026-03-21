@@ -1,0 +1,14 @@
+__turbopack_load_page_chunks__("/_app", [
+  "static/chunks/b0ccc_next_dist_compiled_next-devtools_index_fbb9cb59.js",
+  "static/chunks/b0ccc_next_dist_compiled_7a90c56f._.js",
+  "static/chunks/b0ccc_next_dist_shared_lib_53d4105c._.js",
+  "static/chunks/b0ccc_next_dist_client_349d5f95._.js",
+  "static/chunks/b0ccc_next_dist_e6f16bad._.js",
+  "static/chunks/b0ccc_next_app_aa7283fd.js",
+  "static/chunks/[next]_entry_page-loader_ts_a3dadb87._.js",
+  "static/chunks/b0ccc_react-dom_f1005a16._.js",
+  "static/chunks/b0ccc_77ec21b9._.js",
+  "static/chunks/[root-of-the-server]__f181dedf._.js",
+  "static/chunks/axon-tools_frontend_pages__app_2da965e7._.js",
+  "static/chunks/turbopack-axon-tools_frontend_pages__app_d178f578._.js"
+])
