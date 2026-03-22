@@ -1,6 +1,9 @@
 import { FormKeyValueItem } from "@/shared/types/form/FormKeyValueTable.types";
 
+export type KnowledgeStudioSectionId = "RESOURCE" | "METADATA" | "STRATEGY" | "HUBS";
+
 export interface KnowledgeResourceData {
+    id?: string;
     fileName: string | null;
     fileSize: string | null;
     metadata: FormKeyValueItem[];

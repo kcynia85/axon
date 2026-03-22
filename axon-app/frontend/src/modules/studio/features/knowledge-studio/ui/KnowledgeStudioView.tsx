@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { useForm, FormProvider } from "react-hook-form";
-import { X, Plus, Wand2 } from "lucide-react";
+import { X, Plus, Wand2, RefreshCw } from "lucide-react";
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { Button } from "@/shared/ui/ui/Button";
@@ -17,6 +17,9 @@ import { FormSelectedFile } from "@/shared/ui/form/FormSelectedFile";
 import { KnowledgeStudioViewProps } from "../types/knowledge-studio.types";
 import { KnowledgeStudioSectionNav, KnowledgeStudioSectionId } from "./KnowledgeStudioSectionNav";
 import { FormField } from "@/shared/ui/ui/Form";
+import { RagDebugger } from "./RagDebugger";
+import { KnowledgeResourceStatusCard } from "./KnowledgeResourceStatusCard";
+import { FormFileUpload } from "@/shared/ui/form/FormFileUpload";
 
 const EMBEDDING_MODELS = [
     { name: "text-embedding-3-small (domyślny)", id: "text-embedding-3-small" },
@@ -85,7 +88,17 @@ export const KnowledgeStudioView = ({
                     </Button>
                 }
                 navigator={<KnowledgeStudioSectionNav activeSection={activeSection} onSectionClick={scrollToSection} data={data} />}
-                poster={<div />}
+                poster={
+                    <div className="space-y-8 w-full">
+                        {data.id && (
+                            <KnowledgeResourceStatusCard 
+                                model={data.model}
+                                chunksCount={4}
+                            />
+                        )}
+                        <RagDebugger fileName={data.fileName} strategy={data.chunkType} />
+                    </div>
+                }
                 canvas={
 
                     <div className="px-24 pb-48">
@@ -132,21 +145,7 @@ export const KnowledgeStudioView = ({
                                             </div>
                                         </div>
                                     ) : (
-                                        <button 
-                                            type="button"
-                                            onClick={triggerFileInput} 
-                                            className="w-full h-48 border-2 border-dashed border-zinc-800 hover:border-zinc-600 bg-zinc-950/30 hover:bg-zinc-900/50 rounded-3xl flex flex-col items-center justify-center gap-4 transition-all duration-300 group outline-none"
-                                        >
-                                            <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:scale-110 group-hover:border-primary/50 transition-all">
-                                                <Plus className="w-7 h-7 text-zinc-600 group-hover:text-primary transition-colors" />
-                                            </div>
-                                            <span className="text-zinc-500 group-hover:text-zinc-300 font-mono uppercase tracking-[0.3em] text-[11px] font-bold">
-                                                Dodaj plik zasobu
-                                            </span>
-                                            <span className="text-zinc-700 group-hover:text-zinc-500 font-mono text-[9px] uppercase tracking-wider">
-                                                PDF, MARKDOWN, DOCX (MAX 50MB)
-                                            </span>
-                                        </button>
+                                        <FormFileUpload onClick={triggerFileInput} />
                                     )}
                                 </div>
                             </FormSection>
@@ -273,7 +272,8 @@ export const KnowledgeStudioView = ({
                             Anuluj
                         </Button>
                         <ActionButton
-                            label="Zapisz i Indeksuj"
+                            label={data.id ? "Re-indeksuj" : "Zapisz i Indeksuj"}
+                            icon={data.id ? RefreshCw : Plus}
                             onClick={onSave}
                         />
                     </div>

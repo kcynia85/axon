@@ -15,12 +15,14 @@ export const StudioSidebar = ({
 	return (
 		<aside
 			className={cn(
-				"h-full overflow-y-auto custom-scrollbar scroll-smooth p-8 flex flex-col",
+				"h-full flex flex-col overflow-hidden",
 				positionClasses,
 				className,
 			)}
 		>
-			{children}
+			<div className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth p-8 pb-32">
+				{children}
+			</div>
 		</aside>
 	);
 };
