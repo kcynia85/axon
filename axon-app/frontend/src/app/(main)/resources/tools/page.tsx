@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { resourcesApi } from "@/modules/resources/infrastructure/api";
 import InternalToolsList from "@/modules/resources/ui/InternalToolsList";
 import { Button } from "@/shared/ui/ui/Button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Terminal } from "lucide-react";
 import { toast } from "sonner";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
@@ -199,6 +199,7 @@ export default function InternalToolsPage() {
                         tools={paginatedTools} 
                         isLoading={isLoading} 
                         onSelect={handleSelectTool}
+                        viewMode={viewMode}
                     />
                 </BrowserLayout>
             </PageLayout>
@@ -209,6 +210,11 @@ export default function InternalToolsPage() {
                 open={isSidebarOpen}
                 onOpenChange={setIsSidebarOpen}
                 maxWidth="sm:max-w-md"
+                image={
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Terminal className="w-5 h-5 text-primary" />
+                    </div>
+                }
             >
                 {selectedTool && (
                     <InternalToolDetailsView 

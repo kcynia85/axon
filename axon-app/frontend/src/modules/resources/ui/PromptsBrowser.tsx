@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useQuery } from "@tanstack/react-query";
-import { getAssets } from "@/modules/knowledge/features/browse-assets/infrastructure";
+import { resourcesApi } from "../infrastructure/api";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },

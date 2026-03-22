@@ -16,11 +16,11 @@ const buttonVariants = cva(
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
-          "bg-secondary not-italic text-secondary-foreground hover:bg-secondary/80",
+          "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 dark:border dark:border-zinc-800 font-bold rounded-xl",
         action: 
           "bg-white text-black hover:bg-zinc-200 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 font-bold rounded-xl shadow-lg border-none transition-transform active:scale-95",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 rounded-xl",
         link: "text-zinc-900 dark:text-zinc-100 underline-offset-4 hover:underline font-bold",
       },
       size: {

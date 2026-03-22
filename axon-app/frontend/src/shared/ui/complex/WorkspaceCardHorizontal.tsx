@@ -159,7 +159,7 @@ export const WorkspaceCardHorizontal = ({
                     }
                 }}
             >
-                <Card className="flex flex-col h-full p-6 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-xl transition-all rounded-2xl overflow-hidden active:scale-[0.98] relative min-h-[200px] justify-between">
+                <Card className="flex flex-col h-full p-6 border-zinc-200 dark:border-zinc-800 bg-card hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-xl transition-all rounded-2xl overflow-hidden active:scale-[0.98] relative min-h-[200px] justify-between">
                     
                     {renderActions()}
 
@@ -266,7 +266,7 @@ export const WorkspaceCardHorizontal = ({
     return (
         <Link 
             href={href} 
-            className={cn("group block w-full outline-none min-h-[180px]", className)}
+            className={cn("group block w-full outline-none min-h-[160px]", className)}
             onClick={(e) => {
                 if (onClick) {
                     e.preventDefault();
@@ -275,7 +275,7 @@ export const WorkspaceCardHorizontal = ({
                 }
             }}
         >
-            <Card className="flex items-start p-5 border-zinc-200 dark:border-zinc-800 bg-black hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative h-full">
+            <Card className="flex flex-row items-start p-5 border-zinc-200 dark:border-zinc-800 bg-card hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative h-full">
                 
                 {renderActions()}
 
@@ -288,27 +288,28 @@ export const WorkspaceCardHorizontal = ({
                     ) : null}
                 </div>
 
-                {/* Visual / Icon */}
-                {Icon && (
-                    <div className={cn(
-                        "flex-shrink-0 w-8 h-8 rounded-lg bg-zinc-900 border flex items-center justify-center mr-4 group-hover:scale-105 transition-transform duration-300", 
-                        isDraft ? "border-zinc-800" : styles.textClassName.replace('text-', 'border-')
-                    )}>
-                        <Icon className={cn("w-4 h-4", isDraft ? "text-zinc-500" : styles.textClassName)} />
-                    </div>
-                )}
+                {/* ICON COLUMN (Left) */}
+                <div className="flex-shrink-0 pt-1">
+                    {Icon && (
+                        <div className={cn(
+                            "w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105", 
+                        )}>
+                            <Icon className="w-5 h-5 text-primary" />
+                        </div>
+                    )}
+                </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0 pr-10 flex flex-col h-full">
+                {/* CONTENT COLUMN (Right) */}
+                <div className="flex min-w-0 flex flex-col h-full">
                     <div className="flex items-center gap-2 mb-1.5 pr-8">
-                        <h4 className="text-[16px] font-bold tracking-tight text-white group-hover:text-primary transition-colors truncate pr-2">
+                        <h4 className="text-[16px] font-bold tracking-tight text-foreground group-hover:text-primary transition-colors truncate pr-2">
                             {title}
                         </h4>
                     </div>
                     {/* Description - Fixed height/lines */}
-                    <div className="min-h-[60px] mb-2">
+                    <div className="min-h-[50px] mb-2">
                         {description && (
-                            <p className="text-[13px] text-zinc-400 line-clamp-4 leading-relaxed font-medium">
+                            <p className="text-[13px] text-muted-foreground line-clamp-3 leading-relaxed font-medium">
                                 {truncatedDescription}
                             </p>
                         )}

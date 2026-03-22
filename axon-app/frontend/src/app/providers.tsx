@@ -5,6 +5,7 @@ import { useState } from "react";
 import { HeroUIProvider } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { TooltipProvider } from "@/shared/ui/ui/Tooltip";
+import { ThemeProvider } from "@/shared/infrastructure/ThemeProvider";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
@@ -18,11 +19,18 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <QueryClientProvider client={queryClient}>
-            <HeroUIProvider navigate={router.push}>
-                <TooltipProvider>
-                    {children}
-                </TooltipProvider>
-            </HeroUIProvider>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                enableSystem
+                disableTransitionOnChange
+            >
+                <HeroUIProvider navigate={router.push}>
+                    <TooltipProvider>
+                        {children}
+                    </TooltipProvider>
+                </HeroUIProvider>
+            </ThemeProvider>
         </QueryClientProvider>
     );
 };

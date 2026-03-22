@@ -25,7 +25,7 @@ export const FormSection = ({
 		<FormSectionStep number={number} />
 		<FormHeading className="text-zinc-200 mb-3">{title}</FormHeading>
 		{description ? (
-			<p className="text-sm font-mono text-zinc-500 mb-12">*Hint: {description}</p>
+			<p className="text-base font-mono text-zinc-500 mb-12">*Hint: {description}</p>
 		) : (
 			<div className="mb-12" />
 		)}

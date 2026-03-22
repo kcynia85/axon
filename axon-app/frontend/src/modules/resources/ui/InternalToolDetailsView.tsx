@@ -17,8 +17,8 @@ export const InternalToolDetailsView = ({ tool, onClose }: InternalToolDetailsVi
                 {/* ── Main Description / Banner ── */}
                 {tool.tool_description && (
                     <div className="bg-muted/50 p-4 rounded-xl">
-                        <p className="text-base leading-relaxed text-foreground/80 font-normal italic">
-                            "{tool.tool_description}"
+                        <p className="text-base leading-relaxed text-foreground/80 font-normal">
+                            {tool.tool_description}
                         </p>
                     </div>
                 )}

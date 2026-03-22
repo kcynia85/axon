@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AI } from "@/modules/agents/infrastructure/AiProvider";
-import { ThemeProvider } from "@/shared/infrastructure/ThemeProvider";
 import Providers  from "./providers";
 import { Toaster } from "sonner";
 
@@ -36,29 +34,22 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {process.env.NODE_ENV === "development" && (
-          <Script
+          <script
             src="//unpkg.com/react-grab/dist/index.global.js"
             crossOrigin="anonymous"
-            strategy="beforeInteractive"
+            async
           />
         )}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-sans antialiased h-screen overflow-hidden bg-background text-foreground`}
       >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        <AI>
           <Providers>
-            <AI>
-              {children}
-            </AI>
+            {children}
             <Toaster position="bottom-center" />
           </Providers>
-        </ThemeProvider>
+        </AI>
       </body>
     </html>
   );

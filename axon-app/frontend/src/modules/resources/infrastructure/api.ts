@@ -46,5 +46,16 @@ export const resourcesApi = {
     syncInternalTools: async (): Promise<{ added: number; updated: number; removed: number; errors: string[] }> => {
         const res = await apiClient.post("/resources/internal-tools/sync", {});
         return await res.json() as { added: number; updated: number; removed: number; errors: string[] };
+    },
+
+    // --- Knowledge Assets (Hubs) ---
+    getAssets: async (): Promise<{ id: string; title: string }[]> => {
+        // Mock implementation for now as the original module was removed
+        return [
+            { id: "hub-product", title: "Hub Product" },
+            { id: "hub-marketing", title: "Hub Marketing" },
+            { id: "hub-engineering", title: "Hub Engineering" },
+            { id: "hub-general", title: "Hub General" }
+        ];
     }
 };
