@@ -6,9 +6,9 @@ from app.api.deps import get_current_user
 from app.modules.settings.application.service import SettingsService
 from app.modules.settings.dependencies import get_settings_service
 from app.modules.settings.application.schemas import (
-    LLMProviderResponse, CreateLLMProviderRequest,
-    LLMModelResponse, CreateLLMModelRequest,
-    LLMRouterResponse, CreateLLMRouterRequest, TestPromptRequest, SanityCheckResponse,
+    LLMProviderResponse, CreateLLMProviderRequest, UpdateLLMProviderRequest,
+    LLMModelResponse, CreateLLMModelRequest, UpdateLLMModelRequest,
+    LLMRouterResponse, CreateLLMRouterRequest, UpdateLLMRouterRequest, TestPromptRequest, SanityCheckResponse,
     EmbeddingModelResponse, CreateEmbeddingModelRequest,
     ChunkingStrategyResponse, CreateChunkingStrategyRequest, SimulateChunkingRequest, SimulateChunkingResponse,
     VectorDatabaseResponse, CreateVectorDatabaseRequest, ConnectionTestResponse
@@ -35,6 +35,25 @@ async def create_llm_provider(
 ):
     return await service.create_llm_provider(request)
 
+@router.patch("/llm-providers/{id}", response_model=LLMProviderResponse)
+async def patch_llm_provider(
+    id: UUID,
+    request: UpdateLLMProviderRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.update_llm_provider(id, request)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+@router.delete("/llm-providers/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_llm_provider(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    await service.delete_llm_provider(id)
+    return None
+
 # --- LLM Model ---
 
 @router.get("/llm-models", response_model=List[LLMModelResponse])
@@ -50,6 +69,25 @@ async def create_llm_model(
 ):
     return await service.create_llm_model(request)
 
+@router.patch("/llm-models/{id}", response_model=LLMModelResponse)
+async def patch_llm_model(
+    id: UUID,
+    request: UpdateLLMModelRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.update_llm_model(id, request)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+@router.delete("/llm-models/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_llm_model(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    await service.delete_llm_model(id)
+    return None
+
 # --- LLM Router ---
 
 @router.get("/llm-routers", response_model=List[LLMRouterResponse])
@@ -64,6 +102,25 @@ async def create_llm_router(
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.create_llm_router(request)
+
+@router.patch("/llm-routers/{id}", response_model=LLMRouterResponse)
+async def patch_llm_router(
+    id: UUID,
+    request: UpdateLLMRouterRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.update_llm_router(id, request)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+@router.delete("/llm-routers/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_llm_router(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    await service.delete_llm_router(id)
+    return None
 
 @router.post("/llm-routers/{id}/test", response_model=SanityCheckResponse)
 async def test_llm_router(

@@ -28,6 +28,16 @@ export const settingsApi = {
         return LLMProviderSchema.parse(data);
     },
 
+    updateLLMProvider: async (id: string, provider: Partial<LLMProvider>): Promise<LLMProvider> => {
+        const res = await apiClient.patch(`/settings/llm-providers/${id}`, provider);
+        const data = await res.json() as unknown;
+        return LLMProviderSchema.parse(data);
+    },
+
+    deleteLLMProvider: async (id: string): Promise<void> => {
+        await apiClient.delete(`/settings/llm-providers/${id}`);
+    },
+
     // --- LLM Models ---
     getLLMModels: async (): Promise<LLMModel[]> => {
         const res = await apiClient.get("/settings/llm-models");
@@ -35,11 +45,43 @@ export const settingsApi = {
         return data.map((modelRaw) => LLMModelSchema.parse(modelRaw));
     },
 
+    createLLMModel: async (model: Omit<LLMModel, "id" | "created_at" | "updated_at">): Promise<LLMModel> => {
+        const res = await apiClient.post("/settings/llm-models", model);
+        const data = await res.json() as unknown;
+        return LLMModelSchema.parse(data);
+    },
+
+    updateLLMModel: async (id: string, model: Partial<LLMModel>): Promise<LLMModel> => {
+        const res = await apiClient.patch(`/settings/llm-models/${id}`, model);
+        const data = await res.json() as unknown;
+        return LLMModelSchema.parse(data);
+    },
+
+    deleteLLMModel: async (id: string): Promise<void> => {
+        await apiClient.delete(`/settings/llm-models/${id}`);
+    },
+
     // --- LLM Routers ---
     getLLMRouters: async (): Promise<LLMRouter[]> => {
         const res = await apiClient.get("/settings/llm-routers");
         const data = await res.json() as unknown[];
         return data.map((routerRaw) => LLMRouterSchema.parse(routerRaw));
+    },
+
+    createLLMRouter: async (router: Omit<LLMRouter, "id" | "created_at" | "updated_at">): Promise<LLMRouter> => {
+        const res = await apiClient.post("/settings/llm-routers", router);
+        const data = await res.json() as unknown;
+        return LLMRouterSchema.parse(data);
+    },
+
+    updateLLMRouter: async (id: string, router: Partial<LLMRouter>): Promise<LLMRouter> => {
+        const res = await apiClient.patch(`/settings/llm-routers/${id}`, router);
+        const data = await res.json() as unknown;
+        return LLMRouterSchema.parse(data);
+    },
+
+    deleteLLMRouter: async (id: string): Promise<void> => {
+        await apiClient.delete(`/settings/llm-routers/${id}`);
     },
 
     testRouter: async (id: string, prompt: string): Promise<unknown> => {

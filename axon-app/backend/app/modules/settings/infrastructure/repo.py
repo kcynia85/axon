@@ -38,6 +38,26 @@ class SettingsRepository:
         )
         return [self._to_domain_provider(row) for row in result.scalars().all()]
 
+    async def get_llm_provider(self, id: UUID) -> Optional[LLMProvider]:
+        result = await self.session.execute(
+            select(LLMProviderTable).options(selectinload(LLMProviderTable.models)).where(LLMProviderTable.id == id)
+        )
+        row = result.scalar_one_or_none()
+        return self._to_domain_provider(row) if row else None
+
+    async def update_llm_provider(self, id: UUID, provider_data: dict) -> Optional[LLMProvider]:
+        provider_data["updated_at"] = now_utc()
+        await self.session.execute(
+            update(LLMProviderTable).where(LLMProviderTable.id == id).values(**provider_data)
+        )
+        await self.session.commit()
+        return await self.get_llm_provider(id)
+
+    async def delete_llm_provider(self, id: UUID) -> bool:
+        await self.session.execute(delete(LLMProviderTable).where(LLMProviderTable.id == id))
+        await self.session.commit()
+        return True
+
     def _to_domain_provider(self, row: LLMProviderTable) -> LLMProvider:
         return LLMProvider(
             id=row.id,
@@ -88,6 +108,24 @@ class SettingsRepository:
         result = await self.session.execute(select(LLMModelTable))
         return [self._to_domain_model(row) for row in result.scalars().all()]
 
+    async def get_llm_model(self, id: UUID) -> Optional[LLMModel]:
+        result = await self.session.execute(select(LLMModelTable).where(LLMModelTable.id == id))
+        row = result.scalar_one_or_none()
+        return self._to_domain_model(row) if row else None
+
+    async def update_llm_model(self, id: UUID, model_data: dict) -> Optional[LLMModel]:
+        model_data["updated_at"] = now_utc()
+        await self.session.execute(
+            update(LLMModelTable).where(LLMModelTable.id == id).values(**model_data)
+        )
+        await self.session.commit()
+        return await self.get_llm_model(id)
+
+    async def delete_llm_model(self, id: UUID) -> bool:
+        await self.session.execute(delete(LLMModelTable).where(LLMModelTable.id == id))
+        await self.session.commit()
+        return True
+
     def _to_domain_model(self, row: LLMModelTable) -> LLMModel:
         return LLMModel(
             id=row.id,
@@ -130,6 +168,19 @@ class SettingsRepository:
         result = await self.session.execute(select(LLMRouterTable).where(LLMRouterTable.id == id))
         row = result.scalar_one_or_none()
         return self._to_domain_router(row) if row else None
+
+    async def update_llm_router(self, id: UUID, router_data: dict) -> Optional[LLMRouter]:
+        router_data["updated_at"] = now_utc()
+        await self.session.execute(
+            update(LLMRouterTable).where(LLMRouterTable.id == id).values(**router_data)
+        )
+        await self.session.commit()
+        return await self.get_llm_router(id)
+
+    async def delete_llm_router(self, id: UUID) -> bool:
+        await self.session.execute(delete(LLMRouterTable).where(LLMRouterTable.id == id))
+        await self.session.commit()
+        return True
 
     def _to_domain_router(self, row: LLMRouterTable) -> LLMRouter:
         return LLMRouter(

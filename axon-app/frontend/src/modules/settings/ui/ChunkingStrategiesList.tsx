@@ -15,7 +15,29 @@ export const ChunkingStrategiesList = () => {
     if (isLoading) {
         return (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2].map((index) => <Skeleton key={index} className="h-40 w-full" />)}
+                {[1, 2, 3].map((index) => (
+                    <Card key={index} className="flex flex-col h-40 bg-muted/5">
+                        <CardHeader className="p-4 bg-muted/10 border-b">
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="w-4 h-4 rounded" />
+                                <Skeleton className="h-4 w-32 rounded" />
+                            </div>
+                            <Skeleton className="h-2 w-20 mt-2 rounded" />
+                        </CardHeader>
+                        <CardContent className="p-4 space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="h-2 w-8" />
+                                <Skeleton className="h-3 w-12" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Skeleton className="h-2 w-8" />
+                                <Skeleton className="h-3 w-10" />
+                                <Skeleton className="h-2 w-8" />
+                                <Skeleton className="h-3 w-10" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         );
     }

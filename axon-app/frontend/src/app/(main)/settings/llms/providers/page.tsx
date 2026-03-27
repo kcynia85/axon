@@ -1,27 +1,47 @@
-import { LLMProvidersList } from "@/modules/settings/ui/LLMProvidersList";
-import { PageHeader } from "@/shared/ui/layout/PageHeader";
-import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { PageContent } from "@/shared/ui/layout/PageContent";
-import { Button } from "@/shared/ui/ui/Button";
-import { Plus } from "lucide-react";
+'use client';
 
+import React from "react";
+import { useRouter } from "next/navigation";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
+import { LLMProvidersBrowser } from "@/modules/settings/ui/LLMProvidersBrowser";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
+
+/**
+ * ProvidersPage - Displays the Model Registry for LLM Providers.
+ * 
+ * Re-implemented using PageLayout for consistency with Resources/Knowledge.
+ * No manual margins required as base layout is now standardized.
+ */
 const ProvidersPage = () => {
+    const router = useRouter();
+
+    const goToRegisterModel = () => {
+        router.push("/settings/llms/providers/new");
+    };
+
     return (
-        <PageContainer>
-            <PageHeader
-                title="LLM Providers"
-                description="Manage API connections to cloud and local language model providers."
+        <>
+            <PageLayout
+                title="Dostawcy LLM"
+                description="Zarządzaj połączeniami API oraz konfiguracją modeli językowych od dostawców chmurowych i lokalnych."
+                breadcrumbs={[
+                    { label: "Home", href: "/home" },
+                    { label: "Settings", href: "/settings" },
+                    { label: "LLMs", href: "/settings/llms/providers" },
+                    { label: "Providers" }
+                ]}
+                actions={
+                    <ActionButton 
+                        label="Dodaj Dostawcę" 
+                        onClick={goToRegisterModel} 
+                    />
+                }
             >
-                <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Provider
-                </Button>
-            </PageHeader>
-            <PageContent>
-                <LLMProvidersList />
-            </PageContent>
-        </PageContainer>
+                <LLMProvidersBrowser onAddProvider={goToRegisterModel} />
+            </PageLayout>
+        </>
     );
 };
 
 export default ProvidersPage;
+

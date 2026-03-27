@@ -34,6 +34,7 @@ interface ActionBarProps {
   readonly viewMode: "grid" | "list";
   readonly onViewModeChange: (mode: "grid" | "list") => void;
 
+  readonly actions?: React.ReactNode;
   readonly className?: string;
 }
 
@@ -55,6 +56,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   onSortChange,
   viewMode,
   onViewModeChange,
+  actions,
   className,
 }) => {
   return (
@@ -69,7 +71,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           <div className="flex items-center gap-3">
             {quickFilters.map((qf) => (
               <FilterPill 
-                key={qf.groupId}
+                key={`${qf.groupId}-${qf.label}`}
                 label={qf.label}
                 group={filterGroups.find(g => g.id === qf.groupId)}
                 activeFilters={activeFilters}
@@ -112,11 +114,17 @@ export const ActionBar: React.FC<ActionBarProps> = ({
           }
         />
 
-        <div className="mb-[-10px]">
+        <div className="flex items-center gap-6 mb-[-10px]">
           <ViewModeSwitcher 
             viewMode={viewMode}
             onViewModeChange={onViewModeChange}
           />
+
+          {actions && (
+            <div className="flex items-center pl-6 border-l border-zinc-200 dark:border-zinc-800 h-6">
+              {actions}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -18,3 +18,23 @@ export const useCreateLLMProvider = () => {
         },
     });
 }
+
+export const useUpdateLLMProvider = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string, data: Partial<LLMProvider> }) => settingsApi.updateLLMProvider(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["llm-providers"] });
+        },
+    });
+}
+
+export const useDeleteLLMProvider = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => settingsApi.deleteLLMProvider(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["llm-providers"] });
+        },
+    });
+}

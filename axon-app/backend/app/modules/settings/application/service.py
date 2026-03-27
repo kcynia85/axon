@@ -5,7 +5,9 @@ from app.modules.settings.domain.models import (
     LLMProvider, LLMModel, LLMRouter, EmbeddingModel, ChunkingStrategy, VectorDatabase
 )
 from app.modules.settings.application.schemas import (
-    CreateLLMProviderRequest, CreateLLMModelRequest, CreateLLMRouterRequest,
+    CreateLLMProviderRequest, UpdateLLMProviderRequest,
+    CreateLLMModelRequest, UpdateLLMModelRequest,
+    CreateLLMRouterRequest, UpdateLLMRouterRequest,
     CreateEmbeddingModelRequest, CreateChunkingStrategyRequest, CreateVectorDatabaseRequest,
     SimulateChunkingRequest, SimulateChunkingResponse,
     TestPromptRequest, SanityCheckResponse, ConnectionTestResponse
@@ -33,6 +35,16 @@ class SettingsService:
     async def list_llm_providers(self) -> List[LLMProvider]:
         return await self.repo.list_llm_providers()
 
+    async def update_llm_provider(self, id: UUID, request: UpdateLLMProviderRequest) -> LLMProvider:
+        data = request.model_dump(exclude_unset=True)
+        updated = await self.repo.update_llm_provider(id, data)
+        if not updated:
+            raise ValueError(f"Provider with id {id} not found")
+        return updated
+
+    async def delete_llm_provider(self, id: UUID) -> bool:
+        return await self.repo.delete_llm_provider(id)
+
     # --- LLM Model ---
 
     async def create_llm_model(self, request: CreateLLMModelRequest) -> LLMModel:
@@ -54,6 +66,16 @@ class SettingsService:
     async def list_llm_models(self) -> List[LLMModel]:
         return await self.repo.list_llm_models()
 
+    async def update_llm_model(self, id: UUID, request: UpdateLLMModelRequest) -> LLMModel:
+        data = request.model_dump(exclude_unset=True)
+        updated = await self.repo.update_llm_model(id, data)
+        if not updated:
+            raise ValueError(f"Model with id {id} not found")
+        return updated
+
+    async def delete_llm_model(self, id: UUID) -> bool:
+        return await self.repo.delete_llm_model(id)
+
     # --- LLM Router ---
 
     async def create_llm_router(self, request: CreateLLMRouterRequest) -> LLMRouter:
@@ -72,6 +94,16 @@ class SettingsService:
 
     async def list_llm_routers(self) -> List[LLMRouter]:
         return await self.repo.list_llm_routers()
+
+    async def update_llm_router(self, id: UUID, request: UpdateLLMRouterRequest) -> LLMRouter:
+        data = request.model_dump(exclude_unset=True)
+        updated = await self.repo.update_llm_router(id, data)
+        if not updated:
+            raise ValueError(f"Router with id {id} not found")
+        return updated
+
+    async def delete_llm_router(self, id: UUID) -> bool:
+        return await self.repo.delete_llm_router(id)
 
     async def test_llm_router(self, id: UUID, request: TestPromptRequest) -> SanityCheckResponse:
         # TODO: Implement real LLM call logic

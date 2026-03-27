@@ -1,26 +1,39 @@
-import { LLMModelsList } from "@/modules/settings/ui/LLMModelsList";
-import { PageHeader } from "@/shared/ui/layout/PageHeader";
-import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { PageContent } from "@/shared/ui/layout/PageContent";
-import { Button } from "@/shared/ui/ui/Button";
-import { Plus } from "lucide-react";
+'use client';
 
+import React from "react";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
+import { LLMModelsList } from "@/modules/settings/ui/LLMModelsList";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
+
+/**
+ * ModelsPage - Displays the Model Registry for LLM Models.
+ * 
+ * Standardized using PageLayout for consistency across Settings and Resources.
+ */
 const ModelsPage = () => {
+    const goToRegisterModel = () => {
+        // Implementation for registering a new model
+    };
+
     return (
-        <PageContainer>
-            <PageHeader
-                title="Model Registry"
-                description="Register and configure available language models from connected providers."
-            >
-                <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Register Model
-                </Button>
-            </PageHeader>
-            <PageContent>
-                <LLMModelsList />
-            </PageContent>
-        </PageContainer>
+        <PageLayout
+            title="Modele LLM"
+            description="Register and configure available language models from connected providers."
+            breadcrumbs={[
+                { label: "Home", href: "/home" },
+                { label: "Settings", href: "/settings" },
+                { label: "LLMs", href: "/settings/llms/providers" },
+                { label: "Models" }
+            ]}
+            actions={
+                <ActionButton 
+                    label="Dodaj Model" 
+                    onClick={goToRegisterModel} 
+                />
+            }
+        >
+            <LLMModelsList />
+        </PageLayout>
     );
 };
 

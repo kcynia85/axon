@@ -1,26 +1,37 @@
-import { LLMRoutersList } from "@/modules/settings/ui/LLMRoutersList";
-import { PageHeader } from "@/shared/ui/layout/PageHeader";
-import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { PageContent } from "@/shared/ui/layout/PageContent";
-import { Button } from "@/shared/ui/ui/Button";
-import { Plus } from "lucide-react";
+'use client';
 
+import React from "react";
+import { useRouter } from "next/navigation";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
+import { LLMRoutersBrowser } from "@/modules/settings/ui/LLMRoutersBrowser";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
+
+/**
+ * RoutersPage - Displays the Intelligent LLM Routers registry.
+ * 
+ * Re-implemented using PageLayout and LLMRoutersBrowser for 
+ * standard Axon UX (search, filters, and polished cards).
+ */
 const RoutersPage = () => {
+    const router = useRouter();
+
+    const goToCreateRouter = () => {
+        router.push("/settings/llms/routers/new");
+    };
+
     return (
-        <PageContainer>
-            <PageHeader
-                title="LLM Routers"
-                description="Configure fallback chains and load balancing strategies across models."
-            >
-                <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Router
-                </Button>
-            </PageHeader>
-            <PageContent>
-                <LLMRoutersList />
-            </PageContent>
-        </PageContainer>
+        <PageLayout
+            title="Routery"
+            description="Configure fallback chains and load balancing strategies across models."
+            actions={
+                <ActionButton 
+                    label="Dodaj Routera" 
+                    onClick={goToCreateRouter} 
+                />
+            }
+        >
+            <LLMRoutersBrowser />
+        </PageLayout>
     );
 };
 

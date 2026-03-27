@@ -12,6 +12,11 @@ class CreateLLMProviderRequest(BaseModel):
     provider_api_key_required: bool = True
     provider_api_endpoint: Optional[str] = None
 
+class UpdateLLMProviderRequest(BaseModel):
+    provider_name: Optional[str] = None
+    provider_api_key_required: Optional[bool] = None
+    provider_api_endpoint: Optional[str] = None
+
 class LLMProviderResponse(CreateLLMProviderRequest):
     id: UUID
     created_at: datetime
@@ -28,6 +33,16 @@ class CreateLLMModelRequest(BaseModel):
     model_pricing_config: Dict[str, Any] = Field(default_factory=dict)
     llm_provider_id: UUID
 
+class UpdateLLMModelRequest(BaseModel):
+    model_id: Optional[str] = None
+    model_display_name: Optional[str] = None
+    model_tier: Optional[ModelTier] = None
+    model_capabilities_flags: Optional[List[str]] = None
+    model_context_window: Optional[int] = None
+    model_supports_thinking: Optional[bool] = None
+    model_pricing_config: Optional[Dict[str, Any]] = None
+    llm_provider_id: Optional[UUID] = None
+
 class LLMModelResponse(CreateLLMModelRequest):
     id: UUID
     created_at: datetime
@@ -40,6 +55,14 @@ class CreateLLMRouterRequest(BaseModel):
     router_max_tokens_threshold: Optional[int] = None
     router_cost_limit_per_request: Optional[float] = None
     primary_model_id: UUID
+    fallback_model_id: Optional[UUID] = None
+
+class UpdateLLMRouterRequest(BaseModel):
+    router_alias: Optional[str] = None
+    router_strategy: Optional[RouterStrategy] = None
+    router_max_tokens_threshold: Optional[int] = None
+    router_cost_limit_per_request: Optional[float] = None
+    primary_model_id: Optional[UUID] = None
     fallback_model_id: Optional[UUID] = None
 
 class LLMRouterResponse(CreateLLMRouterRequest):

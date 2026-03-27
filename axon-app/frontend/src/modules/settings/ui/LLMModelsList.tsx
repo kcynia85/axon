@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useLLMModels } from "../application/useSettings";
+import { useLLMModels, useDeleteLLMModel } from "../application/useSettings";
+import { useLLMProviders } from "../application/useLLMProviders";
 import {
     Table,
     TableBody,
@@ -14,6 +15,8 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { Search } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";
+import { LLMModelSidePeek } from "./LLMModelSidePeek";
+import type { LLMModel } from "@/shared/domain/settings";
 
 /**
  * LLMModelsList: Displays available LLM models in a table.
@@ -21,16 +24,59 @@ import { Input } from "@/shared/ui/ui/Input";
  */
 export const LLMModelsList = () => {
     const { data: models, isLoading } = useLLMModels();
+    const { data: providers } = useLLMProviders();
+    const { mutateAsync: deleteModel } = useDeleteLLMModel();
+    
     const [search, setSearch] = React.useState("");
+    const [selectedModel, setSelectedModel] = React.useState<LLMModel | null>(null);
 
     if (isLoading) {
-        return <Skeleton className="h-64 w-full" />;
+        return (
+            <div className="space-y-4">
+                <Skeleton className="h-9 w-64 rounded-md" />
+                <div className="border rounded-md">
+                    <div className="h-10 bg-muted/30 border-b flex items-center px-4 gap-4">
+                        <Skeleton className="h-3 w-32" />
+                        <Skeleton className="h-3 w-32" />
+                        <Skeleton className="h-3 w-32" />
+                    </div>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className="h-14 border-b flex items-center px-4 gap-4">
+                            <Skeleton className="h-4 w-40" />
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-4 w-24" />
+                            <Skeleton className="h-4 flex-1" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
     }
 
     const filteredModels = models?.filter(m =>
         m.model_display_name.toLowerCase().includes(search.toLowerCase()) ||
         m.model_id.toLowerCase().includes(search.toLowerCase())
     );
+
+    const handleDeleteModel = async (id: string) => {
+        if (confirm("Czy na pewno chcesz usunąć ten model z inwentarza?")) {
+            try {
+                await deleteModel(id);
+                setSelectedModel(null);
+            } catch (error) {
+                console.error("Failed to delete model:", error);
+            }
+        }
+    };
+
+    const handleEditModel = (model: LLMModel) => {
+        console.log("Editing model:", model.id);
+        // TODO: Open edit form
+    };
+
+    const getProviderName = (providerId: string) => {
+        return providers?.find(p => p.id === providerId)?.provider_name || "Unknown";
+    };
 
     return (
         <div className="space-y-4">
@@ -44,7 +90,7 @@ export const LLMModelsList = () => {
                 />
             </div>
 
-            <div className="border rounded-md bg-background">
+            <div className="border rounded-md bg-background overflow-hidden">
                 <Table>
                     <TableHeader className="bg-muted/30">
                         <TableRow>
@@ -57,11 +103,15 @@ export const LLMModelsList = () => {
                     </TableHeader>
                     <TableBody>
                         {filteredModels?.map((model) => (
-                            <TableRow key={model.id} className="group hover:bg-muted/10">
+                            <TableRow 
+                                key={model.id} 
+                                className="group hover:bg-muted/10 cursor-pointer"
+                                onClick={() => setSelectedModel(model)}
+                            >
                                 <TableCell>
                                     <div className="flex flex-col">
                                         <span className="text-xs font-bold">{model.model_display_name}</span>
-                                        <span className="text-[10px] text-muted-foreground font-mono">{model.llm_provider_id.slice(0, 8)}</span>
+                                        <span className="text-[10px] text-muted-foreground font-mono">{getProviderName(model.llm_provider_id)}</span>
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-[10px] font-mono opacity-60">
@@ -97,6 +147,15 @@ export const LLMModelsList = () => {
                     </TableBody>
                 </Table>
             </div>
+
+            <LLMModelSidePeek 
+                model={selectedModel}
+                isOpen={!!selectedModel}
+                onClose={() => setSelectedModel(null)}
+                onDelete={handleDeleteModel}
+                onEdit={handleEditModel}
+                providerName={selectedModel ? getProviderName(selectedModel.llm_provider_id) : undefined}
+            />
         </div>
     );
 };

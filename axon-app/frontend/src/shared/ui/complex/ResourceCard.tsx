@@ -4,7 +4,7 @@ import { LucideIcon, Edit2, Trash2, MoreVertical, ChevronRight } from "lucide-re
 import { cn } from "@/shared/lib/utils";
 import { Card } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { TagChip } from "@/shared/ui/ui/TagChip";
+import { CategoryChip } from "@/shared/ui/ui/CategoryChip";
 import { Button } from "@/shared/ui/ui/Button";
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ export type ResourceCardProps = {
     readonly description?: string | null;
     readonly href: string;
     readonly badgeLabel?: string | null;
-    readonly tags?: readonly string[];
+    readonly categories?: readonly string[];
     readonly icon?: LucideIcon;
     readonly footerContent?: React.ReactNode;
     readonly className?: string;
@@ -38,7 +38,7 @@ export const ResourceCard = ({
     description,
     href,
     badgeLabel,
-    tags,
+    categories,
     icon: Icon,
     footerContent,
     className,
@@ -159,15 +159,15 @@ export const ResourceCard = ({
                 </div>
 
                 {/* ICON COLUMN (Left) */}
-                <div className="flex-shrink-0 mr-[24px] pt-1">
-                    {Icon && (
+                {Icon && (
+                    <div className="flex-shrink-0 mr-[24px] pt-1">
                         <div className={cn(
                             "w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center transition-transform duration-300 group-hover:scale-105", 
                         )}>
                             <Icon className="w-5 h-5 text-primary" />
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 {/* CONTENT COLUMN (Right) */}
                 <div className="flex-1 min-w-0 flex flex-col h-full">
@@ -176,6 +176,14 @@ export const ResourceCard = ({
                             {title}
                         </h4>
                     </div>
+
+                    {/* Categories - Moved up to be under title */}
+                    <div className="flex flex-wrap gap-1.5 min-h-[24px] mb-2">
+                        {categories?.slice(0, 4).map(category => (
+                            <CategoryChip key={category} label={category} />
+                        ))}
+                    </div>
+
                     {/* Description - Fixed height/lines */}
                     <div className="min-h-[50px] mb-2">
                         {description && (
@@ -186,15 +194,8 @@ export const ResourceCard = ({
                     </div>
                     
                     <div className="mt-auto">
-                        {/* Tags - Reserved vertical space even if empty */}
-                        <div className="flex flex-wrap gap-1.5 min-h-[24px] pt-2">
-                            {tags?.slice(0, 4).map(tag => (
-                                <TagChip key={tag} label={tag} />
-                            ))}
-                        </div>
-                        
                         {footerContent && (
-                            <div className="mt-3 opacity-60">
+                            <div className="mt-3">
                                 {footerContent}
                             </div>
                         )}
