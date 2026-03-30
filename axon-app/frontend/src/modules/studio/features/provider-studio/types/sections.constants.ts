@@ -1,6 +1,6 @@
-import { ShieldCheck, Coins, Database, Zap, LayoutGrid } from "lucide-react";
+import { ShieldCheck, Coins, Database, Zap, LayoutGrid, Search } from "lucide-react";
 
-export type ProviderStudioSectionId = "type-selection" | "auth" | "tokenization" | "schema" | "adapter";
+export type ProviderStudioSectionId = "type-selection" | "auth" | "tokenization" | "schema" | "adapter" | "discovery";
 
 export const PROVIDER_STUDIO_SECTIONS = [
 	{
@@ -10,26 +10,32 @@ export const PROVIDER_STUDIO_SECTIONS = [
 		icon: ShieldCheck,
 	},
 	{
-		id: "type-selection" as ProviderStudioSectionId,
+		id: "discovery" as ProviderStudioSectionId,
 		number: 2,
+		title: "API Discovery (SSoT)",
+		icon: Search,
+	},
+	{
+		id: "type-selection" as ProviderStudioSectionId,
+		number: 3,
 		title: "Provider Type Selection",
 		icon: LayoutGrid,
 	},
 	{
 		id: "tokenization" as ProviderStudioSectionId,
-		number: 3,
+		number: 4,
 		title: "Tokenization Strategy",
 		icon: Coins,
 	},
 	{
 		id: "schema" as ProviderStudioSectionId,
-		number: 4,
+		number: 5,
 		title: "JSON Parameters Schema",
 		icon: Database,
 	},
 	{
 		id: "adapter" as ProviderStudioSectionId,
-		number: 5,
+		number: 6,
 		title: "API Keys Adapter",
 		icon: Zap,
 	},

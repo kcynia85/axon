@@ -3,7 +3,7 @@
 import React from "react";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
-import { Trash2, Settings, Network, Cpu, Zap, Activity, HelpCircle, ArrowRight } from "lucide-react";
+import { Trash2, Settings } from "lucide-react";
 import { Badge } from "@/shared/ui/ui/Badge";
 import type { LLMRouter } from "@/shared/domain/settings";
 
@@ -27,6 +27,13 @@ export const LLMRouterSidePeek = ({
   if (!router) return null;
 
   const strategyLabel = router.router_strategy.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+
+  const chain = router.priority_chain && router.priority_chain.length > 0 
+    ? router.priority_chain 
+    : [
+        { model_id: router.primary_model_id, error_timeout: 60 },
+        ...(router.fallback_model_id ? [{ model_id: router.fallback_model_id, error_timeout: 30 }] : [])
+      ];
 
   return (
     <SidePeek
@@ -66,93 +73,28 @@ export const LLMRouterSidePeek = ({
     >
       <div className="space-y-12">
         {/* ── Chain Visualization ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground flex items-center gap-2">
-            Łańcuch Wywołań
-            <Network className="w-4 h-4 text-primary opacity-50" />
+        <section className="space-y-6">
+          <h4 className="text-base font-bold text-muted-foreground">
+            Łańcuch Priorytetów
           </h4>
           
-          <div className="space-y-3">
-            {/* Primary Model */}
-            <div className="relative p-4 rounded-xl border border-primary/10 bg-primary/5 flex items-center gap-4 group">
-                <div className="flex flex-col items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-mono text-xs font-bold shrink-0">
-                    1
-                </div>
-                <div className="flex-1 min-w-0">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-primary/60 mb-0.5">Primary Model</div>
-                    <div className="text-base font-bold truncate">{getModelName(router.primary_model_id)}</div>
-                </div>
-                <Cpu className="w-5 h-5 text-primary opacity-20" />
-            </div>
-
-            {/* Fallback Indicator */}
-            {router.fallback_model_id && (
-                <div className="flex justify-center py-1">
-                    <div className="flex flex-col items-center gap-1">
-                        <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800" />
-                        <Badge variant="outline" className="text-[9px] font-black uppercase tracking-tighter py-0 h-4 px-1.5 opacity-40">
-                            On Failure
-                        </Badge>
-                        <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800" />
-                    </div>
-                </div>
-            )}
-
-            {/* Fallback Model */}
-            {router.fallback_model_id && (
-                <div className="relative p-4 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30 flex items-center gap-4">
-                    <div className="flex flex-col items-center justify-center w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-400 font-mono text-xs font-bold shrink-0">
-                        2
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-0.5">Fallback Model</div>
-                        <div className="text-base font-bold text-zinc-600 dark:text-zinc-400 truncate">
-                            {getModelName(router.fallback_model_id)}
+          <div className="space-y-1.5">
+            {chain.map((item: any, index: number) => (
+                <div key={`${router.id}-step-${index}`} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                    <div className="flex flex-col gap-0.5">
+                        <div className="flex items-center gap-2 text-base font-mono font-semibold">
+                            <span className="text-primary/40 font-bold w-4">{index + 1}.</span>
+                            <span className="text-foreground">{getModelName(item.model_id)}</span>
+                        </div>
+                        <div className="pl-6 text-[10px] font-bold tracking-widest text-muted-foreground/60">
+                            On Error / Timeout &gt; {item.error_timeout >= 60 ? `${Math.floor(item.error_timeout / 60)}m` : `${item.error_timeout}s`}
                         </div>
                     </div>
-                    <Activity className="w-5 h-5 text-zinc-300 dark:text-zinc-700" />
+                    <Badge variant="outline" className="text-[10px] h-5 px-2 py-0 font-bold uppercase tracking-wider opacity-50">
+                        {index === 0 ? "Primary" : "Fallback"}
+                    </Badge>
                 </div>
-            )}
-          </div>
-        </section>
-
-        {/* ── Constraints & Rules ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground flex items-center gap-2">
-            Reguły i Limity
-            <Zap className="w-4 h-4 text-primary opacity-50" />
-          </h4>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-muted/30 border border-primary/5 space-y-1">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Max Tokens</div>
-                <div className="text-lg font-mono font-bold">
-                    {router.router_max_tokens_threshold?.toLocaleString() || "∞"}
-                </div>
-            </div>
-            <div className="p-4 rounded-xl bg-muted/30 border border-primary/5 space-y-1">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Cost Limit</div>
-                <div className="text-lg font-mono font-bold">
-                    {router.router_cost_limit_per_request ? `$${router.router_cost_limit_per_request}` : "N/A"}
-                </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Status Info ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground">
-            Wydajność
-          </h4>
-          <div className="space-y-2">
-             <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Średni czas odpowiedzi</span>
-                <span className="font-mono font-bold text-green-500">142ms</span>
-             </div>
-             <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Wskaźnik sukcesu</span>
-                <span className="font-mono font-bold text-green-500">99.8%</span>
-             </div>
+            ))}
           </div>
         </section>
       </div>

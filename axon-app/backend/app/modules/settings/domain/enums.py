@@ -1,18 +1,20 @@
 from enum import Enum
 
 class ProviderType(str, Enum):
-    CLOUD = "Cloud"
-    META_PROVIDER = "Meta-Provider"
-    LOCAL = "Local"
+    cloud = "cloud"
+    meta = "meta"
+    local = "local"
 
 class ModelTier(str, Enum):
     TIER1 = "Tier1"
     TIER2 = "Tier2"
 
 class RouterStrategy(str, Enum):
-    COST_OPTIMIZED = "Cost_Optimized"
-    SPEED_OPTIMIZED = "Speed_Optimized"
-    QUALITY_OPTIMIZED = "Quality_Optimized"
+    COST_OPTIMIZED = "COST_OPTIMIZED"
+    SPEED_OPTIMIZED = "SPEED_OPTIMIZED"
+    QUALITY_OPTIMIZED = "QUALITY_OPTIMIZED"
+    FALLBACK = "FALLBACK"
+    LOAD_BALANCER = "LOAD_BALANCER"
 
 class ChunkingMethod(str, Enum):
     RECURSIVE_CHARACTER = "Recursive_Character"

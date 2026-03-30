@@ -22,6 +22,12 @@ export const settingsApi = {
         return data.map((providerRaw) => LLMProviderSchema.parse(providerRaw));
     },
 
+    getLLMProvider: async (id: string): Promise<LLMProvider> => {
+        const res = await apiClient.get(`/settings/llm-providers/${id}`);
+        const data = await res.json() as unknown;
+        return LLMProviderSchema.parse(data);
+    },
+
     createLLMProvider: async (provider: Omit<LLMProvider, "id" | "created_at" | "updated_at">): Promise<LLMProvider> => {
         const res = await apiClient.post("/settings/llm-providers", provider);
         const data = await res.json() as unknown;
@@ -38,11 +44,27 @@ export const settingsApi = {
         await apiClient.delete(`/settings/llm-providers/${id}`);
     },
 
+    testLLMProvider: async (id: string): Promise<any> => {
+        const res = await apiClient.post(`/settings/llm-providers/${id}/test`, {});
+        return await res.json();
+    },
+
+    getAvailableModels: async (provider_id: string): Promise<any[]> => {
+        const res = await apiClient.get(`/settings/llm-providers/${provider_id}/available-models`);
+        return await res.json() as any[];
+    },
+
     // --- LLM Models ---
     getLLMModels: async (): Promise<LLMModel[]> => {
         const res = await apiClient.get("/settings/llm-models");
         const data = await res.json() as unknown[];
         return data.map((modelRaw) => LLMModelSchema.parse(modelRaw));
+    },
+
+    getLLMModel: async (id: string): Promise<LLMModel> => {
+        const res = await apiClient.get(`/settings/llm-models/${id}`);
+        const data = await res.json() as unknown;
+        return LLMModelSchema.parse(data);
     },
 
     createLLMModel: async (model: Omit<LLMModel, "id" | "created_at" | "updated_at">): Promise<LLMModel> => {
@@ -61,11 +83,27 @@ export const settingsApi = {
         await apiClient.delete(`/settings/llm-models/${id}`);
     },
 
+    getLLMModelUsage: async (id: string): Promise<{ is_used: bool, used_by: string[] }> => {
+        const res = await apiClient.get(`/settings/llm-models/${id}/usage`);
+        return await res.json();
+    },
+
+    testLLMModel: async (id: string, prompt: string): Promise<unknown> => {
+        const res = await apiClient.post(`/settings/llm-models/${id}/test`, { prompt });
+        return await res.json() as unknown;
+    },
+
     // --- LLM Routers ---
     getLLMRouters: async (): Promise<LLMRouter[]> => {
         const res = await apiClient.get("/settings/llm-routers");
         const data = await res.json() as unknown[];
         return data.map((routerRaw) => LLMRouterSchema.parse(routerRaw));
+    },
+
+    getLLMRouter: async (id: string): Promise<LLMRouter> => {
+        const res = await apiClient.get(`/settings/llm-routers/${id}`);
+        const data = await res.json() as unknown;
+        return LLMRouterSchema.parse(data);
     },
 
     createLLMRouter: async (router: Omit<LLMRouter, "id" | "created_at" | "updated_at">): Promise<LLMRouter> => {

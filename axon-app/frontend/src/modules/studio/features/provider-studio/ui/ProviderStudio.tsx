@@ -8,12 +8,13 @@ import { PROVIDER_STUDIO_SECTIONS, ProviderStudioSectionId } from "../types/sect
 import { useProviderStudioSectionNav } from "../application/hooks/useProviderStudioSectionNav";
 
 export const ProviderStudio = ({
+    providerId,
     initialData,
     onSave,
     onCancel,
     isSaving = false
 }: ProviderStudioProps) => {
-    const form = useProviderForm(initialData);
+    const form = useProviderForm(initialData) as any;
     const [activeSection, setActiveSection] = useState<ProviderStudioSectionId>("auth");
     const canvasContainerRef = useRef<HTMLElement | null>(null);
 
@@ -48,6 +49,9 @@ export const ProviderStudio = ({
             onSave={handleOnSave}
             onCancel={onCancel}
             isSaving={isSaving}
+            isValid={form.formState.isValid}
+            isDirty={form.formState.isDirty}
+            providerId={providerId}
             setCanvasContainerReference={setCanvasContainerReference}
         />
     );

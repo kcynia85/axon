@@ -1,45 +1,42 @@
-# Plan: Naprawa hydracji narzędzi i synchronizacji w Studio oraz Sidepeek
+# Plan: Fixing Hydration and Data Flow in Router Studio
 
-Ten plan opisuje kroki niezbędne do naprawy błędów w wyświetlaniu dodanych narzędzi w Studio oraz braku aktualizacji interfejsu danych w podglądzie Agenta (Sidepeek).
+The goal is to ensure that "Router Studio" (the editor) correctly loads existing data, saves changes back to the backend, and that these changes are immediately reflected in the "Router Browser" (list/sidepeek).
 
-## Cel
-1.  Zapewnienie poprawnej hydracji (wyświetlania) dodanych narzędzi przy otwieraniu istniejącego Agenta w Studio.
-2.  Poprawa synchronizacji danych między sekcją Tools a sekcjami Context/Artefacts.
-3.  Aktualizacja `AgentProfilePeek`, aby korzystał z nowego interfejsu danych (`data_interface`) zamiast przestarzałych schematów.
+## Problems Identified
+1.  **Missing API/Hook**: No way to fetch a single router by ID.
+2.  **Mocked Save**: `RouterStudioContainer` has a `TODO` instead of actual save logic.
+3.  **Schema Mismatch**: `RouterFormData` (Studio) is more complex than `LLMRouter` (Shared Schema).
+4.  **No Hydration**: The edit page doesn't fetch initial data, leading to an empty form.
 
-## Kroki implementacji
+## Proposed Changes
 
-### 1. Poprawa hydracji w `SkillsSection.tsx`
-Zaktualizujemy `SkillsSection`, aby:
--   Obsługiwał zarówno UUID jak i `tool_function_name` w `custom_functions` (dla wstecznej kompatybilności).
--   Uruchamiał synchronizację `data_interface` przy zmianach listy narzędzi.
--   Zapewnił, że `availableSkills` poprawnie mapuje dane nawet przed pełnym załadowaniem.
+### 1. Update Infrastructure
+-   **File**: `axon-app/frontend/src/modules/settings/infrastructure/api.ts`
+    -   Add `getLLMRouter(id: string)` method.
+-   **File**: `axon-app/frontend/src/modules/settings/application/useSettings.ts`
+    -   Add `useLLMRouter(id: string)` hook.
 
-### 2. Synchronizacja `input_schema` i `output_schema`
-Chociaż przechodzimy na `data_interface`, wiele części systemu nadal polega na `input_schema` i `output_schema`. Będziemy je synchronizować równolegle w `syncDataInterface`.
+### 2. Connect Router Studio to Backend
+-   **File**: `axon-app/frontend/src/modules/studio/features/router-studio/ui/RouterStudioContainer.tsx`
+    -   Use `useLLMRouter(routerId)` to fetch initial data.
+    -   Use `useUpdateLLMRouter` / `useCreateLLMRouter` in `handleSave`.
+    -   Implement mapping between `LLMRouter` and `RouterFormData`.
 
-### 3. Refaktoryzacja `AgentProfilePeek.tsx`
-Zaktualizujemy komponent podglądu, aby:
--   Priorytetyzował dane z `agent.data_interface.context` i `agent.data_interface.artefacts`.
--   Usuwał twardo zakodowane wartości mockowe ("income", "business_size"), jeśli Agent ma zdefiniowany interfejs.
+### 3. Fix Hydration in Edit Page
+-   **File**: `axon-app/frontend/src/app/(studio)/settings/llms/routers/[id]/page.tsx`
+    -   (Optional but recommended) Change to Server Component if SSR is desired, or keep as Client Component but ensure it handles the loading state of the hook correctly. *Decision: Keep as Client Component for now to avoid refactoring the entire Studio layout, but ensure the hook provides the data.*
 
-### 4. Szczegóły kodu
+### 4. Mapping Logic
+-   **LLMRouter -> RouterFormData**:
+    -   `router_alias` -> `name`
+    -   `router_strategy` -> `strategy` (mapped to lowercase)
+    -   `primary_model_id` -> first item in `priority_chain`
+    -   `fallback_model_id` -> second item in `priority_chain` (if exists)
+-   **RouterFormData -> LLMRouter**:
+    -   Reverse of the above.
 
-#### Zmiana w `SkillsSection.tsx`:
-Dodamy efekt lub poprawimy logikę renderowania, aby `addedFunctions` znajdowało narzędzia po dowolnym z identyfikatorów (ID lub Name).
-
-#### Zmiana w `AgentProfilePeek.tsx`:
-```tsx
-const inputFields = agent.data_interface?.context?.length > 0
-  ? agent.data_interface.context.map(c => [c.name, c.field_type])
-  : Object.entries(agent.input_schema || {});
-
-const outputFields = agent.data_interface?.artefacts?.length > 0
-  ? agent.data_interface.artefacts.map(a => [a.name, a.field_type])
-  : Object.entries(agent.output_schema || {});
-```
-
-## Weryfikacja
-1.  Otwarcie istniejącego Agenta z narzędziami -> Narzędzia powinny być widoczne w sekcji Tools (zaznaczone).
-2.  Dodanie narzędzia -> Sekcja Context i Artefacts w Sidepeek powinna się natychmiast zaktualizować.
-3.  Brak narzędzi -> Sidepeek nie powinien pokazywać mockowych danych, jeśli użytkownik wyczyścił interfejs.
+## Verification Plan
+1.  Open an existing router in the Studio. Verify form is pre-filled.
+2.  Edit the router and save. Verify toast success.
+3.  Verify the router list/sidepeek reflects the changes.
+4.  Check for any hydration warnings in the console.

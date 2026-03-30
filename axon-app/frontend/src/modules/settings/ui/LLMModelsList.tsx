@@ -17,12 +17,14 @@ import { Search } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";
 import { LLMModelSidePeek } from "./LLMModelSidePeek";
 import type { LLMModel } from "@/shared/domain/settings";
+import { useRouter } from "next/navigation";
 
 /**
  * LLMModelsList: Displays available LLM models in a table.
  * Standard: 0% useEffect, arrow function.
  */
 export const LLMModelsList = () => {
+    const router = useRouter();
     const { data: models, isLoading } = useLLMModels();
     const { data: providers } = useLLMProviders();
     const { mutateAsync: deleteModel } = useDeleteLLMModel();
@@ -70,8 +72,7 @@ export const LLMModelsList = () => {
     };
 
     const handleEditModel = (model: LLMModel) => {
-        console.log("Editing model:", model.id);
-        // TODO: Open edit form
+        router.push(`/settings/llms/models/${model.id}/edit`);
     };
 
     const getProviderName = (providerId: string) => {
@@ -110,28 +111,28 @@ export const LLMModelsList = () => {
                             >
                                 <TableCell>
                                     <div className="flex flex-col">
-                                        <span className="text-xs font-bold">{model.model_display_name}</span>
-                                        <span className="text-[10px] text-muted-foreground font-mono">{getProviderName(model.llm_provider_id)}</span>
+                                        <span className="text-base font-bold">{model.model_display_name}</span>
+                                        <span className="text-xs text-muted-foreground font-mono">{getProviderName(model.llm_provider_id)}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell className="text-[10px] font-mono opacity-60">
+                                <TableCell className="text-base font-mono opacity-60">
                                     {model.model_id}
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex gap-1">
                                         {model.model_capabilities_flags.slice(0, 3).map((cap: string, i: number) => (
-                                            <Badge key={i} variant="outline" className="text-[8px] h-3 px-1">{cap}</Badge>
+                                            <Badge key={i} variant="outline" className="text-[10px] h-4 px-1.5">{cap}</Badge>
                                         ))}
                                     </div>
                                 </TableCell>
-                                <TableCell className="text-right text-[10px] font-mono">
+                                <TableCell className="text-right text-base font-mono">
                                     <span suppressHydrationWarning>{model.model_context_window.toLocaleString()}</span>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <div className="text-[10px] font-mono">
+                                    <div className="text-base font-mono">
                                         In: ${((model.model_pricing_config.input as number) || 0).toFixed(2)}
                                     </div>
-                                    <div className="text-[10px] font-mono opacity-60">
+                                    <div className="text-xs font-mono opacity-60">
                                         Out: ${((model.model_pricing_config.output as number) || 0).toFixed(2)}
                                     </div>
                                 </TableCell>

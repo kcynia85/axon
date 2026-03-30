@@ -16,6 +16,7 @@ export type Provider = {
     readonly pricing: string;
     readonly url?: string;
     readonly categories: readonly string[];
+    readonly provider_type?: string;
 };
 
 type LLMProviderSidePeekProps = {
@@ -27,6 +28,7 @@ type LLMProviderSidePeekProps = {
 }
 
 export const LLMProviderSidePeek = ({ provider, isOpen, onClose, onConfigure, onDelete }: LLMProviderSidePeekProps) => {
+
   if (!provider) return null;
 
   return (
@@ -101,7 +103,9 @@ export const LLMProviderSidePeek = ({ provider, isOpen, onClose, onConfigure, on
             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
               <div className="flex items-center gap-3">
                 <Key className="w-4 h-4 text-primary/60 shrink-0" />
-                <span className="text-base font-mono font-semibold">{provider.apiKey}</span>
+                <span className="text-base font-mono font-semibold">
+                  {provider.apiKey === "N/A" ? "N/A" : "•••••••••••••••••••••••••"}
+                </span>
               </div>
               <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold opacity-50">KEY</Badge>
             </div>

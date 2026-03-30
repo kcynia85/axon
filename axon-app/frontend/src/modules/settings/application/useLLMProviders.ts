@@ -9,6 +9,22 @@ export const useLLMProviders = () => {
     });
 }
 
+export const useLLMProvider = (id: string) => {
+    return useQuery({
+        queryKey: ["llm-providers", id],
+        queryFn: () => settingsApi.getLLMProvider(id),
+        enabled: !!id,
+    });
+}
+
+export const useAvailableModels = (providerId?: string) => {
+    return useQuery({
+        queryKey: ["llm-providers", providerId, "available-models"],
+        queryFn: () => providerId ? settingsApi.getAvailableModels(providerId) : Promise.resolve([]),
+        enabled: !!providerId,
+    });
+}
+
 export const useCreateLLMProvider = () => {
     const queryClient = useQueryClient();
     return useMutation({

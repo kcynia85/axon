@@ -3,6 +3,7 @@ import { ProviderFormData } from "./provider-schema";
 import { ProviderStudioSectionId } from "./sections.constants";
 
 export type ProviderStudioProps = {
+	providerId?: string;
 	initialData?: Partial<ProviderFormData>;
 	onSave: (data: ProviderFormData) => void;
 	onCancel: () => void;
@@ -17,5 +18,8 @@ export type ProviderStudioViewProps = {
 	onCancel: () => void;
 	onSave: () => void;
 	isSaving: boolean;
+	isValid: boolean;
+	isDirty: boolean;
+	providerId?: string;
 	setCanvasContainerReference: (node: HTMLElement | null) => void;
 };

@@ -20,22 +20,47 @@ class LLMModel(SettingsBase):
     model_capabilities_flags: List[str] = Field(default_factory=list)
     model_context_window: int = 4096
     model_supports_thinking: bool = False
+    model_reasoning_effort: Optional[str] = None
+    model_system_prompt: Optional[str] = None
+    model_custom_params: List[Dict[str, Any]] = Field(default_factory=list)
     model_pricing_config: Dict[str, Any] = Field(default_factory=dict)
     llm_provider_id: UUID
 
 class LLMProvider(SettingsBase):
     provider_name: str
+    provider_technical_id: str
+    provider_type: ProviderType = ProviderType.cloud
+    provider_api_key: Optional[str] = None
     provider_api_key_required: bool = True
     provider_api_endpoint: Optional[str] = None
-    models: List[LLMModel] = Field(default_factory=list)
+    provider_custom_config: Optional[Dict[str, Any]] = None
 
+    # Agnostic Protocol Configuration
+    protocol: str = "openai" # openai, anthropic, google, custom
+    custom_headers: List[Dict[str, str]] = Field(default_factory=list)
+
+    # Discovery Configuration (SSoT)
+    auth_header_name: str = "Authorization"
+    auth_header_prefix: str = "Bearer "
+    api_key_placement: str = "header" # header, query
+    discovery_json_path: str = "data"
+    discovery_id_key: str = "id"
+    discovery_name_key: str = "name"
+    discovery_context_key: str = "context_length"
+
+    # Inference Response Mapping
+    response_content_path: str = "choices.0.message.content"
+    response_error_path: str = "error.message"
+
+    models: List[LLMModel] = Field(default_factory=list)
 class LLMRouter(SettingsBase):
     router_alias: str
     router_strategy: RouterStrategy = RouterStrategy.QUALITY_OPTIMIZED
     router_max_tokens_threshold: Optional[int] = None
     router_cost_limit_per_request: Optional[float] = None
-    primary_model_id: UUID
+    primary_model_id: Optional[UUID] = None
     fallback_model_id: Optional[UUID] = None
+    priority_chain: List[Dict[str, Any]] = Field(default_factory=list)
 
 # KE
 class EmbeddingModel(SettingsBase):

@@ -33,9 +33,18 @@ export const RouterStudio = ({
 		canvasContainerRef.current = node;
 	}, []);
 
-	const handleOnSave = form.handleSubmit((data) => {
-		onSave(data);
-	});
+	const handleOnSave = form.handleSubmit(
+		(data) => {
+			onSave(data);
+		},
+		(errors) => {
+			console.error("Form validation errors:", errors);
+			const firstError = Object.values(errors)[0];
+			if (firstError) {
+				toast.error("Proszę poprawić błędy w formularzu");
+			}
+		}
+	);
 
 	return (
 		<RouterStudioView

@@ -24,12 +24,6 @@ const ProvidersPage = () => {
             <PageLayout
                 title="Dostawcy LLM"
                 description="Zarządzaj połączeniami API oraz konfiguracją modeli językowych od dostawców chmurowych i lokalnych."
-                breadcrumbs={[
-                    { label: "Home", href: "/home" },
-                    { label: "Settings", href: "/settings" },
-                    { label: "LLMs", href: "/settings/llms/providers" },
-                    { label: "Providers" }
-                ]}
                 actions={
                     <ActionButton 
                         label="Dodaj Dostawcę" 

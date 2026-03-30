@@ -1,8 +1,7 @@
 import type * as React from "react";
 import { cn } from "@/shared/lib/utils";
 import type { FormSectionProps } from "@/shared/types/form/FormPrimitives.types";
-import { FormSectionStep } from "./FormSectionStep";
-import { FormHeading } from "./FormHeading";
+import { FormHeader } from "./FormHeader";
 
 /**
  * FormSection: A functional architectural segment of the agent blueprint.
@@ -22,13 +21,11 @@ export const FormSection = ({
 			className,
 		)}
 	>
-		<FormSectionStep number={number} />
-		<FormHeading className="text-zinc-200 mb-3">{title}</FormHeading>
-		{description ? (
-			<p className="text-base font-mono text-zinc-500 mb-12">*Hint: {description}</p>
-		) : (
-			<div className="mb-12" />
-		)}
+		<FormHeader
+			eyebrow={`[${String(number).padStart(2, "0")}]`}
+			title={title}
+			description={description}
+		/>
 		<div className="max-w-4xl">{children}</div>
 	</section>
 );

@@ -58,15 +58,22 @@ export const LLMRoutersList = ({
             emptyTitle="Nie znaleziono routerów"
             emptyDescription="Zdefiniuj swój pierwszy inteligentny router, aby zarządzać ruchem LLM."
             renderItem={(router) => {
-                // Map flat structure to priority chain list for card preview
-                const chainModels = [
-                    { id: router.primary_model_id, name: getModelName(router.primary_model_id) }
-                ];
-                if (router.fallback_model_id) {
-                    chainModels.push({ 
-                        id: router.fallback_model_id, 
-                        name: getModelName(router.fallback_model_id) 
-                    });
+                // Map chain or flat structure to list for card preview
+                let chainModels: { id: string; name: string }[] = [];
+                
+                if (router.priority_chain && router.priority_chain.length > 0) {
+                    chainModels = (router.priority_chain as any[]).slice(0, 2).map(item => ({
+                        id: item.model_id,
+                        name: getModelName(item.model_id)
+                    }));
+                } else {
+                    chainModels.push({ id: router.primary_model_id, name: getModelName(router.primary_model_id) });
+                    if (router.fallback_model_id) {
+                        chainModels.push({ 
+                            id: router.fallback_model_id, 
+                            name: getModelName(router.fallback_model_id) 
+                        });
+                    }
                 }
 
                 return (

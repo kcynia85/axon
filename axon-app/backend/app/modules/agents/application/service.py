@@ -103,24 +103,74 @@ async def inspect_agent_deletion_use_case(
     """Returns assignments that would be affected by deleting this agent."""
     return await repo.get_assigned_crews(id)
 
+import tiktoken
+from app.modules.settings.infrastructure.repo import SettingsRepository
+from app.modules.settings.dependencies import get_settings_repo
+
 async def estimate_cost_use_case(
     id: UUID,
-    repo: AgentConfigRepository = Depends(get_agent_repo)
+    repo: AgentConfigRepository = Depends(get_agent_repo),
+    settings_repo: SettingsRepository = Depends(get_settings_repo)
 ) -> dict:
     agent = await repo.get(id)
     if not agent:
         return {}
-    # Mock estimation
+    
+    model_id = agent.llm_model_id
+    model = None
+    if model_id:
+        model = await settings_repo.get_llm_model(model_id)
+    
+    # 1. Calculate Prompt Tokens
+    full_prompt = f"{agent.agent_role_text or ''}\n{agent.agent_goal or ''}\n{agent.agent_backstory or ''}"
+    if agent.guardrails:
+        full_prompt += "\n" + "\n".join(agent.guardrails.get("instructions", []))
+        full_prompt += "\n" + "\n".join(agent.guardrails.get("constraints", []))
+    
+    # Simple token counting using cl100k_base (OpenAI default)
+    # TODO: Use strategy from provider config if available
+    try:
+        encoding = tiktoken.get_encoding("cl100k_base")
+        input_tokens = len(encoding.encode(full_prompt))
+    except Exception:
+        input_tokens = len(full_prompt) // 4
+    
+    # 2. Calculate Costs
+    input_price_1m = 0.0
+    output_price_1m = 0.0
+    context_window = 4096
+    
+    if model:
+        pricing = model.model_pricing_config or {}
+        input_price_1m = pricing.get("input", 0.0)
+        output_price_1m = pricing.get("output", 0.0)
+        context_window = model.model_context_window or 4096
+    
+    input_cost = (input_tokens / 1_000_000) * input_price_1m
+    
+    # Estimate output cost (assuming average 500 tokens)
+    avg_output_tokens = 500
+    output_cost = (avg_output_tokens / 1_000_000) * output_price_1m
+    
+    static_setup_cost = 0.001
+    rag_cost = 0.005 if agent.knowledge_hub_ids else 0.0
+    
+    total_estimate = input_cost + output_cost + static_setup_cost + rag_cost
+    
     return {
-        "staticCost": 0.01,
-        "dynamicCost": 0.05,
-        "totalEstimate": 0.06,
-        "breakdown": {
-            "agentSetup": 0.01,
-            "ragUsage": 0.02,
-            "toolCalls": 0.02,
-            "inputTokens": 0.005,
-            "outputTokens": 0.005
+        "staticCost": static_setup_cost + rag_cost,
+        "dynamicCost": input_cost + output_cost,
+        "totalEstimate": total_estimate,
+        "contextUsage": {
+            "current": input_tokens,
+            "total": context_window
         },
-        "suggestions": ["Use cheaper model", "Reduce history"]
+        "breakdown": {
+            "agentSetup": static_setup_cost,
+            "ragUsage": rag_cost,
+            "toolCalls": 0.0,
+            "inputTokens": input_cost,
+            "outputTokens": output_cost
+        },
+        "suggestions": ["Consider a shorter prompt" if input_tokens > 2000 else "Model configuration looks good"]
     }

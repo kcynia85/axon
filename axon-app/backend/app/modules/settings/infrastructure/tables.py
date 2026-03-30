@@ -12,8 +12,30 @@ class LLMProviderTable(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True)
     provider_name = Column(String, unique=True, nullable=False)
+    provider_technical_id = Column(String, unique=True, nullable=False)
+    provider_type = Column(SAEnum(ProviderType), nullable=False, default=ProviderType.cloud)
+    provider_api_key = Column(String, nullable=True)
     provider_api_key_required = Column(Boolean, default=True)
     provider_api_endpoint = Column(String, nullable=True)
+    provider_custom_config = Column(JSONB, nullable=True)
+
+    # Core Agnostic Configuration
+    protocol = Column(String, default="openai")
+    custom_headers = Column(JSONB, default=[]) # List of {key, value}
+
+    # Discovery & Auth Configuration (SSoT)
+    auth_header_name = Column(String, default="Authorization")
+    auth_header_prefix = Column(String, default="Bearer ")
+    api_key_placement = Column(String, default="header") # header, query
+    discovery_json_path = Column(String, default="data")
+    discovery_id_key = Column(String, default="id")
+    discovery_name_key = Column(String, default="name")
+    discovery_context_key = Column(String, default="context_length")
+
+    # Response Mapping
+    response_content_path = Column(String, default="choices.0.message.content")
+    response_error_path = Column(String, default="error.message")
+
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
@@ -29,6 +51,9 @@ class LLMModelTable(Base):
     model_capabilities_flags = Column(ARRAY(String), default=[])
     model_context_window = Column(Integer, default=4096)
     model_supports_thinking = Column(Boolean, default=False)
+    model_reasoning_effort = Column(String, nullable=True) # Low, Medium, High
+    model_system_prompt = Column(String, nullable=True)
+    model_custom_params = Column(JSONB, default=[]) # List of {key, value, type}
     model_pricing_config = Column(JSONB, default={}) # {input_1M, output_1M}
     llm_provider_id = Column(UUID(as_uuid=True), ForeignKey("llm_providers.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
@@ -44,8 +69,9 @@ class LLMRouterTable(Base):
     router_strategy = Column(SAEnum(RouterStrategy), default=RouterStrategy.QUALITY_OPTIMIZED)
     router_max_tokens_threshold = Column(Integer, nullable=True)
     router_cost_limit_per_request = Column(Float, nullable=True)
-    primary_model_id = Column(UUID(as_uuid=True), ForeignKey("llm_models.id"), nullable=False)
+    primary_model_id = Column(UUID(as_uuid=True), ForeignKey("llm_models.id"), nullable=True)
     fallback_model_id = Column(UUID(as_uuid=True), ForeignKey("llm_models.id"), nullable=True)
+    priority_chain = Column(JSONB, default=[])
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 

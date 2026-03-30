@@ -1,6 +1,7 @@
 'use client';
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { LLMModelsList } from "@/modules/settings/ui/LLMModelsList";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
@@ -11,20 +12,16 @@ import { ActionButton } from "@/shared/ui/complex/ActionButton";
  * Standardized using PageLayout for consistency across Settings and Resources.
  */
 const ModelsPage = () => {
+    const router = useRouter();
+
     const goToRegisterModel = () => {
-        // Implementation for registering a new model
+        router.push("/settings/llms/models/new");
     };
 
     return (
         <PageLayout
             title="Modele LLM"
             description="Register and configure available language models from connected providers."
-            breadcrumbs={[
-                { label: "Home", href: "/home" },
-                { label: "Settings", href: "/settings" },
-                { label: "LLMs", href: "/settings/llms/providers" },
-                { label: "Models" }
-            ]}
             actions={
                 <ActionButton 
                     label="Dodaj Model" 

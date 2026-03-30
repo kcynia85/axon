@@ -16,10 +16,25 @@ export const FormRadio = (props: FormRadioProps) => {
 	const radioClass =
 		"w-5 h-5 border-2 border-zinc-300 dark:border-zinc-700 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all shadow-none shrink-0 rounded-full pointer-events-none";
 
+	const handleSelect = () => {
+		if (!disabled && !checked) {
+			onChange(true);
+		}
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			handleSelect();
+		}
+	};
+
 	return (
-		<button
-			type="button"
-			onClick={() => !disabled && !checked && onChange(true)}
+		<div
+			role="button"
+			tabIndex={disabled ? -1 : 0}
+			onClick={handleSelect}
+			onKeyDown={handleKeyDown}
 			className={cn(
 				"w-full text-left p-6 rounded-2xl border transition-all flex items-center gap-6 group shadow-sm outline-none",
 				disabled
@@ -61,6 +76,6 @@ export const FormRadio = (props: FormRadioProps) => {
 					)}
 				</div>
 			</div>
-		</button>
+		</div>
 	);
 };

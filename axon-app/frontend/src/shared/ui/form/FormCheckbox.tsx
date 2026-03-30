@@ -20,10 +20,19 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 	const checkboxClass =
 		"w-5 h-5 border-2 border-zinc-300 dark:border-zinc-700 data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-black transition-all shadow-none shrink-0 rounded-md pointer-events-none";
 
+	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			handleToggle();
+		}
+	};
+
 	return (
-		<button
-			type="button"
+		<div 
+			role="button"
+			tabIndex={disabled ? -1 : 0}
 			onClick={handleToggle}
+			onKeyDown={handleKeyDown}
 			className={cn(
 				"w-full text-left p-6 rounded-2xl border transition-all flex items-center gap-6 group shadow-sm outline-none",
 				disabled
@@ -76,6 +85,6 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 					)}
 				</div>
 			</div>
-		</button>
+		</div>
 	);
 };

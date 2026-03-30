@@ -10,17 +10,23 @@ export const FormItemField = ({
 	label,
 	children,
 	error,
+	hint,
 	className,
 }: FormItemFieldProps) => {
 	return (
 		<FormItem className={className}>
 			{label && (
-				<FormLabel className="text-lg font-mono text-zinc-200 block h4">
+				<FormLabel className="text-lg font-mono text-zinc-200 block h4 mb-3">
 					{label}
 				</FormLabel>
 			)}
+			{hint && (
+				<p className="text-base font-mono text-zinc-500 mb-4 -mt-2">
+					{hint}
+				</p>
+			)}
 			<FormControl>{children}</FormControl>
-			{error ? <FormMessage>{error}</FormMessage> : <FormMessage />}
+			{error ? <FormMessage className="mt-2" /> : <FormMessage className="mt-2" />}
 		</FormItem>
 	);
 };

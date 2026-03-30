@@ -19,14 +19,13 @@ export const ProviderApiAdapterSection = () => {
 	};
 
 	return (
-		<FormSection id="adapter" number={5} title="API Keys Adapter">
+		<FormSection 
+			id="adapter" 
+			number={5} 
+			title="API Keys Adapter"
+			description="Zdefiniuj w jaki sposób klucze z Axon mają być mapowane na klucze akceptowane przez API dostawcy."
+		>
 			<div className="space-y-12 max-w-4xl">
-				<div className="space-y-4">
-					<p className="text-zinc-500 text-sm">
-						Zdefiniuj w jaki sposób klucze z Axon mają być mapowane na klucze akceptowane przez API dostawcy.
-					</p>
-				</div>
-
 				{fields.length > 0 ? (
 					<div className="space-y-8">
 						<div className="grid grid-cols-[1fr_1fr_48px] gap-8 px-4 text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-600">

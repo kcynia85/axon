@@ -5,6 +5,8 @@ import { cn } from "@/shared/lib/utils";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormSelect } from "@/shared/ui/form/FormSelect";
 import { FormRadio } from "@/shared/ui/form/FormRadio";
+import { FormItemField } from "@/shared/ui/form/FormItemField";
+import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 import type { FormSelectOption } from "@/shared/types/form/FormSelect.types";
 
 const TOKENIZATION_OPTIONS = [
@@ -33,22 +35,22 @@ export const ProviderTokenizationSection = () => {
 		<FormSection id="tokenization" number={3} title="Tokenization Strategy">
 			<div className="space-y-12 max-w-3xl">
 				{/* Tokenizer Strategy */}
-				<div className="space-y-6">
-					<h4 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Strategia bazowa</h4>
+				<div className="space-y-8">
+					<FormSubheading>Strategia bazowa</FormSubheading>
+					
 					{values.provider_type === "meta" ? (
-						<div className="p-8 bg-zinc-950/50 border border-zinc-900 rounded-3xl space-y-6">
-							<div className="space-y-4">
-								<div className="flex items-center gap-3">
+						<div className="space-y-10">
+							<FormItemField
+								label="System Status"
+								hint="Dla Meta-Providerów Axon automatycznie wykrywa model i wybiera odpowiednią strategię. Możesz ustawić domyślny fallback poniżej."
+							>
+								<div className="flex items-center gap-3 p-4 bg-zinc-900/30 border border-zinc-800 rounded-xl w-fit pr-8">
 									<div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-									<span className="text-white font-bold">Auto-Detect</span>
+									<span className="text-white font-bold font-mono text-[10px] tracking-[0.2em] uppercase">Auto-Detect Active</span>
 								</div>
-								<p className="text-sm text-zinc-500 max-w-lg">
-									Dla Meta-Providerów Axon automatycznie wykrywa model i wybiera odpowiednią strategię. Możesz ustawić domyślny fallback poniżej.
-								</p>
-							</div>
+							</FormItemField>
 							
-							<div className="space-y-4 pt-2">
-								<h5 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Fallback Strategy</h5>
+							<FormItemField label="Fallback Strategy">
 								<Controller
 									control={control}
 									name="tokenization_fallback"
@@ -61,28 +63,30 @@ export const ProviderTokenizationSection = () => {
 										/>
 									)}
 								/>
-							</div>
+							</FormItemField>
 						</div>
 					) : (
-						<Controller
-							control={control}
-							name="tokenization_strategy"
-							render={({ field }) => (
-								<FormSelect
-									options={tokenizationOptions}
-									value={field.value || ""}
-									onChange={field.onChange}
-									placeholder="Select tokenization strategy..."
-								/>
-							)}
-						/>
+						<FormItemField label="Tokenizer">
+							<Controller
+								control={control}
+								name="tokenization_strategy"
+								render={({ field }) => (
+									<FormSelect
+										options={tokenizationOptions}
+										value={field.value || ""}
+										onChange={field.onChange}
+										placeholder="Select tokenization strategy..."
+									/>
+								)}
+							/>
+						</FormItemField>
 					)}
 				</div>
 
 				{/* Local Billing Model */}
 				{values.provider_type === "local" && (
-					<div className="space-y-6 pt-6 border-t border-zinc-900">
-						<h4 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Model Rozliczeń</h4>
+					<div className="space-y-8 pt-6 border-t border-zinc-900">
+						<FormSubheading>Model Rozliczeń</FormSubheading>
 						<div className="grid grid-cols-1 gap-4">
 							{BILLING_OPTIONS.map((opt) => (
 								<FormRadio

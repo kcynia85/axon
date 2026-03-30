@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
@@ -9,41 +9,6 @@ import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
 import { ResourceList } from "@/shared/ui/complex/ResourceList";
 import { Button } from "@/shared/ui/ui/Button";
 import { LLMProviderSidePeek, Provider } from "./LLMProviderSidePeek";
-
-// Mock Data for Providers
-const MOCK_PROVIDERS: Provider[] = [
-  { 
-    id: "1", 
-    title: "OpenAI", 
-    type: "Cloud / SaaS",
-    schema: "v2",
-    models: "o1, GPT-4",
-    apiKey: "sk-proj....",
-    pricing: "Auto-Scrape",
-    categories: ["Cloud / SaaS"]
-  },
-  { 
-    id: "2", 
-    title: "OpenRouter", 
-    type: "Meta-Provider",
-    schema: "Native API",
-    models: "14",
-    apiKey: "sk-proj....",
-    pricing: "Live API Sync",
-    categories: ["Meta-Provider"]
-  },
-  { 
-    id: "3", 
-    title: "Ollama", 
-    type: "Local / Self-Hosted",
-    schema: "Generic OpenAI",
-    models: "Local only",
-    apiKey: "N/A",
-    pricing: "$0.00",
-    url: "http://localhost:12344",
-    categories: ["Local / Self-Hosted"]
-  },
-];
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Nazwa (A-Z)" },
@@ -78,7 +43,7 @@ import { useRouter } from "next/navigation";
  */
 export const LLMProvidersBrowser = () => {
   const router = useRouter();
-  const { data: providers = [], isLoading } = useLLMProviders();
+  const { data: providers = [], isLoading, isError } = useLLMProviders();
   const { mutateAsync: deleteProvider } = useDeleteLLMProvider();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,12 +56,12 @@ export const LLMProvidersBrowser = () => {
     let result = providers.map(p => ({
         id: p.id,
         title: p.provider_name,
-        type: p.provider_api_key_required ? "Cloud / SaaS" : "Open Source / Local",
-        schema: "OpenAI v1",
-        apiKey: "••••••••",
-        pricing: "Pay-as-you-go",
-        url: p.provider_api_endpoint,
-        categories: [p.provider_api_key_required ? "Cloud / SaaS" : "Local / Self-Hosted"]
+        type: p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted",
+        schema: p.provider_type === "meta" ? "Native API" : "OpenAI v1",
+        apiKey: p.provider_api_key || "N/A",
+        pricing: p.provider_type === "meta" ? "Live API Sync" : "Pay-as-you-go",
+        url: p.provider_api_endpoint || undefined,
+        categories: [p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted"]
     }));
 
     // Search
@@ -178,6 +143,7 @@ export const LLMProvidersBrowser = () => {
       <ResourceList
         items={filteredProviders}
         isLoading={isLoading}
+        isError={isError}
         viewMode={viewMode}
         renderItem={(provider) => (
             <ResourceCard

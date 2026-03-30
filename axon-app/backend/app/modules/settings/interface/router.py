@@ -7,7 +7,7 @@ from app.modules.settings.application.service import SettingsService
 from app.modules.settings.dependencies import get_settings_service
 from app.modules.settings.application.schemas import (
     LLMProviderResponse, CreateLLMProviderRequest, UpdateLLMProviderRequest,
-    LLMModelResponse, CreateLLMModelRequest, UpdateLLMModelRequest,
+    LLMModelResponse, CreateLLMModelRequest, UpdateLLMModelRequest, AvailableModelResponse, LLMModelUsageResponse,
     LLMRouterResponse, CreateLLMRouterRequest, UpdateLLMRouterRequest, TestPromptRequest, SanityCheckResponse,
     EmbeddingModelResponse, CreateEmbeddingModelRequest,
     ChunkingStrategyResponse, CreateChunkingStrategyRequest, SimulateChunkingRequest, SimulateChunkingResponse,
@@ -27,6 +27,16 @@ async def list_llm_providers(
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.list_llm_providers()
+
+@router.get("/llm-providers/{id}", response_model=LLMProviderResponse)
+async def get_llm_provider(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    provider = await service.get_llm_provider(id)
+    if not provider:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Provider not found")
+    return provider
 
 @router.post("/llm-providers", response_model=LLMProviderResponse, status_code=status.HTTP_201_CREATED)
 async def create_llm_provider(
@@ -54,6 +64,26 @@ async def delete_llm_provider(
     await service.delete_llm_provider(id)
     return None
 
+@router.get("/llm-providers/{id}/available-models", response_model=List[AvailableModelResponse])
+async def get_available_models(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.get_available_models(id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+@router.post("/llm-providers/{id}/test", response_model=ConnectionTestResponse)
+async def test_llm_provider(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.test_provider_connection(id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
 # --- LLM Model ---
 
 @router.get("/llm-models", response_model=List[LLMModelResponse])
@@ -61,6 +91,16 @@ async def list_llm_models(
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.list_llm_models()
+
+@router.get("/llm-models/{id}", response_model=LLMModelResponse)
+async def get_llm_model(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    model = await service.get_llm_model(id)
+    if not model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Model not found")
+    return model
 
 @router.post("/llm-models", response_model=LLMModelResponse, status_code=status.HTTP_201_CREATED)
 async def create_llm_model(
@@ -88,6 +128,28 @@ async def delete_llm_model(
     await service.delete_llm_model(id)
     return None
 
+@router.get("/llm-models/{id}/usage", response_model=LLMModelUsageResponse)
+async def get_llm_model_usage(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    usage = await service.get_llm_model_usage(id)
+    return LLMModelUsageResponse(
+        is_used=len(usage) > 0,
+        used_by=usage
+    )
+
+@router.post("/llm-models/{id}/test", response_model=SanityCheckResponse)
+async def test_llm_model(
+    id: UUID,
+    request: TestPromptRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.test_llm_model(id, request)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
 # --- LLM Router ---
 
 @router.get("/llm-routers", response_model=List[LLMRouterResponse])
@@ -95,6 +157,16 @@ async def list_llm_routers(
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.list_llm_routers()
+
+@router.get("/llm-routers/{id}", response_model=LLMRouterResponse)
+async def get_llm_router(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    router = await service.get_llm_router(id)
+    if not router:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Router not found")
+    return router
 
 @router.post("/llm-routers", response_model=LLMRouterResponse, status_code=status.HTTP_201_CREATED)
 async def create_llm_router(

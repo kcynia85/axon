@@ -5,6 +5,8 @@ import { ROUTER_STRATEGIES } from "../../types/router.constants";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormTextField } from "@/shared/ui/form/FormTextField";
 import { FormRadio } from "@/shared/ui/form/FormRadio";
+import { FormItemField } from "@/shared/ui/form/FormItemField";
+import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 
 export const RouterGeneralSection = () => {
 	const { setValue, control, register, formState: { errors } } = useFormContext<RouterFormData>();
@@ -14,21 +16,16 @@ export const RouterGeneralSection = () => {
 		<FormSection id="general" number={1} title="General Settings">
 			<div className="space-y-12 max-w-3xl">
 				{/* Router Name */}
-				<div className="space-y-6">
-					<h4 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Nazwa (Alias)</h4>
+				<FormItemField label="Nazwa (Alias)" error={errors.name?.message}>
 					<FormTextField
 						{...register("name")}
 						placeholder="np. Production Safe"
-						className={errors.name ? "border-red-500 focus:border-red-500" : ""}
 					/>
-					{errors.name && (
-						<p className="text-xs text-red-500 font-mono">{errors.name.message}</p>
-					)}
-				</div>
+				</FormItemField>
 
 				{/* Router Strategy */}
 				<div className="space-y-6 pt-6 border-t border-zinc-900">
-					<h4 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Strategia</h4>
+					<FormSubheading>Strategia</FormSubheading>
 					<div className="grid grid-cols-1 gap-4">
 						{ROUTER_STRATEGIES.map((strategy) => (
 							<FormRadio

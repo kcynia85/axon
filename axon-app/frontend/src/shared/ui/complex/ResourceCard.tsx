@@ -151,7 +151,7 @@ export const ResourceCard = ({
                         </Badge>
                     ) : (
                         badgeLabel && (
-                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-white border-white px-2.5 py-0.5 rounded-lg text-black whitespace-nowrap">
+                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 px-2.5 py-0.5 rounded-lg text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
                                 {badgeLabel}
                             </Badge>
                         )
@@ -201,12 +201,6 @@ export const ResourceCard = ({
                         )}
                     </div>
                 </div>
-
-                {/* Bottom Accent Bar */}
-                <div className={cn(
-                    "absolute bottom-0 left-0 right-0 h-1 z-30", 
-                    isDraft ? "bg-transparent" : "bg-primary"
-                )} />
             </Card>
         </Link>
     );

@@ -6,8 +6,33 @@ export const ChunkingMethodSchema = z.enum(["Recursive_Character", "Code_Splitte
 export const LLMProviderSchema = z.object({
     id: z.string().uuid(),
     provider_name: z.string(),
+    provider_technical_id: z.string(),
+    provider_type: z.enum(["cloud", "meta", "local"]),
+    provider_api_key: z.string().nullable().optional(),
     provider_api_key_required: z.boolean(),
     provider_api_endpoint: z.string().url().nullable().optional(),
+    
+    // Core Agnostic Configuration
+    protocol: z.string().default("openai"),
+    custom_headers: z.array(z.object({
+        key: z.string(),
+        value: z.string()
+    })).default([]),
+    
+    // Discovery & Auth (SSoT)
+    auth_header_name: z.string().default("Authorization"),
+    auth_header_prefix: z.string().default("Bearer "),
+    api_key_placement: z.enum(["header", "query"]).default("header"),
+    discovery_json_path: z.string().default("data"),
+    discovery_id_key: z.string().default("id"),
+    discovery_name_key: z.string().default("name"),
+    discovery_context_key: z.string().default("context_length"),
+    
+    // Response Mapping
+    response_content_path: z.string().default("choices.0.message.content"),
+    response_error_path: z.string().default("error.message"),
+
+    provider_custom_config: z.record(z.any()).nullable().optional(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
 });
@@ -22,6 +47,9 @@ export const LLMModelSchema = z.object({
     model_capabilities_flags: z.array(z.string()).default([]),
     model_context_window: z.number().int(),
     model_supports_thinking: z.boolean().default(false),
+    model_reasoning_effort: z.string().nullable().optional(),
+    model_system_prompt: z.string().nullable().optional(),
+    model_custom_params: z.array(z.record(z.any())).default([]),
     model_pricing_config: z.record(z.any()),
     llm_provider_id: z.string().uuid(),
     created_at: z.string().datetime(),
@@ -33,11 +61,16 @@ export type LLMModel = z.infer<typeof LLMModelSchema>;
 export const LLMRouterSchema = z.object({
     id: z.string().uuid(),
     router_alias: z.string(),
-    router_strategy: z.enum(["Cost_Optimized", "Speed_Optimized", "Quality_Optimized", "COST_OPTIMIZED", "SPEED_OPTIMIZED", "QUALITY_OPTIMIZED"]),
+    router_strategy: z.enum([
+        "Cost_Optimized", "Speed_Optimized", "Quality_Optimized", 
+        "COST_OPTIMIZED", "SPEED_OPTIMIZED", "QUALITY_OPTIMIZED",
+        "Fallback", "Load_Balancer", "FALLBACK", "LOAD_BALANCER"
+    ]),
     router_max_tokens_threshold: z.number().int().nullable().optional(),
     router_cost_limit_per_request: z.number().nullable().optional(),
-    primary_model_id: z.string().uuid(),
+    primary_model_id: z.string().uuid().nullable().optional(),
     fallback_model_id: z.string().uuid().nullable().optional(),
+    priority_chain: z.array(z.record(z.any())).default([]),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
 });

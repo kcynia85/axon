@@ -38,7 +38,7 @@ export const ProviderJsonSchemaSection = () => {
 				<FormItemField 
 					label="JSON Schema Configuration"
 					error={errors.json_schema_mapping?.message}
-					hint="Zdefiniuj strukturę JSON, którą Twój dostawca akceptuje w zapytaniach typu Chat Completion."
+					hint="Zdefiniuj strukturę JSON, którą Twój dostawca akceptuje w zapytaniach typu Chat Completion. Możesz użyć edytora JSON, aby precyzyjnie dostosować schemat pod specyficzne API."
 				>
 					<div className="relative group">
 						<div className="absolute top-4 right-4 z-10 flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-lg text-[10px] font-mono uppercase tracking-widest text-zinc-500">
@@ -51,10 +51,6 @@ export const ProviderJsonSchemaSection = () => {
 						/>
 					</div>
 				</FormItemField>
-				
-				<p className="text-xs text-zinc-600 italic">
-					Hint: Możesz użyć edytora JSON, aby precyzyjnie dostosować schemat pod specyficzne API.
-				</p>
 			</div>
 		</FormSection>
 	);

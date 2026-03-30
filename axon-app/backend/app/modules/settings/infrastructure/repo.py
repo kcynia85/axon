@@ -22,15 +22,38 @@ class SettingsRepository:
         db_obj = LLMProviderTable(
             id=provider.id,
             provider_name=provider.provider_name,
+            provider_technical_id=provider.provider_technical_id,
+            provider_type=provider.provider_type,
+            provider_api_key=provider.provider_api_key,
             provider_api_key_required=provider.provider_api_key_required,
             provider_api_endpoint=provider.provider_api_endpoint,
+            provider_custom_config=provider.provider_custom_config,
+            
+            # Agnostic Configuration
+            protocol=provider.protocol,
+            custom_headers=provider.custom_headers,
+            
+            # Discovery & Auth Configuration (SSoT)
+            auth_header_name=provider.auth_header_name,
+            auth_header_prefix=provider.auth_header_prefix,
+            api_key_placement=provider.api_key_placement,
+            discovery_json_path=provider.discovery_json_path,
+            discovery_id_key=provider.discovery_id_key,
+            discovery_name_key=provider.discovery_name_key,
+            discovery_context_key=provider.discovery_context_key,
+            
+            # Response Mapping
+            response_content_path=provider.response_content_path,
+            response_error_path=provider.response_error_path,
+            
             created_at=provider.created_at,
             updated_at=provider.updated_at
         )
         self.session.add(db_obj)
         await self.session.commit()
-        await self.session.refresh(db_obj)
-        return self._to_domain_provider(db_obj)
+        
+        # Re-fetch with models to avoid lazy loading error
+        return await self.get_llm_provider(provider.id) # type: ignore
 
     async def list_llm_providers(self) -> List[LLMProvider]:
         result = await self.session.execute(
@@ -62,8 +85,30 @@ class SettingsRepository:
         return LLMProvider(
             id=row.id,
             provider_name=row.provider_name,
+            provider_technical_id=row.provider_technical_id,
+            provider_type=row.provider_type,
+            provider_api_key=row.provider_api_key,
             provider_api_key_required=row.provider_api_key_required,
             provider_api_endpoint=row.provider_api_endpoint,
+            provider_custom_config=row.provider_custom_config,
+            
+            # Agnostic Configuration
+            protocol=row.protocol,
+            custom_headers=row.custom_headers or [],
+            
+            # Discovery & Auth
+            auth_header_name=row.auth_header_name,
+            auth_header_prefix=row.auth_header_prefix,
+            api_key_placement=row.api_key_placement,
+            discovery_json_path=row.discovery_json_path,
+            discovery_id_key=row.discovery_id_key,
+            discovery_name_key=row.discovery_name_key,
+            discovery_context_key=row.discovery_context_key,
+            
+            # Response Mapping
+            response_content_path=row.response_content_path,
+            response_error_path=row.response_error_path,
+            
             created_at=row.created_at,
             updated_at=row.updated_at,
             models=[
@@ -75,6 +120,9 @@ class SettingsRepository:
                     model_capabilities_flags=m.model_capabilities_flags,
                     model_context_window=m.model_context_window,
                     model_supports_thinking=m.model_supports_thinking,
+                    model_reasoning_effort=m.model_reasoning_effort,
+                    model_system_prompt=m.model_system_prompt,
+                    model_custom_params=m.model_custom_params or [],
                     model_pricing_config=m.model_pricing_config,
                     llm_provider_id=m.llm_provider_id,
                     created_at=m.created_at,
@@ -94,6 +142,9 @@ class SettingsRepository:
             model_capabilities_flags=model.model_capabilities_flags,
             model_context_window=model.model_context_window,
             model_supports_thinking=model.model_supports_thinking,
+            model_reasoning_effort=model.model_reasoning_effort,
+            model_system_prompt=model.model_system_prompt,
+            model_custom_params=model.model_custom_params,
             model_pricing_config=model.model_pricing_config,
             llm_provider_id=model.llm_provider_id,
             created_at=model.created_at,
@@ -122,9 +173,31 @@ class SettingsRepository:
         return await self.get_llm_model(id)
 
     async def delete_llm_model(self, id: UUID) -> bool:
+        # Clear references in LLM Routers (they should stay empty if model deleted)
+        await self.session.execute(
+            update(LLMRouterTable).where(LLMRouterTable.primary_model_id == id).values(primary_model_id=None)
+        )
+        await self.session.execute(
+            update(LLMRouterTable).where(LLMRouterTable.fallback_model_id == id).values(fallback_model_id=None)
+        )
+        
         await self.session.execute(delete(LLMModelTable).where(LLMModelTable.id == id))
         await self.session.commit()
         return True
+
+    async def get_model_usage(self, id: UUID) -> List[str]:
+        """
+        Returns a list of names/aliases where this model is being used.
+        """
+        # Check LLM Routers
+        result = await self.session.execute(
+            select(LLMRouterTable).where(
+                (LLMRouterTable.primary_model_id == id) | 
+                (LLMRouterTable.fallback_model_id == id)
+            )
+        )
+        routers = result.scalars().all()
+        return [f"Router: {r.router_alias}" for r in routers]
 
     def _to_domain_model(self, row: LLMModelTable) -> LLMModel:
         return LLMModel(
@@ -135,6 +208,9 @@ class SettingsRepository:
             model_capabilities_flags=row.model_capabilities_flags,
             model_context_window=row.model_context_window,
             model_supports_thinking=row.model_supports_thinking,
+            model_reasoning_effort=row.model_reasoning_effort,
+            model_system_prompt=row.model_system_prompt,
+            model_custom_params=row.model_custom_params or [],
             model_pricing_config=row.model_pricing_config,
             llm_provider_id=row.llm_provider_id,
             created_at=row.created_at,
@@ -152,6 +228,7 @@ class SettingsRepository:
             router_cost_limit_per_request=router.router_cost_limit_per_request,
             primary_model_id=router.primary_model_id,
             fallback_model_id=router.fallback_model_id,
+            priority_chain=router.priority_chain,
             created_at=router.created_at,
             updated_at=router.updated_at
         )
@@ -191,6 +268,7 @@ class SettingsRepository:
             router_cost_limit_per_request=row.router_cost_limit_per_request,
             primary_model_id=row.primary_model_id,
             fallback_model_id=row.fallback_model_id,
+            priority_chain=row.priority_chain or [],
             created_at=row.created_at,
             updated_at=row.updated_at
         )

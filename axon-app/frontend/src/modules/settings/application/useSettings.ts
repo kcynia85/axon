@@ -2,10 +2,25 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { settingsApi } from "../infrastructure/api";
 import { LLMModel, LLMRouter } from "@/shared/domain/settings";
 
+export const useLLMProviders = () => {
+    return useQuery({
+        queryKey: ["llm-providers"],
+        queryFn: () => settingsApi.getLLMProviders(),
+    });
+}
+
 export const useLLMModels = () => {
     return useQuery({
         queryKey: ["llm-models"],
         queryFn: () => settingsApi.getLLMModels(),
+    });
+}
+
+export const useLLMModel = (id?: string) => {
+    return useQuery({
+        queryKey: ["llm-models", id],
+        queryFn: () => id ? settingsApi.getLLMModel(id) : Promise.reject("No ID provided"),
+        enabled: !!id,
     });
 }
 
@@ -39,10 +54,38 @@ export const useDeleteLLMModel = () => {
     });
 }
 
+export const useLLMModelUsage = (id?: string) => {
+    return useQuery({
+        queryKey: ["llm-models", id, "usage"],
+        queryFn: () => id ? settingsApi.getLLMModelUsage(id) : Promise.reject("No ID provided"),
+        enabled: !!id,
+    });
+}
+
+export const useTestLLMModel = () => {
+    return useMutation({
+        mutationFn: ({ id, prompt }: { id: string, prompt: string }) => settingsApi.testLLMModel(id, prompt),
+    });
+}
+
+export const useTestLLMProvider = () => {
+    return useMutation({
+        mutationFn: (id: string) => settingsApi.testLLMProvider(id),
+    });
+}
+
 export const useLLMRouters = () => {
     return useQuery({
         queryKey: ["llm-routers"],
         queryFn: () => settingsApi.getLLMRouters(),
+    });
+}
+
+export const useLLMRouter = (id?: string) => {
+    return useQuery({
+        queryKey: ["llm-routers", id],
+        queryFn: () => id ? settingsApi.getLLMRouter(id) : Promise.reject("No ID provided"),
+        enabled: !!id,
     });
 }
 
@@ -60,8 +103,9 @@ export const useUpdateLLMRouter = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ id, data }: { id: string, data: Partial<LLMRouter> }) => settingsApi.updateLLMRouter(id, data),
-        onSuccess: () => {
+        onSuccess: (_, { id }) => {
             queryClient.invalidateQueries({ queryKey: ["llm-routers"] });
+            queryClient.invalidateQueries({ queryKey: ["llm-routers", id] });
         },
     });
 }

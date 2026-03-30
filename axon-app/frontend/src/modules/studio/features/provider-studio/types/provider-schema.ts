@@ -1,16 +1,37 @@
 import { z } from "zod";
 
+const CustomHeaderSchema = z.object({
+	key: z.string().min(1, "Klucz jest wymagany"),
+	value: z.string().min(1, "Wartość jest wymagana"),
+});
+
 const BaseProviderSchema = z.object({
 	display_name: z.string().min(1, "Nazwa jest wymagana"),
 	provider_id: z.string().min(1, "ID jest wymagane"),
 	base_url: z.string().url("Podaj poprawny adres URL"),
+	
+	// Protocol & Body Config
+	protocol: z.enum(["openai", "anthropic", "google", "custom"]).default("openai"),
+	
+	// Discovery & Auth Configuration (SSoT)
+	auth_header_name: z.string().min(1, "Wymagane").default("Authorization"),
+	auth_header_prefix: z.string().default("Bearer "),
+	api_key_placement: z.enum(["header", "query"]).default("header"),
+	
+	// Advanced Connection
+	custom_headers: z.array(CustomHeaderSchema).default([]),
+	
+	// Model Discovery Mapping
+	discovery_json_path: z.string().min(1, "Wymagane").default("data"),
+	discovery_id_key: z.string().min(1, "Wymagane").default("id"),
+	discovery_name_key: z.string().min(1, "Wymagane").default("name"),
+	discovery_context_key: z.string().min(1, "Wymagane").default("context_length"),
+	
+	// Response Mapping (Inference)
+	response_content_path: z.string().default("choices.0.message.content"),
+	response_error_path: z.string().default("error.message"),
+	
 	json_schema_mapping: z.string().optional(),
-	api_adapter_mapping: z.array(
-		z.object({
-			axon_key: z.string(),
-			provider_key: z.string(),
-		})
-	).optional(),
 });
 
 export const CloudProviderSchema = BaseProviderSchema.extend({
@@ -22,10 +43,6 @@ export const CloudProviderSchema = BaseProviderSchema.extend({
 export const MetaProviderSchema = BaseProviderSchema.extend({
 	provider_type: z.literal("meta"),
 	api_key: z.string().min(1, "Klucz API jest wymagany"),
-	custom_headers: z.object({
-		http_referer: z.string().optional(),
-		x_title: z.string().optional(),
-	}).optional(),
 	tokenization_strategy: z.literal("auto_detect"),
 	tokenization_fallback: z.enum(["cl100k_base", "heuristic"]),
 });

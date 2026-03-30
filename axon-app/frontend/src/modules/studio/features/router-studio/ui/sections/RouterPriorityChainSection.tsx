@@ -10,7 +10,7 @@ import { cn } from "@/shared/lib/utils";
 import { FormTextField } from "@/shared/ui/form/FormTextField";
 
 export const RouterPriorityChainSection = () => {
-	const { control, register, formState: { errors } } = useFormContext<RouterFormData>();
+	const { control, register, setValue, watch, formState: { errors } } = useFormContext<RouterFormData>();
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "priority_chain",
@@ -26,100 +26,119 @@ export const RouterPriorityChainSection = () => {
 		append({ model_id: "", override_params: false, error_timeout: 30 });
 	};
 
+	// Watch the priority chain to get live values for the custom checkboxes
+	const watchedChain = watch("priority_chain");
+
 	return (
 		<FormSection id="priority-chain" number={2} title="Łańcuch Priorytetów">
 			<div className="space-y-12 max-w-4xl">
 				<div className="space-y-6">
-					{fields.map((field, index) => (
-						<div 
-							key={field.id} 
-							className="p-8 rounded-[32px] border border-zinc-900 bg-zinc-950/20 group transition-all hover:border-zinc-800"
-						>
-							<div className="flex items-center justify-between mb-8">
-								<div className="flex items-center gap-4">
-									<div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-mono font-bold text-zinc-500">
-										{index + 1}
-									</div>
-									<div className="h-px w-8 bg-zinc-900" />
-									<Controller
-										control={control}
-										name={`priority_chain.${index}.model_id`}
-										render={({ field: selectField }) => (
-											<FormSelect
-												options={modelOptions}
-												value={selectField.value}
-												onChange={selectField.onChange}
-												placeholder="Wybierz model..."
-												className="min-w-[240px]"
-												renderTrigger={(selected) => (
-													<div className="flex items-center gap-3 cursor-pointer group/trigger">
-														<span className={cn(
-															"text-xl font-black uppercase tracking-tight transition-colors",
-															selected.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
-														)}>
-															{selected.length > 0 ? selected[0].name : "Wybierz model"}
-														</span>
-														<ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
-													</div>
+					{fields.map((field, index) => {
+						const isOverridden = watchedChain?.[index]?.override_params ?? false;
+						const itemError = errors.priority_chain?.[index]?.model_id;
+
+						return (
+							<div 
+								key={field.id} 
+								className={cn(
+									"p-8 rounded-[32px] border bg-zinc-950/20 group transition-all hover:border-zinc-800",
+									itemError ? "border-red-500/50" : "border-zinc-900"
+								)}
+							>
+								<div className="flex items-center justify-between mb-8">
+									<div className="flex flex-col gap-1">
+										<div className="flex items-center gap-4">
+											<div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-mono font-bold text-zinc-500">
+												{index + 1}
+											</div>
+											<div className="h-px w-8 bg-zinc-900" />
+											<Controller
+												control={control}
+												name={`priority_chain.${index}.model_id`}
+												render={({ field: selectField }) => (
+													<FormSelect
+														options={modelOptions}
+														value={selectField.value}
+														onChange={selectField.onChange}
+														placeholder="Wybierz model..."
+														className="min-w-[240px]"
+														renderTrigger={(selected) => (
+															<div className="flex items-center gap-3 cursor-pointer group/trigger">
+																<span className={cn(
+																	"text-xl font-black uppercase tracking-tight transition-colors",
+																	selected.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+																)}>
+																	{selected.length > 0 ? selected[0].name : "Wybierz model"}
+																</span>
+																<ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
+															</div>
+														)}
+													/>
 												)}
 											/>
-										)}
-									/>
-								</div>
-
-								<Button
-									type="button"
-									variant="ghost"
-									size="icon"
-									onClick={() => remove(index)}
-									className="text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-2xl transition-all h-10 w-10 opacity-0 group-hover:opacity-100"
-								>
-									<Trash2 className="w-4 h-4" />
-								</Button>
-							</div>
-
-							<div className="flex items-center gap-8 pl-14">
-								<div className="flex items-center gap-3 group/opt cursor-pointer" 
-									 onClick={() => {
-										const current = control._formValues.priority_chain[index].override_params;
-										control._formValues.priority_chain[index].override_params = !current;
-									 }}>
-									<div className={cn(
-										"w-5 h-5 rounded border-2 flex items-center justify-center transition-all",
-										field.override_params ? "border-primary bg-primary text-black" : "border-zinc-800 text-transparent"
-									)}>
-										<Settings2 className="w-3 h-3" />
-									</div>
-									<span className={cn(
-										"text-[10px] font-mono uppercase tracking-widest transition-colors",
-										field.override_params ? "text-primary" : "text-zinc-500 group-hover/opt:text-zinc-300"
-									)}>
-										Nadpisz Params
-									</span>
-									<input 
-										type="checkbox" 
-										className="hidden" 
-										{...register(`priority_chain.${index}.override_params`)} 
-									/>
-								</div>
-
-								<div className="flex items-center gap-4 group/opt">
-									<Timer className="w-4 h-4 text-zinc-600 group-hover/opt:text-zinc-400 transition-colors" />
-									<div className="flex items-center gap-2">
-										<span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">On Error / Timeout &gt;</span>
-										<div className="w-16">
-											<FormTextField
-												type="number"
-												{...register(`priority_chain.${index}.error_timeout`, { valueAsNumber: true })}
-												className="h-8 p-0 px-2 text-xs text-center rounded-lg border-zinc-900 bg-transparent"
-											/>
 										</div>
-										<span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 text-zinc-600">s</span>
+										{itemError && (
+											<span className="pl-24 text-[10px] text-red-500 font-mono uppercase tracking-widest animate-pulse">
+												{itemError.message}
+											</span>
+										)}
+									</div>
+
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon"
+										onClick={() => remove(index)}
+										className="text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-2xl transition-all h-10 w-10 opacity-0 group-hover:opacity-100"
+									>
+										<Trash2 className="w-4 h-4" />
+									</Button>
+								</div>
+
+								<div className="flex items-center gap-8 pl-14">
+									<div 
+										className="flex items-center gap-3 group/opt cursor-pointer" 
+										onClick={() => {
+											setValue(`priority_chain.${index}.override_params`, !isOverridden, { shouldDirty: true, shouldValidate: true });
+										}}
+									>
+										<div className={cn(
+											"w-5 h-5 rounded border-2 flex items-center justify-center transition-all",
+											isOverridden ? "border-primary bg-primary text-black" : "border-zinc-800 text-transparent"
+										)}>
+											<Settings2 className="w-3 h-3" />
+										</div>
+										<span className={cn(
+											"text-[10px] font-mono uppercase tracking-widest transition-colors",
+											isOverridden ? "text-primary" : "text-zinc-500 group-hover/opt:text-zinc-300"
+										)}>
+											Nadpisz Params
+										</span>
+										<input 
+											type="checkbox" 
+											className="hidden" 
+											{...register(`priority_chain.${index}.override_params`)} 
+										/>
+									</div>
+
+									<div className="flex items-center gap-4 group/opt">
+										<Timer className="w-4 h-4 text-zinc-600 group-hover/opt:text-zinc-400 transition-colors" />
+										<div className="flex items-center gap-2">
+											<span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">On Error / Timeout &gt;</span>
+											<div className="w-16">
+												<FormTextField
+													type="number"
+													{...register(`priority_chain.${index}.error_timeout`, { valueAsNumber: true })}
+													className="h-8 p-0 px-2 text-xs text-center rounded-lg border-zinc-900 bg-transparent focus:border-primary transition-colors"
+												/>
+											</div>
+											<span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 text-zinc-600">s</span>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					))}
+						);
+					})}
 
 					{fields.length === 0 && (
 						<div className="p-16 border-2 border-dashed border-zinc-900 rounded-[40px] flex flex-col items-center justify-center text-center space-y-6 bg-zinc-950/20">

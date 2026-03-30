@@ -6,7 +6,7 @@ import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { LLMRoutersList } from "./LLMRoutersList";
-import { useLLMRouters, useLLMModels, useDeleteLLMRouter } from "../application/useSettings";
+import { useLLMRouters, useLLMModels, useDeleteLLMRouter, useLLMProviders } from "../application/useSettings";
 import { useRouter } from "next/navigation";
 import { LLMRouterSidePeek } from "./LLMRouterSidePeek";
 import type { LLMRouter } from "@/shared/domain/settings";
@@ -41,6 +41,7 @@ export const LLMRoutersBrowser = () => {
   const routerNav = useRouter();
   const { data: routers = [], isLoading, isError } = useLLMRouters();
   const { data: models = [] } = useLLMModels();
+  const { data: providers = [] } = useLLMProviders();
   const { mutateAsync: deleteRouter } = useDeleteLLMRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -51,7 +52,14 @@ export const LLMRoutersBrowser = () => {
 
   const getModelName = (id: string) => {
     const model = models.find(m => m.id === id);
-    return model?.model_display_name || "Unknown Model";
+    if (!model) return "Unknown Model";
+    
+    const provider = providers.find(p => p.id === model.llm_provider_id);
+    if (provider) {
+        return `${provider.provider_name} / ${model.model_display_name}`;
+    }
+    
+    return model.model_display_name;
   };
 
   const filteredRouters = useMemo(() => {

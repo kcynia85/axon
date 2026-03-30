@@ -9,8 +9,8 @@ export const useRouterForm = (initialData?: Partial<RouterFormData>) => {
 			name: "",
 			strategy: "fallback",
 			priority_chain: [],
-			...initialData,
 		} as any,
+		values: initialData as RouterFormData,
 		mode: "onChange",
 	});
 

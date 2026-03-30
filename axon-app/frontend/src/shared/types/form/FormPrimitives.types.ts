@@ -5,13 +5,15 @@ export type FormHeadingProps = {
 	readonly className?: string;
 };
 
-export type FormSubheadingProps = {
-	readonly children: React.ReactNode;
+export type FormHeaderProps = {
+	readonly eyebrow?: string;
+	readonly title: string;
+	readonly description?: string;
 	readonly className?: string;
 };
 
-export type FormSectionStepProps = {
-	readonly number: string | number;
+export type FormSubheadingProps = {
+	readonly children: React.ReactNode;
 	readonly className?: string;
 };
 
@@ -43,6 +45,7 @@ export type FormItemFieldProps = {
 	readonly label?: string;
 	readonly children: React.ReactNode;
 	readonly error?: string;
+	readonly hint?: string;
 	readonly className?: string;
 };
 
