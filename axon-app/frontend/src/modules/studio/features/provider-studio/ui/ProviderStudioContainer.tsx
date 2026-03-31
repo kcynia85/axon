@@ -40,6 +40,8 @@ export const ProviderStudioContainer = ({
 
 					// Core Agnostic Configuration
 					protocol: data.protocol,
+					inference_path: data.inference_path,
+					inference_json_template: data.json_schema_mapping || null,
 					custom_headers: data.custom_headers,
 
 					// SSoT Fields (Discovery & Auth)

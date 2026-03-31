@@ -42,11 +42,11 @@ export const CrewStudioView = ({
                     exitButton={
                         <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             onClick={onCancel}
-                            className="hover:bg-zinc-900 gap-2 text-zinc-400 hover:text-white px-4 font-mono text-[10px] uppercase tracking-[0.2em] border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+                            className="hover:bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all h-9 w-9"
                         >
-                            <X className="w-4 h-4" /> Exit Studio
+                            <X className="w-4 h-4" />
                         </Button>
                     }
                     navigator={

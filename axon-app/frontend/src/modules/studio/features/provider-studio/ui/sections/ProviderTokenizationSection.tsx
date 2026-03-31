@@ -22,6 +22,8 @@ const BILLING_OPTIONS = [
 	{ id: "manual_rate", label: "Manualna stawka", description: "Wprowadź własny cennik za 1M tokenów." },
 ];
 
+import { NativeAccordion } from "@/shared/ui/ui/NativeAccordion";
+
 export const ProviderTokenizationSection = () => {
 	const { setValue, control } = useFormContext<ProviderFormData>();
 	const values = useWatch({ control });
@@ -32,12 +34,16 @@ export const ProviderTokenizationSection = () => {
 	}));
 
 	return (
-		<FormSection id="tokenization" number={3} title="Tokenization Strategy">
-			<div className="space-y-12 max-w-3xl">
+		<FormSection 
+			id="tokenization" 
+			number={3} 
+			title="Tokenizer"
+			description="Zdefiniuj model tokenizacji oraz sposób naliczania kosztów dla zapytań lokalnych i zewnętrznych."
+			variant="island"
+		>
+			<div className="space-y-12 w-full">
 				{/* Tokenizer Strategy */}
 				<div className="space-y-8">
-					<FormSubheading>Strategia bazowa</FormSubheading>
-					
 					{values.provider_type === "meta" ? (
 						<div className="space-y-10">
 							<FormItemField
@@ -50,7 +56,7 @@ export const ProviderTokenizationSection = () => {
 								</div>
 							</FormItemField>
 							
-							<FormItemField label="Fallback Strategy">
+							<FormItemField>
 								<Controller
 									control={control}
 									name="tokenization_fallback"
@@ -59,14 +65,14 @@ export const ProviderTokenizationSection = () => {
 											options={tokenizationOptions.filter(opt => ["cl100k_base", "heuristic"].includes(opt.id))}
 											value={field.value || ""}
 											onChange={field.onChange}
-											placeholder="Select fallback strategy..."
+											placeholder="Select tokenizer"
 										/>
 									)}
 								/>
 							</FormItemField>
 						</div>
 					) : (
-						<FormItemField label="Tokenizer">
+						<FormItemField>
 							<Controller
 								control={control}
 								name="tokenization_strategy"
@@ -75,12 +81,14 @@ export const ProviderTokenizationSection = () => {
 										options={tokenizationOptions}
 										value={field.value || ""}
 										onChange={field.onChange}
-										placeholder="Select tokenization strategy..."
+										placeholder="Select tokenizer"
 									/>
 								)}
 							/>
 						</FormItemField>
 					)}
+
+
 				</div>
 
 				{/* Local Billing Model */}

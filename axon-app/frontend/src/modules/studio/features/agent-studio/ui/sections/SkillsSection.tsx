@@ -109,7 +109,7 @@ export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 	), [availableSkills, currentCustomFunctions]);
 
 	return (
-		<FormSection id="SKILLS" number={4} title="Skills">
+		<FormSection id="SKILLS" number={4} title="Skills" variant="island">
 			<div className="space-y-12 relative overflow-hidden">
 				<div className="space-y-8 relative z-10">
 					<div className="space-y-4">

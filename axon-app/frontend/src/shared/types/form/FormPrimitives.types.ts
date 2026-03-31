@@ -9,6 +9,7 @@ export type FormHeaderProps = {
 	readonly eyebrow?: string;
 	readonly title: string;
 	readonly description?: string;
+	readonly actions?: React.ReactNode;
 	readonly className?: string;
 };
 
@@ -24,6 +25,7 @@ export type FormSectionProps = {
 	readonly description?: string;
 	readonly children: React.ReactNode;
 	readonly className?: string;
+	readonly variant?: "default" | "island";
 };
 
 export type FormProgressProps = {

@@ -13,7 +13,7 @@ export const RouterGeneralSection = () => {
 	const currentStrategy = useWatch({ control, name: "strategy" });
 
 	return (
-		<FormSection id="general" number={1} title="General Settings">
+		<FormSection id="general" number={1} title="General Settings" variant="island">
 			<div className="space-y-12 max-w-3xl">
 				{/* Router Name */}
 				<FormItemField label="Nazwa (Alias)" error={errors.name?.message}>

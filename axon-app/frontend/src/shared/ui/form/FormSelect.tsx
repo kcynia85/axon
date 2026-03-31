@@ -37,7 +37,7 @@ export const FormSelect = (props: FormSelectProps) => {
 	const defaultTrigger = (
 		<div
 			className={cn(
-				"w-full p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/30 hover:border-zinc-900 dark:hover:border-zinc-600 transition-all flex items-center justify-between group shadow-sm outline-none text-left cursor-pointer",
+				"w-full p-6 rounded-2xl border border-zinc-200 dark:border-white/20 bg-zinc-50 dark:bg-zinc-800/40 hover:border-zinc-900 dark:hover:border-primary/50 hover:bg-[#141416] transition-all flex items-center justify-between group shadow-sm outline-none text-left cursor-pointer",
 				className,
 			)}
 		>
@@ -124,7 +124,7 @@ export const FormSelect = (props: FormSelectProps) => {
 						placeholder={searchPlaceholder}
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
-						className="w-full bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl h-12 pl-12 pr-4 text-sm font-bold text-zinc-900 dark:text-white focus:border-primary outline-none transition-all"
+						className="w-full bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/10 rounded-xl h-12 pl-12 pr-4 text-sm font-bold text-zinc-900 dark:text-white focus:border-primary outline-none transition-all"
 					/>
 				</div>
 
@@ -152,11 +152,11 @@ export const FormSelect = (props: FormSelectProps) => {
 											</div>
 										)}
 										<div className="flex flex-col">
-											<span className="text-sm font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+											<span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
 												{opt.name}
 											</span>
 											{opt.subtitle && (
-												<span className="text-[10px] text-zinc-400 font-mono">
+												<span className="text-[14px] text-zinc-400 font-mono">
 													{opt.subtitle}
 												</span>
 											)}
@@ -192,11 +192,11 @@ export const FormSelect = (props: FormSelectProps) => {
 									</div>
 								)}
 								<div className="flex flex-col">
-									<span className="text-sm font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+									<span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
 										{opt.name}
 									</span>
 									{opt.subtitle && (
-										<span className="text-[10px] text-zinc-400 font-mono">
+										<span className="text-[14px] text-zinc-400 font-mono">
 											{opt.subtitle}
 										</span>
 									)}

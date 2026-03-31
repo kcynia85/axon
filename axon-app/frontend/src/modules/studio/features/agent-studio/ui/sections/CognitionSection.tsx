@@ -15,7 +15,7 @@ export const CognitionSection = React.memo((props: CognitionSectionProps) => {
 	const { control, syncDraft } = useCognitionSection(props);
 
 	return (
-		<FormSection id="MEMORY" number={2} title="Cognition">
+		<FormSection id="MEMORY" number={2} title="Cognition" variant="island">
 			<div className="space-y-12">
 				<div className="space-y-6">
 					<FormSubheading>Knowledge Hubs (RAG)</FormSubheading>

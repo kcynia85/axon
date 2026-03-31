@@ -12,14 +12,7 @@ export const AVATARS: readonly AvatarItem[] = [
 	{ id: 5, url: "/images/avatars/agent-5.webp" },
 ];
 
-export const ALL_MODELS: readonly LLMModel[] = [
-	{ id: "123e4567-e89b-12d3-a456-426614174000", name: "Gemini 2.5 Pro", cost: "High" },
-	{ id: "123e4567-e89b-12d3-a456-426614174001", name: "Gemini 2.0 Flash", cost: "Low" },
-	{ id: "123e4567-e89b-12d3-a456-426614174002", name: "GPT-4o", cost: "Mid" },
-	{ id: "123e4567-e89b-12d3-a456-426614174003", name: "GPT-4-turbo", cost: "High" },
-	{ id: "123e4567-e89b-12d3-a456-426614174004", name: "Claude 3.5 Sonnet", cost: "Mid" },
-	{ id: "123e4567-e89b-12d3-a456-426614174005", name: "Claude 3 Opus", cost: "High" },
-];
+export const ALL_MODELS: readonly LLMModel[] = [];
 
 export const ALL_HUBS: readonly KnowledgeHub[] = [
 	{
@@ -140,11 +133,4 @@ export const IDENTITY_FIELDS: readonly FormFieldConfig[] = [
 	},
 ];
 
-export const MODEL_NAMES: Record<string, string> = {
-	"123e4567-e89b-12d3-a456-426614174000": "Gemini 2.5 Pro",
-	"123e4567-e89b-12d3-a456-426614174001": "Gemini 2.0 Flash",
-	"123e4567-e89b-12d3-a456-426614174002": "GPT-4o",
-	"123e4567-e89b-12d3-a456-426614174003": "GPT-4-turbo",
-	"123e4567-e89b-12d3-a456-426614174004": "Claude 3.5 Sonnet",
-	"123e4567-e89b-12d3-a456-426614174005": "Claude 3 Opus",
-};
+export const MODEL_NAMES: Record<string, string> = {};

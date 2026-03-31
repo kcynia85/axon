@@ -21,6 +21,8 @@ class LLMProviderTable(Base):
 
     # Core Agnostic Configuration
     protocol = Column(String, default="openai")
+    inference_path = Column(String, default="/chat/completions")
+    inference_json_template = Column(String, default='{"model": "{{model}}", "messages": [{"role": "user", "content": "{{prompt}}"}]}')
     custom_headers = Column(JSONB, default=[]) # List of {key, value}
 
     # Discovery & Auth Configuration (SSoT)
@@ -38,6 +40,7 @@ class LLMProviderTable(Base):
 
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     models = relationship("LLMModelTable", back_populates="provider", cascade="all, delete-orphan")
 
@@ -58,6 +61,7 @@ class LLMModelTable(Base):
     llm_provider_id = Column(UUID(as_uuid=True), ForeignKey("llm_providers.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     provider = relationship("LLMProviderTable", back_populates="models")
 
@@ -74,6 +78,7 @@ class LLMRouterTable(Base):
     priority_chain = Column(JSONB, default=[])
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 class EmbeddingModelTable(Base):
     __tablename__ = "embedding_models"
@@ -86,6 +91,7 @@ class EmbeddingModelTable(Base):
     model_cost_per_1m_tokens = Column(Float, nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 class ChunkingStrategyTable(Base):
     __tablename__ = "chunking_strategies"
@@ -98,6 +104,7 @@ class ChunkingStrategyTable(Base):
     strategy_chunk_boundaries = Column(JSONB, default=[])
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
 
 class VectorDatabaseTable(Base):
     __tablename__ = "vector_databases"
@@ -116,3 +123,4 @@ class VectorDatabaseTable(Base):
     vector_database_expected_dimensions = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)

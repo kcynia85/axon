@@ -1,7 +1,7 @@
 import { useFormContext, useWatch } from "react-hook-form";
 import { useMemo } from "react";
 import type { RouterFormData } from "../types/router-schema";
-import { ALL_MODELS } from "../../agent-studio/types/agent-studio.constants";
+import { useLLMModels } from "@/modules/settings/application/useSettings";
 
 export type RouterGraphNode = {
 	id: string;
@@ -26,6 +26,7 @@ export type RouterGraphData = {
 
 export const useRouterGraph = (): RouterGraphData => {
 	const { control } = useFormContext<RouterFormData>();
+	const { data: models } = useLLMModels();
 	
 	const name = useWatch({ control, name: "name" }) || "Router";
 	const strategy = useWatch({ control, name: "strategy" }) || "fallback";
@@ -35,7 +36,7 @@ export const useRouterGraph = (): RouterGraphData => {
 		const nodes: RouterGraphNode[] = [];
 		const edges: RouterGraphEdge[] = [];
 
-		const getModel = (id: string) => ALL_MODELS.find(m => m.id === id);
+		const getModel = (id: string) => models?.find(m => m.id === id);
 
 		const NODE_SPACING_X = 160;
 		const NODE_SPACING_Y = 160;
@@ -58,7 +59,7 @@ export const useRouterGraph = (): RouterGraphData => {
 				nodes.push({
 					id: nodeId,
 					type: "model",
-					name: model?.name || "Unassigned Model",
+					name: model?.model_display_name || "Unassigned Model",
 					x: 250,
 					y: 100 + (index + 1) * NODE_SPACING_Y,
 					sequenceNumber: index + 1,
@@ -95,7 +96,7 @@ export const useRouterGraph = (): RouterGraphData => {
 				nodes.push({
 					id: nodeId,
 					type: "model",
-					name: model?.name || "Unassigned Model",
+					name: model?.model_display_name || "Unassigned Model",
 					x,
 					y,
 					sequenceNumber: index + 1,
@@ -111,5 +112,5 @@ export const useRouterGraph = (): RouterGraphData => {
 		}
 
 		return { nodes, edges };
-	}, [name, strategy, priority_chain]);
+	}, [name, strategy, priority_chain, models]);
 };

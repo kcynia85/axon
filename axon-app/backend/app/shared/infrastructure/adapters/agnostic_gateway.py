@@ -1,5 +1,6 @@
 import httpx
 import json
+import re
 from typing import Any, AsyncGenerator, Optional
 from app.shared.domain.ports.llm_gateway import LLMGateway
 from app.modules.settings.domain.models import LLMProvider, LLMModel
@@ -36,16 +37,48 @@ class AgnosticGateway(LLMGateway):
         except (IndexError, ValueError, KeyError, TypeError):
             return None
 
+    def _render_template(self, template: str, variables: dict[str, Any]) -> dict[str, Any]:
+        """
+        Renders a JSON template string by replacing {{variable}} placeholders.
+        """
+        rendered = template
+        for key, value in variables.items():
+            placeholder = f"{{{{{key}}}}}"
+            if isinstance(value, (dict, list)):
+                rendered = rendered.replace(f'"{placeholder}"', json.dumps(value))
+                rendered = rendered.replace(placeholder, json.dumps(value))
+            else:
+                rendered = rendered.replace(placeholder, str(value))
+        
+        try:
+            return json.loads(rendered)
+        except json.JSONDecodeError as e:
+            # Fallback to simple replacement if JSON is invalid after render
+            # This helps debug template errors
+            raise ValueError(f"Failed to render inference template: {str(e)}. Rendered content: {rendered}")
+
     def _prepare_request(self, prompt: str, tools: list[Any] | None = None) -> tuple[str, dict, dict]:
         """
         Prepares URL, Headers, and Body based on agnostic SSoT configuration.
+        Zero hardcoded protocol checks for body structure.
         """
         endpoint = self.provider.provider_api_endpoint.strip().rstrip("/")
         api_key = self.provider.provider_api_key
         protocol = self.provider.protocol.lower()
         
-        # 1. Base URL construction
-        url = endpoint
+        # 1. Base URL construction using dynamic inference_path
+        inference_path = self.provider.inference_path or ""
+        
+        # Special logic for Google models in URL if needed, 
+        # but we try to keep it in inference_path template
+        if protocol == "google" and "{{model}}" in inference_path:
+            model_id = self.model.model_id if self.model else "gemini-2.0-flash"
+            inference_path = inference_path.replace("{{model}}", model_id)
+        
+        if not inference_path.startswith("/") and not inference_path.startswith(":"):
+            inference_path = "/" + inference_path
+            
+        url = f"{endpoint}{inference_path}"
         headers = {"Content-Type": "application/json"}
         
         # 2. Add API Key
@@ -61,38 +94,21 @@ class AgnosticGateway(LLMGateway):
                 if h.get("key") and h.get("value"):
                     headers[h["key"]] = h["value"]
 
-        # 4. Protocol-Driven Body Construction
-        body: dict = {"temperature": 0.7}
+        # 4. Render Body from template
+        variables = {
+            "prompt": prompt,
+            "model": self.model.model_id if self.model else "unknown",
+        }
         
-        if protocol == "google":
-             # Google Gemini REST Style
-             body["contents"] = [{"parts": [{"text": prompt}]}]
-             if not url.endswith(":generateContent"):
-                  model_id = self.model.model_id if self.model else "gemini-2.0-flash"
-                  if f"models/{model_id}" not in url:
-                       url = f"{url}/models/{model_id}:generateContent"
-                  else:
-                       url = f"{url}:generateContent"
-        
-        elif protocol == "anthropic":
-             # Anthropic Style
-             body["model"] = self.model.model_id if self.model else "claude-3-5-sonnet-20240620"
-             body["messages"] = [{"role": "user", "content": prompt}]
-             body["max_tokens"] = 1024
-             # Auto-add required version header if missing
-             if "anthropic-version" not in headers:
-                 headers["anthropic-version"] = "2023-06-01"
-             # Auto-map Authorization to x-api-key if default used
-             if self.provider.auth_header_name == "Authorization" and "x-api-key" not in headers:
-                 headers["x-api-key"] = api_key
-                 headers.pop("Authorization", None)
-        
-        else:
-             # OpenAI / Default / Custom Style
-             body["model"] = self.model.model_id if self.model else "unknown"
-             body["messages"] = [{"role": "user", "content": prompt}]
+        template = self.provider.inference_json_template
+        if not template:
+            # Fallback to default OpenAI style if template missing
+            template = '{"model": "{{model}}", "messages": [{"role": "user", "content": "{{prompt}}"}]}'
+            
+        body = self._render_template(template, variables)
 
-        if tools:
+        # Handle tools automatically if not in template
+        if tools and "tools" not in body:
             body["tools"] = tools
 
         return url, headers, body

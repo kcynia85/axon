@@ -31,7 +31,7 @@ export const ProviderTypeSelectionSection = () => {
 	};
 
 	return (
-		<FormSection id="type-selection" number={2} title="Provider Type Selection">
+		<FormSection id="type-selection" number={2} title="Provider Type Selection" variant="island">
 			<div className="grid grid-cols-1 gap-6">
 				{PROVIDER_TYPES.map((type) => (
 					<FormRadio

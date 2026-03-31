@@ -13,7 +13,7 @@ export const ArtefactsSection = (props: ArtefactsSectionProps) => {
 	const { control, syncDraft } = useDataInterfaceSection(props);
 
 	return (
-		<FormSection id="ARTEFACTS" number={6} title="Artefacts">
+		<FormSection id="ARTEFACTS" number={6} title="Artefacts" variant="island">
 			<div className="space-y-4">
 				<FormField
 					control={control}

@@ -18,12 +18,17 @@ function RouterStudioEditPageContent() {
 
         return {
             name: router.router_alias,
-            strategy: router.router_strategy as any,
-            priority_chain: (router.priority_chain as any[]).map(item => ({
-                model_id: item.model_id,
-                override_params: item.override_params || false,
-                error_timeout: item.error_timeout || 30,
-            })),
+            strategy: (router.router_strategy.toLowerCase() === "load_balancer" ? "load_balancer" : "fallback") as any,
+            priority_chain: (router.priority_chain as any[])?.length > 0 
+                ? (router.priority_chain as any[]).map(item => ({
+                    model_id: item.model_id,
+                    override_params: item.override_params || false,
+                    error_timeout: item.error_timeout || 30,
+                }))
+                : [
+                    { model_id: (router as any).primary_model_id || "", error_timeout: 60, override_params: false },
+                    ...((router as any).fallback_model_id ? [{ model_id: (router as any).fallback_model_id, error_timeout: 30, override_params: false }] : [])
+                ].filter(item => item.model_id),
         };
     }, [router]);
 

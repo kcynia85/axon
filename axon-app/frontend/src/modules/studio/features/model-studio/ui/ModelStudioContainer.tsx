@@ -75,6 +75,7 @@ export const ModelStudioContainer = ({
 	return (
 		<div className="min-h-screen bg-black text-white">
 			<ModelStudio
+				modelId={modelId}
 				onSave={handleSave}
 				onCancel={handleCancel}
 				initialData={initialData}

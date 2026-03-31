@@ -295,6 +295,9 @@ class SettingsService:
     async def list_embedding_models(self) -> List[EmbeddingModel]:
         return await self.repo.list_embedding_models()
 
+    async def delete_embedding_model(self, id: UUID) -> bool:
+        return await self.repo.delete_embedding_model(id)
+
     # --- Chunking Strategy ---
 
     async def create_chunking_strategy(self, request: CreateChunkingStrategyRequest) -> ChunkingStrategy:
@@ -312,6 +315,9 @@ class SettingsService:
 
     async def list_chunking_strategies(self) -> List[ChunkingStrategy]:
         return await self.repo.list_chunking_strategies()
+
+    async def delete_chunking_strategy(self, id: UUID) -> bool:
+        return await self.repo.delete_chunking_strategy(id)
 
     async def simulate_chunking(self, request: SimulateChunkingRequest) -> SimulateChunkingResponse:
         # TODO: Implement real chunking logic (LangChain/TextSplitter)
@@ -347,6 +353,9 @@ class SettingsService:
 
     async def list_vector_databases(self) -> List[VectorDatabase]:
         return await self.repo.list_vector_databases()
+
+    async def delete_vector_database(self, id: UUID) -> bool:
+        return await self.repo.delete_vector_database(id)
 
     async def test_vector_database(self, id: UUID) -> ConnectionTestResponse:
         # TODO: Implement real connection test

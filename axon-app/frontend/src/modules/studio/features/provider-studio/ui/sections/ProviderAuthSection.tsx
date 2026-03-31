@@ -10,6 +10,8 @@ import { FormSelect } from "@/shared/ui/form/FormSelect";
 import { NativeAccordion } from "@/shared/ui/ui/NativeAccordion";
 import { Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
+import { FormLabel } from "@/shared/ui/ui/Form";
+import { cn } from "@/shared/lib/utils";
 
 const PROTOCOL_OPTIONS = [
 	{ id: "openai", name: "OpenAI Compatible" },
@@ -37,8 +39,9 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 			id="auth" 
 			number={1} 
 			title="Auth & Connection"
+			variant="island"
 		>
-			<div className="space-y-12 max-w-2xl">
+			<div className="space-y-12 w-full">
 				{/* Basic Info */}
 				<div className="grid grid-cols-1 gap-10">
 					<FormItemField
@@ -49,6 +52,17 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 						<FormTextField
 							{...register("display_name")}
 							placeholder="np. OpenAI"
+						/>
+					</FormItemField>
+
+					<FormItemField
+						label="Unikalne ID Dostawcy"
+						error={errors.provider_id?.message}
+						hint="Techniczny identyfikator (openai, anthropic, ollama itp)."
+					>
+						<FormTextField
+							{...register("provider_id")}
+							placeholder="openai"
 						/>
 					</FormItemField>
 
@@ -72,11 +86,22 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 					<FormItemField
 						label="Base URL (Endpoint)"
 						error={errors.base_url?.message}
-						hint="Adres serwera API."
+						hint="Bazowy adres API (bez końcówek /chat/completions itp)."
 					>
 						<FormTextField
 							{...register("base_url")}
 							placeholder="https://api.openai.com/v1"
+						/>
+					</FormItemField>
+
+					<FormItemField
+						label="Ścieżka Generowania (Inference Path)"
+						error={errors.inference_path?.message}
+						hint="Końcówka URL służąca do generowania treści (np. /chat/completions)."
+					>
+						<FormTextField
+							{...register("inference_path")}
+							placeholder="/chat/completions"
 						/>
 					</FormItemField>
 				</div>
@@ -104,41 +129,43 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 					</div>
 				</FormItemField>
 
-				{/* Custom Headers Management */}
-				<div className="p-8 bg-zinc-950 border border-zinc-900 rounded-3xl space-y-8">
+				{/* Custom Headers Management - Flat Panoramic style */}
+				<div className="space-y-6 mt-10">
 					<div className="flex items-center justify-between">
-						<FormSubheading>Nagłówki Niestandardowe</FormSubheading>
+						<FormLabel className="text-lg font-mono text-zinc-200 block mb-0">
+							Nagłówki Niestandardowe
+						</FormLabel>
 						<Button 
 							type="button" 
-							variant="outline" 
+							variant="ghost" 
 							size="sm"
 							onClick={() => append({ key: "", value: "" })}
-							className="h-8 text-[10px] font-bold uppercase tracking-widest gap-2"
+							className="h-8 px-4 text-[10px] font-bold uppercase tracking-[0.15em] gap-2 text-zinc-400 hover:text-white hover:bg-zinc-900 border border-white/5 rounded-lg transition-all"
 						>
 							<Plus className="w-3 h-3" /> Dodaj Nagłówek
 						</Button>
 					</div>
 
-					<div className="space-y-4">
+					<div className="space-y-4 pt-2">
 						{fields.length === 0 && (
-							<div className="text-center py-6 border border-dashed border-zinc-800 rounded-2xl">
-								<p className="text-[10px] text-zinc-500 font-mono uppercase tracking-tight">Brak dodatkowych nagłówków</p>
+							<div className="text-center py-10 border border-dashed border-white/15 rounded-3xl bg-zinc-800/40">
+								<p className="text-[10px] text-zinc-500 font-mono uppercase tracking-[0.1em]">Brak zdefiniowanych nagłówków dodatkowych</p>
 							</div>
 						)}
 						{fields.map((field, index) => (
-							<div key={field.id} className="flex gap-3 items-start animate-in fade-in slide-in-from-top-1 duration-200">
+							<div key={field.id} className="flex gap-4 items-start animate-in fade-in slide-in-from-top-1 duration-200">
 								<div className="flex-1">
 									<FormTextField
 										{...register(`custom_headers.${index}.key` as const)}
 										placeholder="Nazwa (np. anthropic-version)"
-										className="bg-zinc-900/50 border-zinc-800"
+										className="h-12"
 									/>
 								</div>
 								<div className="flex-[1.5]">
 									<FormTextField
 										{...register(`custom_headers.${index}.value` as const)}
 										placeholder="Wartość"
-										className="bg-zinc-900/50 border-zinc-800"
+										className="h-12"
 									/>
 								</div>
 								<Button
@@ -146,78 +173,162 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 									variant="ghost"
 									size="icon"
 									onClick={() => remove(index)}
-									className="text-zinc-500 hover:text-red-500 mt-1 h-10 w-10 shrink-0"
+									className="text-zinc-600 hover:text-red-500 hover:bg-red-500/10 h-12 w-12 shrink-0 rounded-lg"
 								>
-									<Trash2 className="w-4 h-4" />
+									<Trash2 className="w-5 h-5" />
 								</Button>
 							</div>
 						))}
 					</div>
 				</div>
 
-				{/* Technical ID (moved down) */}
-				<FormItemField
-					label="Unikalne ID Dostawcy"
-					error={errors.provider_id?.message}
-					hint="Techniczny identyfikator (openai, anthropic, ollama itp)."
-				>
-					<FormTextField
-						{...register("provider_id")}
-						placeholder="openai"
-					/>
-				</FormItemField>
-
-				{/* Advanced Auth Config Toggle */}
+				{/* Advanced Configuration Combined */}
 				<div className="pt-4">
-					<NativeAccordion title="Zaawansowana Autoryzacja (SSoT)">
-						<div className="mt-8 space-y-10">
-							<div className="grid grid-cols-1 gap-8">
-								<FormItemField
-									label="Nazwa nagłówka Auth"
-									error={errors.auth_header_name?.message}
-									hint="Nagłówek przesyłający klucz (np. Authorization, x-api-key)."
-								>
-									<FormTextField
-										{...register("auth_header_name")}
-										placeholder="Authorization"
-									/>
-								</FormItemField>
+					<NativeAccordion title="Zaawansowane">
+						<div className="mt-8 space-y-20 pb-12">
+							{/* Advanced Auth Group - Flat style */}
+							<div className="space-y-0">
+								<FormSubheading className="font-bold mb-2">
+									Parametry Autoryzacji
+								</FormSubheading>
+								<div className="h-px bg-white/10 w-full mb-12" />
+								
+								<div className="grid grid-cols-1 gap-12">
+									<FormItemField
+										label="Nazwa nagłówka Auth"
+										error={errors.auth_header_name?.message}
+										hint="Nagłówek przesyłający klucz (np. Authorization, x-api-key)."
+									>
+										<FormTextField
+											{...register("auth_header_name")}
+											placeholder="Authorization"
+										/>
+									</FormItemField>
 
-								<FormItemField
-									label="Prefix wartości nagłówka"
-									error={errors.auth_header_prefix?.message}
-									hint="Prefix przed kluczem (np. 'Bearer ' - pamiętaj o spacji!)."
-								>
-									<FormTextField
-										{...register("auth_header_prefix")}
-										placeholder="Bearer "
-									/>
-								</FormItemField>
+									<FormItemField
+										label="Prefix wartości nagłówka"
+										error={errors.auth_header_prefix?.message}
+										hint="Prefix przed kluczem (np. 'Bearer ' - pamiętaj o spacji!)."
+									>
+										<FormTextField
+											{...register("auth_header_prefix")}
+											placeholder="Bearer "
+										/>
+									</FormItemField>
 
-								<FormItemField
-									label="Miejsce wstrzyknięcia klucza"
-									error={errors.api_key_placement?.message}
-									hint="Gdzie Axon powinien umieścić klucz API."
-								>
-									<Controller
-										control={control}
-										name="api_key_placement"
-										render={({ field }) => (
-											<div className="grid grid-cols-1 gap-4">
-												<FormRadio
-													title="NAGŁÓWEK (HTTP Header)"
-													checked={field.value === "header"}
-													onChange={() => field.onChange("header")}
+									<FormItemField
+										label="Miejsce wstrzyknięcia klucza"
+										error={errors.api_key_placement?.message}
+										hint="Gdzie Axon powinien umieścić klucz API."
+									>
+										<Controller
+											control={control}
+											name="api_key_placement"
+											render={({ field }) => (
+												<div className="grid grid-cols-1 gap-4">
+													<FormRadio
+														title="NAGŁÓWEK (HTTP Header)"
+														checked={field.value === "header"}
+														onChange={() => field.onChange("header")}
+													/>
+													<FormRadio
+														title="URL (Query Params)"
+														checked={field.value === "query"}
+														onChange={() => field.onChange("query")}
+													/>
+												</div>
+											)}
+										/>
+									</FormItemField>
+								</div>
+							</div>
+
+							{/* Discovery & Model Mapping Group - Flat style */}
+							<div className="space-y-0 pt-4">
+								<FormSubheading className="font-bold mb-2">
+									Discovery & Model Mapping (SSoT)
+								</FormSubheading>
+								<div className="h-px bg-white/10 w-full mb-12" />
+
+								<div className="space-y-12">
+									<div className="space-y-12">
+										<FormItemField 
+											label="Ścieżka do listy modeli" 
+											error={errors.discovery_json_path?.message}
+											hint="Klucz w JSON, pod którym znajduje się tablica modeli (np. 'data' dla OpenAI, 'models' dla Google)."
+										>
+											<FormTextField 
+												{...register("discovery_json_path")}
+												placeholder="data"
+											/>
+										</FormItemField>
+
+										<FormItemField 
+											label="Klucz ID modelu" 
+											error={errors.discovery_id_key?.message}
+											hint="Unikalny identyfikator (np. 'id', 'name')."
+										>
+											<FormTextField 
+												{...register("discovery_id_key")}
+												placeholder="id"
+											/>
+										</FormItemField>
+
+										<FormItemField 
+											label="Klucz Nazwy modelu" 
+											error={errors.discovery_name_key?.message}
+											hint="Nazwa wyświetlana (np. 'name', 'displayName')."
+										>
+											<FormTextField 
+												{...register("discovery_name_key")}
+												placeholder="name"
+											/>
+										</FormItemField>
+
+										<FormItemField 
+											label="Klucz Context Window" 
+											error={errors.discovery_context_key?.message}
+											hint="Limit tokenów (np. 'context_length', 'inputTokenLimit')."
+										>
+											<FormTextField 
+												{...register("discovery_context_key")}
+												placeholder="context_length"
+											/>
+										</FormItemField>
+									</div>
+
+									{/* Inference Response Mapping Group - Flat style */}
+									<div className="space-y-0 pt-4">
+										<FormSubheading className="font-bold mb-2">
+											Inference Response Mapping
+										</FormSubheading>
+										<div className="h-px bg-white/10 w-full mb-12" />
+										
+										<div className="space-y-12">
+											<FormItemField 
+												label="Ścieżka do treści odpowiedzi" 
+												error={errors.response_content_path?.message}
+												hint="Kropkowa notacja ścieżki do tekstu (np. 'choices.0.message.content' dla OpenAI, 'content.0.text' dla Anthropic)."
+											>
+												<FormTextField 
+													{...register("response_content_path")}
+													placeholder="choices.0.message.content"
 												/>
-												<FormRadio
-													title="URL (Query Params)"
-													checked={field.value === "query"}
-													onChange={() => field.onChange("query")}
+											</FormItemField>
+
+											<FormItemField 
+												label="Ścieżka do błędu" 
+												error={errors.response_error_path?.message}
+												hint="Skąd Axon ma pobrać opis błędu w przypadku niepowodzenia (np. 'error.message')."
+											>
+												<FormTextField 
+													{...register("response_error_path")}
+													placeholder="error.message"
 												/>
-											</div>
-										)}
-									/>
-								</FormItemField>
+											</FormItemField>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</NativeAccordion>

@@ -119,18 +119,6 @@ export const LLMProviderSidePeek = ({ provider, isOpen, onClose, onConfigure, on
             </div>
           </div>
         </section>
-
-        {/* ── Status Info ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground">
-            Status Połączenia
-          </h4>
-          <div className="flex flex-wrap gap-1.5">
-            <Badge variant="outline" className="text-base font-normal border-green-500/20 text-green-500 bg-green-500/5">
-              Aktywny i zweryfikowany
-            </Badge>
-          </div>
-        </section>
       </div>
     </SidePeek>
   );

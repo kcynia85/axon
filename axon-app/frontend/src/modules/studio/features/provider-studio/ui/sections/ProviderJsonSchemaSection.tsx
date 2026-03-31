@@ -12,17 +12,16 @@ export const ProviderJsonSchemaSection = () => {
 
 	const generateDefaultSchema = () => {
 		const defaultSchema = JSON.stringify({
-			"model": "string",
-			"messages": "array",
-			"temperature": "number",
-			"max_tokens": "number"
+			"model": "{{model}}",
+			"messages": [{"role": "user", "content": "{{prompt}}"}],
+			"temperature": 0.7
 		}, null, 2);
 		setValue("json_schema_mapping", defaultSchema);
 	};
 
 	return (
-		<FormSection id="schema" number={4} title="JSON Parameters Schema">
-			<div className="space-y-12 max-w-3xl">
+		<FormSection id="schema" number={4} title="Definicja Parametrów JSON" variant="island">
+			<div className="space-y-12 w-full">
 				<div className="flex items-center gap-4">
 					<Button 
 						type="button"

@@ -8,9 +8,10 @@ interface RouterGraphNodeProps {
 	x: number;
 	y: number;
 	sequenceNumber?: number;
+	hideNumber?: boolean;
 }
 
-export const RouterGraphNode = ({ name, type, x, y, sequenceNumber }: RouterGraphNodeProps) => {
+export const RouterGraphNode = ({ name, type, x, y, sequenceNumber, hideNumber }: RouterGraphNodeProps) => {
 	const isRouter = type === "router";
 
 	return (
@@ -37,7 +38,7 @@ export const RouterGraphNode = ({ name, type, x, y, sequenceNumber }: RouterGrap
 						<>
 							<div className="relative flex items-center justify-center transition-all duration-500 text-zinc-500">
 								{/* Sequence Number Badge - Centered vertically on left edge of icon */}
-								{sequenceNumber && (
+								{sequenceNumber && !hideNumber && (
 									<div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-primary text-black flex items-center justify-center text-xs font-black border-4 border-black z-20 shadow-2xl">
 										{sequenceNumber}
 									</div>

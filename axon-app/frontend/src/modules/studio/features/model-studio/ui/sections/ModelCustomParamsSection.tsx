@@ -4,13 +4,13 @@ import type { ModelFormData } from "../../types/model-schema";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormPropertyTable } from "@/shared/ui/form/FormPropertyTable";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
-import type { FormPropertyTableItem } from "@/shared/types/form/FormPropertyTable.types";
+import type { FormPropertyTableItem, FormPropertyFieldType } from "@/shared/types/form/FormPropertyTable.types";
 
-const TYPE_OPTIONS = [
-    { value: "String", label: "String" },
-    { value: "Int", label: "Int" },
-    { value: "Boolean", label: "Boolean" },
-    { value: "Float", label: "Float" }
+const TYPE_OPTIONS: { label: string; value: FormPropertyFieldType }[] = [
+    { value: "string", label: "String" },
+    { value: "number", label: "Number" },
+    { value: "boolean", label: "Boolean" },
+    { value: "json", label: "JSON" }
 ];
 
 export const ModelCustomParamsSection: React.FC = () => {
@@ -22,6 +22,7 @@ export const ModelCustomParamsSection: React.FC = () => {
             number={3} 
             title="Parametry Niestandardowe (Passthrough)"
             description="Wstrzyknij dodatkowe parametry bezpośrednio do payloadu JSON wysyłanego do dostawcy."
+            variant="island"
         >
             <div className="space-y-12 max-w-4xl">
                 <FormItemField 

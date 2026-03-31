@@ -18,6 +18,8 @@ class CreateLLMProviderRequest(BaseModel):
 
     # Core Agnostic Configuration
     protocol: str = "openai"
+    inference_path: str = "/chat/completions"
+    inference_json_template: str = '{"model": "{{model}}", "messages": [{"role": "user", "content": "{{prompt}}"}]}'
     custom_headers: List[Dict[str, str]] = Field(default_factory=list)
 
     # Discovery & Auth Configuration (SSoT)
@@ -43,6 +45,8 @@ class UpdateLLMProviderRequest(BaseModel):
     provider_custom_config: Optional[Dict[str, Any]] = None
 
     protocol: Optional[str] = None
+    inference_path: Optional[str] = None
+    inference_json_template: Optional[str] = None
     custom_headers: Optional[List[Dict[str, str]]] = None
 
     # Discovery & Auth Configuration (SSoT)
@@ -60,6 +64,7 @@ class LLMProviderResponse(CreateLLMProviderRequest):
     id: UUID
     created_at: datetime
     updated_at: datetime
+    deleted_at: Optional[datetime] = None
 
 # LLM Model
 class CreateLLMModelRequest(BaseModel):
@@ -92,6 +97,7 @@ class LLMModelResponse(CreateLLMModelRequest):
     id: UUID
     created_at: datetime
     updated_at: datetime
+    deleted_at: Optional[datetime] = None
 
 # LLM Router
 class CreateLLMRouterRequest(BaseModel):
@@ -116,6 +122,7 @@ class LLMRouterResponse(CreateLLMRouterRequest):
     id: UUID
     created_at: datetime
     updated_at: datetime
+    deleted_at: Optional[datetime] = None
 
 class TestPromptRequest(BaseModel):
     prompt: str
@@ -141,6 +148,7 @@ class EmbeddingModelResponse(CreateEmbeddingModelRequest):
     id: UUID
     created_at: datetime
     updated_at: datetime
+    deleted_at: Optional[datetime] = None
 
 class CreateChunkingStrategyRequest(BaseModel):
     strategy_name: str
@@ -153,6 +161,7 @@ class ChunkingStrategyResponse(CreateChunkingStrategyRequest):
     id: UUID
     created_at: datetime
     updated_at: datetime
+    deleted_at: Optional[datetime] = None
 
 class SimulateChunkingRequest(BaseModel):
     text: str
@@ -179,6 +188,7 @@ class VectorDatabaseResponse(CreateVectorDatabaseRequest):
     vector_database_size: int
     created_at: datetime
     updated_at: datetime
+    deleted_at: Optional[datetime] = None
 
 class AvailableModelResponse(BaseModel):
     id: str

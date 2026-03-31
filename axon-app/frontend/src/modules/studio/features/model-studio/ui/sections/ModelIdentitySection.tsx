@@ -81,6 +81,7 @@ export const ModelIdentitySection = ({ modelId }: ModelIdentitySectionProps) => 
             number={1} 
             title="Tożsamość"
             description="Zdefiniuj podstawową tożsamość modelu oraz jego powiązanie z dostawcą."
+            variant="island"
         >
             <div className="space-y-12 max-w-4xl">
                 {/* Wybierz Dostawcę */}

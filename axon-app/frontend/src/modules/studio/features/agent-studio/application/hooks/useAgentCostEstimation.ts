@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
-import { useLLMModel, useLLMProviders } from "@/modules/settings/application/useSettings";
+import { useLLMModel } from "@/modules/settings/application/useSettings";
+import { useLLMProviders } from "@/modules/settings/application/useLLMProviders";
 import { countTokens, estimateCost, TokenizationStrategy } from "@/shared/lib/tokenization";
 import { CostEstimatorData } from "@/modules/agents/ui/CostEstimator";
 

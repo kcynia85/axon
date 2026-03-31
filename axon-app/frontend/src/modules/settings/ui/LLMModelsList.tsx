@@ -11,64 +11,250 @@ import {
     TableHeader,
     TableRow
 } from "@/shared/ui/ui/Table";
+import { 
+    DropdownMenu, 
+    DropdownMenuContent, 
+    DropdownMenuItem, 
+    DropdownMenuTrigger 
+} from "@/shared/ui/ui/DropdownMenu";
+import { Button } from "@/shared/ui/ui/Button";
+import { 
+    MoreHorizontal, 
+    Pencil, 
+    Trash2, 
+    Search,
+    Filter,
+    Info,
+    ArrowUpDown
+} from "lucide-react";
+import { Input } from "@/shared/ui/ui/Input";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { Search } from "lucide-react";
-import { Input } from "@/shared/ui/ui/Input";
+import { cn } from "@/shared/lib/utils";
+import { Tooltip } from "@/shared/ui/ui/Tooltip";
 import { LLMModelSidePeek } from "./LLMModelSidePeek";
 import type { LLMModel } from "@/shared/domain/settings";
 import { useRouter } from "next/navigation";
+import { FilterBigMenu } from "@/shared/ui/complex/FilterBigMenu";
+import { SortMenu } from "@/shared/ui/complex/SortMenu";
+import { FilterBar } from "@/shared/ui/complex/FilterBar";
+import { FilterGroup, ActiveFilter } from "@/shared/domain/filters";
+import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useLLMModelUsage } from "../application/useSettings";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
+import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
+
+const STATIC_CAPABILITIES = [
+    { id: "vision", label: "Vision" },
+    { id: "streaming", label: "Streaming" },
+    { id: "tools", label: "Tools" },
+    { id: "json", label: "JSON Mode" },
+    { id: "audio", label: "Audio" },
+    { id: "thinking", label: "Thinking / Reasoning" },
+];
+
+const STATIC_TIERS = [
+    { id: "Tier1", label: "Tier 1 (High-End)" },
+    { id: "Tier2", label: "Tier 2 (Mid/Basic)" },
+];
+
+const SORT_OPTIONS = [
+    { id: "name_asc", label: "Name (A-Z)" },
+    { id: "name_desc", label: "Name (Z-A)" },
+    { id: "context_desc", label: "Context (Largest First)" },
+    { id: "context_asc", label: "Context (Smallest First)" },
+    { id: "price_in_asc", label: "Input Cost (Lowest First)" },
+    { id: "price_out_asc", label: "Output Cost (Lowest First)" },
+];
 
 /**
  * LLMModelsList: Displays available LLM models in a table.
- * Standard: 0% useEffect, arrow function.
  */
 export const LLMModelsList = () => {
     const router = useRouter();
     const { data: models, isLoading } = useLLMModels();
     const { data: providers } = useLLMProviders();
     const { mutateAsync: deleteModel } = useDeleteLLMModel();
+    const { deleteWithUndo } = useDeleteWithUndo();
+    const { pendingIds } = usePendingDeletionsStore();
     
     const [search, setSearch] = React.useState("");
-    const [selectedModel, setSelectedModel] = React.useState<LLMModel | null>(null);
+    const [selectedModelId, setSelectedModelId] = React.useState<string | null>(null);
+    const [activeFilters, setActiveFilters] = React.useState<ActiveFilter[]>([]);
+    const [sortBy, setSortBy] = React.useState("name_asc");
 
-    if (isLoading) {
-        return (
-            <div className="space-y-4">
-                <Skeleton className="h-9 w-64 rounded-md" />
-                <div className="border rounded-md">
-                    <div className="h-10 bg-muted/30 border-b flex items-center px-4 gap-4">
-                        <Skeleton className="h-3 w-32" />
-                        <Skeleton className="h-3 w-32" />
-                        <Skeleton className="h-3 w-32" />
-                    </div>
-                    {[1, 2, 3, 4, 5].map((i) => (
-                        <div key={i} className="h-14 border-b flex items-center px-4 gap-4">
-                            <Skeleton className="h-4 w-40" />
-                            <Skeleton className="h-4 w-32" />
-                            <Skeleton className="h-4 w-24" />
-                            <Skeleton className="h-4 flex-1" />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-    }
+    // Deletion Modal State
+    const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [modelToDeleteId, setModelToDeleteId] = React.useState<string | null>(null);
+    
+    const { data: usageData, isLoading: isLoadingUsage } = useLLMModelUsage(modelToDeleteId || undefined);
 
-    const filteredModels = models?.filter(m =>
-        m.model_display_name.toLowerCase().includes(search.toLowerCase()) ||
-        m.model_id.toLowerCase().includes(search.toLowerCase())
-    );
+    const modelToDelete = React.useMemo(() => {
+        if (!modelToDeleteId || !models) return null;
+        return models.find(m => m.id === modelToDeleteId) || null;
+    }, [models, modelToDeleteId]);
 
-    const handleDeleteModel = async (id: string) => {
-        if (confirm("Czy na pewno chcesz usunąć ten model z inwentarza?")) {
-            try {
-                await deleteModel(id);
-                setSelectedModel(null);
-            } catch (error) {
-                console.error("Failed to delete model:", error);
-            }
+    const affectedResources = React.useMemo(() => {
+        if (!usageData?.used_by) return [];
+        return usageData.used_by.map((name, index) => ({
+            id: `usage-${index}`,
+            name: name,
+            role: "Assigned To"
+        }));
+    }, [usageData]);
+
+    const filterGroups = React.useMemo(() => {
+        const activeIds = activeFilters.map(f => f.id);
+        
+        const groups: FilterGroup[] = [];
+
+        // 1. Providers Group
+        if (providers) {
+            groups.push({
+                id: "providers",
+                title: "Providers",
+                type: "checkbox",
+                options: providers.map(p => ({
+                    id: p.id,
+                    label: p.provider_name,
+                    isChecked: activeIds.includes(p.id)
+                }))
+            });
         }
+
+        // 2. Capabilities Group
+        groups.push({
+            id: "capabilities",
+            title: "Capabilities",
+            type: "checkbox",
+            options: STATIC_CAPABILITIES.map(c => ({
+                id: c.id,
+                label: c.label,
+                isChecked: activeIds.includes(c.id)
+            }))
+        });
+
+        // 3. Tiers Group
+        groups.push({
+            id: "tiers",
+            title: "Tiers",
+            type: "checkbox",
+            options: STATIC_TIERS.map(t => ({
+                id: t.id,
+                label: t.label,
+                isChecked: activeIds.includes(t.id)
+            }))
+        });
+
+        return groups;
+    }, [providers, activeFilters]);
+
+    const handleApplyFilters = (selectedIds: string[]) => {
+        const nextFilters: ActiveFilter[] = [];
+        
+        filterGroups.forEach(group => {
+            group.options.forEach(opt => {
+                if (selectedIds.includes(opt.id)) {
+                    nextFilters.push({
+                        id: opt.id,
+                        label: opt.label,
+                        category: group.id
+                    });
+                }
+            });
+        });
+
+        setActiveFilters(nextFilters);
+    };
+
+    const handleRemoveFilter = (filterId: string) => {
+        setActiveFilters(prev => prev.filter(f => f.id !== filterId));
+    };
+
+    const selectedModel = React.useMemo(() => {
+        if (!selectedModelId || !models) return null;
+        return models.find(m => m.id === selectedModelId) || null;
+    }, [models, selectedModelId]);
+
+    const filteredModels = React.useMemo(() => {
+        if (!models) return [];
+
+        const filtered = models
+            .filter(m => !pendingIds.has(m.id))
+            .filter(m => {
+                // 1. Search Filter
+                const matchesSearch = 
+                    m.model_display_name.toLowerCase().includes(search.toLowerCase()) ||
+                    m.model_id.toLowerCase().includes(search.toLowerCase());
+                
+                if (!matchesSearch) return false;
+
+                // 2. Category Filters
+                const selectedProviderIds = activeFilters.filter(f => f.category === "providers").map(f => f.id);
+                const selectedCapabilityIds = activeFilters.filter(f => f.category === "capabilities").map(f => f.id);
+                const selectedTierIds = activeFilters.filter(f => f.category === "tiers").map(f => f.id);
+
+                // Providers (OR)
+                if (selectedProviderIds.length > 0 && !selectedProviderIds.includes(m.llm_provider_id)) {
+                    return false;
+                }
+
+                // Capabilities (AND)
+                if (selectedCapabilityIds.length > 0) {
+                    const hasAllCapabilities = selectedCapabilityIds.every(id => 
+                        m.model_capabilities_flags?.includes(id)
+                    );
+                    if (!hasAllCapabilities) return false;
+                }
+
+                // Tiers (OR)
+                if (selectedTierIds.length > 0) {
+                    const modelTier = m.model_tier.toUpperCase();
+                    const matchesTier = selectedTierIds.some(id => id.toUpperCase() === modelTier);
+                    if (!matchesTier) return false;
+                }
+
+                return true;
+            });
+
+        // 3. Sorting
+        return [...filtered].sort((a, b) => {
+            switch (sortBy) {
+                case "name_asc":
+                    return a.model_display_name.localeCompare(b.model_display_name);
+                case "name_desc":
+                    return b.model_display_name.localeCompare(a.model_display_name);
+                case "context_desc":
+                    return b.model_context_window - a.model_context_window;
+                case "context_asc":
+                    return a.model_context_window - b.model_context_window;
+                case "price_in_asc":
+                    return ((a.model_pricing_config.input as number) || 0) - ((b.model_pricing_config.input as number) || 0);
+                case "price_out_asc":
+                    return ((a.model_pricing_config.output as number) || 0) - ((b.model_pricing_config.output as number) || 0);
+                default:
+                    return 0;
+            }
+        });
+    }, [models, search, activeFilters, sortBy, pendingIds]);
+
+    const confirmDeleteModel = (id: string) => {
+        setModelToDeleteId(id);
+        setDeleteModalOpen(true);
+    };
+
+    const handleDeleteModelExecution = async () => {
+        if (!modelToDeleteId) return;
+        const model = models?.find(m => m.id === modelToDeleteId);
+        if (!model) return;
+
+        deleteWithUndo(model.id, model.model_display_name, () => deleteModel(model.id));
+        
+        setDeleteModalOpen(false);
+        if (selectedModelId === modelToDeleteId) {
+            setSelectedModelId(null);
+        }
+        setModelToDeleteId(null);
     };
 
     const handleEditModel = (model: LLMModel) => {
@@ -79,15 +265,66 @@ export const LLMModelsList = () => {
         return providers?.find(p => p.id === providerId)?.provider_name || "Unknown";
     };
 
+    if (isLoading) {
+        return <Skeleton className="h-64 w-full rounded-2xl" />;
+    }
+
     return (
         <div className="space-y-4">
-            <div className="relative max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                    placeholder="Search models..."
-                    className="pl-9 h-9 text-xs"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between gap-4">
+                    <div className="relative flex-1 max-w-sm">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                        <Input
+                            placeholder="Search models by name or id..."
+                            className="pl-10 h-[52px] text-xs border-zinc-200 dark:border-zinc-800"
+                            value={search}
+                            onChange={(event) => setSearch(event.target.value)}
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-6 h-9">
+                        <FilterBigMenu
+                            groups={filterGroups}
+                            resultsCount={filteredModels.length}
+                            onApply={handleApplyFilters}
+                            onClearAll={() => setActiveFilters([])}
+                            trigger={
+                                <div className={cn(
+                                    "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent transition-all pb-1.5 cursor-pointer group outline-none translate-y-[2px]",
+                                    activeFilters.length > 0 
+                                        ? "text-black dark:text-white border-black dark:border-white" 
+                                        : "text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white"
+                                )}>
+                                    <Filter size={14} className="group-hover:scale-110 transition-transform" />
+                                    <span>Filters</span>
+                                    {activeFilters.length > 0 && (
+                                        <Badge variant="secondary" className="ml-0.5 h-4 min-w-4 px-1 rounded-full text-[9px] font-black bg-black dark:bg-white text-white dark:text-black">
+                                            {activeFilters.length}
+                                        </Badge>
+                                    )}
+                                </div>
+                            }
+                        />
+
+                        <SortMenu 
+                            options={SORT_OPTIONS}
+                            activeOptionId={sortBy}
+                            onSelect={(id) => setSortBy(id)}
+                            trigger={
+                                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1.5 cursor-pointer group outline-none translate-y-[2px]">
+                                    <ArrowUpDown size={14} className="group-hover:scale-110 transition-transform" />
+                                    <span>Sort</span>
+                                </div>
+                            }
+                        />
+                    </div>
+                </div>
+
+                <FilterBar 
+                    activeFilters={activeFilters}
+                    onRemove={handleRemoveFilter}
+                    onClearAll={() => setActiveFilters([])}
                 />
             </div>
 
@@ -96,18 +333,32 @@ export const LLMModelsList = () => {
                     <TableHeader className="bg-muted/30">
                         <TableRow>
                             <TableHead className="text-[10px] uppercase font-bold tracking-widest">Model Name</TableHead>
-                            <TableHead className="text-[10px] uppercase font-bold tracking-widest">Identifier</TableHead>
-                            <TableHead className="text-[10px] uppercase font-bold tracking-widest">Capabilities</TableHead>
                             <TableHead className="text-[10px] uppercase font-bold tracking-widest text-right">Context</TableHead>
-                            <TableHead className="text-[10px] uppercase font-bold tracking-widest text-right">Pricing (1M)</TableHead>
+                            <TableHead className="text-[10px] uppercase font-bold tracking-widest text-right">
+                                <div className="flex items-center justify-end gap-1.5">
+                                    In
+                                    <Tooltip content="Koszt za 1 mln tokenów">
+                                        <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                                    </Tooltip>
+                                </div>
+                            </TableHead>
+                            <TableHead className="text-[10px] uppercase font-bold tracking-widest text-right">
+                                <div className="flex items-center justify-end gap-1.5">
+                                    Out
+                                    <Tooltip content="Koszt za 1 mln tokenów">
+                                        <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                                    </Tooltip>
+                                </div>
+                            </TableHead>
+                            <TableHead className="w-[50px]"></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {filteredModels?.map((model) => (
                             <TableRow 
                                 key={model.id} 
-                                className="group hover:bg-muted/10 cursor-pointer"
-                                onClick={() => setSelectedModel(model)}
+                                className="group h-[56px] hover:bg-muted/10 even:bg-muted/15 cursor-pointer"
+                                onClick={() => setSelectedModelId(model.id)}
                             >
                                 <TableCell>
                                     <div className="flex flex-col">
@@ -115,26 +366,36 @@ export const LLMModelsList = () => {
                                         <span className="text-xs text-muted-foreground font-mono">{getProviderName(model.llm_provider_id)}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell className="text-base font-mono opacity-60">
-                                    {model.model_id}
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex gap-1">
-                                        {model.model_capabilities_flags.slice(0, 3).map((cap: string, i: number) => (
-                                            <Badge key={i} variant="outline" className="text-[10px] h-4 px-1.5">{cap}</Badge>
-                                        ))}
-                                    </div>
-                                </TableCell>
                                 <TableCell className="text-right text-base font-mono">
                                     <span suppressHydrationWarning>{model.model_context_window.toLocaleString()}</span>
                                 </TableCell>
-                                <TableCell className="text-right">
-                                    <div className="text-base font-mono">
-                                        In: ${((model.model_pricing_config.input as number) || 0).toFixed(2)}
-                                    </div>
-                                    <div className="text-xs font-mono opacity-60">
-                                        Out: ${((model.model_pricing_config.output as number) || 0).toFixed(2)}
-                                    </div>
+                                <TableCell className="text-right text-base font-mono">
+                                    ${((model.model_pricing_config.input as number) || 0).toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-right text-base font-mono">
+                                    ${((model.model_pricing_config.output as number) || 0).toFixed(2)}
+                                </TableCell>
+                                <TableCell onClick={(e) => e.stopPropagation()} className="w-[50px]">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 transition-opacity border-none">
+                                                <MoreHorizontal className="h-4 w-4 text-zinc-500" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="w-[160px]">
+                                            <DropdownMenuItem onClick={() => handleEditModel(model)}>
+                                                <Pencil className="mr-2 h-4 w-4" />
+                                                Edit Model
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                                className="text-red-500 focus:text-red-500" 
+                                                onClick={() => confirmDeleteModel(model.id)}
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Delete Model
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -152,10 +413,23 @@ export const LLMModelsList = () => {
             <LLMModelSidePeek 
                 model={selectedModel}
                 isOpen={!!selectedModel}
-                onClose={() => setSelectedModel(null)}
-                onDelete={handleDeleteModel}
+                onClose={() => setSelectedModelId(null)}
+                onDelete={confirmDeleteModel}
                 onEdit={handleEditModel}
                 providerName={selectedModel ? getProviderName(selectedModel.llm_provider_id) : undefined}
+            />
+
+            <DestructiveDeleteModal
+                isOpen={deleteModalOpen}
+                onClose={() => {
+                    setDeleteModalOpen(false);
+                    setModelToDeleteId(null);
+                }}
+                onConfirm={handleDeleteModelExecution}
+                title="Usuń Model"
+                resourceName={modelToDelete?.model_display_name || "Model"}
+                affectedResources={affectedResources}
+                isLoading={isLoadingUsage}
             />
         </div>
     );

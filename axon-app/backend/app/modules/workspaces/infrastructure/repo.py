@@ -309,17 +309,30 @@ class WorkspaceRepository:
 
     async def get_trash(self) -> List[TrashItem]:
         from app.modules.agents.infrastructure.tables import AgentConfigTable
+        from app.modules.settings.infrastructure.tables import (
+            LLMProviderTable, LLMModelTable, LLMRouterTable, 
+            EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable
+        )
         
         # Build union query for all tables
         # Since schemas differ, we select only the common fields: id, name, type, deleted_at
         
         queries = [
+            # Workspaces module
             select(PatternTable.id, PatternTable.pattern_name.label("name"), func.cast("pattern", String).label("type"), PatternTable.deleted_at).where(PatternTable.deleted_at != None),
             select(TemplateTable.id, TemplateTable.template_name.label("name"), func.cast("template", String).label("type"), TemplateTable.deleted_at).where(TemplateTable.deleted_at != None),
             select(CrewTable.id, CrewTable.crew_name.label("name"), func.cast("crew", String).label("type"), CrewTable.deleted_at).where(CrewTable.deleted_at != None),
             select(ExternalServiceTable.id, ExternalServiceTable.service_name.label("name"), func.cast("service", String).label("type"), ExternalServiceTable.deleted_at).where(ExternalServiceTable.deleted_at != None),
             select(AutomationTable.id, AutomationTable.automation_name.label("name"), func.cast("automation", String).label("type"), AutomationTable.deleted_at).where(AutomationTable.deleted_at != None),
-            select(AgentConfigTable.id, func.coalesce(AgentConfigTable.agent_name, AgentConfigTable.agent_role_text).label("name"), func.cast("agent", String).label("type"), AgentConfigTable.deleted_at).where(AgentConfigTable.deleted_at != None)
+            # Agents module
+            select(AgentConfigTable.id, func.coalesce(AgentConfigTable.agent_name, AgentConfigTable.agent_role_text).label("name"), func.cast("agent", String).label("type"), AgentConfigTable.deleted_at).where(AgentConfigTable.deleted_at != None),
+            # Settings module
+            select(LLMProviderTable.id, LLMProviderTable.provider_name.label("name"), func.cast("llm_provider", String).label("type"), LLMProviderTable.deleted_at).where(LLMProviderTable.deleted_at != None),
+            select(LLMModelTable.id, LLMModelTable.model_display_name.label("name"), func.cast("llm_model", String).label("type"), LLMModelTable.deleted_at).where(LLMModelTable.deleted_at != None),
+            select(LLMRouterTable.id, LLMRouterTable.router_alias.label("name"), func.cast("llm_router", String).label("type"), LLMRouterTable.deleted_at).where(LLMRouterTable.deleted_at != None),
+            select(EmbeddingModelTable.id, EmbeddingModelTable.model_id.label("name"), func.cast("embedding_model", String).label("type"), EmbeddingModelTable.deleted_at).where(EmbeddingModelTable.deleted_at != None),
+            select(ChunkingStrategyTable.id, ChunkingStrategyTable.strategy_name.label("name"), func.cast("chunking_strategy", String).label("type"), ChunkingStrategyTable.deleted_at).where(ChunkingStrategyTable.deleted_at != None),
+            select(VectorDatabaseTable.id, VectorDatabaseTable.vector_database_name.label("name"), func.cast("vector_database", String).label("type"), VectorDatabaseTable.deleted_at).where(VectorDatabaseTable.deleted_at != None)
         ]
         
         trash_items = []
@@ -339,6 +352,10 @@ class WorkspaceRepository:
 
     async def restore_item(self, item_id: UUID, item_type: str) -> bool:
         from app.modules.agents.infrastructure.tables import AgentConfigTable
+        from app.modules.settings.infrastructure.tables import (
+            LLMProviderTable, LLMModelTable, LLMRouterTable, 
+            EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable
+        )
         
         table_map = {
             "pattern": PatternTable,
@@ -346,7 +363,13 @@ class WorkspaceRepository:
             "crew": CrewTable,
             "service": ExternalServiceTable,
             "automation": AutomationTable,
-            "agent": AgentConfigTable
+            "agent": AgentConfigTable,
+            "llm_provider": LLMProviderTable,
+            "llm_model": LLMModelTable,
+            "llm_router": LLMRouterTable,
+            "embedding_model": EmbeddingModelTable,
+            "chunking_strategy": ChunkingStrategyTable,
+            "vector_database": VectorDatabaseTable
         }
         
         table = table_map.get(item_type.lower())
@@ -360,6 +383,10 @@ class WorkspaceRepository:
 
     async def purge_item(self, item_id: UUID, item_type: str) -> bool:
         from app.modules.agents.infrastructure.tables import AgentConfigTable
+        from app.modules.settings.infrastructure.tables import (
+            LLMProviderTable, LLMModelTable, LLMRouterTable, 
+            EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable
+        )
         
         table_map = {
             "pattern": PatternTable,
@@ -367,7 +394,13 @@ class WorkspaceRepository:
             "crew": CrewTable,
             "service": ExternalServiceTable,
             "automation": AutomationTable,
-            "agent": AgentConfigTable
+            "agent": AgentConfigTable,
+            "llm_provider": LLMProviderTable,
+            "llm_model": LLMModelTable,
+            "llm_router": LLMRouterTable,
+            "embedding_model": EmbeddingModelTable,
+            "chunking_strategy": ChunkingStrategyTable,
+            "vector_database": VectorDatabaseTable
         }
         
         table = table_map.get(item_type.lower())

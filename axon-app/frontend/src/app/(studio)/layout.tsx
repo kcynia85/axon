@@ -6,7 +6,7 @@ const StudioLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="h-screen w-screen overflow-hidden bg-background">
+    <div className="h-screen w-screen overflow-hidden bg-background" suppressHydrationWarning>
       {children}
     </div>
   );

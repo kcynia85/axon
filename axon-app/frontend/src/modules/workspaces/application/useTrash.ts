@@ -33,6 +33,13 @@ export const useRestoreItem = (): UseMutationResult<void, Error, { id: string; t
             queryClient.invalidateQueries({ queryKey: ["automations"] });
             queryClient.invalidateQueries({ queryKey: ["agents"] });
             queryClient.invalidateQueries({ queryKey: ["services"] });
+            // Settings module
+            queryClient.invalidateQueries({ queryKey: ["llm-models"] });
+            queryClient.invalidateQueries({ queryKey: ["llm-providers"] });
+            queryClient.invalidateQueries({ queryKey: ["llm-routers"] });
+            queryClient.invalidateQueries({ queryKey: ["embedding-models"] });
+            queryClient.invalidateQueries({ queryKey: ["chunking-strategies"] });
+            queryClient.invalidateQueries({ queryKey: ["vector-databases"] });
         },
     });
 };

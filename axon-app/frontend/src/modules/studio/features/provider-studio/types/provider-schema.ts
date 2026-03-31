@@ -5,6 +5,11 @@ const CustomHeaderSchema = z.object({
 	value: z.string().min(1, "Wartość jest wymagana"),
 });
 
+const ApiAdapterMappingSchema = z.object({
+	axon_key: z.string().min(1, "Klucz Axon jest wymagany"),
+	provider_key: z.string().min(1, "Klucz Dostawcy jest wymagany"),
+});
+
 const BaseProviderSchema = z.object({
 	display_name: z.string().min(1, "Nazwa jest wymagana"),
 	provider_id: z.string().min(1, "ID jest wymagane"),
@@ -20,6 +25,7 @@ const BaseProviderSchema = z.object({
 	
 	// Advanced Connection
 	custom_headers: z.array(CustomHeaderSchema).default([]),
+	api_adapter_mapping: z.array(ApiAdapterMappingSchema).default([]),
 	
 	// Model Discovery Mapping
 	discovery_json_path: z.string().min(1, "Wymagane").default("data"),
@@ -31,6 +37,7 @@ const BaseProviderSchema = z.object({
 	response_content_path: z.string().default("choices.0.message.content"),
 	response_error_path: z.string().default("error.message"),
 	
+	inference_path: z.string().min(1, "Wymagane").default("/chat/completions"),
 	json_schema_mapping: z.string().optional(),
 });
 

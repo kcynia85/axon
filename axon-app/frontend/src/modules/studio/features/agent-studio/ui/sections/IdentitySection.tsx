@@ -14,8 +14,8 @@ export const IdentitySection = React.memo((props: IdentitySectionProps) => {
 	const { control, syncDraft } = useIdentitySection(props);
 
 	return (
-		<FormSection id="IDENTITY" number={1} title="Identity">
-			<div className="space-y-12">
+		<FormSection id="IDENTITY" number={1} title="Identity" variant="island">
+			<div className="space-y-12 w-full">
 				<FormField
 					control={control}
 					name="agent_visual_url"
@@ -23,7 +23,7 @@ export const IdentitySection = React.memo((props: IdentitySectionProps) => {
 						<FormItemField>
 							<AvatarGallerySlider
 								value={field.value}
-								onChange={(url) => {
+								onChange={(url: string) => {
 									field.onChange(url);
 									syncDraft();
 								}}

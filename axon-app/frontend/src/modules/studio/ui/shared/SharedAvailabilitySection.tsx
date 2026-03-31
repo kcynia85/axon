@@ -25,6 +25,7 @@ export const SharedAvailabilitySection = ({ name, number = 4, onSyncDraft }: Pro
       number={number}
       title="Dostępność"
       description="Określ, w których przestrzeniach roboczych encja ma być widoczna."
+      variant="island"
     >
       <FormField
         control={control}

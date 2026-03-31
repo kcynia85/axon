@@ -43,15 +43,16 @@ export const ModelStudioView = ({
 		<FormProvider {...form}>
 			<div className="h-full w-full outline-none" tabIndex={0}>
 				<StudioLayout
+					studioLabel="Model"
 					canvasRef={setCanvasContainerReference as any}
 					exitButton={
 						<Button
 							variant="ghost"
-							size="sm"
+							size="icon"
 							onClick={onCancel}
-							className="hover:bg-zinc-900 gap-2 text-zinc-400 hover:text-white px-4 font-mono text-[10px] uppercase tracking-[0.2em] border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+							className="hover:bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all h-9 w-9"
 						>
-							<X className="w-4 h-4" /> Exit
+							<X className="w-4 h-4" />
 						</Button>
 					}
 					navigator={
@@ -63,8 +64,8 @@ export const ModelStudioView = ({
                         />
 					}
 					canvas={
-						<div className="px-24 pb-48">
-							<form className="space-y-0" onSubmit={(e) => e.preventDefault()}>
+						<div className="px-16 pb-48 pt-20 w-full">
+							<form className="space-y-16 w-full" onSubmit={(e) => e.preventDefault()}>
 								<ModelIdentitySection modelId={modelId} />
 								<ModelParametersSection />
 								<ModelCustomParamsSection />
@@ -74,7 +75,7 @@ export const ModelStudioView = ({
 						</div>
 					}
 					poster={
-                        <div className="h-full overflow-y-auto custom-scrollbar">
+                        <div className="h-full overflow-y-auto custom-scrollbar w-[336px]">
                            <ModelSanityCheck modelId={modelId || ""} />
                         </div>
                     }

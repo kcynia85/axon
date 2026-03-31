@@ -217,6 +217,13 @@ async def create_embedding_model(
 ):
     return await service.create_embedding_model(request)
 
+@router.delete("/embedding-models/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_embedding_model(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    await service.delete_embedding_model(id)
+
 # --- Chunking Strategy ---
 
 @router.get("/chunking-strategies", response_model=List[ChunkingStrategyResponse])
@@ -231,6 +238,13 @@ async def create_chunking_strategy(
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.create_chunking_strategy(request)
+
+@router.delete("/chunking-strategies/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_chunking_strategy(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    await service.delete_chunking_strategy(id)
 
 @router.post("/chunking-strategies/simulate", response_model=SimulateChunkingResponse)
 async def simulate_chunking(
@@ -253,6 +267,13 @@ async def create_vector_database(
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.create_vector_database(request)
+
+@router.delete("/vector-databases/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_vector_database(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    await service.delete_vector_database(id)
 
 @router.post("/vector-databases/{id}/test", response_model=ConnectionTestResponse)
 async def test_vector_database(

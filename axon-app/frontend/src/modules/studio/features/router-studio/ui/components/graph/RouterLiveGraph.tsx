@@ -92,6 +92,7 @@ export const RouterLiveGraph = () => {
 									x={node.x}
 									y={node.y}
 									sequenceNumber={node.sequenceNumber}
+									hideNumber={strategy === "load_balancer"}
 								/>
 							))}
 						</AnimatePresence>

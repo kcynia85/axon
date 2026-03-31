@@ -7,36 +7,27 @@ export const PROVIDER_STUDIO_SECTIONS = [
 		id: "auth" as ProviderStudioSectionId,
 		number: 1,
 		title: "Auth & Connection",
-		icon: ShieldCheck,
-	},
-	{
-		id: "discovery" as ProviderStudioSectionId,
-		number: 2,
-		title: "API Discovery (SSoT)",
-		icon: Search,
 	},
 	{
 		id: "type-selection" as ProviderStudioSectionId,
-		number: 3,
+		number: 2,
 		title: "Provider Type Selection",
-		icon: LayoutGrid,
 	},
 	{
 		id: "tokenization" as ProviderStudioSectionId,
-		number: 4,
-		title: "Tokenization Strategy",
-		icon: Coins,
+		number: 3,
+		title: "Tokenizer",
 	},
 	{
 		id: "schema" as ProviderStudioSectionId,
-		number: 5,
-		title: "JSON Parameters Schema",
-		icon: Database,
+		number: 4,
+		title: "Definicja Parametrów JSON",
 	},
 	{
 		id: "adapter" as ProviderStudioSectionId,
-		number: 6,
-		title: "API Keys Adapter",
-		icon: Zap,
+		number: 5,
+		title: "Mapowanie Kluczy API (Adapter)",
 	},
 ] as const;
+
+

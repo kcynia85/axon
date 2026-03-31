@@ -51,6 +51,7 @@ export const useDeleteLLMProvider = () => {
         mutationFn: (id: string) => settingsApi.deleteLLMProvider(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["llm-providers"] });
+            queryClient.invalidateQueries({ queryKey: ["trash"] });
         },
     });
 }

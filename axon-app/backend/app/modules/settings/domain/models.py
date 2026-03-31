@@ -11,6 +11,7 @@ class SettingsBase(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
+    deleted_at: Optional[datetime] = None
 
 # LLM
 class LLMModel(SettingsBase):
@@ -37,6 +38,8 @@ class LLMProvider(SettingsBase):
 
     # Agnostic Protocol Configuration
     protocol: str = "openai" # openai, anthropic, google, custom
+    inference_path: str = "/chat/completions"
+    inference_json_template: str = '{"model": "{{model}}", "messages": [{"role": "user", "content": "{{prompt}}"}]}'
     custom_headers: List[Dict[str, str]] = Field(default_factory=list)
 
     # Discovery Configuration (SSoT)

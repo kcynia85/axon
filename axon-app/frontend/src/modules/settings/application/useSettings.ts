@@ -2,13 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { settingsApi } from "../infrastructure/api";
 import { LLMModel, LLMRouter } from "@/shared/domain/settings";
 
-export const useLLMProviders = () => {
-    return useQuery({
-        queryKey: ["llm-providers"],
-        queryFn: () => settingsApi.getLLMProviders(),
-    });
-}
-
 export const useLLMModels = () => {
     return useQuery({
         queryKey: ["llm-models"],
@@ -30,6 +23,7 @@ export const useCreateLLMModel = () => {
         mutationFn: (model: Omit<LLMModel, "id" | "created_at" | "updated_at">) => settingsApi.createLLMModel(model),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["llm-models"] });
+            queryClient.invalidateQueries({ queryKey: ["trash"] });
         },
     });
 }
@@ -40,6 +34,7 @@ export const useUpdateLLMModel = () => {
         mutationFn: ({ id, data }: { id: string, data: Partial<LLMModel> }) => settingsApi.updateLLMModel(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["llm-models"] });
+            queryClient.invalidateQueries({ queryKey: ["trash"] });
         },
     });
 }
@@ -50,6 +45,7 @@ export const useDeleteLLMModel = () => {
         mutationFn: (id: string) => settingsApi.deleteLLMModel(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["llm-models"] });
+            queryClient.invalidateQueries({ queryKey: ["trash"] });
         },
     });
 }
@@ -116,6 +112,7 @@ export const useDeleteLLMRouter = () => {
         mutationFn: (id: string) => settingsApi.deleteLLMRouter(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["llm-routers"] });
+            queryClient.invalidateQueries({ queryKey: ["trash"] });
         },
     });
 }
@@ -127,6 +124,17 @@ export const useEmbeddingModels = () => {
     });
 }
 
+export const useDeleteEmbeddingModel = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => settingsApi.deleteEmbeddingModel(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["embedding-models"] });
+            queryClient.invalidateQueries({ queryKey: ["trash"] });
+        },
+    });
+}
+
 export const useChunkingStrategies = () => {
     return useQuery({
         queryKey: ["chunking-strategies"],
@@ -134,9 +142,31 @@ export const useChunkingStrategies = () => {
     });
 }
 
+export const useDeleteChunkingStrategy = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => settingsApi.deleteChunkingStrategy(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["chunking-strategies"] });
+            queryClient.invalidateQueries({ queryKey: ["trash"] });
+        },
+    });
+}
+
 export const useVectorDatabases = () => {
     return useQuery({
         queryKey: ["vector-databases"],
         queryFn: () => settingsApi.getVectorDatabases(),
+    });
+}
+
+export const useDeleteVectorDatabase = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => settingsApi.deleteVectorDatabase(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["vector-databases"] });
+            queryClient.invalidateQueries({ queryKey: ["trash"] });
+        },
     });
 }

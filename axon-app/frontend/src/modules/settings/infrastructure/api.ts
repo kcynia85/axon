@@ -134,11 +134,19 @@ export const settingsApi = {
         return data.map((embeddingModelRaw) => EmbeddingModelSchema.parse(embeddingModelRaw));
     },
 
+    deleteEmbeddingModel: async (id: string): Promise<void> => {
+        await apiClient.delete(`/settings/embedding-models/${id}`);
+    },
+
     // --- Chunking Strategies ---
     getChunkingStrategies: async (): Promise<ChunkingStrategy[]> => {
         const res = await apiClient.get("/settings/chunking-strategies");
         const data = await res.json() as unknown[];
         return data.map((chunkingStrategyRaw) => ChunkingStrategySchema.parse(chunkingStrategyRaw));
+    },
+
+    deleteChunkingStrategy: async (id: string): Promise<void> => {
+        await apiClient.delete(`/settings/chunking-strategies/${id}`);
     },
 
     simulateChunking: async (params: Record<string, unknown>): Promise<unknown> => {
@@ -151,6 +159,10 @@ export const settingsApi = {
         const res = await apiClient.get("/settings/vector-databases");
         const data = await res.json() as unknown[];
         return data.map((vectorDatabaseRaw) => VectorDatabaseSchema.parse(vectorDatabaseRaw));
+    },
+
+    deleteVectorDatabase: async (id: string): Promise<void> => {
+        await apiClient.delete(`/settings/vector-databases/${id}`);
     },
 
     testVectorDB: async (id: string): Promise<unknown> => {

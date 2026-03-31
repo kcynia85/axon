@@ -71,22 +71,25 @@ export const ModelSanityCheck = ({ modelId, className }: ModelSanityCheckProps) 
 
             <CardContent className="space-y-8 pt-8">
                 {/* Prompt Testowy */}
-                <div className="space-y-2">
-                    <div className="flex items-center justify-between px-1">
-                        <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                            Testowy Prompt
-                        </h4>
-                        <span className="text-[10px] font-mono text-zinc-400">
-                            {promptTokens} tokenów
-                        </span>
-                    </div>
-                    <div className="space-y-4">
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between px-1">
+                            <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                                Testowy Prompt
+                            </h4>
+                            <span className="text-[10px] font-mono text-zinc-400">
+                                {promptTokens} tokenów
+                            </span>
+                        </div>
                         <Textarea 
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
                             placeholder="Wpisz zapytanie do modelu..."
                             className="min-h-[100px] bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 focus:ring-1 ring-primary transition-all text-sm rounded-xl"
                         />
+                    </div>
+
+                    <div className="space-y-3">
                         <Button 
                             onClick={handleRunTest}
                             disabled={isPending || !prompt.trim() || !modelId}
@@ -95,6 +98,21 @@ export const ModelSanityCheck = ({ modelId, className }: ModelSanityCheckProps) 
                         >
                             {isPending ? "Testowanie..." : <><Play className="w-4 h-4" /> Wyślij Test</>}
                         </Button>
+
+                        {!modelId && (
+                            <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                                <AlertCircle className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />
+                                <p className="text-[10px] text-amber-500/80 leading-relaxed font-medium">
+                                    Zapisz model przed wykonaniem testu połączenia. Testy są dostępne tylko dla zapisanych konfiguracji.
+                                </p>
+                            </div>
+                        )}
+
+                        {modelId && !prompt.trim() && (
+                            <p className="text-[10px] text-zinc-500 text-center italic">
+                                Wpisz prompt, aby odblokować test
+                            </p>
+                        )}
                     </div>
                 </div>
 

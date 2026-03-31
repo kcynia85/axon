@@ -28,6 +28,11 @@ export const useProviderForm = (initialData?: Partial<ProviderFormData>) => {
 			// Response Mapping
 			response_content_path: "choices.0.message.content",
 			response_error_path: "error.message",
+			inference_path: "/chat/completions",
+			json_schema_mapping: JSON.stringify({
+				"model": "{{model}}",
+				"messages": [{"role": "user", "content": "{{prompt}}"}]
+			}, null, 2),
 			
 			...initialData,
 		} as any,
@@ -35,6 +40,40 @@ export const useProviderForm = (initialData?: Partial<ProviderFormData>) => {
 	});
 
 	const providerType = useWatch({ control: form.control, name: "provider_type" });
+	const protocol = useWatch({ control: form.control, name: "protocol" });
+
+	// Protocol Presets
+	useEffect(() => {
+		const isNew = !initialData?.provider_id;
+		if (!isNew) return;
+
+		switch (protocol) {
+			case "anthropic":
+				form.setValue("inference_path", "/messages");
+				form.setValue("response_content_path", "content.0.text");
+				form.setValue("json_schema_mapping", JSON.stringify({
+					"model": "{{model}}",
+					"messages": [{"role": "user", "content": "{{prompt}}"}],
+					"max_tokens": 1024
+				}, null, 2));
+				break;
+			case "google":
+				form.setValue("inference_path", ":generateContent");
+				form.setValue("response_content_path", "candidates.0.content.parts.0.text");
+				form.setValue("json_schema_mapping", JSON.stringify({
+					"contents": [{"parts": [{"text": "{{prompt}}"}]}]
+				}, null, 2));
+				break;
+			case "openai":
+				form.setValue("inference_path", "/chat/completions");
+				form.setValue("response_content_path", "choices.0.message.content");
+				form.setValue("json_schema_mapping", JSON.stringify({
+					"model": "{{model}}",
+					"messages": [{"role": "user", "content": "{{prompt}}"}]
+				}, null, 2));
+				break;
+		}
+	}, [protocol, form, initialData]);
 
 	useEffect(() => {
 		if (providerType === "meta") {

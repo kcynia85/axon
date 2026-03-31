@@ -16,6 +16,7 @@ export const StudioLayout = ({
 	poster,
 	footer,
 	exitButton,
+	studioLabel,
 	canvasRef,
 	className,
 }: StudioLayoutProps) => {
@@ -29,7 +30,17 @@ export const StudioLayout = ({
 			<main className="flex-1 overflow-hidden grid grid-cols-[280px_1fr_400px] gap-0">
 				<StudioSidebar position="left">
 					<div className="space-y-12">
-						<div className="mb-12">{exitButton}</div>
+						<div className="flex items-center gap-4">
+							{exitButton}
+							{studioLabel && (
+								<div className="flex items-center gap-4">
+									<div className="w-px h-4 bg-zinc-800" />
+									<div className="text-lg font-mono text-zinc-500 font-bold">
+										{studioLabel}
+									</div>
+								</div>
+							)}
+						</div>
 						{navigator}
 					</div>
 				</StudioSidebar>

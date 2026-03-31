@@ -21,6 +21,7 @@ const NAVIGATION_ITEMS = [
 ];
 
 export const ModelStudio = ({
+	modelId,
 	initialData,
 	onSave,
 	onCancel,
@@ -65,6 +66,7 @@ export const ModelStudio = ({
 	return (
 		<ModelStudioView
 			form={form}
+			modelId={modelId}
 			navigationItems={NAVIGATION_ITEMS}
 			activeSection={activeSection}
 			onSectionClick={handleSectionClick}

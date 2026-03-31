@@ -4,6 +4,7 @@ import { RouterStudioView } from "./RouterStudioView";
 import { useRouterForm } from "../application/hooks/useRouterForm";
 import { ROUTER_STUDIO_SECTIONS, type RouterSectionIdentifier } from "../types/router.constants";
 import { useRouterStudioSectionNav } from "../application/hooks/useRouterStudioSectionNav";
+import { toast } from "sonner";
 
 export const RouterStudio = ({
 	initialData,
@@ -18,7 +19,7 @@ export const RouterStudio = ({
 	const { items: navigationItems } = useRouterStudioSectionNav({
 		sections: ROUTER_STUDIO_SECTIONS,
 		activeSection,
-		form
+		form: form as any
 	});
 
 	const handleSectionClick = useCallback((sectionId: RouterSectionIdentifier) => {
@@ -34,8 +35,8 @@ export const RouterStudio = ({
 	}, []);
 
 	const handleOnSave = form.handleSubmit(
-		(data) => {
-			onSave(data);
+		(data: any) => {
+			onSave(data as any);
 		},
 		(errors) => {
 			console.error("Form validation errors:", errors);
@@ -48,7 +49,7 @@ export const RouterStudio = ({
 
 	return (
 		<RouterStudioView
-			form={form}
+			form={form as any}
 			navigationItems={navigationItems}
 			activeSectionIdentifier={activeSection}
 			onSectionClick={handleSectionClick}

@@ -32,6 +32,7 @@ export const ModelParametersSection = () => {
             number={2} 
             title="Parametry Dostawcy (Schema-Driven)"
             description="Konfiguracja parametrów wykonawczych modelu."
+            variant="island"
         >
             <div className="space-y-12 max-w-4xl">
                 {/* Reasoning Effort */}

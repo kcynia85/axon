@@ -18,6 +18,7 @@ export const ModelPricingSection = () => {
             number={5} 
             title="Ekonomia (Pricing)"
             description="Skonfiguruj koszty modelu za 1M tokenów wejściowych i wyjściowych."
+            variant="island"
         >
             <div className="space-y-12 max-w-4xl">
                 <div className="flex items-center justify-between">

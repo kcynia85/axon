@@ -13,7 +13,7 @@ export const ContextSection = (props: ContextSectionProps) => {
 	const { control, syncDraft } = useDataInterfaceSection(props);
 
 	return (
-		<FormSection id="CONTEXT" number={5} title="Context">
+		<FormSection id="CONTEXT" number={5} title="Context" variant="island">
 			<div className="space-y-4">
 				<FormField
 					control={control}

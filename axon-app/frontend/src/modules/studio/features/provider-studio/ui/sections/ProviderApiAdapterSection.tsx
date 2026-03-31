@@ -22,13 +22,14 @@ export const ProviderApiAdapterSection = () => {
 		<FormSection 
 			id="adapter" 
 			number={5} 
-			title="API Keys Adapter"
+			title="Mapowanie Kluczy API (Adapter)"
 			description="Zdefiniuj w jaki sposób klucze z Axon mają być mapowane na klucze akceptowane przez API dostawcy."
+			variant="island"
 		>
-			<div className="space-y-12 max-w-4xl">
+			<div className="space-y-10 w-full">
 				{fields.length > 0 ? (
 					<div className="space-y-8">
-						<div className="grid grid-cols-[1fr_1fr_48px] gap-8 px-4 text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-600">
+						<div className="grid grid-cols-[1fr_1fr_48px] gap-8 px-0 text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-600">
 							<div>Axon Key</div>
 							<div>Provider API Key</div>
 							<div></div>
@@ -62,7 +63,7 @@ export const ProviderApiAdapterSection = () => {
 						))}
 					</div>
 				) : (
-					<div className="p-16 border-2 border-dashed border-zinc-900 rounded-[40px] flex flex-col items-center justify-center text-center space-y-6 bg-zinc-950/20">
+					<div className="p-16 border-2 border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center text-center space-y-6 bg-zinc-950/20">
 						<p className="text-sm text-zinc-600 max-w-xs leading-relaxed">Nie zdefiniowano jeszcze żadnego mapowania kluczy dla tego adaptera.</p>
 						<Button type="button" variant="secondary" onClick={addMapping} className="gap-2 px-8 h-12 rounded-2xl">
 							<PlusCircle className="w-4 h-4" /> Dodaj Pierwsze Mapowanie
@@ -75,7 +76,7 @@ export const ProviderApiAdapterSection = () => {
 						type="button" 
 						variant="ghost" 
 						onClick={addMapping} 
-						className="gap-2 text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-2xl border border-zinc-900 px-8 h-12 transition-all"
+						className="gap-2 text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-2xl border border-white/5 px-8 h-12 transition-all mt-4"
 					>
 						<PlusCircle className="w-4 h-4" /> Dodaj Kolejne Mapowanie
 					</Button>

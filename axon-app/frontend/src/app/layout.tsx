@@ -43,6 +43,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} font-sans antialiased h-screen overflow-hidden bg-background text-foreground`}
+        suppressHydrationWarning
       >
         <AI>
           <Providers>

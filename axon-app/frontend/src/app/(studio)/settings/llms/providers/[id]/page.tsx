@@ -37,6 +37,8 @@ const ProviderEditPageContent = () => {
             // Response Mapping
             response_content_path: (provider as any).response_content_path,
             response_error_path: (provider as any).response_error_path,
+            inference_path: (provider as any).inference_path || "/chat/completions",
+            json_schema_mapping: (provider as any).inference_json_template || "",
             
             // Legacy / Custom
             tokenization_strategy: (provider.provider_custom_config as any)?.tokenization_strategy,

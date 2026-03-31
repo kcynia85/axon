@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
@@ -9,6 +9,8 @@ import { FileText, FileCode, File, ExternalLink, LucideIcon } from "lucide-react
 import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
 import { ResourceList } from "@/shared/ui/complex/ResourceList";
 import { TagChip } from "@/shared/ui/ui/TagChip";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
+import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
 
 // Mock Data
 const MOCK_RESOURCES = [
@@ -70,6 +72,8 @@ const getResourceIcon = (type: string): LucideIcon => {
 };
 
 export const KnowledgeBrowser = () => {
+  const { deleteWithUndo } = useDeleteWithUndo();
+  const { pendingIds } = usePendingDeletionsStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortBy, setSortBy] = useState("date-desc");
@@ -94,6 +98,10 @@ export const KnowledgeBrowser = () => {
       }
   };
 
+  const filteredResources = useMemo(() => {
+    return MOCK_RESOURCES.filter(r => !pendingIds.has(r.id));
+  }, [pendingIds]);
+
   return (
     <BrowserLayout
       searchQuery={searchQuery}
@@ -114,7 +122,7 @@ export const KnowledgeBrowser = () => {
           onToggleFilter={handleToggleFilter}
           onApplyFilters={() => {}} 
           onClearAllFilters={handleClearAll}
-          resultsCount={MOCK_RESOURCES.length}
+          resultsCount={filteredResources.length}
           sortOptions={SORT_OPTIONS}
           sortBy={sortBy}
           onSortChange={setSortBy}
@@ -124,7 +132,7 @@ export const KnowledgeBrowser = () => {
       }
     >
       <ResourceList
-        items={MOCK_RESOURCES}
+        items={filteredResources}
         isLoading={false}
         viewMode={viewMode}
         renderItem={(resource) => (
@@ -134,12 +142,19 @@ export const KnowledgeBrowser = () => {
                 description={null}
                 href="#"
                 icon={getResourceIcon(resource.type)}
-                tags={resource.tags}
-                // Custom rendering for tags if ResourceCard supported render prop for tags, 
-                // but since we need 'category' variant and ResourceCard uses default, 
-                // we might accept that for now or assume ResourceCard has been updated globally.
-                // However, user specifically asked for "To samo stylowanie" (The same styling).
-                // Tools uses ResourceCard. So using ResourceCard is the correct path for consistency.
+                categories={resource.tags}
+                onEdit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Edit resource", resource.id);
+                }}
+                onDelete={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteWithUndo(resource.id, resource.title, () => {
+                        console.log("Permanently delete resource from Knowledge base", resource.id);
+                    });
+                }}
             />
         )}
       />

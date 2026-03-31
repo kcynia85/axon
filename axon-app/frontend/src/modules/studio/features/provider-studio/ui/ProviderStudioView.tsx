@@ -10,7 +10,6 @@ import { ProviderStudioViewProps } from "../types/provider-studio.types";
 import { ProviderStudioSectionNav } from "./components/ProviderStudioSectionNav";
 import { ProviderSanityCheck } from "./components/ProviderSanityCheck";
 import { ProviderAuthSection } from "./sections/ProviderAuthSection";
-import { ProviderDiscoverySection } from "./sections/ProviderDiscoverySection";
 import { ProviderTypeSelectionSection } from "./sections/ProviderTypeSelectionSection";
 import { ProviderTokenizationSection } from "./sections/ProviderTokenizationSection";
 import { ProviderJsonSchemaSection } from "./sections/ProviderJsonSchemaSection";
@@ -33,15 +32,16 @@ export const ProviderStudioView = ({
         <FormProvider {...form}>
             <div className="h-full w-full outline-none" tabIndex={0}>
                 <StudioLayout
+                    studioLabel="Provider"
                     canvasRef={setCanvasContainerReference as any}
                     exitButton={
                         <Button
                             variant="ghost"
-                            size="sm"
+                            size="icon"
                             onClick={onCancel}
-                            className="hover:bg-zinc-900 gap-2 text-zinc-400 hover:text-white px-4 font-mono text-[10px] uppercase tracking-[0.2em] border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+                            className="hover:bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all h-9 w-9"
                         >
-                            <X className="w-4 h-4" /> Exit
+                            <X className="w-4 h-4" />
                         </Button>
                     }
                     navigator={
@@ -53,12 +53,12 @@ export const ProviderStudioView = ({
                         />
                     }
                     canvas={
-                        <div className="px-24 pb-48">
-                            <form className="space-y-0" onSubmit={(e) => e.preventDefault()}>
+                        <div className="px-16 pb-48 pt-20 w-full">
+                            <form className="space-y-16 w-full" onSubmit={(e) => e.preventDefault()}>
                                 <ProviderAuthSection providerId={providerId} />
-                                <ProviderDiscoverySection />
                                 <ProviderTypeSelectionSection />
                                 <ProviderTokenizationSection />
+
                                 <ProviderJsonSchemaSection />
                                 <ProviderApiAdapterSection />
                             </form>

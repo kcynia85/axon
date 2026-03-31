@@ -6,10 +6,13 @@ import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { LLMRoutersList } from "./LLMRoutersList";
-import { useLLMRouters, useLLMModels, useDeleteLLMRouter, useLLMProviders } from "../application/useSettings";
+import { useLLMRouters, useLLMModels, useDeleteLLMRouter } from "../application/useSettings";
+import { useLLMProviders } from "../application/useLLMProviders";
 import { useRouter } from "next/navigation";
 import { LLMRouterSidePeek } from "./LLMRouterSidePeek";
 import type { LLMRouter } from "@/shared/domain/settings";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
+import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Nazwa (A-Z)" },
@@ -24,31 +27,43 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
 const FILTER_GROUPS: readonly FilterGroup[] = [
     {
         id: "strategy",
-        label: "Strategia",
+        title: "Strategia",
+        type: "checkbox",
         options: [
-            { id: "fallback", label: "Fallback" },
-            { id: "load_balancer", label: "Load Balancer" },
-            { id: "Cost_Optimized", label: "Cost Optimized" },
-            { id: "Speed_Optimized", label: "Speed Optimized" },
-            { id: "Quality_Optimized", label: "Quality Optimized" },
+            { id: "fallback", label: "Fallback", isChecked: false },
+            { id: "load_balancer", label: "Load Balancer", isChecked: false },
+            { id: "Cost_Optimized", label: "Cost Optimized", isChecked: false },
+            { id: "Speed_Optimized", label: "Speed Optimized", isChecked: false },
+            { id: "Quality_Optimized", label: "Quality Optimized", isChecked: false },
         ]
     }
 ];
 
 import { Button } from "@/shared/ui/ui/Button";
 
+/**
+ * LLMRoutersBrowser - Browser for LLM Routers.
+ * Includes Delete with Undo pattern.
+ */
 export const LLMRoutersBrowser = () => {
   const routerNav = useRouter();
   const { data: routers = [], isLoading, isError } = useLLMRouters();
   const { data: models = [] } = useLLMModels();
   const { data: providers = [] } = useLLMProviders();
   const { mutateAsync: deleteRouter } = useDeleteLLMRouter();
+  const { deleteWithUndo } = useDeleteWithUndo();
+  const { pendingIds } = usePendingDeletionsStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("newest");
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
-  const [selectedRouter, setSelectedRouter] = useState<LLMRouter | null>(null);
+  const [selectedRouterId, setSelectedRouterId] = useState<string | null>(null);
+
+  const selectedRouter = useMemo(() => {
+    if (!selectedRouterId) return null;
+    return routers.find(r => r.id === selectedRouterId) || null;
+  }, [routers, selectedRouterId]);
 
   const getModelName = (id: string) => {
     const model = models.find(m => m.id === id);
@@ -63,7 +78,7 @@ export const LLMRoutersBrowser = () => {
   };
 
   const filteredRouters = useMemo(() => {
-    let result = [...routers];
+    let result = routers.filter(r => !pendingIds.has(r.id));
 
     // Search
     if (searchQuery) {
@@ -75,7 +90,7 @@ export const LLMRoutersBrowser = () => {
 
     // Filters
     if (activeFilters.length > 0) {
-        const strategyFilters = activeFilters.filter(f => f.groupId === "strategy").map(f => f.id);
+        const strategyFilters = activeFilters.filter(f => f.category === "strategy").map(f => f.id);
         if (strategyFilters.length > 0) {
             result = result.filter(r => strategyFilters.includes(r.router_strategy));
         }
@@ -90,7 +105,7 @@ export const LLMRoutersBrowser = () => {
     });
 
     return result;
-  }, [routers, searchQuery, activeFilters, sortBy]);
+  }, [routers, searchQuery, activeFilters, sortBy, pendingIds]);
 
   const handleRemoveFilter = (id: string) => {
     setActiveFilters(prev => prev.filter(f => f.id !== id));
@@ -106,19 +121,18 @@ export const LLMRoutersBrowser = () => {
           if (activeFilters.some(f => f.id === id)) {
               handleRemoveFilter(id);
           } else {
-              setActiveFilters([...activeFilters, { id: option.id, label: option.label, groupId: option.groupId }]);
+              setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
           }
       }
   };
 
   const handleDeleteRouter = async (id: string) => {
-    if (confirm("Czy na pewno chcesz usunąć ten router?")) {
-        try {
-            await deleteRouter(id);
-            setSelectedRouter(null);
-        } catch (error) {
-            console.error("Failed to delete router:", error);
-        }
+    const router = routers.find(r => r.id === id);
+    if (!router) return;
+
+    if (confirm(`Czy na pewno chcesz usunąć router "${router.router_alias}"?`)) {
+        deleteWithUndo(router.id, router.router_alias, () => deleteRouter(router.id));
+        setSelectedRouterId(null);
     }
   };
 
@@ -160,7 +174,7 @@ export const LLMRoutersBrowser = () => {
         isLoading={isLoading}
         isError={isError}
         viewMode={viewMode}
-        onItemClick={setSelectedRouter}
+        onItemClick={(r) => setSelectedRouterId(r?.id || null)}
         onDelete={handleDeleteRouter}
         onEdit={handleConfigureRouter}
       />
@@ -168,7 +182,7 @@ export const LLMRoutersBrowser = () => {
       <LLMRouterSidePeek 
         router={selectedRouter}
         isOpen={!!selectedRouter}
-        onClose={() => setSelectedRouter(null)}
+        onClose={() => setSelectedRouterId(null)}
         onConfigure={handleConfigureRouter}
         onDelete={handleDeleteRouter}
         getModelName={getModelName}

@@ -57,13 +57,16 @@ class SettingsRepository:
 
     async def list_llm_providers(self) -> List[LLMProvider]:
         result = await self.session.execute(
-            select(LLMProviderTable).options(selectinload(LLMProviderTable.models))
+            select(LLMProviderTable).options(selectinload(LLMProviderTable.models)).where(LLMProviderTable.deleted_at == None)
         )
         return [self._to_domain_provider(row) for row in result.scalars().all()]
 
     async def get_llm_provider(self, id: UUID) -> Optional[LLMProvider]:
         result = await self.session.execute(
-            select(LLMProviderTable).options(selectinload(LLMProviderTable.models)).where(LLMProviderTable.id == id)
+            select(LLMProviderTable).options(selectinload(LLMProviderTable.models)).where(
+                LLMProviderTable.id == id,
+                LLMProviderTable.deleted_at == None
+            )
         )
         row = result.scalar_one_or_none()
         return self._to_domain_provider(row) if row else None
@@ -71,13 +74,18 @@ class SettingsRepository:
     async def update_llm_provider(self, id: UUID, provider_data: dict) -> Optional[LLMProvider]:
         provider_data["updated_at"] = now_utc()
         await self.session.execute(
-            update(LLMProviderTable).where(LLMProviderTable.id == id).values(**provider_data)
+            update(LLMProviderTable).where(
+                LLMProviderTable.id == id,
+                LLMProviderTable.deleted_at == None
+            ).values(**provider_data)
         )
         await self.session.commit()
         return await self.get_llm_provider(id)
 
     async def delete_llm_provider(self, id: UUID) -> bool:
-        await self.session.execute(delete(LLMProviderTable).where(LLMProviderTable.id == id))
+        await self.session.execute(
+            update(LLMProviderTable).where(LLMProviderTable.id == id).values(deleted_at=now_utc())
+        )
         await self.session.commit()
         return True
 
@@ -156,18 +164,24 @@ class SettingsRepository:
         return self._to_domain_model(db_obj)
 
     async def list_llm_models(self) -> List[LLMModel]:
-        result = await self.session.execute(select(LLMModelTable))
+        result = await self.session.execute(select(LLMModelTable).where(LLMModelTable.deleted_at == None))
         return [self._to_domain_model(row) for row in result.scalars().all()]
 
     async def get_llm_model(self, id: UUID) -> Optional[LLMModel]:
-        result = await self.session.execute(select(LLMModelTable).where(LLMModelTable.id == id))
+        result = await self.session.execute(select(LLMModelTable).where(
+            LLMModelTable.id == id,
+            LLMModelTable.deleted_at == None
+        ))
         row = result.scalar_one_or_none()
         return self._to_domain_model(row) if row else None
 
     async def update_llm_model(self, id: UUID, model_data: dict) -> Optional[LLMModel]:
         model_data["updated_at"] = now_utc()
         await self.session.execute(
-            update(LLMModelTable).where(LLMModelTable.id == id).values(**model_data)
+            update(LLMModelTable).where(
+                LLMModelTable.id == id,
+                LLMModelTable.deleted_at == None
+            ).values(**model_data)
         )
         await self.session.commit()
         return await self.get_llm_model(id)
@@ -181,7 +195,9 @@ class SettingsRepository:
             update(LLMRouterTable).where(LLMRouterTable.fallback_model_id == id).values(fallback_model_id=None)
         )
         
-        await self.session.execute(delete(LLMModelTable).where(LLMModelTable.id == id))
+        await self.session.execute(
+            update(LLMModelTable).where(LLMModelTable.id == id).values(deleted_at=now_utc())
+        )
         await self.session.commit()
         return True
 
@@ -238,24 +254,32 @@ class SettingsRepository:
         return self._to_domain_router(db_obj)
 
     async def list_llm_routers(self) -> List[LLMRouter]:
-        result = await self.session.execute(select(LLMRouterTable))
+        result = await self.session.execute(select(LLMRouterTable).where(LLMRouterTable.deleted_at == None))
         return [self._to_domain_router(row) for row in result.scalars().all()]
 
     async def get_llm_router(self, id: UUID) -> Optional[LLMRouter]:
-        result = await self.session.execute(select(LLMRouterTable).where(LLMRouterTable.id == id))
+        result = await self.session.execute(select(LLMRouterTable).where(
+            LLMRouterTable.id == id,
+            LLMRouterTable.deleted_at == None
+        ))
         row = result.scalar_one_or_none()
         return self._to_domain_router(row) if row else None
 
     async def update_llm_router(self, id: UUID, router_data: dict) -> Optional[LLMRouter]:
         router_data["updated_at"] = now_utc()
         await self.session.execute(
-            update(LLMRouterTable).where(LLMRouterTable.id == id).values(**router_data)
+            update(LLMRouterTable).where(
+                LLMRouterTable.id == id,
+                LLMRouterTable.deleted_at == None
+            ).values(**router_data)
         )
         await self.session.commit()
         return await self.get_llm_router(id)
 
     async def delete_llm_router(self, id: UUID) -> bool:
-        await self.session.execute(delete(LLMRouterTable).where(LLMRouterTable.id == id))
+        await self.session.execute(
+            update(LLMRouterTable).where(LLMRouterTable.id == id).values(deleted_at=now_utc())
+        )
         await self.session.commit()
         return True
 
@@ -270,7 +294,8 @@ class SettingsRepository:
             fallback_model_id=row.fallback_model_id,
             priority_chain=row.priority_chain or [],
             created_at=row.created_at,
-            updated_at=row.updated_at
+            updated_at=row.updated_at,
+            deleted_at=row.deleted_at
         )
 
     # --- Embedding Model ---
@@ -292,8 +317,15 @@ class SettingsRepository:
         return self._to_domain_embedding_model(db_obj)
 
     async def list_embedding_models(self) -> List[EmbeddingModel]:
-        result = await self.session.execute(select(EmbeddingModelTable))
+        result = await self.session.execute(select(EmbeddingModelTable).where(EmbeddingModelTable.deleted_at == None))
         return [self._to_domain_embedding_model(row) for row in result.scalars().all()]
+
+    async def delete_embedding_model(self, id: UUID) -> bool:
+        await self.session.execute(
+            update(EmbeddingModelTable).where(EmbeddingModelTable.id == id).values(deleted_at=now_utc())
+        )
+        await self.session.commit()
+        return True
 
     def _to_domain_embedding_model(self, row: EmbeddingModelTable) -> EmbeddingModel:
         return EmbeddingModel(
@@ -304,7 +336,8 @@ class SettingsRepository:
             model_max_context_tokens=row.model_max_context_tokens,
             model_cost_per_1m_tokens=row.model_cost_per_1m_tokens,
             created_at=row.created_at,
-            updated_at=row.updated_at
+            updated_at=row.updated_at,
+            deleted_at=row.deleted_at
         )
 
     # --- Chunking Strategy ---
@@ -326,11 +359,21 @@ class SettingsRepository:
         return self._to_domain_chunking_strategy(db_obj)
 
     async def list_chunking_strategies(self) -> List[ChunkingStrategy]:
-        result = await self.session.execute(select(ChunkingStrategyTable))
+        result = await self.session.execute(select(ChunkingStrategyTable).where(ChunkingStrategyTable.deleted_at == None))
         return [self._to_domain_chunking_strategy(row) for row in result.scalars().all()]
 
+    async def delete_chunking_strategy(self, id: UUID) -> bool:
+        await self.session.execute(
+            update(ChunkingStrategyTable).where(ChunkingStrategyTable.id == id).values(deleted_at=now_utc())
+        )
+        await self.session.commit()
+        return True
+
     async def get_chunking_strategy(self, id: UUID) -> Optional[ChunkingStrategy]:
-        result = await self.session.execute(select(ChunkingStrategyTable).where(ChunkingStrategyTable.id == id))
+        result = await self.session.execute(select(ChunkingStrategyTable).where(
+            ChunkingStrategyTable.id == id,
+            ChunkingStrategyTable.deleted_at == None
+        ))
         row = result.scalar_one_or_none()
         return self._to_domain_chunking_strategy(row) if row else None
 
@@ -343,7 +386,8 @@ class SettingsRepository:
             strategy_chunk_overlap=row.strategy_chunk_overlap,
             strategy_chunk_boundaries=row.strategy_chunk_boundaries or [],
             created_at=row.created_at,
-            updated_at=row.updated_at
+            updated_at=row.updated_at,
+            deleted_at=row.deleted_at
         )
 
     # --- Vector Database ---
@@ -371,11 +415,21 @@ class SettingsRepository:
         return self._to_domain_vector_db(db_obj)
 
     async def list_vector_databases(self) -> List[VectorDatabase]:
-        result = await self.session.execute(select(VectorDatabaseTable))
+        result = await self.session.execute(select(VectorDatabaseTable).where(VectorDatabaseTable.deleted_at == None))
         return [self._to_domain_vector_db(row) for row in result.scalars().all()]
 
+    async def delete_vector_database(self, id: UUID) -> bool:
+        await self.session.execute(
+            update(VectorDatabaseTable).where(VectorDatabaseTable.id == id).values(deleted_at=now_utc())
+        )
+        await self.session.commit()
+        return True
+
     async def get_vector_database(self, id: UUID) -> Optional[VectorDatabase]:
-        result = await self.session.execute(select(VectorDatabaseTable).where(VectorDatabaseTable.id == id))
+        result = await self.session.execute(select(VectorDatabaseTable).where(
+            VectorDatabaseTable.id == id,
+            VectorDatabaseTable.deleted_at == None
+        ))
         row = result.scalar_one_or_none()
         return self._to_domain_vector_db(row) if row else None
 
@@ -394,5 +448,6 @@ class SettingsRepository:
             vector_database_size=row.vector_database_size or 0,
             vector_database_expected_dimensions=row.vector_database_expected_dimensions,
             created_at=row.created_at,
-            updated_at=row.updated_at
+            updated_at=row.updated_at,
+            deleted_at=row.deleted_at
         )

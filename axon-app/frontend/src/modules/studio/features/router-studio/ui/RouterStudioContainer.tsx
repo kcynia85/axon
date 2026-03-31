@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useMemo, useState } from "react";
 import { RouterStudio } from "./RouterStudio";
 import type { RouterFormData } from "../types/router-schema";
-import { useLLMRouter, useCreateLLMRouter, useUpdateLLMRouter } from "@/modules/settings/application/useSettings";
+import { useCreateLLMRouter, useUpdateLLMRouter } from "@/modules/settings/application/useSettings";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 
 interface Props {
@@ -24,28 +24,12 @@ export const RouterStudioContainer = ({
 	const routerNav = useRouter();
 	const [isSaving, setIsSaving] = useState(false);
 
-	const { data: fetchedData, isLoading: isFetching } = useLLMRouter(routerId);
 	const { mutateAsync: createRouter } = useCreateLLMRouter();
 	const { mutateAsync: updateRouter } = useUpdateLLMRouter();
 
 	const initialData = useMemo(() => {
-		if (providedInitialData) return providedInitialData;
-		if (!fetchedData) return undefined;
-
-		// Use priority_chain if available and not empty, otherwise reconstruct from primary/fallback
-		const chain = fetchedData.priority_chain && fetchedData.priority_chain.length > 0 
-			? fetchedData.priority_chain 
-			: [
-				{ model_id: fetchedData.primary_model_id, error_timeout: 60, override_params: false },
-				...(fetchedData.fallback_model_id ? [{ model_id: fetchedData.fallback_model_id, error_timeout: 30, override_params: false }] : [])
-			];
-
-		return {
-			name: fetchedData.router_alias,
-			strategy: (fetchedData.router_strategy.toLowerCase() === "load_balancer" ? "load_balancer" : "fallback") as any,
-			priority_chain: chain as any
-		};
-	}, [providedInitialData, fetchedData]);
+		return providedInitialData;
+	}, [providedInitialData]);
 
 	const handleSave = async (data: RouterFormData) => {
 		setIsSaving(true);
@@ -79,14 +63,6 @@ export const RouterStudioContainer = ({
 		routerNav.back();
 	};
 
-	if (routerId && isFetching) {
-		return (
-			<div className="p-12 space-y-12 bg-black min-h-screen">
-				<Skeleton className="h-24 w-full rounded-2xl bg-zinc-900" />
-				<Skeleton className="h-[400px] w-full rounded-3xl bg-zinc-900/50" />
-			</div>
-		);
-	}
 
 	return (
 		<div className="min-h-screen bg-black text-white">

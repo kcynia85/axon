@@ -9,6 +9,12 @@ import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
 import { ResourceList } from "@/shared/ui/complex/ResourceList";
 import { Button } from "@/shared/ui/ui/Button";
 import { LLMProviderSidePeek, Provider } from "./LLMProviderSidePeek";
+import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { useLLMModels } from "../application/useSettings";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
+import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
+import { useLLMProviders, useDeleteLLMProvider } from "../application/useLLMProviders";
+import { useRouter } from "next/navigation";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Nazwa (A-Z)" },
@@ -32,28 +38,62 @@ const FILTER_GROUPS: readonly FilterGroup[] = [
     }
 ];
 
-const INITIAL_ACTIVE_FILTERS: ActiveFilter[] = [];
-
-import { useLLMProviders, useDeleteLLMProvider } from "../application/useLLMProviders";
-import { useRouter } from "next/navigation";
-
 /**
  * LLMProvidersBrowser - Browser for LLM Providers (OpenAI, OpenRouter, Ollama etc).
- * Now uses LLMProviderSidePeek for detailed view and configuration.
  */
 export const LLMProvidersBrowser = () => {
   const router = useRouter();
   const { data: providers = [], isLoading, isError } = useLLMProviders();
+  const { data: allModels = [] } = useLLMModels();
   const { mutateAsync: deleteProvider } = useDeleteLLMProvider();
+  const { deleteWithUndo } = useDeleteWithUndo();
+  const { pendingIds } = usePendingDeletionsStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortBy, setSortBy] = useState("name-asc");
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
-  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
+
+  // Deletion Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [providerToDeleteId, setProviderToDeleteId] = useState<string | null>(null);
+
+  const providerToDelete = useMemo(() => {
+    return providers.find(p => p.id === providerToDeleteId);
+  }, [providers, providerToDeleteId]);
+
+  const affectedResources = useMemo(() => {
+    if (!providerToDeleteId) return [];
+    return allModels
+      .filter(m => m.llm_provider_id === providerToDeleteId)
+      .map(m => ({
+        id: m.id,
+        name: m.model_display_name,
+        role: "Linked Model"
+      }));
+  }, [allModels, providerToDeleteId]);
+
+  const selectedProvider = useMemo(() => {
+    if (!selectedProviderId) return null;
+    const p = providers.find(prov => prov.id === selectedProviderId);
+    if (!p) return null;
+    return {
+        id: p.id,
+        title: p.provider_name,
+        type: p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted",
+        schema: p.provider_type === "meta" ? "Native API" : "OpenAI v1",
+        apiKey: p.provider_api_key || "N/A",
+        pricing: p.provider_type === "meta" ? "Live API Sync" : "Pay-as-you-go",
+        url: p.provider_api_endpoint || undefined,
+        categories: [p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted"]
+    } as Provider;
+  }, [providers, selectedProviderId]);
 
   const filteredProviders = useMemo(() => {
-    let result = providers.map(p => ({
+    let result = providers
+      .filter(p => !pendingIds.has(p.id))
+      .map(p => ({
         id: p.id,
         title: p.provider_name,
         type: p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted",
@@ -71,7 +111,7 @@ export const LLMProvidersBrowser = () => {
     }
 
     return result;
-  }, [providers, searchQuery]);
+  }, [providers, searchQuery, pendingIds]);
 
   const handleRemoveFilter = (id: string) => {
     setActiveFilters(prev => prev.filter(f => f.id !== id));
@@ -93,18 +133,26 @@ export const LLMProvidersBrowser = () => {
   };
 
   const handleProviderClick = (provider: Provider) => {
-    setSelectedProvider(provider);
+    setSelectedProviderId(provider.id);
   };
 
-  const handleDeleteProvider = async (id: string) => {
-    if (confirm("Czy na pewno chcesz usunąć tego dostawcę? Spowoduje to również usunięcie powiązanych modeli.")) {
-        try {
-            await deleteProvider(id);
-            setSelectedProvider(null);
-        } catch (error) {
-            console.error("Failed to delete provider:", error);
-        }
+  const confirmDeleteProvider = (id: string) => {
+    setProviderToDeleteId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteProviderExecution = async () => {
+    if (!providerToDeleteId) return;
+    const provider = providers.find(p => p.id === providerToDeleteId);
+    if (!provider) return;
+
+    deleteWithUndo(provider.id, provider.provider_name, () => deleteProvider(provider.id));
+    
+    setDeleteModalOpen(false);
+    if (selectedProviderId === providerToDeleteId) {
+        setSelectedProviderId(null);
     }
+    setProviderToDeleteId(null);
   };
 
   const handleConfigureProvider = (provider: Provider) => {
@@ -153,6 +201,17 @@ export const LLMProvidersBrowser = () => {
                 href="#"
                 onClick={() => handleProviderClick(provider)}
                 categories={provider.categories}
+                onEdit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const p = providers.find(prov => prov.id === provider.id);
+                    if (p) handleConfigureProvider(p as any);
+                }}
+                onDelete={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    confirmDeleteProvider(provider.id);
+                }}
             />
         )}
       />
@@ -160,9 +219,21 @@ export const LLMProvidersBrowser = () => {
       <LLMProviderSidePeek 
         provider={selectedProvider}
         isOpen={!!selectedProvider}
-        onClose={() => setSelectedProvider(null)}
+        onClose={() => setSelectedProviderId(null)}
         onConfigure={handleConfigureProvider}
-        onDelete={handleDeleteProvider}
+        onDelete={confirmDeleteProvider}
+      />
+
+      <DestructiveDeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => {
+            setDeleteModalOpen(false);
+            setProviderToDeleteId(null);
+        }}
+        onConfirm={handleDeleteProviderExecution}
+        title="Usuń Dostawcę"
+        resourceName={providerToDelete?.provider_name || "Dostawca"}
+        affectedResources={affectedResources}
       />
     </BrowserLayout>
   );

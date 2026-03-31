@@ -14,6 +14,7 @@ export const ModelSystemPromptSection = () => {
             number={4} 
             title="Globalne Instrukcje (System Prompt)"
             description="Zdefiniuj bazowe zachowanie modelu dla wszystkich konwersacji."
+            variant="island"
         >
             <div className="space-y-12 max-w-4xl">
                 <FormItemField 

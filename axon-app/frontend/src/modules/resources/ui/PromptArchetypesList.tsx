@@ -13,6 +13,7 @@ import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizo
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { toast } from "sonner";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
+import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
 
 type PromptArchetypesListProps = {
     readonly archetypes?: any[];
@@ -25,6 +26,7 @@ export const PromptArchetypesList = React.memo(({ archetypes: externalArchetypes
     const { draft, clearDraft } = useArchetypeDraft("global", "new");
     const { mutate: deleteArchetype } = useDeletePromptArchetype();
     const { deleteWithUndo } = useDeleteWithUndo();
+    const { pendingIds } = usePendingDeletionsStore();
     const [archetypeToDeleteId, setArchetypeToDeleteId] = React.useState<string | null>(null);
 
     const handleCreateNew = () => {
@@ -61,7 +63,8 @@ export const PromptArchetypesList = React.memo(({ archetypes: externalArchetypes
         );
     }
 
-    const hasNoArchetypes = (!archetypes || archetypes.length === 0);
+    const filteredArchetypes = archetypes?.filter(a => !pendingIds.has(a.id));
+    const hasNoArchetypes = (!filteredArchetypes || filteredArchetypes.length === 0);
 
     return (
         <>
@@ -95,7 +98,7 @@ export const PromptArchetypesList = React.memo(({ archetypes: externalArchetypes
                     />
                 )}
 
-                {archetypes?.map((archetype) => (
+                {filteredArchetypes?.map((archetype) => (
                     <WorkspaceCardHorizontal
                         key={archetype.id}
                         title={archetype.archetype_name}

@@ -6,15 +6,25 @@ import { FormCheckbox } from "@/shared/ui/form/FormCheckbox";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 import { FormSlider } from "@/shared/ui/form/FormSlider";
-import { ALL_MODELS } from "../../types/agent-studio.constants";
+import { useLLMModels } from "@/modules/settings/application/useSettings";
 import type { EngineSectionProps } from "../../types/sections/engine.types";
 import { useEngineSection } from "../../application/hooks/sections/useEngineSection";
 
 export const EngineSection = React.memo((props: EngineSectionProps) => {
 	const { control, syncDraft } = useEngineSection(props);
+	const { data: models, isLoading: isLoadingModels } = useLLMModels();
+
+	const modelOptions = React.useMemo(() => {
+		if (!models) return [];
+		return models.map(m => ({
+			id: m.id,
+			name: m.model_display_name,
+			subtitle: `${m.model_tier} • ${m.model_context_window.toLocaleString()} ctx`
+		}));
+	}, [models]);
 
 	return (
-		<FormSection id="ENGINE" number={3} title="Engine">
+		<FormSection id="ENGINE" number={3} title="Engine" variant="island">
 			<div className="space-y-12 relative overflow-hidden">
 				<div className="space-y-8 relative z-10">
 					<div className="space-y-6">
@@ -26,13 +36,13 @@ export const EngineSection = React.memo((props: EngineSectionProps) => {
 								render={({ field }) => (
 									<FormItemField>
 										<FormSelect
-											options={ALL_MODELS as any}
+											options={modelOptions}
 											value={field.value || ""}
 											onChange={(val) => {
 												field.onChange(val);
 												syncDraft();
 											}}
-											placeholder="Select model..."
+											placeholder={isLoadingModels ? "Loading models..." : "Select model..."}
 											searchPlaceholder="Search model..."
 										/>
 									</FormItemField>

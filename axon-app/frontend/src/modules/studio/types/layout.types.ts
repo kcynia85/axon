@@ -6,6 +6,7 @@ export type StudioLayoutProps = {
 	readonly poster: React.ReactNode;
 	readonly footer: React.ReactNode;
 	readonly exitButton: React.ReactNode;
+	readonly studioLabel?: string;
 	readonly canvasRef?: (node: HTMLDivElement | null) => void;
 	readonly className?: string;
 };
