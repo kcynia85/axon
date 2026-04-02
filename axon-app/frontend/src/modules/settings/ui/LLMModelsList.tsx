@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useLLMModels, useDeleteLLMModel } from "../application/useSettings";
-import { useLLMProviders } from "../application/useLLMProviders";
+import { useLLMProviders, useSyncProviderPricing } from "../application/useLLMProviders";
 import {
     Table,
     TableBody,
@@ -25,7 +25,9 @@ import {
     Search,
     Filter,
     Info,
-    ArrowUpDown
+    ArrowUpDown,
+    RefreshCw,
+    AlertCircle
 } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
@@ -43,6 +45,7 @@ import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModa
 import { useLLMModelUsage } from "../application/useSettings";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
+import { toast } from "sonner";
 
 const STATIC_CAPABILITIES = [
     { id: "vision", label: "Vision" },
@@ -75,12 +78,14 @@ export const LLMModelsList = () => {
     const { data: models, isLoading } = useLLMModels();
     const { data: providers } = useLLMProviders();
     const { mutateAsync: deleteModel } = useDeleteLLMModel();
+    const { mutateAsync: syncPricing, isPending: isSyncingPricing } = useSyncProviderPricing();
     const { deleteWithUndo } = useDeleteWithUndo();
     const { pendingIds } = usePendingDeletionsStore();
     
     const [search, setSearch] = React.useState("");
     const [selectedModelId, setSelectedModelId] = React.useState<string | null>(null);
     const [activeFilters, setActiveFilters] = React.useState<ActiveFilter[]>([]);
+    const [pendingFilterIds, setPendingFilterIds] = React.useState<string[]>([]);
     const [sortBy, setSortBy] = React.useState("name_asc");
 
     // Deletion Modal State
@@ -165,16 +170,51 @@ export const LLMModelsList = () => {
         });
 
         setActiveFilters(nextFilters);
+        setPendingFilterIds(selectedIds);
+    };
+
+    const handleSelectionChange = (selectedIds: string[]) => {
+        setPendingFilterIds(selectedIds);
     };
 
     const handleRemoveFilter = (filterId: string) => {
         setActiveFilters(prev => prev.filter(f => f.id !== filterId));
+        setPendingFilterIds(prev => prev.filter(id => id !== filterId));
     };
 
     const selectedModel = React.useMemo(() => {
         if (!selectedModelId || !models) return null;
         return models.find(m => m.id === selectedModelId) || null;
     }, [models, selectedModelId]);
+
+    const previewCount = React.useMemo(() => {
+        if (!models) return 0;
+
+        return models.filter(m => {
+            if (pendingIds.has(m.id)) return false;
+
+            const matchesSearch = 
+                m.model_display_name.toLowerCase().includes(search.toLowerCase()) ||
+                m.model_id.toLowerCase().includes(search.toLowerCase());
+            
+            if (!matchesSearch) return false;
+
+            if (pendingFilterIds.length === 0) return true;
+
+            const selectedProviderIds = pendingFilterIds.filter(id => providers?.some(p => p.id === id));
+            const selectedCapabilityIds = pendingFilterIds.filter(id => STATIC_CAPABILITIES.some(c => c.id === id));
+            const selectedTierIds = pendingFilterIds.filter(id => STATIC_TIERS.some(t => t.id === id));
+
+            if (selectedProviderIds.length > 0 && !selectedProviderIds.includes(m.llm_provider_id)) return false;
+            if (selectedCapabilityIds.length > 0 && !selectedCapabilityIds.every(id => m.model_capabilities_flags?.includes(id))) return false;
+            if (selectedTierIds.length > 0) {
+                const modelTier = m.model_tier.toUpperCase();
+                if (!selectedTierIds.some(id => id.toUpperCase() === modelTier)) return false;
+            }
+
+            return true;
+        }).length;
+    }, [models, search, pendingFilterIds, pendingIds, providers]);
 
     const filteredModels = React.useMemo(() => {
         if (!models) return [];
@@ -261,9 +301,47 @@ export const LLMModelsList = () => {
         router.push(`/settings/llms/models/${model.id}/edit`);
     };
 
+    const handleSyncAllVisible = async () => {
+        const uniqueProviderIds = Array.from(new Set(filteredModels.map(m => m.llm_provider_id)));
+        if (uniqueProviderIds.length === 0) return;
+        
+        toast.info("Zlecono synchronizację cenników dla wszystkich widocznych dostawców...");
+        
+        for (const pid of uniqueProviderIds) {
+            try {
+                await syncPricing(pid);
+            } catch (e) {
+                console.error("Sync error for provider", pid, e);
+            }
+        }
+    };
+
     const getProviderName = (providerId: string) => {
         return providers?.find(p => p.id === providerId)?.provider_name || "Unknown";
     };
+
+    const lastSyncedInfo = React.useMemo(() => {
+        if (!filteredModels || !providers) return null;
+        const uniqueProviderIds = Array.from(new Set(filteredModels.map(m => m.llm_provider_id)));
+        
+        let newestSync: Date | null = null;
+        let errors: string[] = [];
+
+        uniqueProviderIds.forEach(pid => {
+            const provider = providers.find(p => p.id === pid);
+            if (provider?.pricing_last_synced_at) {
+                const date = new Date(provider.pricing_last_synced_at);
+                if (!newestSync || date > newestSync) {
+                    newestSync = date;
+                }
+            }
+            if (provider?.pricing_sync_error) {
+                errors.push(`${provider.provider_name}: ${provider.pricing_sync_error}`);
+            }
+        });
+
+        return { newestSync, errors };
+    }, [filteredModels, providers]);
 
     if (isLoading) {
         return <Skeleton className="h-64 w-full rounded-2xl" />;
@@ -273,52 +351,66 @@ export const LLMModelsList = () => {
         <div className="space-y-4">
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between gap-4">
-                    <div className="relative flex-1 max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-                        <Input
-                            placeholder="Search models by name or id..."
-                            className="pl-10 h-[52px] text-xs border-zinc-200 dark:border-zinc-800"
-                            value={search}
-                            onChange={(event) => setSearch(event.target.value)}
-                        />
+                    <div className="flex items-center gap-8 flex-1">
+                        <div className="relative flex-1 max-w-sm">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                            <Input
+                                placeholder="Search models by name or id..."
+                                className="pl-10 h-[52px] text-xs border-zinc-200 dark:border-zinc-800"
+                                value={search}
+                                onChange={(event) => setSearch(event.target.value)}
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-6 h-9">
+                            <FilterBigMenu
+                                groups={filterGroups}
+                                resultsCount={previewCount}
+                                onApply={handleApplyFilters}
+                                onSelectionChange={handleSelectionChange}
+                                onClearAll={() => { setActiveFilters([]); setPendingFilterIds([]); }}
+                                trigger={
+                                    <div className={cn(
+                                        "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent transition-all pb-1.5 cursor-pointer group outline-none translate-y-[2px]",
+                                        activeFilters.length > 0 
+                                            ? "text-black dark:text-white border-black dark:border-white" 
+                                            : "text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white"
+                                    )}>
+                                        <Filter size={14} className="group-hover:scale-110 transition-transform" />
+                                        <span>Filters</span>
+                                        {activeFilters.length > 0 && (
+                                            <Badge variant="secondary" className="ml-0.5 h-4 min-w-4 px-1 rounded-full text-[9px] font-black bg-black dark:bg-white text-white dark:text-black">
+                                                {activeFilters.length}
+                                            </Badge>
+                                        )}
+                                    </div>
+                                }
+                            />
+
+                            <SortMenu 
+                                options={SORT_OPTIONS}
+                                activeOptionId={sortBy}
+                                onSelect={(id) => setSortBy(id)}
+                                trigger={
+                                    <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1.5 cursor-pointer group outline-none translate-y-[2px]">
+                                        <ArrowUpDown size={14} className="group-hover:scale-110 transition-transform" />
+                                        <span>Sort</span>
+                                    </div>
+                                }
+                            />
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-6 h-9">
-                        <FilterBigMenu
-                            groups={filterGroups}
-                            resultsCount={filteredModels.length}
-                            onApply={handleApplyFilters}
-                            onClearAll={() => setActiveFilters([])}
-                            trigger={
-                                <div className={cn(
-                                    "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent transition-all pb-1.5 cursor-pointer group outline-none translate-y-[2px]",
-                                    activeFilters.length > 0 
-                                        ? "text-black dark:text-white border-black dark:border-white" 
-                                        : "text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white"
-                                )}>
-                                    <Filter size={14} className="group-hover:scale-110 transition-transform" />
-                                    <span>Filters</span>
-                                    {activeFilters.length > 0 && (
-                                        <Badge variant="secondary" className="ml-0.5 h-4 min-w-4 px-1 rounded-full text-[9px] font-black bg-black dark:bg-white text-white dark:text-black">
-                                            {activeFilters.length}
-                                        </Badge>
-                                    )}
-                                </div>
-                            }
-                        />
-
-                        <SortMenu 
-                            options={SORT_OPTIONS}
-                            activeOptionId={sortBy}
-                            onSelect={(id) => setSortBy(id)}
-                            trigger={
-                                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1.5 cursor-pointer group outline-none translate-y-[2px]">
-                                    <ArrowUpDown size={14} className="group-hover:scale-110 transition-transform" />
-                                    <span>Sort</span>
-                                </div>
-                            }
-                        />
-                    </div>
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleSyncAllVisible}
+                        disabled={isSyncingPricing || filteredModels.length === 0}
+                        className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-500 hover:text-white"
+                    >
+                        <RefreshCw size={14} className={cn(isSyncingPricing && "animate-spin")} />
+                        Sync Pricing
+                    </Button>
                 </div>
 
                 <FilterBar 
@@ -333,6 +425,7 @@ export const LLMModelsList = () => {
                     <TableHeader className="bg-muted/30">
                         <TableRow>
                             <TableHead className="text-[10px] uppercase font-bold tracking-widest">Model Name</TableHead>
+                            <TableHead className="text-[10px] uppercase font-bold tracking-widest">Status</TableHead>
                             <TableHead className="text-[10px] uppercase font-bold tracking-widest text-right">Context</TableHead>
                             <TableHead className="text-[10px] uppercase font-bold tracking-widest text-right">
                                 <div className="flex items-center justify-end gap-1.5">
@@ -364,6 +457,16 @@ export const LLMModelsList = () => {
                                     <div className="flex flex-col">
                                         <span className="text-base font-bold">{model.model_display_name}</span>
                                         <span className="text-xs text-muted-foreground font-mono">{getProviderName(model.llm_provider_id)}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <div className={cn(
+                                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-black transition-all",
+                                        model.is_available 
+                                            ? "bg-white text-black shadow-[0_0_12px_rgba(255,255,255,0.3)]" 
+                                            : "bg-zinc-800 text-zinc-500 border border-zinc-700 opacity-50"
+                                    )}>
+                                        {model.is_available ? "Dostępny" : "Niedostępny"}
                                     </div>
                                 </TableCell>
                                 <TableCell className="text-right text-base font-mono">
@@ -408,6 +511,29 @@ export const LLMModelsList = () => {
                         )}
                     </TableBody>
                 </Table>
+            </div>
+
+            <div className="flex flex-col gap-2 px-2 pt-2">
+                {lastSyncedInfo?.errors && lastSyncedInfo.errors.length > 0 && (
+                    <div className="flex items-start gap-2 text-red-500 bg-red-500/5 p-3 rounded-lg border border-red-500/20 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                        <div className="flex flex-col gap-1">
+                            <span className="text-[10px] font-bold uppercase tracking-widest">Błędy synchronizacji:</span>
+                            {lastSyncedInfo.errors.map((err, i) => (
+                                <span key={i} className="text-xs font-mono">{err}</span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                <div className="flex items-center gap-2 text-zinc-500 justify-end">
+                    <Info className="w-4 h-4" />
+                    <span className="text-xs font-mono text-right">
+                        {lastSyncedInfo?.newestSync 
+                            ? `Ostatnia udana aktualizacja: ${lastSyncedInfo.newestSync.toLocaleString()} (Auto co 24h)`
+                            : "Brak zsynchronizowanych cenników (Auto co 24h)"}
+                    </span>
+                </div>
             </div>
 
             <LLMModelSidePeek 

@@ -55,3 +55,16 @@ export const useDeleteLLMProvider = () => {
         },
     });
 }
+
+export const useSyncProviderPricing = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => settingsApi.syncLLMProviderPricing(id),
+        onSuccess: () => {
+            // Invalidate providers to update pricing_last_synced_at
+            queryClient.invalidateQueries({ queryKey: ["llm-providers"] });
+            // Invalidate models to show updated pricing_input/output in the table
+            queryClient.invalidateQueries({ queryKey: ["llm-models"] });
+        },
+    });
+}

@@ -10,27 +10,38 @@ export const LLMProviderSchema = z.object({
     provider_type: z.enum(["cloud", "meta", "local"]),
     provider_api_key: z.string().nullable().optional(),
     provider_api_key_required: z.boolean(),
-    provider_api_endpoint: z.string().url().nullable().optional(),
+    provider_api_endpoint: z.string().nullable().optional(),
     
     // Core Agnostic Configuration
     protocol: z.string().default("openai"),
+    inference_path: z.string().nullable().optional(),
+    inference_json_template: z.string().nullable().optional(),
     custom_headers: z.array(z.object({
         key: z.string(),
         value: z.string()
     })).default([]),
     
     // Discovery & Auth (SSoT)
-    auth_header_name: z.string().default("Authorization"),
-    auth_header_prefix: z.string().default("Bearer "),
+    auth_header_name: z.string().nullable().optional().default("Authorization"),
+    auth_header_prefix: z.string().nullable().optional().default("Bearer "),
     api_key_placement: z.enum(["header", "query"]).default("header"),
-    discovery_json_path: z.string().default("data"),
-    discovery_id_key: z.string().default("id"),
-    discovery_name_key: z.string().default("name"),
-    discovery_context_key: z.string().default("context_length"),
+    discovery_json_path: z.string().nullable().optional().default("data"),
+    discovery_id_key: z.string().nullable().optional().default("id"),
+    discovery_name_key: z.string().nullable().optional().default("name"),
+    discovery_context_key: z.string().nullable().optional().default("context_length"),
+    discovery_pricing_endpoint: z.string().nullable().optional(),
+    discovery_pricing_input_key: z.string().nullable().optional(),
+    discovery_pricing_output_key: z.string().nullable().optional(),
+
+    // Algorithmic Scraping Configuration
+    pricing_page_url: z.string().nullable().optional(),
+    pricing_scraper_strategy: z.string().default("auto"),
+    pricing_last_synced_at: z.string().datetime().nullable().optional(),
+    pricing_data_cache: z.record(z.any()).nullable().optional(),
     
     // Response Mapping
-    response_content_path: z.string().default("choices.0.message.content"),
-    response_error_path: z.string().default("error.message"),
+    response_content_path: z.string().nullable().optional().default("choices.0.message.content"),
+    response_error_path: z.string().nullable().optional().default("error.message"),
 
     provider_custom_config: z.record(z.any()).nullable().optional(),
     created_at: z.string().datetime(),
@@ -44,13 +55,14 @@ export const LLMModelSchema = z.object({
     model_id: z.string(),
     model_display_name: z.string(),
     model_tier: ModelTierSchema,
-    model_capabilities_flags: z.array(z.string()).default([]),
-    model_context_window: z.number().int(),
-    model_supports_thinking: z.boolean().default(false),
+    model_capabilities_flags: z.array(z.string()).nullable().optional().default([]),
+    model_context_window: z.number().int().default(4096),
+    model_supports_thinking: z.boolean().nullable().optional().default(false),
     model_reasoning_effort: z.string().nullable().optional(),
     model_system_prompt: z.string().nullable().optional(),
-    model_custom_params: z.array(z.record(z.any())).default([]),
-    model_pricing_config: z.record(z.any()),
+    model_custom_params: z.array(z.record(z.any())).nullable().optional().default([]),
+    model_pricing_config: z.record(z.any()).nullable().optional().default({}),
+    is_available: z.boolean().nullable().optional().default(true),
     llm_provider_id: z.string().uuid(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),

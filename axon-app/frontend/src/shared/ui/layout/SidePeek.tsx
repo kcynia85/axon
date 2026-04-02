@@ -51,9 +51,9 @@ export const SidePeek = ({
               </div>
             )}
             <div className="flex flex-col gap-1 min-w-0">
-              <SheetTitle className="text-xl font-bold tracking-tight truncate">{title}</SheetTitle>
+              <SheetTitle className="text-2xl font-bold tracking-tight truncate">{title}</SheetTitle>
               {description && (
-                <div className="text-muted-foreground truncate">
+                <div className="text-base text-muted-foreground truncate font-medium">
                   {description}
                 </div>
               )}
@@ -61,7 +61,7 @@ export const SidePeek = ({
           </div>
         </SheetHeader>
         
-        <div className="flex-1 overflow-y-auto p-6 text-base">
+        <div className="flex-1 overflow-y-auto p-6 space-y-12">
           {children}
         </div>
 
@@ -74,3 +74,37 @@ export const SidePeek = ({
     </Sheet>
   );
 };
+
+export const SidePeekSection = ({ 
+    title, 
+    children, 
+    className
+}: { 
+    title?: string; 
+    children: React.ReactNode; 
+    className?: string;
+}) => (
+    <section className={cn("space-y-4", className)}>
+        {title && (
+            <h4 className="text-base font-bold text-muted-foreground">
+                {title}
+            </h4>
+        )}
+        <div className="space-y-1.5">
+            {children}
+        </div>
+    </section>
+);
+
+export const SidePeekGrid = ({ children }: { children: React.ReactNode }) => (
+    <div className="grid grid-cols-2 gap-4 pb-10 border-b border-muted">
+        {children}
+    </div>
+);
+
+export const SidePeekGridItem = ({ label, value }: { label: string; value: React.ReactNode }) => (
+    <div className="space-y-2">
+        <div className="text-base font-bold text-muted-foreground">{label}</div>
+        <div className="text-base font-bold tracking-tight">{value}</div>
+    </div>
+);

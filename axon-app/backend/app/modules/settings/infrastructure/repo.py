@@ -41,6 +41,16 @@ class SettingsRepository:
             discovery_id_key=provider.discovery_id_key,
             discovery_name_key=provider.discovery_name_key,
             discovery_context_key=provider.discovery_context_key,
+            discovery_pricing_endpoint=provider.discovery_pricing_endpoint,
+            discovery_pricing_input_key=provider.discovery_pricing_input_key,
+            discovery_pricing_output_key=provider.discovery_pricing_output_key,
+
+            # Algorithmic Scraping Configuration
+            pricing_page_url=provider.pricing_page_url,
+            pricing_scraper_strategy=provider.pricing_scraper_strategy,
+            pricing_last_synced_at=provider.pricing_last_synced_at,
+            pricing_sync_error=provider.pricing_sync_error,
+            pricing_data_cache=provider.pricing_data_cache,
             
             # Response Mapping
             response_content_path=provider.response_content_path,
@@ -102,6 +112,8 @@ class SettingsRepository:
             
             # Agnostic Configuration
             protocol=row.protocol,
+            inference_path=row.inference_path,
+            inference_json_template=row.inference_json_template,
             custom_headers=row.custom_headers or [],
             
             # Discovery & Auth
@@ -112,6 +124,16 @@ class SettingsRepository:
             discovery_id_key=row.discovery_id_key,
             discovery_name_key=row.discovery_name_key,
             discovery_context_key=row.discovery_context_key,
+            discovery_pricing_endpoint=row.discovery_pricing_endpoint,
+            discovery_pricing_input_key=row.discovery_pricing_input_key,
+            discovery_pricing_output_key=row.discovery_pricing_output_key,
+
+            # Algorithmic Scraping Configuration
+            pricing_page_url=row.pricing_page_url,
+            pricing_scraper_strategy=row.pricing_scraper_strategy or "auto",
+            pricing_last_synced_at=row.pricing_last_synced_at,
+            pricing_sync_error=row.pricing_sync_error,
+            pricing_data_cache=row.pricing_data_cache,
             
             # Response Mapping
             response_content_path=row.response_content_path,
@@ -132,6 +154,7 @@ class SettingsRepository:
                     model_system_prompt=m.model_system_prompt,
                     model_custom_params=m.model_custom_params or [],
                     model_pricing_config=m.model_pricing_config,
+                    is_available=m.is_available,
                     llm_provider_id=m.llm_provider_id,
                     created_at=m.created_at,
                     updated_at=m.updated_at
@@ -154,6 +177,7 @@ class SettingsRepository:
             model_system_prompt=model.model_system_prompt,
             model_custom_params=model.model_custom_params,
             model_pricing_config=model.model_pricing_config,
+            is_available=model.is_available,
             llm_provider_id=model.llm_provider_id,
             created_at=model.created_at,
             updated_at=model.updated_at
@@ -227,7 +251,8 @@ class SettingsRepository:
             model_reasoning_effort=row.model_reasoning_effort,
             model_system_prompt=row.model_system_prompt,
             model_custom_params=row.model_custom_params or [],
-            model_pricing_config=row.model_pricing_config,
+            model_pricing_config=row.model_pricing_config or {},
+            is_available=row.is_available,
             llm_provider_id=row.llm_provider_id,
             created_at=row.created_at,
             updated_at=row.updated_at

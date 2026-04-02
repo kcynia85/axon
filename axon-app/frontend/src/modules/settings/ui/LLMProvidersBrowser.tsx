@@ -53,6 +53,7 @@ export const LLMProvidersBrowser = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortBy, setSortBy] = useState("name-asc");
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
+  const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
 
   // Deletion Modal State
@@ -90,9 +91,26 @@ export const LLMProvidersBrowser = () => {
     } as Provider;
   }, [providers, selectedProviderId]);
 
+  const previewCount = useMemo(() => {
+    return providers.filter(p => {
+        if (pendingIds.has(p.id)) return false;
+        
+        const title = p.provider_name.toLowerCase();
+        const query = searchQuery.toLowerCase();
+        if (searchQuery && !title.includes(query)) return false;
+
+        if (pendingFilterIds.length === 0) return true;
+        return pendingFilterIds.includes(p.provider_type);
+    }).length;
+  }, [providers, searchQuery, pendingFilterIds, pendingIds]);
+
   const filteredProviders = useMemo(() => {
     let result = providers
       .filter(p => !pendingIds.has(p.id))
+      .filter(p => {
+          if (activeFilters.length === 0) return true;
+          return activeFilters.some(f => f.id === p.provider_type);
+      })
       .map(p => ({
         id: p.id,
         title: p.provider_name,
@@ -111,14 +129,33 @@ export const LLMProvidersBrowser = () => {
     }
 
     return result;
-  }, [providers, searchQuery, pendingIds]);
+  }, [providers, searchQuery, pendingIds, activeFilters]);
 
   const handleRemoveFilter = (id: string) => {
     setActiveFilters(prev => prev.filter(f => f.id !== id));
+    setPendingFilterIds(prev => prev.filter(pId => pId !== id));
   };
 
   const handleClearAll = () => {
     setActiveFilters([]);
+    setPendingFilterIds([]);
+  };
+
+  const handleApplyFilters = (selectedIds: string[]) => {
+      const nextFilters: ActiveFilter[] = [];
+      FILTER_GROUPS.forEach(group => {
+          group.options.forEach(opt => {
+              if (selectedIds.includes(opt.id)) {
+                  nextFilters.push({ id: opt.id, label: opt.label, category: group.id });
+              }
+          });
+      });
+      setActiveFilters(nextFilters);
+      setPendingFilterIds(selectedIds);
+  };
+
+  const handleSelectionChange = (selectedIds: string[]) => {
+      setPendingFilterIds(selectedIds);
   };
 
   const handleToggleFilter = (id: string) => {
@@ -128,6 +165,7 @@ export const LLMProvidersBrowser = () => {
               handleRemoveFilter(id);
           } else {
               setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
+              setPendingFilterIds([...pendingFilterIds, id]);
           }
       }
   };
@@ -177,9 +215,11 @@ export const LLMProvidersBrowser = () => {
           activeFilters={activeFilters}
           quickFilters={QUICK_FILTERS}
           onToggleFilter={handleToggleFilter}
-          onApplyFilters={() => {}} 
+          onApplyFilters={handleApplyFilters} 
+          onSelectionChange={handleSelectionChange}
           onClearAllFilters={handleClearAll}
-          resultsCount={filteredProviders.length}
+          onPendingFilterIdsChange={handleSelectionChange}
+          resultsCount={previewCount}
           sortOptions={SORT_OPTIONS}
           sortBy={sortBy}
           onSortChange={setSortBy}

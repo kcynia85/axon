@@ -49,6 +49,10 @@ export const settingsApi = {
         return await res.json();
     },
 
+    syncLLMProviderPricing: async (id: string): Promise<void> => {
+        await apiClient.post(`/settings/llm-providers/${id}/sync-pricing`, {});
+    },
+
     getAvailableModels: async (provider_id: string): Promise<any[]> => {
         const res = await apiClient.get(`/settings/llm-providers/${provider_id}/available-models`);
         return await res.json() as any[];
@@ -134,6 +138,12 @@ export const settingsApi = {
         return data.map((embeddingModelRaw) => EmbeddingModelSchema.parse(embeddingModelRaw));
     },
 
+    createEmbeddingModel: async (data: Omit<EmbeddingModel, "id" | "created_at" | "updated_at">): Promise<EmbeddingModel> => {
+        const res = await apiClient.post("/settings/embedding-models", data);
+        const raw = await res.json();
+        return EmbeddingModelSchema.parse(raw);
+    },
+
     deleteEmbeddingModel: async (id: string): Promise<void> => {
         await apiClient.delete(`/settings/embedding-models/${id}`);
     },
@@ -143,6 +153,12 @@ export const settingsApi = {
         const res = await apiClient.get("/settings/chunking-strategies");
         const data = await res.json() as unknown[];
         return data.map((chunkingStrategyRaw) => ChunkingStrategySchema.parse(chunkingStrategyRaw));
+    },
+
+    createChunkingStrategy: async (data: Omit<ChunkingStrategy, "id" | "created_at" | "updated_at">): Promise<ChunkingStrategy> => {
+        const res = await apiClient.post("/settings/chunking-strategies", data);
+        const raw = await res.json();
+        return ChunkingStrategySchema.parse(raw);
     },
 
     deleteChunkingStrategy: async (id: string): Promise<void> => {

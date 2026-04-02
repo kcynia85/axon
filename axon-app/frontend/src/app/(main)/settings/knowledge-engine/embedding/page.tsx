@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
 import React from "react";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { EmbeddingModelsList } from "@/modules/settings/ui/EmbeddingModelsList";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { useRouter } from "next/navigation";
 
 const EmbeddingPage = () => {
-    const goToAddModel = () => {
-        // Add model implementation
-    };
+    const router = useRouter();
 
     return (
         <PageLayout
@@ -23,7 +22,7 @@ const EmbeddingPage = () => {
             actions={
                 <ActionButton 
                     label="Add Model" 
-                    onClick={goToAddModel} 
+                    onClick={() => router.push("/settings/knowledge-engine/embedding/new")} 
                 />
             }
         >

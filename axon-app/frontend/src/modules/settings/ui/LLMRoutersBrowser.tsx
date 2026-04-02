@@ -58,6 +58,7 @@ export const LLMRoutersBrowser = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("newest");
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
+  const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
   const [selectedRouterId, setSelectedRouterId] = useState<string | null>(null);
 
   const selectedRouter = useMemo(() => {
@@ -76,6 +77,21 @@ export const LLMRoutersBrowser = () => {
     
     return model.model_display_name;
   };
+
+  const previewCount = useMemo(() => {
+    let result = routers.filter(r => !pendingIds.has(r.id));
+
+    if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        result = result.filter(r => r.router_alias.toLowerCase().includes(query));
+    }
+
+    if (pendingFilterIds.length > 0) {
+        result = result.filter(r => pendingFilterIds.includes(r.router_strategy));
+    }
+
+    return result.length;
+  }, [routers, searchQuery, pendingFilterIds, pendingIds]);
 
   const filteredRouters = useMemo(() => {
     let result = routers.filter(r => !pendingIds.has(r.id));
@@ -109,10 +125,29 @@ export const LLMRoutersBrowser = () => {
 
   const handleRemoveFilter = (id: string) => {
     setActiveFilters(prev => prev.filter(f => f.id !== id));
+    setPendingFilterIds(prev => prev.filter(pId => pId !== id));
   };
 
   const handleClearAll = () => {
     setActiveFilters([]);
+    setPendingFilterIds([]);
+  };
+
+  const handleApplyFilters = (selectedIds: string[]) => {
+      const nextFilters: ActiveFilter[] = [];
+      FILTER_GROUPS.forEach(group => {
+          group.options.forEach(opt => {
+              if (selectedIds.includes(opt.id)) {
+                  nextFilters.push({ id: opt.id, label: opt.label, category: group.id });
+              }
+          });
+      });
+      setActiveFilters(nextFilters);
+      setPendingFilterIds(selectedIds);
+  };
+
+  const handleSelectionChange = (selectedIds: string[]) => {
+      setPendingFilterIds(selectedIds);
   };
 
   const handleToggleFilter = (id: string) => {
@@ -122,6 +157,7 @@ export const LLMRoutersBrowser = () => {
               handleRemoveFilter(id);
           } else {
               setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
+              setPendingFilterIds([...pendingFilterIds, id]);
           }
       }
   };
@@ -158,9 +194,11 @@ export const LLMRoutersBrowser = () => {
           activeFilters={activeFilters}
           quickFilters={QUICK_FILTERS}
           onToggleFilter={handleToggleFilter}
-          onApplyFilters={() => {}} 
+          onApplyFilters={handleApplyFilters} 
+          onSelectionChange={handleSelectionChange}
           onClearAllFilters={handleClearAll}
-          resultsCount={filteredRouters.length}
+          onPendingFilterIdsChange={handleSelectionChange}
+          resultsCount={previewCount}
           sortOptions={SORT_OPTIONS}
           sortBy={sortBy}
           onSortChange={setSortBy}

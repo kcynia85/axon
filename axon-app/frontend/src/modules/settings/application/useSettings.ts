@@ -124,6 +124,16 @@ export const useEmbeddingModels = () => {
     });
 }
 
+export const useCreateEmbeddingModel = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data: Omit<EmbeddingModel, "id" | "created_at" | "updated_at">) => settingsApi.createEmbeddingModel(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["embedding-models"] });
+        },
+    });
+}
+
 export const useDeleteEmbeddingModel = () => {
     const queryClient = useQueryClient();
     return useMutation({
@@ -139,6 +149,22 @@ export const useChunkingStrategies = () => {
     return useQuery({
         queryKey: ["chunking-strategies"],
         queryFn: () => settingsApi.getChunkingStrategies(),
+    });
+}
+
+export const useCreateChunkingStrategy = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data: Omit<ChunkingStrategy, "id" | "created_at" | "updated_at">) => settingsApi.createChunkingStrategy(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["chunking-strategies"] });
+        },
+    });
+}
+
+export const useSimulateChunking = () => {
+    return useMutation({
+        mutationFn: (params: Record<string, unknown>) => settingsApi.simulateChunking(params),
     });
 }
 

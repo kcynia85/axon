@@ -17,23 +17,30 @@ class CreateLLMProviderRequest(BaseModel):
     provider_custom_config: Optional[Dict[str, Any]] = None
 
     # Core Agnostic Configuration
-    protocol: str = "openai"
-    inference_path: str = "/chat/completions"
-    inference_json_template: str = '{"model": "{{model}}", "messages": [{"role": "user", "content": "{{prompt}}"}]}'
+    protocol: Optional[str] = "openai"
+    inference_path: Optional[str] = "/chat/completions"
+    inference_json_template: Optional[str] = '{"model": "{{model}}", "messages": [{"role": "user", "content": "{{prompt}}"}]}'
     custom_headers: List[Dict[str, str]] = Field(default_factory=list)
 
     # Discovery & Auth Configuration (SSoT)
-    auth_header_name: str = "Authorization"
-    auth_header_prefix: str = "Bearer "
-    api_key_placement: str = "header"
-    discovery_json_path: str = "data"
-    discovery_id_key: str = "id"
-    discovery_name_key: str = "name"
-    discovery_context_key: str = "context_length"
+    auth_header_name: Optional[str] = "Authorization"
+    auth_header_prefix: Optional[str] = "Bearer "
+    api_key_placement: Optional[str] = "header"
+    discovery_json_path: Optional[str] = "data"
+    discovery_id_key: Optional[str] = "id"
+    discovery_name_key: Optional[str] = "name"
+    discovery_context_key: Optional[str] = "context_length"
+    discovery_pricing_endpoint: Optional[str] = None
+    discovery_pricing_input_key: Optional[str] = None
+    discovery_pricing_output_key: Optional[str] = None
+
+    # Algorithmic Scraping Configuration
+    pricing_page_url: Optional[str] = None
+    pricing_scraper_strategy: Optional[str] = "auto"
 
     # Response Mapping
-    response_content_path: str = "choices.0.message.content"
-    response_error_path: str = "error.message"
+    response_content_path: Optional[str] = "choices.0.message.content"
+    response_error_path: Optional[str] = "error.message"
 
 class UpdateLLMProviderRequest(BaseModel):
     provider_name: Optional[str] = None
@@ -57,11 +64,22 @@ class UpdateLLMProviderRequest(BaseModel):
     discovery_id_key: Optional[str] = None
     discovery_name_key: Optional[str] = None
     discovery_context_key: Optional[str] = None
+    discovery_pricing_endpoint: Optional[str] = None
+    discovery_pricing_input_key: Optional[str] = None
+    discovery_pricing_output_key: Optional[str] = None
+
+    # Algorithmic Scraping Configuration
+    pricing_page_url: Optional[str] = None
+    pricing_scraper_strategy: Optional[str] = None
 
     response_content_path: Optional[str] = None
     response_error_path: Optional[str] = None
+
 class LLMProviderResponse(CreateLLMProviderRequest):
     id: UUID
+    pricing_last_synced_at: Optional[datetime] = None
+    pricing_sync_error: Optional[str] = None
+    pricing_data_cache: Optional[Dict[str, Any]] = None
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime] = None
@@ -78,6 +96,7 @@ class CreateLLMModelRequest(BaseModel):
     model_system_prompt: Optional[str] = None
     model_custom_params: List[Dict[str, Any]] = Field(default_factory=list)
     model_pricing_config: Dict[str, Any] = Field(default_factory=dict)
+    is_available: Optional[bool] = True
     llm_provider_id: UUID
 
 class UpdateLLMModelRequest(BaseModel):
@@ -91,6 +110,7 @@ class UpdateLLMModelRequest(BaseModel):
     model_system_prompt: Optional[str] = None
     model_custom_params: Optional[List[Dict[str, Any]]] = None
     model_pricing_config: Optional[Dict[str, Any]] = None
+    is_available: Optional[bool] = None
     llm_provider_id: Optional[UUID] = None
 
 class LLMModelResponse(CreateLLMModelRequest):

@@ -2,6 +2,7 @@ import httpx
 from uuid import UUID, uuid4
 from typing import List, Optional
 from app.modules.settings.infrastructure.repo import SettingsRepository
+from app.modules.settings.infrastructure.pricing_scraper import PricingScraper
 from app.modules.settings.domain.models import (
     LLMProvider, LLMModel, LLMRouter, EmbeddingModel, ChunkingStrategy, VectorDatabase
 )
@@ -49,6 +50,13 @@ class SettingsService:
             discovery_id_key=request.discovery_id_key,
             discovery_name_key=request.discovery_name_key,
             discovery_context_key=request.discovery_context_key,
+            discovery_pricing_endpoint=request.discovery_pricing_endpoint,
+            discovery_pricing_input_key=request.discovery_pricing_input_key,
+            discovery_pricing_output_key=request.discovery_pricing_output_key,
+            
+            # Algorithmic Scraping Configuration
+            pricing_page_url=request.pricing_page_url,
+            pricing_scraper_strategy=request.pricing_scraper_strategy,
             
             # Response Mapping
             response_content_path=request.response_content_path,
@@ -190,8 +198,6 @@ class SettingsService:
         start_time = time.time()
         try:
             # Use _fetch_models to get both raw JSON and mapped models
-            # We modify _fetch_models to return more info or just call it
-            # To keep it simple, we'll just call it and it will use the correct agnostic logic
             mapped_models = await self._fetch_models(provider)
             latency_ms = (time.time() - start_time) * 1000
             
@@ -266,8 +272,7 @@ class SettingsService:
         return await self.repo.delete_llm_router(id)
 
     async def test_llm_router(self, id: UUID, request: TestPromptRequest) -> SanityCheckResponse:
-        # TODO: Implement real LLM call logic
-        # For now, return mock response
+        # Mocking for now
         return SanityCheckResponse(
             success=True,
             response_text=f"Mock response for prompt: {request.prompt}",
@@ -320,8 +325,6 @@ class SettingsService:
         return await self.repo.delete_chunking_strategy(id)
 
     async def simulate_chunking(self, request: SimulateChunkingRequest) -> SimulateChunkingResponse:
-        # TODO: Implement real chunking logic (LangChain/TextSplitter)
-        # Mocking for now
         text_len = len(request.text)
         chunk_size = 500 # Should get from strategy if ID provided
         chunks = [request.text[i:i+chunk_size] for i in range(0, text_len, chunk_size)]
@@ -358,7 +361,6 @@ class SettingsService:
         return await self.repo.delete_vector_database(id)
 
     async def test_vector_database(self, id: UUID) -> ConnectionTestResponse:
-        # TODO: Implement real connection test
         return ConnectionTestResponse(
             success=True,
             message="Mock connection successful",
@@ -383,6 +385,7 @@ class SettingsService:
     async def _fetch_models(self, provider: LLMProvider) -> List[AvailableModelResponse]:
         """
         Generic model discovery driven by provider configuration (SSoT).
+        Falls back to global litellm pricing scraper if provider pricing API is not configured or fails.
         """
         endpoint = provider.provider_api_endpoint.strip()
         api_key = provider.provider_api_key
@@ -431,6 +434,46 @@ class SettingsService:
                 if not isinstance(data, list):
                     return []
 
+                def get_nested_value(d, key_path, default=0.0):
+                    if not key_path:
+                        return default
+                    parts = key_path.split(".")
+                    curr = d
+                    for p in parts:
+                        if isinstance(curr, dict):
+                            curr = curr.get(p)
+                        else:
+                            return default
+                    try:
+                        return float(curr) if curr is not None else default
+                    except (ValueError, TypeError):
+                        return default
+
+                pricing_data_map = {}
+                pricing_endpoint = provider.discovery_pricing_endpoint.strip() if provider.discovery_pricing_endpoint else None
+                if pricing_endpoint and pricing_endpoint != url:
+                    try:
+                        pres = await client.get(pricing_endpoint, headers=headers)
+                        pres.raise_for_status()
+                        p_raw = pres.json()
+                        p_data = p_raw
+                        for part in path_parts:
+                            if isinstance(p_data, dict):
+                                p_data = p_data.get(part, [])
+                            else:
+                                break
+                        if isinstance(p_data, list):
+                            for pm in p_data:
+                                if isinstance(pm, dict):
+                                    pm_id = str(pm.get(provider.discovery_id_key, ""))
+                                    if pm_id:
+                                        pricing_data_map[pm_id] = pm
+                    except Exception as pe:
+                        print(f"Error fetching pricing from custom endpoint {pricing_endpoint}: {pe}")
+
+                # Pre-fetch litellm global pricing dictionary
+                global_pricing_data = await PricingScraper.get_pricing_data()
+
                 # Dynamic field mapping
                 results = []
                 for m in data:
@@ -444,16 +487,111 @@ class SettingsService:
                     model_name = str(m.get(provider.discovery_name_key, model_id))
                     context = m.get(provider.discovery_context_key)
                     
+                    price_in = 0.0
+                    price_out = 0.0
+                    
+                    pm_data = pricing_data_map.get(model_id, m)
+                    
+                    if provider.discovery_pricing_input_key or provider.discovery_pricing_output_key:
+                        price_in = get_nested_value(pm_data, provider.discovery_pricing_input_key, 0.0)
+                        price_out = get_nested_value(pm_data, provider.discovery_pricing_output_key, 0.0)
+                    else:
+                        # Fallback to litellm pricing scraper
+                        model_key = model_id
+                        if model_key not in global_pricing_data and "/" in model_key:
+                             model_key = model_key.split("/", 1)[1]
+                             
+                        global_model_data = global_pricing_data.get(model_key)
+                        if global_model_data:
+                            input_cost = global_model_data.get("input_cost_per_token", 0.0)
+                            output_cost = global_model_data.get("output_cost_per_token", 0.0)
+                            if isinstance(input_cost, (int, float)):
+                                price_in = input_cost * 1_000_000
+                            if isinstance(output_cost, (int, float)):
+                                price_out = output_cost * 1_000_000
+
+                    try:
+                        ctx_val = int(context) if context else 0
+                    except (ValueError, TypeError):
+                        ctx_val = 0
+
                     results.append(AvailableModelResponse(
                         id=model_id,
                         name=model_name,
-                        context_window=int(context) if context and str(context).isdigit() else 0,
-                        pricing_input=0.0, # Will be refined via marketplace if needed
-                        pricing_output=0.0
+                        context_window=ctx_val,
+                        pricing_input=price_in,
+                        pricing_output=price_out
                     ))
                 
-                return sorted(results, key=lambda x: x.name)
+                # If native discovery returned results, return them
+                if results:
+                    return sorted(results, key=lambda x: x.name)
 
             except Exception as e:
                 print(f"Error fetching models from {url}: {e}")
-                return []
+            
+            # --- FINAL FALLBACK: LiteLLM Registry ---
+            # If native discovery failed or returned nothing, try to find models in LiteLLM registry
+            # that match the provider's technical ID or name.
+            fallback_results = []
+            provider_search_term = provider.provider_technical_id.lower() or provider.provider_name.lower()
+            
+            # Common mappings for LiteLLM
+            mapping = {
+                "openai": "openai/",
+                "anthropic": "anthropic/",
+                "google": "gemini/",
+                "cohere": "os/",
+                "mistral": "mistral/",
+                "groq": "groq/",
+                "perplexity": "perplexity/",
+                "deepseek": "deepseek/",
+                "openrouter": "openrouter/"
+            }
+            
+            prefix = ""
+            for k, v in mapping.items():
+                if k in provider_search_term:
+                    prefix = v
+                    break
+            
+            # LiteLLM JSON mapping
+            try:
+                litellm_data = await PricingScraper.get_pricing_data()
+                for model_key, m_info in litellm_data.items():
+                    if not isinstance(m_info, dict): continue
+                    
+                    # Match by prefix or explicit provider field in litellm if it exists
+                    # Heuristic: model_key starts with prefix
+                    is_match = False
+                    if prefix and model_key.startswith(prefix):
+                        is_match = True
+                    elif provider_search_term in model_key.lower():
+                        is_match = True
+                        
+                    if is_match:
+                        # Map to AvailableModelResponse
+                        m_id = model_key
+                        # If it has prefix, friendly name is just the part after prefix
+                        m_name = model_key.split("/", 1)[1] if "/" in model_key else model_key
+                        m_name = m_name.replace("-", " ").title()
+                        
+                        ctx = m_info.get("max_tokens", 4096)
+                        in_cost = m_info.get("input_cost_per_token", 0.0) * 1_000_000
+                        out_cost = m_info.get("output_cost_per_token", 0.0) * 1_000_000
+                        
+                        fallback_results.append(AvailableModelResponse(
+                            id=m_id,
+                            name=m_name,
+                            context_window=ctx,
+                            pricing_input=in_cost,
+                            pricing_output=out_cost
+                        ))
+                
+                if fallback_results:
+                    return sorted(fallback_results, key=lambda x: x.name)
+            except Exception as fe:
+                print(f"LiteLLM Fallback discovery error: {fe}")
+
+            return []
+

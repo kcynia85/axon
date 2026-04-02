@@ -3,7 +3,12 @@
 import React from "react";
 import Image from "next/image";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { SidePeek } from "@/shared/ui/layout/SidePeek";
+import { 
+    SidePeek, 
+    SidePeekSection, 
+    SidePeekGrid, 
+    SidePeekGridItem 
+} from "@/shared/ui/layout/SidePeek";
 import { Button } from "@/shared/ui/ui/Button";
 import { HelpCircle, BookOpen, Edit2, Trash2, Code2, Globe, Database, ShieldCheck, CloudSun, Zap, Hash, FileText } from "lucide-react";
 import { KNOWLEDGE_HUB_NAMES, LLM_MODEL_NAMES, getWorkspaceLabel } from "../domain/constants";
@@ -51,7 +56,6 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
 
   const avatarUrl = getAgentAvatarUrl(agent.id, agent.agent_visual_url);
 
-  // Combine native and custom skills (supporting both new field and legacy field)
   const customIdsFromFunctions = agent.custom_functions || [];
   const customIdsFromLegacy = (agent as any).tools || [];
   const allCustomIds = Array.from(new Set([...customIdsFromFunctions, ...customIdsFromLegacy]));
@@ -135,22 +139,16 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
         )}
 
         {/* ── Metadata Summary ── */}
-        <div className="grid grid-cols-2 gap-4 pb-10 border-b border-muted">
-          <div className="space-y-2">
-            <div className="text-base font-bold text-muted-foreground">Cost</div>
-            <div className="text-base font-bold">Medium</div>
-          </div>
-          <div className="space-y-2">
-            <div className="text-base font-bold text-muted-foreground">Model LLM</div>
-            <div className="text-base font-bold tracking-tight">
-              {agent.llm_model_id ? (LLM_MODEL_NAMES[agent.llm_model_id] ?? agent.llm_model_id) : "GPT-4o"}
-            </div>
-          </div>
-        </div>
+        <SidePeekGrid>
+            <SidePeekGridItem label="Cost" value="Medium" />
+            <SidePeekGridItem 
+                label="Model LLM" 
+                value={agent.llm_model_id ? (LLM_MODEL_NAMES[agent.llm_model_id] ?? agent.llm_model_id) : "GPT-4o"} 
+            />
+        </SidePeekGrid>
 
         {/* ── Keywords ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground">Keywords</h4>
+        <SidePeekSection title="Keywords">
           <div className="flex flex-wrap gap-1.5">
             {keywords.map((kw, i) => (
               <Badge key={i} variant="secondary" className="text-base font-normal">
@@ -158,14 +156,10 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
               </Badge>
             ))}
           </div>
-        </section>
+        </SidePeekSection>
 
         {/* ── Context (Input Schema) ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground flex items-center gap-2">
-            Context
-            <HelpCircle className="w-4 h-4 text-muted-foreground/50 cursor-help" />
-          </h4>
+        <SidePeekSection title="Context">
           <div className="space-y-1.5">
             {inputFields.map(([name, type]) => (
               <div key={name} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
@@ -173,18 +167,13 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
                 <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
                   {String(type)}
                 </Badge>
-
               </div>
             ))}
           </div>
-        </section>
+        </SidePeekSection>
 
         {/* ── Artefacts (Output Schema) ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground flex items-center gap-2">
-            Artefacts
-            <HelpCircle className="w-4 h-4 text-muted-foreground/50 cursor-help" />
-          </h4>
+        <SidePeekSection title="Artefacts">
           <div className="space-y-1.5">
             {outputFields.map(([name, type]) => (
               <div key={name} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
@@ -192,18 +181,13 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
                 <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
                   {String(type)}
                 </Badge>
-
               </div>
             ))}
           </div>
-        </section>
+        </SidePeekSection>
 
         {/* ── Knowledge ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground flex items-center gap-2">
-            Wiedza (RAG)
-            <HelpCircle className="w-4 h-4 text-muted-foreground/50 cursor-help" />
-          </h4>
+        <SidePeekSection title="Wiedza (RAG)">
           <div className="space-y-1.5">
             {knowledgeHubs.map((name, i) => (
               <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-muted/30 border border-primary/5">
@@ -212,14 +196,10 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
               </div>
             ))}
           </div>
-        </section>
+        </SidePeekSection>
 
         {/* ── Skills ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground flex items-center gap-2">
-            Skills
-            <HelpCircle className="w-4 h-4 text-muted-foreground/50 cursor-help" />
-          </h4>
+        <SidePeekSection title="Skills">
           <div className="space-y-1.5">
             {allSkills.map((skill) => {
               const Icon = skillIcons[skill.id.toLowerCase()];
@@ -234,13 +214,10 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
               );
             })}
           </div>
-        </section>
+        </SidePeekSection>
 
         {/* ── Availability ── */}
-        <section className="space-y-4">
-          <h4 className="text-base font-bold text-muted-foreground">
-            Dostępność
-          </h4>
+        <SidePeekSection title="Dostępność">
           <div className="flex flex-wrap gap-1.5">
             {availabilityLabels.map((label) => (
               <Badge key={label} variant="outline" className="text-base font-normal">
@@ -248,7 +225,7 @@ export const AgentProfilePeek = ({ agent, isOpen, onClose, onEdit, onDelete }: A
               </Badge>
             ))}
           </div>
-        </section>
+        </SidePeekSection>
       </div>
     </SidePeek>
   );

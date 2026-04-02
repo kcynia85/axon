@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from typing import List
 from uuid import UUID
+import inngest
 
 from app.api.deps import get_current_user
 from app.modules.settings.application.service import SettingsService
 from app.modules.settings.dependencies import get_settings_service
+from app.shared.infrastructure.inngest_client import inngest_client
 from app.modules.settings.application.schemas import (
     LLMProviderResponse, CreateLLMProviderRequest, UpdateLLMProviderRequest,
     LLMModelResponse, CreateLLMModelRequest, UpdateLLMModelRequest, AvailableModelResponse, LLMModelUsageResponse,
@@ -83,6 +85,23 @@ async def test_llm_provider(
         return await service.test_provider_connection(id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+@router.post("/llm-providers/{id}/sync-pricing", status_code=status.HTTP_202_ACCEPTED)
+async def sync_provider_pricing(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    provider = await service.get_llm_provider(id)
+    if not provider:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Provider not found")
+        
+    await inngest_client.send(
+        inngest.Event(
+            name="provider.pricing/sync.requested",
+            data={"provider_id": str(id)}
+        )
+    )
+    return {"status": "accepted"}
 
 # --- LLM Model ---
 

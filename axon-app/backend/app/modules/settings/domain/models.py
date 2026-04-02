@@ -25,6 +25,7 @@ class LLMModel(SettingsBase):
     model_system_prompt: Optional[str] = None
     model_custom_params: List[Dict[str, Any]] = Field(default_factory=list)
     model_pricing_config: Dict[str, Any] = Field(default_factory=dict)
+    is_available: Optional[bool] = True
     llm_provider_id: UUID
 
 class LLMProvider(SettingsBase):
@@ -37,23 +38,33 @@ class LLMProvider(SettingsBase):
     provider_custom_config: Optional[Dict[str, Any]] = None
 
     # Agnostic Protocol Configuration
-    protocol: str = "openai" # openai, anthropic, google, custom
-    inference_path: str = "/chat/completions"
-    inference_json_template: str = '{"model": "{{model}}", "messages": [{"role": "user", "content": "{{prompt}}"}]}'
+    protocol: Optional[str] = "openai" # openai, anthropic, google, custom
+    inference_path: Optional[str] = "/chat/completions"
+    inference_json_template: Optional[str] = '{"model": "{{model}}", "messages": [{"role": "user", "content": "{{prompt}}"}]}'
     custom_headers: List[Dict[str, str]] = Field(default_factory=list)
 
     # Discovery Configuration (SSoT)
-    auth_header_name: str = "Authorization"
-    auth_header_prefix: str = "Bearer "
-    api_key_placement: str = "header" # header, query
-    discovery_json_path: str = "data"
-    discovery_id_key: str = "id"
-    discovery_name_key: str = "name"
-    discovery_context_key: str = "context_length"
+    auth_header_name: Optional[str] = "Authorization"
+    auth_header_prefix: Optional[str] = "Bearer "
+    api_key_placement: Optional[str] = "header" # header, query
+    discovery_json_path: Optional[str] = "data"
+    discovery_id_key: Optional[str] = "id"
+    discovery_name_key: Optional[str] = "name"
+    discovery_context_key: Optional[str] = "context_length"
+    discovery_pricing_endpoint: Optional[str] = None
+    discovery_pricing_input_key: Optional[str] = None
+    discovery_pricing_output_key: Optional[str] = None
+
+    # Algorithmic Scraping Configuration
+    pricing_page_url: Optional[str] = None
+    pricing_scraper_strategy: Optional[str] = "auto"
+    pricing_last_synced_at: Optional[datetime] = None
+    pricing_sync_error: Optional[str] = None
+    pricing_data_cache: Optional[Dict[str, Any]] = None
 
     # Inference Response Mapping
-    response_content_path: str = "choices.0.message.content"
-    response_error_path: str = "error.message"
+    response_content_path: Optional[str] = "choices.0.message.content"
+    response_error_path: Optional[str] = "error.message"
 
     models: List[LLMModel] = Field(default_factory=list)
 class LLMRouter(SettingsBase):

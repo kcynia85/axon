@@ -8,9 +8,11 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import {
     Scissors
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const ChunkingStrategiesList = () => {
     const { data: strategies, isLoading } = useChunkingStrategies();
+    const router = useRouter();
 
     if (isLoading) {
         return (
@@ -45,7 +47,11 @@ export const ChunkingStrategiesList = () => {
     return (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {strategies?.map((strategy) => (
-                <Card key={strategy.id} className="group hover:border-primary/50 transition-all flex flex-col bg-muted/5">
+                <Card 
+                    key={strategy.id} 
+                    className="group hover:border-primary/50 transition-all flex flex-col bg-muted/5 cursor-pointer"
+                    onClick={() => router.push(`/settings/knowledge-engine/chunking/${strategy.id}`)}
+                >
                     <CardHeader className="p-4 bg-muted/20 border-b">
                         <div className="flex justify-between items-start">
                             <div className="flex items-center gap-2">

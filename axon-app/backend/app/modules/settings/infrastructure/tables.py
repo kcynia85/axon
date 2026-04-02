@@ -33,6 +33,16 @@ class LLMProviderTable(Base):
     discovery_id_key = Column(String, default="id")
     discovery_name_key = Column(String, default="name")
     discovery_context_key = Column(String, default="context_length")
+    discovery_pricing_endpoint = Column(String, nullable=True)
+    discovery_pricing_input_key = Column(String, nullable=True)
+    discovery_pricing_output_key = Column(String, nullable=True)
+
+    # Algorithmic Scraping Configuration
+    pricing_page_url = Column(String, nullable=True)
+    pricing_scraper_strategy = Column(String, default="auto") # auto, openai_spa, anthropic_table, litellm_fallback
+    pricing_last_synced_at = Column(DateTime(timezone=True), nullable=True)
+    pricing_sync_error = Column(String, nullable=True)
+    pricing_data_cache = Column(JSONB, nullable=True)
 
     # Response Mapping
     response_content_path = Column(String, default="choices.0.message.content")
@@ -58,6 +68,7 @@ class LLMModelTable(Base):
     model_system_prompt = Column(String, nullable=True)
     model_custom_params = Column(JSONB, default=[]) # List of {key, value, type}
     model_pricing_config = Column(JSONB, default={}) # {input_1M, output_1M}
+    is_available = Column(Boolean, default=True)
     llm_provider_id = Column(UUID(as_uuid=True), ForeignKey("llm_providers.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
