@@ -32,6 +32,13 @@ const BaseProviderSchema = z.object({
 	discovery_id_key: z.string().min(1, "Wymagane").default("id"),
 	discovery_name_key: z.string().min(1, "Wymagane").default("name"),
 	discovery_context_key: z.string().min(1, "Wymagane").default("context_length"),
+	discovery_pricing_endpoint: z.union([z.literal(""), z.string().url("Podaj poprawny adres URL").optional()]),
+	discovery_pricing_input_key: z.string().optional(),
+	discovery_pricing_output_key: z.string().optional(),
+	
+	// Algorithmic Scraping Configuration
+	pricing_page_url: z.union([z.literal(""), z.string().url("Podaj poprawny adres URL").optional()]),
+	pricing_scraper_strategy: z.string().default("auto"),
 	
 	// Response Mapping (Inference)
 	response_content_path: z.string().default("choices.0.message.content"),

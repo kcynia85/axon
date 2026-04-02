@@ -23,6 +23,7 @@ from app.modules.system.interface.router import router as system_router
 from app.modules.workspaces.interface.router import router as workspaces_router
 from app.shared.infrastructure.inngest_client import inngest_client
 from app.modules.agents.application.workflows import writer_workflow, generic_agent_workflow
+from app.modules.settings.application.inngest_handlers import sync_all_pricing, sync_provider_pricing_event
 
 app = FastAPI(title="RAGAS Axon API")
 
@@ -71,7 +72,7 @@ app.include_router(workspaces_router)
 inngest_handler = serve(
     app,
     inngest_client,
-    [writer_workflow, generic_agent_workflow],
+    [writer_workflow, generic_agent_workflow, sync_all_pricing, sync_provider_pricing_event],
 )
 
 @app.get("/")

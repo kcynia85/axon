@@ -124,6 +124,7 @@ interface Props {
 export const OpenRouterMarketplace = ({ isOpen, onOpenChange, onSelect, installedModelId, models, isLoading }: Props) => {
     const [search, setSearch] = useState("");
     const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
+    const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
     const parentRef = React.useRef<HTMLDivElement>(null);
 
     const filteredModels = useMemo(() => {
@@ -145,6 +146,26 @@ export const OpenRouterMarketplace = ({ isOpen, onOpenChange, onSelect, installe
             return matchesSearch && matchesFilters;
         });
     }, [models, search, activeFilters]);
+
+    // Calculate preview count based on pending filters
+    const previewCount = useMemo(() => {
+        return models.filter(model => {
+            const matchesSearch = model.name.toLowerCase().includes(search.toLowerCase()) || 
+                                 model.id.toLowerCase().includes(search.toLowerCase());
+            
+            const promptPrice = model.pricing_input || 0;
+            
+            const matchesFilters = pendingFilterIds.length === 0 || pendingFilterIds.every(filterId => {
+                if (filterId === "context-128k") return model.context_window >= 128000;
+                if (filterId === "cheap") return promptPrice < 1.00;
+                if (filterId === "premium") return promptPrice > 10.00;
+                if (filterId === "reasoning") return model.id.includes("claude") || model.id.includes("gpt-4") || model.id.includes("r1") || model.id.includes("o1") || model.description?.toLowerCase().includes("reasoning");
+                return true;
+            });
+
+            return matchesSearch && matchesFilters;
+        }).length;
+    }, [models, search, pendingFilterIds]);
 
     // Grid virtualization: 2 items per row
     const rowCount = Math.ceil(filteredModels.length / 2);
@@ -181,14 +202,27 @@ export const OpenRouterMarketplace = ({ isOpen, onOpenChange, onSelect, installe
             });
         });
         setActiveFilters(newActiveFilters);
+        setPendingFilterIds(selectedIds);
+    };
+
+    const handleSelectionChange = (selectedIds: string[]) => {
+        setPendingFilterIds(selectedIds);
     };
 
     const handleRemoveFilter = (filterId: string) => {
         setActiveFilters(prev => prev.filter(f => f.id !== filterId));
+        setPendingFilterIds(prev => prev.filter(id => id !== filterId));
+    };
+
+    const handleOpenChange = (open: boolean) => {
+        if (open) {
+            setPendingFilterIds(activeFilters.map(f => f.id));
+        }
+        onOpenChange(open);
     };
 
     return (
-        <DialogPrimitive.Root open={isOpen} onOpenChange={onOpenChange}>
+        <DialogPrimitive.Root open={isOpen} onOpenChange={handleOpenChange}>
             <DialogPrimitive.Portal>
                 <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
 
@@ -229,9 +263,10 @@ export const OpenRouterMarketplace = ({ isOpen, onOpenChange, onSelect, installe
                                 
                                 <FilterBigMenu
                                     groups={filterGroups}
-                                    resultsCount={filteredModels.length}
+                                    resultsCount={previewCount}
                                     onApply={handleApplyFilters}
-                                    onClearAll={() => setActiveFilters([])}
+                                    onSelectionChange={handleSelectionChange}
+                                    onClearAll={() => { setActiveFilters([]); setPendingFilterIds([]); }}
                                     trigger={
                                         <Button 
                                             variant="outline" 

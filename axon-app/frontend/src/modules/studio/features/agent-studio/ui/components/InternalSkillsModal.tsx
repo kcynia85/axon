@@ -113,8 +113,10 @@ export const InternalSkillsModal = ({
 								</div>
 								<FilterBigMenu
 									groups={filterGroups}
+									resultsCount={previewCount}
 									onApply={handleApplyFilters}
-									onClear={handleClearFilters} // Corrected prop name based on hook
+									onSelectionChange={handleSelectionChange}
+									onClearAll={handleClearFilters}
 								/>
 								<Button 
 									variant="outline" 

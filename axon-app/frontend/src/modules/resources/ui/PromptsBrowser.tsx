@@ -185,7 +185,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
             onApplyFilters={handleApplyFilters}
             onClearAllFilters={handleClearAll}
             onPendingFilterIdsChange={setPendingFilterIds}
-            resultsCount={displayPrompts.length}
+            resultsCount={getPreviewCount(prompts)}
             sortOptions={SORT_OPTIONS}
             sortBy={sortBy}
             onSortChange={setSortBy}

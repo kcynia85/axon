@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     # Inngest (Workflows)
     INNGEST_SIGNING_KEY: Optional[str] = None
     INNGEST_EVENT_KEY: Optional[str] = None
+    INNGEST_BASE_URL: str = "http://localhost:8288"
 
     # Storage (MinIO / S3)
     STORAGE_ENDPOINT: str = "http://localhost:9000"

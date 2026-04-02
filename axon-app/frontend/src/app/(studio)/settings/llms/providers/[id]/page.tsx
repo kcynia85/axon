@@ -24,26 +24,34 @@ const ProviderEditPageContent = () => {
             api_key: provider.provider_api_key || "",
             protocol: (provider as any).protocol || "openai",
             custom_headers: (provider as any).custom_headers || [],
+            api_adapter_mapping: (provider as any).api_adapter_mapping || [],
             
             // SSoT Fields
-            auth_header_name: (provider as any).auth_header_name,
-            auth_header_prefix: (provider as any).auth_header_prefix,
-            api_key_placement: (provider as any).api_key_placement,
-            discovery_json_path: (provider as any).discovery_json_path,
-            discovery_id_key: (provider as any).discovery_id_key,
-            discovery_name_key: (provider as any).discovery_name_key,
-            discovery_context_key: (provider as any).discovery_context_key,
+            auth_header_name: (provider as any).auth_header_name || "Authorization",
+            auth_header_prefix: (provider as any).auth_header_prefix || "Bearer ",
+            api_key_placement: (provider as any).api_key_placement || "header",
+            discovery_json_path: (provider as any).discovery_json_path || "data",
+            discovery_id_key: (provider as any).discovery_id_key || "id",
+            discovery_name_key: (provider as any).discovery_name_key || "name",
+            discovery_context_key: (provider as any).discovery_context_key || "context_length",
+            discovery_pricing_endpoint: (provider as any).discovery_pricing_endpoint || "",
+            discovery_pricing_input_key: (provider as any).discovery_pricing_input_key || "",
+            discovery_pricing_output_key: (provider as any).discovery_pricing_output_key || "",
+            
+            // Algorithmic Scraping
+            pricing_page_url: provider.pricing_page_url || "",
+            pricing_scraper_strategy: provider.pricing_scraper_strategy || "auto",
             
             // Response Mapping
-            response_content_path: (provider as any).response_content_path,
-            response_error_path: (provider as any).response_error_path,
+            response_content_path: (provider as any).response_content_path || "choices.0.message.content",
+            response_error_path: (provider as any).response_error_path || "error.message",
             inference_path: (provider as any).inference_path || "/chat/completions",
             json_schema_mapping: (provider as any).inference_json_template || "",
             
             // Legacy / Custom
-            tokenization_strategy: (provider.provider_custom_config as any)?.tokenization_strategy,
-            tokenization_fallback: (provider.provider_custom_config as any)?.tokenization_fallback,
-            billing_model: (provider.provider_custom_config as any)?.billing_model,
+            tokenization_strategy: (provider.provider_custom_config as any)?.tokenization_strategy || "o200k_base",
+            tokenization_fallback: (provider.provider_custom_config as any)?.tokenization_fallback || "cl100k_base",
+            billing_model: (provider.provider_custom_config as any)?.billing_model || "zero_hardware",
         };
     }, [provider]);
 

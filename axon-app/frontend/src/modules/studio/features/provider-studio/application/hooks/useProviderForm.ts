@@ -24,6 +24,13 @@ export const useProviderForm = (initialData?: Partial<ProviderFormData>) => {
 			discovery_id_key: "id",
 			discovery_name_key: "name",
 			discovery_context_key: "context_length",
+			discovery_pricing_endpoint: "",
+			discovery_pricing_input_key: "",
+			discovery_pricing_output_key: "",
+
+			// Algorithmic Scraping Configuration
+			pricing_page_url: "",
+			pricing_scraper_strategy: "auto",
 
 			// Response Mapping
 			response_content_path: "choices.0.message.content",
@@ -60,6 +67,13 @@ export const useProviderForm = (initialData?: Partial<ProviderFormData>) => {
 			case "google":
 				form.setValue("inference_path", ":generateContent");
 				form.setValue("response_content_path", "candidates.0.content.parts.0.text");
+				form.setValue("discovery_json_path", "models");
+				form.setValue("discovery_id_key", "name");
+				form.setValue("discovery_name_key", "displayName");
+				form.setValue("discovery_context_key", "inputTokenLimit");
+				form.setValue("api_key_placement", "query");
+				form.setValue("auth_header_prefix", "");
+				form.setValue("auth_header_name", "key");
 				form.setValue("json_schema_mapping", JSON.stringify({
 					"contents": [{"parts": [{"text": "{{prompt}}"}]}]
 				}, null, 2));

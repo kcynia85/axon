@@ -2,9 +2,11 @@ import inngest
 from app.config import settings
 
 # Initialize Inngest Client
+# Forced to development server as per user request
 inngest_client = inngest.Inngest(
     app_id="ragas-axon",
-    is_production=False, # Set to True in prod via env var if needed
+    is_production=False, 
+    api_base_url=settings.INNGEST_BASE_URL,
     signing_key=settings.INNGEST_SIGNING_KEY,
     event_key=settings.INNGEST_EVENT_KEY,
 )

@@ -64,9 +64,9 @@ export const ModelIdentitySection = ({ modelId }: ModelIdentitySectionProps) => 
             setValue("alias_name", model.name);
         }
 
-        setValue("max_completion_tokens", model.context_window || 0);
-        setValue("pricing_input", model.pricing_input || 0);
-        setValue("pricing_output", model.pricing_output || 0);
+        setValue("max_completion_tokens", model.context_window || 0, { shouldValidate: true, shouldDirty: true });
+        setValue("pricing_input", model.pricing_input || 0, { shouldValidate: true, shouldDirty: true });
+        setValue("pricing_output", model.pricing_output || 0, { shouldValidate: true, shouldDirty: true });
         
         if (isReasoning) {
             setValue("reasoning_effort", "Medium");

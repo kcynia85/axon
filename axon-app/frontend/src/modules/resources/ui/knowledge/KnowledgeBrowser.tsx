@@ -35,32 +35,31 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
 const FILTER_GROUPS: readonly FilterGroup[] = [
     {
         id: "type",
-        label: "Type",
+        title: "Type",
+        type: "checkbox",
         options: [
-            { id: "markdown", label: "Markdown" },
-            { id: "document", label: "Document" },
-            { id: "code", label: "Code" },
-            { id: "pdf", label: "PDF" },
+            { id: "markdown", label: "Markdown", isChecked: false },
+            { id: "document", label: "Document", isChecked: false },
+            { id: "code", label: "Code", isChecked: false },
+            { id: "pdf", label: "PDF", isChecked: false },
         ]
     },
     {
         id: "tag",
-        label: "Tag",
+        title: "Tag",
+        type: "checkbox",
         options: [
-            { id: "discovery", label: "Discovery" },
-            { id: "design", label: "Design" },
-            { id: "growth", label: "Growth & Market" },
-            { id: "delivery", label: "Delivery" },
-            { id: "general", label: "#general" },
+            { id: "discovery", label: "Discovery", isChecked: false },
+            { id: "design", label: "Design", isChecked: false },
+            { id: "growth", label: "Growth & Market", isChecked: false },
+            { id: "delivery", label: "Delivery", isChecked: false },
+            { id: "general", label: "#general", isChecked: false },
         ]
     }
 ];
 
 // Mock Active Filters from Breadboard
-const INITIAL_ACTIVE_FILTERS: ActiveFilter[] = [
-    { id: "hub-product", label: "Hub Product", groupId: "hub" },
-    { id: "strat-general", label: "Strat: General", groupId: "strat" }
-];
+const INITIAL_ACTIVE_FILTERS: ActiveFilter[] = [];
 
 const getResourceIcon = (type: string): LucideIcon => {
     switch (type) {
@@ -78,13 +77,33 @@ export const KnowledgeBrowser = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortBy, setSortBy] = useState("date-desc");
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_ACTIVE_FILTERS);
+  const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
 
   const handleRemoveFilter = (id: string) => {
     setActiveFilters(prev => prev.filter(f => f.id !== id));
+    setPendingFilterIds(prev => prev.filter(pId => pId !== id));
   };
 
   const handleClearAll = () => {
     setActiveFilters([]);
+    setPendingFilterIds([]);
+  };
+
+  const handleApplyFilters = (selectedIds: string[]) => {
+      const nextFilters: ActiveFilter[] = [];
+      FILTER_GROUPS.forEach(group => {
+          group.options.forEach(opt => {
+              if (selectedIds.includes(opt.id)) {
+                  nextFilters.push({ id: opt.id, label: opt.label, category: group.id });
+              }
+          });
+      });
+      setActiveFilters(nextFilters);
+      setPendingFilterIds(selectedIds);
+  };
+
+  const handleSelectionChange = (selectedIds: string[]) => {
+      setPendingFilterIds(selectedIds);
   };
 
   const handleToggleFilter = (id: string) => {
@@ -93,14 +112,49 @@ export const KnowledgeBrowser = () => {
           if (activeFilters.some(f => f.id === id)) {
               handleRemoveFilter(id);
           } else {
-              setActiveFilters([...activeFilters, { id: option.id, label: option.label, groupId: option.groupId }]);
+              setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
+              setPendingFilterIds([...pendingFilterIds, id]);
           }
       }
   };
 
+  const previewCount = useMemo(() => {
+    let result = MOCK_RESOURCES.filter(r => !pendingIds.has(r.id));
+    
+    if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        result = result.filter(r => r.title.toLowerCase().includes(query));
+    }
+
+    if (pendingFilterIds.length > 0) {
+        result = result.filter(r => {
+            const matchesType = pendingFilterIds.includes(r.type);
+            const matchesTag = r.tags.some(t => pendingFilterIds.includes(t.toLowerCase()));
+            return matchesType || matchesTag;
+        });
+    }
+
+    return result.length;
+  }, [searchQuery, pendingFilterIds, pendingIds]);
+
   const filteredResources = useMemo(() => {
-    return MOCK_RESOURCES.filter(r => !pendingIds.has(r.id));
-  }, [pendingIds]);
+    let result = MOCK_RESOURCES.filter(r => !pendingIds.has(r.id));
+
+    if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        result = result.filter(r => r.title.toLowerCase().includes(query));
+    }
+
+    if (activeFilters.length > 0) {
+        result = result.filter(r => {
+            const matchesType = activeFilters.some(f => f.id === r.type);
+            const matchesTag = r.tags.some(t => activeFilters.some(f => f.id === t.toLowerCase()));
+            return matchesType || matchesTag;
+        });
+    }
+
+    return result;
+  }, [pendingIds, searchQuery, activeFilters]);
 
   return (
     <BrowserLayout
@@ -120,9 +174,11 @@ export const KnowledgeBrowser = () => {
           activeFilters={activeFilters}
           quickFilters={QUICK_FILTERS}
           onToggleFilter={handleToggleFilter}
-          onApplyFilters={() => {}} 
+          onApplyFilters={handleApplyFilters} 
+          onSelectionChange={handleSelectionChange}
           onClearAllFilters={handleClearAll}
-          resultsCount={filteredResources.length}
+          onPendingFilterIdsChange={handleSelectionChange}
+          resultsCount={previewCount}
           sortOptions={SORT_OPTIONS}
           sortBy={sortBy}
           onSortChange={setSortBy}

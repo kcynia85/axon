@@ -52,6 +52,13 @@ export const ProviderStudioContainer = ({
 					discovery_id_key: data.discovery_id_key,
 					discovery_name_key: data.discovery_name_key,
 					discovery_context_key: data.discovery_context_key,
+					discovery_pricing_endpoint: data.discovery_pricing_endpoint || null,
+					discovery_pricing_input_key: data.discovery_pricing_input_key || null,
+					discovery_pricing_output_key: data.discovery_pricing_output_key || null,
+
+					// Algorithmic Scraping Configuration
+					pricing_page_url: data.pricing_page_url || null,
+					pricing_scraper_strategy: data.pricing_scraper_strategy,
 
 					// Response Mapping
 					response_content_path: data.response_content_path,

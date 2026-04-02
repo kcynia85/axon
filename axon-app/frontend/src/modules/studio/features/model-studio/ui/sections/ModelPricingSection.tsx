@@ -1,16 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFormContext, Controller, useWatch } from "react-hook-form";
 import type { ModelFormData } from "../../types/model-schema";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormTextField } from "@/shared/ui/form/FormTextField";
 import { Button } from "@/shared/ui/ui/Button";
-import { Download, Sparkles } from "lucide-react";
+import { Download, Sparkles, RefreshCw } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { useAvailableModels } from "@/modules/settings/application/useLLMProviders";
+import { toast } from "sonner";
 
 export const ModelPricingSection = () => {
-    const { control } = useFormContext<ModelFormData>();
+    const { control, setValue } = useFormContext<ModelFormData>();
+    const providerId = useWatch({ control, name: "provider_id" });
     const modelId = useWatch({ control, name: "model_id" });
     const isOpenRouter = modelId?.includes("/");
+    
+    const [isSyncing, setIsSyncing] = useState(false);
+    const { data: availableModels = [] } = useAvailableModels(providerId);
+
+    const handleSyncPricing = () => {
+        if (!modelId) {
+            toast.error("Wybierz model przed synchronizacją kosztów.");
+            return;
+        }
+        
+        if (!providerId) {
+            toast.error("Wybierz dostawcę przed synchronizacją kosztów.");
+            return;
+        }
+
+        setIsSyncing(true);
+        try {
+            // Find model in available models fetched from Provider API
+            const modelData = availableModels.find(m => m.id === modelId);
+            
+            if (modelData && (modelData.pricing_input !== undefined || modelData.pricing_output !== undefined)) {
+                const priceIn = modelData.pricing_input || 0;
+                const priceOut = modelData.pricing_output || 0;
+                
+                setValue("pricing_input", priceIn, { shouldValidate: true, shouldDirty: true });
+                setValue("pricing_output", priceOut, { shouldValidate: true, shouldDirty: true });
+                
+                toast.success(`Zsynchronizowano cennik z API dla ${modelId}`);
+            } else {
+                toast.error(`Brak cennika w API dostawcy dla wybranego modelu (${modelId}).`);
+            }
+        } catch (error) {
+            toast.error("Wystąpił błąd podczas pobierania cennika.");
+            console.error("Error syncing prices:", error);
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
     return (
         <FormSection 
@@ -26,9 +67,11 @@ export const ModelPricingSection = () => {
                         type="button" 
                         variant="outline" 
                         className="gap-2 text-zinc-400 border-zinc-800 hover:text-white hover:bg-zinc-900 rounded-xl px-6 h-10"
-                        onClick={() => alert("Not implemented yet")}
+                        onClick={handleSyncPricing}
+                        disabled={isSyncing}
                     >
-                        <Download className="w-4 h-4" /> Importuj z URL
+                        <RefreshCw className={cn("w-4 h-4", isSyncing && "animate-spin")} /> 
+                        Pobierz z API
                     </Button>
 
                     {isOpenRouter && (

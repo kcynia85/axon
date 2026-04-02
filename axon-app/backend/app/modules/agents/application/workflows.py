@@ -17,7 +17,7 @@ from app.modules.agents.domain.enums import AgentRole
     fn_id="agent-writer-loop",
     trigger=inngest.TriggerEvent(event="agent/turn.requested", expression="event.data.agent_role == 'AgentRole.WRITER'"),
 )
-async def writer_workflow(ctx, step):
+async def writer_workflow(ctx: inngest.Context):
     """
     Durable Workflow for the Writer Agent (Loop Pattern).
     """
@@ -27,7 +27,7 @@ async def writer_workflow(ctx, step):
     fn_id="agent-generic-turn",
     trigger=inngest.TriggerEvent(event="agent/turn.requested", expression="event.data.agent_role != 'AgentRole.WRITER'"),
 )
-async def generic_agent_workflow(ctx, step):
+async def generic_agent_workflow(ctx: inngest.Context):
     """
     Generic Durable Workflow for Standard Agents (Researcher, Builder, Manager).
     """

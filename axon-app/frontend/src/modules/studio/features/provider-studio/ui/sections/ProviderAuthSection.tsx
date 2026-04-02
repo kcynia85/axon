@@ -20,6 +20,13 @@ const PROTOCOL_OPTIONS = [
 	{ id: "custom", name: "Custom / Agnostic" },
 ];
 
+const SCRAPER_STRATEGY_OPTIONS = [
+    { id: "auto", name: "Auto-detect" },
+    { id: "litellm_fallback", name: "LiteLLM Registry (Fallback)" },
+    { id: "openai_spa", name: "OpenAI (SPA)" },
+    { id: "anthropic_table", name: "Table Scraping (Anthropic, DeepSeek, etc.)" }
+];
+
 interface ProviderAuthSectionProps {
 	providerId?: string;
 }
@@ -27,7 +34,7 @@ interface ProviderAuthSectionProps {
 export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) => {
 	const { register, control, formState: { errors } } = useFormContext<ProviderFormData>();
 	const providerType = useWatch({ control, name: "provider_type" });
-	const [showPassword, setShowPassword] = useState(false);
+	const [showPassword, useState] = React.useState(false);
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -121,7 +128,7 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 						/>
 						<button
 							type="button"
-							onClick={() => setShowPassword(!showPassword)}
+							onClick={() => useState(!showPassword)}
 							className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors focus:outline-none"
 						>
 							{showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -295,6 +302,85 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 												placeholder="context_length"
 											/>
 										</FormItemField>
+										<FormSubheading className="font-bold mb-2">
+											Endpoint i mapowanie Cenników
+										</FormSubheading>
+										<div className="h-px bg-white/10 w-full mb-12" />
+										
+
+										<FormItemField 
+											label="Pricing Endpoint URL (Opcjonalny)" 
+											error={errors.discovery_pricing_endpoint?.message}
+											hint="Pozostaw puste, jeśli endpoint modeli  URL + ścieżka do modeli) zawiera również informacje o cenach."
+										>
+											<FormTextField 
+												{...register("discovery_pricing_endpoint")}
+												placeholder="np. https://openrouter.ai/api/v1/models"
+											/>
+										</FormItemField>
+
+										<div className="grid grid-cols-1 gap-6">
+											<FormItemField 
+												label="Klucz cennika Input" 
+												error={errors.discovery_pricing_input_key?.message}
+												hint="Np. 'pricing.prompt' lub 'pricing.input'"
+											>
+												<FormTextField 
+													{...register("discovery_pricing_input_key")}
+													placeholder="pricing.prompt"
+												/>
+											</FormItemField>
+
+											<FormItemField 
+												label="Klucz cennika Output" 
+												error={errors.discovery_pricing_output_key?.message}
+												hint="Np. 'pricing.completion' lub 'pricing.output'"
+											>
+												<FormTextField 
+													{...register("discovery_pricing_output_key")}
+													placeholder="pricing.completion"
+												/>
+											</FormItemField>
+										</div>
+									</div>
+
+                                    {/* Algorithmic Scraping Configuration */}
+									<div className="space-y-0 pt-4">
+										<FormSubheading className="font-bold mb-2">
+											Algorytmiczne Scrapowanie Cenników (Background Job)
+										</FormSubheading>
+										<div className="h-px bg-white/10 w-full mb-12" />
+										
+										<div className="space-y-12">
+											<FormItemField 
+												label="URL Strony Cennikowej" 
+												error={errors.pricing_page_url?.message}
+												hint="Strona internetowa z oficjalnym cennikiem (będzie skanowana algorytmicznie bez użycia modeli LLM)."
+											>
+												<FormTextField 
+													{...register("pricing_page_url")}
+													placeholder="np. https://openai.com/api/pricing/"
+												/>
+											</FormItemField>
+
+											<FormItemField 
+												label="Strategia Scrapera" 
+												error={errors.pricing_scraper_strategy?.message}
+												hint="Wybierz heurystykę odpowiednią do struktury strony z cennikiem."
+											>
+                                                <Controller
+                                                    control={control}
+                                                    name="pricing_scraper_strategy"
+                                                    render={({ field }) => (
+                                                        <FormSelect
+                                                            options={SCRAPER_STRATEGY_OPTIONS}
+                                                            value={field.value || "auto"}
+                                                            onChange={field.onChange}
+                                                        />
+                                                    )}
+                                                />
+											</FormItemField>
+										</div>
 									</div>
 
 									{/* Inference Response Mapping Group - Flat style */}
@@ -337,3 +423,4 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 		</FormSection>
 	);
 };
+

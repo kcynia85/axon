@@ -22,6 +22,7 @@ export const useInternalSkillsModal = (
 ) => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+	const [pendingCategories, setPendingCategories] = useState<string[]>([]);
 
 	// Extract unique categories from availableSkills
 	const categories = useMemo(() => {
@@ -52,11 +53,33 @@ export const useInternalSkillsModal = (
 
 	const handleApplyFilters = useCallback((selectedIds: string[]) => {
 		setSelectedCategories(selectedIds);
+		setPendingCategories(selectedIds);
+	}, []);
+
+	const handleSelectionChange = useCallback((selectedIds: string[]) => {
+		setPendingCategories(selectedIds);
 	}, []);
 
 	const handleClearFilters = useCallback(() => {
 		setSelectedCategories([]);
+		setPendingCategories([]);
 	}, []);
+
+	// Calculate preview count based on pending categories
+	const previewCount = useMemo(() => {
+		return availableSkills.filter((fn) => {
+			const matchesSearch =
+				searchQuery === "" ||
+				fn.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				fn.desc.toLowerCase().includes(searchQuery.toLowerCase());
+
+			const matchesCategory =
+				pendingCategories.length === 0 ||
+				(fn.category && pendingCategories.includes(fn.category));
+
+			return matchesSearch && matchesCategory;
+		}).length;
+	}, [availableSkills, searchQuery, pendingCategories]);
 
 	// Filter functions based on search query and selected categories and map to ViewItem
 	const filteredSkills: readonly SkillViewItem[] = useMemo(() => {
@@ -84,6 +107,7 @@ export const useInternalSkillsModal = (
 		if (!open) {
 			setSearchQuery("");
 			setSelectedCategories([]);
+			setPendingCategories([]);
 		}
 		onOpenChangeProp(open);
 	}, [onOpenChangeProp]);
@@ -93,7 +117,9 @@ export const useInternalSkillsModal = (
 		setSearchQuery,
 		filterGroups,
 		handleApplyFilters,
+		handleSelectionChange,
 		handleClearFilters,
+		previewCount,
 		filteredSkills,
 		handleOpenChange,
 	};
