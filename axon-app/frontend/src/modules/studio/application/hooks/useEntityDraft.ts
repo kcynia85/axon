@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
  * It uses TanStack Query for state management and localStorage for persistence.
  */
 export const useEntityDraft = <T>(
-  entityType: "service" | "automation" | "archetype",
+  entityType: "service" | "automation" | "archetype" | "embedding-model" | "chunking-strategy",
   workspaceId: string,
   entityId?: string | null
 ) => {

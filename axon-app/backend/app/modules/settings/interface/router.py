@@ -11,8 +11,9 @@ from app.modules.settings.application.schemas import (
     LLMProviderResponse, CreateLLMProviderRequest, UpdateLLMProviderRequest,
     LLMModelResponse, CreateLLMModelRequest, UpdateLLMModelRequest, AvailableModelResponse, LLMModelUsageResponse,
     LLMRouterResponse, CreateLLMRouterRequest, UpdateLLMRouterRequest, TestPromptRequest, SanityCheckResponse,
-    EmbeddingModelResponse, CreateEmbeddingModelRequest,
-    ChunkingStrategyResponse, CreateChunkingStrategyRequest, SimulateChunkingRequest, SimulateChunkingResponse,
+    EmbeddingModelResponse, CreateEmbeddingModelRequest, UpdateEmbeddingModelRequest,
+    ChunkingStrategyResponse, CreateChunkingStrategyRequest, UpdateChunkingStrategyRequest,
+    SimulateChunkingRequest, SimulateChunkingResponse,
     VectorDatabaseResponse, CreateVectorDatabaseRequest, ConnectionTestResponse
 )
 
@@ -229,12 +230,33 @@ async def list_embedding_models(
 ):
     return await service.list_embedding_models()
 
+@router.get("/embedding-models/{id}", response_model=EmbeddingModelResponse)
+async def get_embedding_model(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    model = await service.get_embedding_model(id)
+    if not model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Embedding model not found")
+    return model
+
 @router.post("/embedding-models", response_model=EmbeddingModelResponse, status_code=status.HTTP_201_CREATED)
 async def create_embedding_model(
     request: CreateEmbeddingModelRequest,
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.create_embedding_model(request)
+
+@router.patch("/embedding-models/{id}", response_model=EmbeddingModelResponse)
+async def patch_embedding_model(
+    id: UUID,
+    request: UpdateEmbeddingModelRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.update_embedding_model(id, request)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 @router.delete("/embedding-models/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_embedding_model(
@@ -251,12 +273,33 @@ async def list_chunking_strategies(
 ):
     return await service.list_chunking_strategies()
 
+@router.get("/chunking-strategies/{id}", response_model=ChunkingStrategyResponse)
+async def get_chunking_strategy(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    strategy = await service.get_chunking_strategy(id)
+    if not strategy:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chunking strategy not found")
+    return strategy
+
 @router.post("/chunking-strategies", response_model=ChunkingStrategyResponse, status_code=status.HTTP_201_CREATED)
 async def create_chunking_strategy(
     request: CreateChunkingStrategyRequest,
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.create_chunking_strategy(request)
+
+@router.patch("/chunking-strategies/{id}", response_model=ChunkingStrategyResponse)
+async def patch_chunking_strategy(
+    id: UUID,
+    request: UpdateChunkingStrategyRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.update_chunking_strategy(id, request)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 @router.delete("/chunking-strategies/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_chunking_strategy(

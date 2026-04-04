@@ -3,36 +3,95 @@
 import React from "react";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormTextField } from "@/shared/ui/form/FormTextField";
-import { Info } from "lucide-react";
+import { FormItemField } from "@/shared/ui/form/FormItemField";
+import { useFormContext, useWatch, Controller } from "react-hook-form";
 
-export const StrategyParamsSection = () => {
+interface Props {
+    onSyncDraft: () => void;
+}
+
+export const StrategyParamsSection = ({ onSyncDraft }: Props) => {
+    const { control, formState: { errors } } = useFormContext();
+    const method = useWatch({ control, name: "strategy_chunking_method" });
+
+    const isTokenBased = method === "Token_Splitter";
+    const isSemantic = method === "Semantic";
+    
+    // Config based on method
+    const config = {
+        sizeLabel: isTokenBased ? "Rozmiar fragmentu (Tokens)" : "Rozmiar fragmentu (Characters)",
+        sizeHint: isTokenBased 
+            ? "Liczba tokenów (tiktoken) na pojedynczy fragment. Zalecane: 512 - 1024."
+            : isSemantic
+                ? "Maksymalny rozmiar fragmentu w znakach. Semantic Chunker dąży do podziału tematycznego, ale nie przekroczy tego limitu."
+                : "Zalecany rozmiar dla ogólnego tekstu to 1000 znaków. Określa maksymalną długość pojedynczego fragmentu.",
+        overlapLabel: isTokenBased ? "Nakładka (Tokens)" : "Nakładka (Characters)",
+        overlapHint: isTokenBased
+            ? "Liczba wspólnych tokenów między fragmentami. Zapobiega ucinaniu myśli w połowie zdania."
+            : "Zalecana nakładka to ok. 10-20% rozmiaru fragmentu (np. 200 znaków).",
+        showOverlap: !isSemantic // Semantic chunking usually doesn't use fixed overlap in the same way
+    };
+
     return (
-        <FormSection 
+        <FormSection
             id="params"
             number={2}
-            title="Parametry rozmiaru" 
-            description="Określ jak duże powinny być kawałki tekstu i jaka powinna być nakładka między nimi."
+            title="Parametry rozmiaru"
+            description={isTokenBased ? "Skonfiguruj limity oparte na tokenach dla modeli LLM." : "Określ jak duże powinny być kawałki tekstu i jaka powinna być nakładka między nimi."}
             variant="island"
         >
-            <div className="grid grid-cols-2 gap-6">
-                <FormTextField
-                    name="strategy_chunk_size"
-                    label="Chunk Size"
-                    type="number"
-                    placeholder="1000"
-                />
-                <FormTextField
-                    name="strategy_chunk_overlap"
-                    label="Chunk Overlap"
-                    type="number"
-                    placeholder="200"
-                />
-            </div>
-            <div className="mt-4 p-4 rounded-xl bg-primary/5 border border-primary/10 flex gap-3">
-                <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                    Zalecane ustawienia dla ogólnego tekstu to rozmiar <strong className="text-white">1000</strong> znaków z nakładką <strong className="text-white">200</strong>. Zapobiega to utracie kontekstu na granicach podziału.
-                </p>
+            <div className="space-y-8 max-w-4xl">
+                <FormItemField 
+                    label={config.sizeLabel} 
+                    error={errors.strategy_chunk_size?.message as string}
+                    hint={config.sizeHint}
+                >
+                    <Controller
+                        control={control}
+                        name="strategy_chunk_size"
+                        render={({ field }) => (
+                            <FormTextField
+                                {...field}
+                                onBlur={() => {
+                                    field.onBlur();
+                                    onSyncDraft();
+                                }}
+                                type="number"
+                                placeholder={isTokenBased ? "512" : "1000"}
+                            />
+                        )}
+                    />
+                </FormItemField>
+
+                {config.showOverlap && (
+                    <FormItemField 
+                        label={config.overlapLabel} 
+                        error={errors.strategy_chunk_overlap?.message as string}
+                        hint={config.overlapHint}
+                    >
+                        <Controller
+                            control={control}
+                            name="strategy_chunk_overlap"
+                            render={({ field }) => (
+                                <FormTextField
+                                    {...field}
+                                    onBlur={() => {
+                                        field.onBlur();
+                                        onSyncDraft();
+                                    }}
+                                    type="number"
+                                    placeholder={isTokenBased ? "50" : "200"}
+                                />
+                            )}
+                        />
+                    </FormItemField>
+                )}
+
+                {isSemantic && (
+                    <div className="p-4 rounded-xl bg-zinc-950/50 border border-zinc-800 text-[11px] text-zinc-400 leading-relaxed italic">
+                        <strong className="text-zinc-200 not-italic mr-1">Info:</strong> Semantic Chunker wykorzystuje embeddingi do wykrywania przerw tematycznych. Rozmiar fragmentu jest traktowany jako limit górny (guardrail), a nie sztywny podział.
+                    </div>
+                )}
             </div>
         </FormSection>
     );

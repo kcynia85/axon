@@ -9,6 +9,7 @@ export const ChunkingStrategyStudioSchema = z.object({
     strategy_chunk_boundaries: z.object({
         separators: z.array(z.string()).default(["\\n\\n", "\\n", " "]),
     }).default({ separators: ["\\n\\n", "\\n", " "] }),
+    is_draft: z.boolean().default(false),
 });
 
 export type ChunkingStrategyStudioValues = z.infer<typeof ChunkingStrategyStudioSchema>;

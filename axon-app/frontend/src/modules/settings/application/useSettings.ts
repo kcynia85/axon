@@ -124,12 +124,31 @@ export const useEmbeddingModels = () => {
     });
 }
 
+export const useEmbeddingModel = (id?: string) => {
+    return useQuery({
+        queryKey: ["embedding-models", id],
+        queryFn: () => id ? settingsApi.getEmbeddingModel(id) : Promise.reject("No ID provided"),
+        enabled: !!id,
+    });
+}
+
 export const useCreateEmbeddingModel = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (data: Omit<EmbeddingModel, "id" | "created_at" | "updated_at">) => settingsApi.createEmbeddingModel(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["embedding-models"] });
+        },
+    });
+}
+
+export const useUpdateEmbeddingModel = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string, data: Partial<EmbeddingModel> }) => settingsApi.updateEmbeddingModel(id, data),
+        onSuccess: (_, { id }) => {
+            queryClient.invalidateQueries({ queryKey: ["embedding-models"] });
+            queryClient.invalidateQueries({ queryKey: ["embedding-models", id] });
         },
     });
 }
@@ -152,12 +171,31 @@ export const useChunkingStrategies = () => {
     });
 }
 
+export const useChunkingStrategy = (id?: string) => {
+    return useQuery({
+        queryKey: ["chunking-strategies", id],
+        queryFn: () => id ? settingsApi.getChunkingStrategy(id) : Promise.reject("No ID provided"),
+        enabled: !!id,
+    });
+}
+
 export const useCreateChunkingStrategy = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (data: Omit<ChunkingStrategy, "id" | "created_at" | "updated_at">) => settingsApi.createChunkingStrategy(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["chunking-strategies"] });
+        },
+    });
+}
+
+export const useUpdateChunkingStrategy = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string, data: Partial<ChunkingStrategy> }) => settingsApi.updateChunkingStrategy(id, data),
+        onSuccess: (_, { id }) => {
+            queryClient.invalidateQueries({ queryKey: ["chunking-strategies"] });
+            queryClient.invalidateQueries({ queryKey: ["chunking-strategies", id] });
         },
     });
 }

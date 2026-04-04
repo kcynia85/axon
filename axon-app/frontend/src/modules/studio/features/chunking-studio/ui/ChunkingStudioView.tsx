@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
 import { Button } from "@/shared/ui/ui/Button";
-import { X } from "lucide-react";
+import { X, Save } from "lucide-react";
 import { ChunkingStrategyStudioSchema, type ChunkingStrategyStudioValues } from "../types/chunking-studio.types";
 import { StrategyBasicSection } from "./sections/StrategyBasicSection";
 import { StrategyParamsSection } from "./sections/StrategyParamsSection";
@@ -13,37 +13,49 @@ import { StrategySeparatorsSection } from "./sections/StrategySeparatorsSection"
 import { ChunkingSimulatorPoster } from "./components/ChunkingSimulatorPoster";
 import { GenericStudioSectionNav } from "@/modules/studio/ui/components/StudioSectionNav/GenericStudioSectionNav";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { useChunkingStrategyDraft } from "../application/hooks/useChunkingStrategyDraft";
+import { toast } from "sonner";
 
 type ChunkingStudioViewProps = {
     readonly initialData?: any;
     readonly onSave: (data: ChunkingStrategyStudioValues) => void;
     readonly onExit: () => void;
     readonly isSaving?: boolean;
+    readonly strategyId?: string | null;
 }
 
 export const ChunkingStudioView = ({ 
     initialData, 
     onSave, 
     onExit, 
-    isSaving 
+    isSaving,
+    strategyId
 }: ChunkingStudioViewProps) => {
+    const { draft, saveDraft, clearDraft } = useChunkingStrategyDraft(strategyId);
+
+    const defaultValues = useMemo(() => ({
+        strategy_name: "",
+        strategy_chunking_method: "Recursive_Character",
+        strategy_chunk_size: 1000,
+        strategy_chunk_overlap: 200,
+        strategy_chunk_boundaries: { separators: ["\\n\\n", "\\n", " "] },
+        is_draft: false,
+    }), []);
+
     const form = useForm<ChunkingStrategyStudioValues>({
         resolver: zodResolver(ChunkingStrategyStudioSchema),
-        defaultValues: initialData || {
-            strategy_name: "",
-            strategy_chunking_method: "Recursive_Character",
-            strategy_chunk_size: 1000,
-            strategy_chunk_overlap: 200,
-            strategy_chunk_boundaries: { separators: ["\\n\\n", "\\n", " "] },
-        },
+        values: initialData || draft || defaultValues,
     });
 
     const sections = [
-        { id: "basic", label: "Podstawowe" },
+        { id: "basic", label: "Informacje" },
         { id: "params", label: "Rozmiar" },
         { id: "separators", label: "Separatory" },
-    ].filter(s => {
-        if (s.id === "separators") return form.watch("strategy_chunking_method") === "Recursive_Character";
+    ];
+
+    const visibleSections = sections.filter(s => {
+        const method = form.watch("strategy_chunking_method");
+        if (s.id === "separators") return method === "Recursive_Character" || method === "Character";
         return true;
     });
 
@@ -55,6 +67,15 @@ export const ChunkingStudioView = ({
         if (element) {
             element.scrollIntoView({ behavior: "smooth" });
         }
+    };
+
+    const syncDraft = useCallback(() => {
+        saveDraft(form.getValues());
+    }, [form, saveDraft]);
+
+    const handleFinalSave = async (data: ChunkingStrategyStudioValues) => {
+        await onSave({ ...data, is_draft: false });
+        clearDraft();
     };
 
     return (
@@ -74,7 +95,7 @@ export const ChunkingStudioView = ({
                     }
                     navigator={
                         <GenericStudioSectionNav 
-                            sections={sections}
+                            sections={visibleSections}
                             activeSection={activeSection}
                             onSectionClick={handleSectionClick}
                         />
@@ -82,9 +103,9 @@ export const ChunkingStudioView = ({
                     canvas={
                         <div className="px-16 pb-48 pt-20 w-full">
                             <form className="space-y-16 w-full" onSubmit={(e) => e.preventDefault()}>
-                                <StrategyBasicSection />
-                                <StrategyParamsSection />
-                                <StrategySeparatorsSection />
+                                <StrategyBasicSection onSyncDraft={syncDraft} />
+                                <StrategyParamsSection onSyncDraft={syncDraft} />
+                                <StrategySeparatorsSection onSyncDraft={syncDraft} />
                             </form>
                         </div>
                     }
@@ -101,7 +122,8 @@ export const ChunkingStudioView = ({
                             </Button>
                             <ActionButton 
                                 label={isSaving ? "Zapisywanie..." : "Zapisz Strategię"}
-                                onClick={form.handleSubmit(onSave)} 
+                                icon={Save}
+                                onClick={form.handleSubmit(handleFinalSave)} 
                             />
                         </div>
                     }

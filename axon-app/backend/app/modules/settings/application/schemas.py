@@ -158,11 +158,22 @@ class SanityCheckResponse(BaseModel):
 
 # KE
 class CreateEmbeddingModelRequest(BaseModel):
+    provider_id: Optional[UUID] = None
     model_provider_name: str
     model_id: str
     model_vector_dimensions: int
     model_max_context_tokens: int
     model_cost_per_1m_tokens: float
+    is_draft: bool = False
+
+class UpdateEmbeddingModelRequest(BaseModel):
+    provider_id: Optional[UUID] = None
+    model_provider_name: Optional[str] = None
+    model_id: Optional[str] = None
+    model_vector_dimensions: Optional[int] = None
+    model_max_context_tokens: Optional[int] = None
+    model_cost_per_1m_tokens: Optional[float] = None
+    is_draft: Optional[bool] = None
 
 class EmbeddingModelResponse(CreateEmbeddingModelRequest):
     id: UUID
@@ -175,7 +186,16 @@ class CreateChunkingStrategyRequest(BaseModel):
     strategy_chunking_method: ChunkingMethod
     strategy_chunk_size: int
     strategy_chunk_overlap: int
-    strategy_chunk_boundaries: List[str] = Field(default_factory=list)
+    strategy_chunk_boundaries: Dict[str, Any] = Field(default_factory=dict)
+    is_draft: bool = False
+
+class UpdateChunkingStrategyRequest(BaseModel):
+    strategy_name: Optional[str] = None
+    strategy_chunking_method: Optional[ChunkingMethod] = None
+    strategy_chunk_size: Optional[int] = None
+    strategy_chunk_overlap: Optional[int] = None
+    strategy_chunk_boundaries: Optional[Dict[str, Any]] = None
+    is_draft: Optional[bool] = None
 
 class ChunkingStrategyResponse(CreateChunkingStrategyRequest):
     id: UUID

@@ -10,6 +10,7 @@ import {
 import { Button } from "@/shared/ui/ui/Button";
 import { Trash2, Settings, Zap, BarChart3, AlertTriangle } from "lucide-react";
 import { Badge } from "@/shared/ui/ui/Badge";
+import { CategoryChip } from "@/shared/ui/ui/CategoryChip";
 import type { LLMModel } from "@/shared/domain/settings";
 import { useLLMModelUsage } from "../application/useSettings";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/ui/ui/Dialog";
@@ -107,14 +108,10 @@ export const LLMModelSidePeek = ({
                     <SidePeekSection title="Możliwości Modelu">
                         <div className="flex flex-wrap gap-2">
                             {model.model_capabilities_flags.map((cap, i) => (
-                                <Badge key={i} variant="outline" className="px-3 py-1 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-medium">
-                                    {cap}
-                                </Badge>
+                                <CategoryChip key={i} label={cap} />
                             ))}
                             {model.model_supports_thinking && (
-                                <Badge className="px-3 py-1 bg-purple-500/10 text-purple-500 border-purple-500/20 font-bold">
-                                    THINKING
-                                </Badge>
+                                <CategoryChip label="THINKING" className="bg-purple-500/10 text-purple-500 border-purple-500/20" />
                             )}
                         </div>
                     </SidePeekSection>

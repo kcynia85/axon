@@ -10,12 +10,16 @@ import { Input } from "@/shared/ui/ui/Input";
 import { Label } from "@/shared/ui/ui/Label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/Select";
 import { Textarea } from "@/shared/ui/ui/Textarea";
-import { Scissors, Play, Layers, Info, Trash2, Plus, RefreshCw } from "lucide-react";
+import { Scissors, Play, Layers, Info, Trash2, Plus, RefreshCw, AlertTriangle } from "lucide-react";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/shared/lib/utils";
 import type { ChunkingStrategy } from "@/shared/domain/settings";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
+import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/ui/ui/Dialog";
+import { toast } from "sonner";
 
 const schema = z.object({
     strategy_name: z.string().min(1, "Nazwa jest wymagana"),
@@ -23,20 +27,28 @@ const schema = z.object({
     strategy_chunk_size: z.coerce.number().min(1, "Rozmiar musi być większy od 0"),
     strategy_chunk_overlap: z.coerce.number().min(0, "Nakładka nie może być ujemna"),
     strategy_chunk_boundaries: z.record(z.any()).default({}),
+    is_draft: z.boolean().default(false),
 });
 
 type FormData = z.infer<typeof schema>;
+
+const formatMethodName = (method: string) => {
+    return method.replace(/_/g, " ");
+};
 
 export const ChunkingStrategiesView = () => {
     const { data: strategies, isLoading: isLoadingStrategies } = useChunkingStrategies();
     const { mutateAsync: createStrategy, isPending: isSaving } = useCreateChunkingStrategy();
     const { mutateAsync: deleteStrategy } = useDeleteChunkingStrategy();
     const { mutateAsync: simulateChunking, isPending: isSimulating } = useSimulateChunking();
+    const { deleteWithUndo } = useDeleteWithUndo();
+    const { pendingIds } = usePendingDeletionsStore();
 
     const [selectedStrategy, setSelectedStrategy] = React.useState<ChunkingStrategy | null>(null);
     const [isCreating, setIsCreating] = React.useState(false);
     const [simText, setSimText] = React.useState("");
     const [simChunks, setSimChunks] = React.useState<string[]>([]);
+    const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
 
     const form = useForm<FormData>({
         resolver: zodResolver(schema),
@@ -46,6 +58,7 @@ export const ChunkingStrategiesView = () => {
             strategy_chunk_size: 1000,
             strategy_chunk_overlap: 200,
             strategy_chunk_boundaries: { separators: ["\\n\\n", "\\n", " "] },
+            is_draft: false,
         },
     });
 
@@ -57,6 +70,7 @@ export const ChunkingStrategiesView = () => {
                 strategy_chunk_size: selectedStrategy.strategy_chunk_size,
                 strategy_chunk_overlap: selectedStrategy.strategy_chunk_overlap,
                 strategy_chunk_boundaries: selectedStrategy.strategy_chunk_boundaries,
+                is_draft: selectedStrategy.is_draft || false,
             });
             setIsCreating(false);
         }
@@ -71,12 +85,30 @@ export const ChunkingStrategiesView = () => {
             strategy_chunk_size: 1000,
             strategy_chunk_overlap: 200,
             strategy_chunk_boundaries: { separators: ["\\n\\n", "\\n", " "] },
+            is_draft: false,
         });
     };
 
-    const handleSave = async (data: FormData) => {
+    const onSave = async (data: FormData) => {
         await createStrategy(data);
+        if (data.is_draft) {
+            toast.info("Szkic strategii został zapisany.");
+        } else {
+            toast.success("Strategia została zapisana.");
+        }
         setIsCreating(false);
+        setSelectedStrategy(null);
+    };
+
+    const handleSaveDraft = async () => {
+        const values = form.getValues();
+        await onSave({ ...values, is_draft: true });
+    };
+
+    const handleDelete = () => {
+        if (!selectedStrategy) return;
+        deleteWithUndo(selectedStrategy.id, selectedStrategy.strategy_name, () => deleteStrategy(selectedStrategy.id));
+        setShowDeleteConfirm(false);
         setSelectedStrategy(null);
     };
 
@@ -96,13 +128,12 @@ export const ChunkingStrategiesView = () => {
             setSimChunks(res.chunks || []);
         } catch (error) {
             console.error("Simulation failed:", error);
-            // Fallback mock simulation if endpoint fails/not implemented fully
             const mockChunks = [];
             let start = 0;
             while (start < simText.length) {
                 mockChunks.push(simText.slice(start, start + data.strategy_chunk_size));
                 start += (data.strategy_chunk_size - data.strategy_chunk_overlap);
-                if (mockChunks.length > 50) break; // Safety
+                if (mockChunks.length > 50) break;
             }
             setSimChunks(mockChunks);
         }
@@ -110,6 +141,8 @@ export const ChunkingStrategiesView = () => {
 
     const separators = form.watch("strategy_chunk_boundaries.separators") || ["\\n\\n", "\\n", " "];
     const isEditing = selectedStrategy || isCreating;
+
+    const displayStrategies = strategies?.filter(s => !pendingIds.has(s.id));
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-140px)]">
@@ -127,7 +160,7 @@ export const ChunkingStrategiesView = () => {
                         {[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full" />)}
                     </div>
                 ) : (
-                    strategies?.map((strategy) => (
+                    displayStrategies?.map((strategy) => (
                         <Card 
                             key={strategy.id} 
                             className={cn(
@@ -137,9 +170,16 @@ export const ChunkingStrategiesView = () => {
                             onClick={() => setSelectedStrategy(strategy)}
                         >
                             <CardHeader className="p-3 pb-1">
-                                <CardTitle className="text-sm font-bold truncate pr-2">{strategy.strategy_name}</CardTitle>
+                                <div className="flex items-center justify-between gap-2">
+                                    <CardTitle className="text-sm font-bold truncate pr-2">{strategy.strategy_name}</CardTitle>
+                                    {strategy.is_draft && (
+                                        <Badge variant="outline" className="text-[8px] h-4 px-1.5 font-black uppercase tracking-widest border-amber-500/20 bg-amber-500/5 text-amber-500 shrink-0">
+                                            Szkic
+                                        </Badge>
+                                    )}
+                                </div>
                                 <CardDescription className="text-[10px] font-mono uppercase opacity-60">
-                                    {strategy.strategy_chunking_method.split('_')[0]}
+                                    {formatMethodName(strategy.strategy_chunking_method)}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="p-3 pt-2">
@@ -162,7 +202,7 @@ export const ChunkingStrategiesView = () => {
                         <p className="text-sm font-medium">Wybierz strategię z listy lub utwórz nową.</p>
                     </div>
                 ) : (
-                    <form onSubmit={form.handleSubmit(handleSave)} className="space-y-8 pb-10">
+                    <form onSubmit={form.handleSubmit((data) => onSave({ ...data, is_draft: false }))} className="space-y-8 pb-10">
                         <div>
                             <h2 className="text-lg font-bold tracking-tight mb-1">
                                 {isCreating ? "New Strategy" : "Edit Strategy"}
@@ -180,7 +220,7 @@ export const ChunkingStrategiesView = () => {
                             </div>
 
                             <div className="space-y-3">
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">2. Metoda Podziału (Splitter)</h3>
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">2. Metoda Podziału (LangChain)</h3>
                                 <div className="space-y-1">
                                     <Controller
                                         name="strategy_chunking_method"
@@ -192,8 +232,14 @@ export const ChunkingStrategiesView = () => {
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="Recursive_Character">Recursive Character</SelectItem>
+                                                    <SelectItem value="Character">Character Splitter</SelectItem>
+                                                    <SelectItem value="Markdown">Markdown Splitter</SelectItem>
+                                                    <SelectItem value="HTML">HTML Splitter</SelectItem>
                                                     <SelectItem value="Code_Splitter">Code Splitter</SelectItem>
-                                                    <SelectItem value="Token_Splitter">Token Splitter (Hard Limit)</SelectItem>
+                                                    <SelectItem value="Token_Splitter">Token Splitter</SelectItem>
+                                                    <SelectItem value="LaTeX">LaTeX Splitter</SelectItem>
+                                                    <SelectItem value="JSON">JSON Splitter</SelectItem>
+                                                    <SelectItem value="Semantic">Semantic Chunker</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         )}
@@ -234,13 +280,37 @@ export const ChunkingStrategiesView = () => {
                             )}
                         </div>
 
-                        <div className="flex justify-end gap-3 pt-6 border-t">
-                            <Button type="button" variant="ghost" onClick={() => { setIsCreating(false); setSelectedStrategy(null); }} disabled={isSaving}>
-                                Anuluj
-                            </Button>
-                            <Button type="submit" disabled={isSaving} className="bg-primary hover:bg-primary/90 font-bold">
-                                {isSaving ? "Zapisywanie..." : "Zapisz Strategię"}
-                            </Button>
+                        <div className="flex justify-between items-center pt-6 border-t">
+                            <div className="flex items-center gap-3">
+                                {selectedStrategy && (
+                                    <Button 
+                                        type="button" 
+                                        variant="ghost" 
+                                        size="icon"
+                                        className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                )}
+                            </div>
+                            <div className="flex gap-3">
+                                <Button type="button" variant="ghost" onClick={() => { setIsCreating(false); setSelectedStrategy(null); }} disabled={isSaving}>
+                                    Anuluj
+                                </Button>
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={handleSaveDraft}
+                                    disabled={isSaving}
+                                    className="border-zinc-800 hover:bg-zinc-900"
+                                >
+                                    {isSaving ? "Zapisywanie..." : "Zapisz Szkic"}
+                                </Button>
+                                <Button type="submit" disabled={isSaving} className="bg-primary hover:bg-primary/90 font-bold">
+                                    {isSaving ? "Zapisywanie..." : "Zapisz Strategię"}
+                                </Button>
+                            </div>
                         </div>
                     </form>
                 )}
@@ -305,6 +375,33 @@ export const ChunkingStrategiesView = () => {
                     </div>
                 </div>
             </div>
+
+            <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-500">
+                            <AlertTriangle className="w-5 h-5" />
+                            Usuwanie Strategii Chunkowania
+                        </DialogTitle>
+                        <DialogDescription className="py-4">
+                            Czy na pewno chcesz usunąć strategię <strong className="text-foreground">{selectedStrategy?.strategy_name}</strong>? 
+                            Tej operacji nie można cofnąć.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter className="gap-2">
+                        <Button variant="ghost" onClick={() => setShowDeleteConfirm(false)}>
+                            Anuluj
+                        </Button>
+                        <Button 
+                            variant="destructive" 
+                            onClick={handleDelete}
+                        >
+                            Tak, usuń strategię
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

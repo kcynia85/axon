@@ -328,11 +328,13 @@ class SettingsRepository:
     async def create_embedding_model(self, model: EmbeddingModel) -> EmbeddingModel:
         db_obj = EmbeddingModelTable(
             id=model.id,
+            provider_id=model.provider_id,
             model_provider_name=model.model_provider_name,
             model_id=model.model_id,
             model_vector_dimensions=model.model_vector_dimensions,
             model_max_context_tokens=model.model_max_context_tokens,
             model_cost_per_1m_tokens=model.model_cost_per_1m_tokens,
+            is_draft=model.is_draft,
             created_at=model.created_at,
             updated_at=model.updated_at
         )
@@ -345,6 +347,25 @@ class SettingsRepository:
         result = await self.session.execute(select(EmbeddingModelTable).where(EmbeddingModelTable.deleted_at == None))
         return [self._to_domain_embedding_model(row) for row in result.scalars().all()]
 
+    async def get_embedding_model(self, id: UUID) -> Optional[EmbeddingModel]:
+        result = await self.session.execute(select(EmbeddingModelTable).where(
+            EmbeddingModelTable.id == id,
+            EmbeddingModelTable.deleted_at == None
+        ))
+        row = result.scalar_one_or_none()
+        return self._to_domain_embedding_model(row) if row else None
+
+    async def update_embedding_model(self, id: UUID, model_data: dict) -> Optional[EmbeddingModel]:
+        model_data["updated_at"] = now_utc()
+        await self.session.execute(
+            update(EmbeddingModelTable).where(
+                EmbeddingModelTable.id == id,
+                EmbeddingModelTable.deleted_at == None
+            ).values(**model_data)
+        )
+        await self.session.commit()
+        return await self.get_embedding_model(id)
+
     async def delete_embedding_model(self, id: UUID) -> bool:
         await self.session.execute(
             update(EmbeddingModelTable).where(EmbeddingModelTable.id == id).values(deleted_at=now_utc())
@@ -355,11 +376,13 @@ class SettingsRepository:
     def _to_domain_embedding_model(self, row: EmbeddingModelTable) -> EmbeddingModel:
         return EmbeddingModel(
             id=row.id,
+            provider_id=row.provider_id,
             model_provider_name=row.model_provider_name,
             model_id=row.model_id,
             model_vector_dimensions=row.model_vector_dimensions,
             model_max_context_tokens=row.model_max_context_tokens,
             model_cost_per_1m_tokens=row.model_cost_per_1m_tokens,
+            is_draft=row.is_draft or False,
             created_at=row.created_at,
             updated_at=row.updated_at,
             deleted_at=row.deleted_at
@@ -375,6 +398,7 @@ class SettingsRepository:
             strategy_chunk_size=strategy.strategy_chunk_size,
             strategy_chunk_overlap=strategy.strategy_chunk_overlap,
             strategy_chunk_boundaries=strategy.strategy_chunk_boundaries,
+            is_draft=strategy.is_draft,
             created_at=strategy.created_at,
             updated_at=strategy.updated_at
         )
@@ -402,6 +426,17 @@ class SettingsRepository:
         row = result.scalar_one_or_none()
         return self._to_domain_chunking_strategy(row) if row else None
 
+    async def update_chunking_strategy(self, id: UUID, strategy_data: dict) -> Optional[ChunkingStrategy]:
+        strategy_data["updated_at"] = now_utc()
+        await self.session.execute(
+            update(ChunkingStrategyTable).where(
+                ChunkingStrategyTable.id == id,
+                ChunkingStrategyTable.deleted_at == None
+            ).values(**strategy_data)
+        )
+        await self.session.commit()
+        return await self.get_chunking_strategy(id)
+
     def _to_domain_chunking_strategy(self, row: ChunkingStrategyTable) -> ChunkingStrategy:
         return ChunkingStrategy(
             id=row.id,
@@ -409,7 +444,8 @@ class SettingsRepository:
             strategy_chunking_method=row.strategy_chunking_method,
             strategy_chunk_size=row.strategy_chunk_size,
             strategy_chunk_overlap=row.strategy_chunk_overlap,
-            strategy_chunk_boundaries=row.strategy_chunk_boundaries or [],
+            strategy_chunk_boundaries=row.strategy_chunk_boundaries or {},
+            is_draft=row.is_draft or False,
             created_at=row.created_at,
             updated_at=row.updated_at,
             deleted_at=row.deleted_at

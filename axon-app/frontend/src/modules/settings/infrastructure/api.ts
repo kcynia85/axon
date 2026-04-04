@@ -138,8 +138,20 @@ export const settingsApi = {
         return data.map((embeddingModelRaw) => EmbeddingModelSchema.parse(embeddingModelRaw));
     },
 
+    getEmbeddingModel: async (id: string): Promise<EmbeddingModel> => {
+        const res = await apiClient.get(`/settings/embedding-models/${id}`);
+        const data = await res.json() as unknown;
+        return EmbeddingModelSchema.parse(data);
+    },
+
     createEmbeddingModel: async (data: Omit<EmbeddingModel, "id" | "created_at" | "updated_at">): Promise<EmbeddingModel> => {
         const res = await apiClient.post("/settings/embedding-models", data);
+        const raw = await res.json();
+        return EmbeddingModelSchema.parse(raw);
+    },
+
+    updateEmbeddingModel: async (id: string, data: Partial<EmbeddingModel>): Promise<EmbeddingModel> => {
+        const res = await apiClient.patch(`/settings/embedding-models/${id}`, data);
         const raw = await res.json();
         return EmbeddingModelSchema.parse(raw);
     },
@@ -155,8 +167,20 @@ export const settingsApi = {
         return data.map((chunkingStrategyRaw) => ChunkingStrategySchema.parse(chunkingStrategyRaw));
     },
 
+    getChunkingStrategy: async (id: string): Promise<ChunkingStrategy> => {
+        const res = await apiClient.get(`/settings/chunking-strategies/${id}`);
+        const data = await res.json() as unknown;
+        return ChunkingStrategySchema.parse(data);
+    },
+
     createChunkingStrategy: async (data: Omit<ChunkingStrategy, "id" | "created_at" | "updated_at">): Promise<ChunkingStrategy> => {
         const res = await apiClient.post("/settings/chunking-strategies", data);
+        const raw = await res.json();
+        return ChunkingStrategySchema.parse(raw);
+    },
+
+    updateChunkingStrategy: async (id: string, data: Partial<ChunkingStrategy>): Promise<ChunkingStrategy> => {
+        const res = await apiClient.patch(`/settings/chunking-strategies/${id}`, data);
         const raw = await res.json();
         return ChunkingStrategySchema.parse(raw);
     },
@@ -175,6 +199,24 @@ export const settingsApi = {
         const res = await apiClient.get("/settings/vector-databases");
         const data = await res.json() as unknown[];
         return data.map((vectorDatabaseRaw) => VectorDatabaseSchema.parse(vectorDatabaseRaw));
+    },
+
+    getVectorDatabase: async (id: string): Promise<VectorDatabase> => {
+        const res = await apiClient.get(`/settings/vector-databases/${id}`);
+        const data = await res.json() as unknown;
+        return VectorDatabaseSchema.parse(data);
+    },
+
+    createVectorDatabase: async (data: Omit<VectorDatabase, "id" | "created_at" | "updated_at">): Promise<VectorDatabase> => {
+        const res = await apiClient.post("/settings/vector-databases", data);
+        const raw = await res.json();
+        return VectorDatabaseSchema.parse(raw);
+    },
+
+    updateVectorDatabase: async (id: string, data: Partial<VectorDatabase>): Promise<VectorDatabase> => {
+        const res = await apiClient.patch(`/settings/vector-databases/${id}`, data);
+        const raw = await res.json();
+        return VectorDatabaseSchema.parse(raw);
     },
 
     deleteVectorDatabase: async (id: string): Promise<void> => {

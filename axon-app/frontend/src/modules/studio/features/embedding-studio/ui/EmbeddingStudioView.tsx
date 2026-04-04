@@ -1,11 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
 import { Button } from "@/shared/ui/ui/Button";
-import { X } from "lucide-react";
+import { X, HardDrive } from "lucide-react";
 import { EmbeddingModelStudioSchema, type EmbeddingModelStudioValues } from "../types/embedding-studio.types";
 import { EmbeddingIdentitySection } from "./sections/EmbeddingIdentitySection";
 import { EmbeddingParamsSection } from "./sections/EmbeddingParamsSection";
@@ -13,29 +13,39 @@ import { EmbeddingCostSection } from "./sections/EmbeddingCostSection";
 import { MigrationPlanPoster } from "./components/MigrationPlanPoster";
 import { GenericStudioSectionNav } from "@/modules/studio/ui/components/StudioSectionNav/GenericStudioSectionNav";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { useEmbeddingModelDraft } from "../application/hooks/useEmbeddingModelDraft";
+import { toast } from "sonner";
 
 type EmbeddingStudioViewProps = {
     readonly initialData?: any;
     readonly onSave: (data: EmbeddingModelStudioValues) => void;
     readonly onExit: () => void;
     readonly isSaving?: boolean;
+    readonly modelId?: string | null;
 }
 
 export const EmbeddingStudioView = ({ 
     initialData, 
     onSave, 
     onExit, 
-    isSaving 
+    isSaving,
+    modelId
 }: EmbeddingStudioViewProps) => {
+    const { draft, saveDraft, clearDraft } = useEmbeddingModelDraft(modelId);
+
+    const defaultValues = useMemo(() => ({
+        provider_id: "",
+        model_provider_name: "",
+        model_id: "",
+        model_vector_dimensions: 1536,
+        model_max_context_tokens: 8191,
+        model_cost_per_1m_tokens: 0.02,
+        is_draft: false,
+    }), []);
+
     const form = useForm<EmbeddingModelStudioValues>({
         resolver: zodResolver(EmbeddingModelStudioSchema),
-        defaultValues: initialData || {
-            model_provider_name: "OpenAI",
-            model_id: "",
-            model_vector_dimensions: 1536,
-            model_max_context_tokens: 8191,
-            model_cost_per_1m_tokens: 0.02,
-        },
+        values: initialData || draft || defaultValues,
     });
 
     const sections = [
@@ -52,6 +62,15 @@ export const EmbeddingStudioView = ({
         if (element) {
             element.scrollIntoView({ behavior: "smooth" });
         }
+    };
+
+    const syncDraft = useCallback(() => {
+        saveDraft(form.getValues());
+    }, [form, saveDraft]);
+
+    const handleFinalSave = async (data: EmbeddingModelStudioValues) => {
+        await onSave({ ...data, is_draft: false });
+        clearDraft();
     };
 
     return (
@@ -79,9 +98,9 @@ export const EmbeddingStudioView = ({
                     canvas={
                         <div className="px-16 pb-48 pt-20 w-full">
                             <form className="space-y-16 w-full" onSubmit={(e) => e.preventDefault()}>
-                                <EmbeddingIdentitySection />
-                                <EmbeddingParamsSection />
-                                <EmbeddingCostSection />
+                                <EmbeddingIdentitySection onSyncDraft={syncDraft} />
+                                <EmbeddingParamsSection onSyncDraft={syncDraft} />
+                                <EmbeddingCostSection onSyncDraft={syncDraft} />
                             </form>
                         </div>
                     }
@@ -97,8 +116,9 @@ export const EmbeddingStudioView = ({
                                 Anuluj
                             </Button>
                             <ActionButton 
-                                label={isSaving ? "Zapisywanie..." : "Zapisz Model"}
-                                onClick={form.handleSubmit(onSave)} 
+                                label={isSaving ? "Zapisywanie..." : "Zapisz i Przeindeksuj"}
+                                icon={HardDrive}
+                                onClick={form.handleSubmit(handleFinalSave)} 
                             />
                         </div>
                     }

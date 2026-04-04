@@ -95,11 +95,13 @@ class EmbeddingModelTable(Base):
     __tablename__ = "embedding_models"
 
     id = Column(UUID(as_uuid=True), primary_key=True)
+    provider_id = Column(UUID(as_uuid=True), nullable=True)
     model_provider_name = Column(String, nullable=False)
     model_id = Column(String, nullable=False)
     model_vector_dimensions = Column(Integer, nullable=False)
     model_max_context_tokens = Column(Integer, nullable=False)
     model_cost_per_1m_tokens = Column(Float, nullable=False)
+    is_draft = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
@@ -113,6 +115,7 @@ class ChunkingStrategyTable(Base):
     strategy_chunk_size = Column(Integer, nullable=False)
     strategy_chunk_overlap = Column(Integer, nullable=False)
     strategy_chunk_boundaries = Column(JSONB, default=[])
+    is_draft = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
     deleted_at = Column(DateTime(timezone=True), nullable=True)

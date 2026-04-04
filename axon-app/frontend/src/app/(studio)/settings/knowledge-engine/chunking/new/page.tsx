@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { ChunkingStudioView } from "@/modules/studio/features/chunking-studio/ui/ChunkingStudioView";
 import { useCreateChunkingStrategy } from "@/modules/settings/application/useSettings";
+import { toast } from "sonner";
 
 export default function NewChunkingStrategyPage() {
     const router = useRouter();
@@ -11,6 +12,11 @@ export default function NewChunkingStrategyPage() {
 
     const handleSave = async (data: any) => {
         await createStrategy(data);
+        if (data.is_draft) {
+            toast.info("Szkic strategii został zapisany.");
+        } else {
+            toast.success("Strategia została utworzona.");
+        }
         router.push("/settings/knowledge-engine/chunking");
     };
 
@@ -23,6 +29,7 @@ export default function NewChunkingStrategyPage() {
             onSave={handleSave}
             onExit={handleExit}
             isSaving={isPending}
+            strategyId="new"
         />
     );
 }

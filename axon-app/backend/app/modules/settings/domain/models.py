@@ -78,18 +78,21 @@ class LLMRouter(SettingsBase):
 
 # KE
 class EmbeddingModel(SettingsBase):
+    provider_id: Optional[UUID] = None
     model_provider_name: str
     model_id: str
     model_vector_dimensions: int
     model_max_context_tokens: int
     model_cost_per_1m_tokens: float
+    is_draft: bool = False
 
 class ChunkingStrategy(SettingsBase):
     strategy_name: str
     strategy_chunking_method: ChunkingMethod
     strategy_chunk_size: int
     strategy_chunk_overlap: int
-    strategy_chunk_boundaries: List[str] = Field(default_factory=list)
+    strategy_chunk_boundaries: Dict[str, Any] = Field(default_factory=dict)
+    is_draft: bool = False
 
 class VectorDatabase(SettingsBase):
     vector_database_name: str

@@ -13,12 +13,7 @@ const EmbeddingPage = () => {
         <PageLayout
             title="Embedding Models"
             description="Configure vector embedding providers for knowledge indexing."
-            breadcrumbs={[
-                { label: "Home", href: "/home" },
-                { label: "Settings", href: "/settings" },
-                { label: "Knowledge Engine", href: "/settings/knowledge-engine/embedding" },
-                { label: "Embedding" }
-            ]}
+            breadcrumbs={[]}
             actions={
                 <ActionButton 
                     label="Add Model" 

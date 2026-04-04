@@ -1,7 +1,26 @@
 import { z } from "zod";
 
 export const ModelTierSchema = z.enum(["Tier1", "Tier2", "TIER1", "TIER2"]);
-export const ChunkingMethodSchema = z.enum(["Recursive_Character", "Code_Splitter", "Token_Splitter", "RECURSIVE_CHARACTER", "CODE_SPLITTER", "TOKEN_SPLITTER"]);
+export const ChunkingMethodSchema = z.enum([
+    "Recursive_Character", 
+    "Character",
+    "Code_Splitter", 
+    "Token_Splitter",
+    "Markdown",
+    "HTML",
+    "LaTeX",
+    "JSON",
+    "Semantic",
+    "RECURSIVE_CHARACTER", 
+    "CHARACTER",
+    "CODE_SPLITTER", 
+    "TOKEN_SPLITTER",
+    "MARKDOWN",
+    "HTML_SPLITTER",
+    "LATEX",
+    "JSON_SPLITTER",
+    "SEMANTIC"
+]);
 
 export const LLMProviderSchema = z.object({
     id: z.string().uuid(),
@@ -46,6 +65,7 @@ export const LLMProviderSchema = z.object({
     provider_custom_config: z.record(z.any()).nullable().optional(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
+    deleted_at: z.string().datetime().nullable().optional(),
 });
 
 export type LLMProvider = z.infer<typeof LLMProviderSchema>;
@@ -66,6 +86,7 @@ export const LLMModelSchema = z.object({
     llm_provider_id: z.string().uuid(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
+    deleted_at: z.string().datetime().nullable().optional(),
 });
 
 export type LLMModel = z.infer<typeof LLMModelSchema>;
@@ -85,6 +106,7 @@ export const LLMRouterSchema = z.object({
     priority_chain: z.array(z.record(z.any())).default([]),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
+    deleted_at: z.string().datetime().nullable().optional(),
 });
 
 export type LLMRouter = z.infer<typeof LLMRouterSchema>;
@@ -96,8 +118,10 @@ export const EmbeddingModelSchema = z.object({
     model_vector_dimensions: z.number().int(),
     model_max_context_tokens: z.number().int(),
     model_cost_per_1m_tokens: z.number(),
+    is_draft: z.boolean().default(false),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
+    deleted_at: z.string().datetime().nullable().optional(),
 });
 
 export type EmbeddingModel = z.infer<typeof EmbeddingModelSchema>;
@@ -109,8 +133,10 @@ export const ChunkingStrategySchema = z.object({
     strategy_chunk_size: z.number().int(),
     strategy_chunk_overlap: z.number().int(),
     strategy_chunk_boundaries: z.record(z.any()).default({}),
+    is_draft: z.boolean().default(false),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
+    deleted_at: z.string().datetime().nullable().optional(),
 });
 
 export type ChunkingStrategy = z.infer<typeof ChunkingStrategySchema>;
@@ -130,6 +156,7 @@ export const VectorDatabaseSchema = z.object({
     vector_database_expected_dimensions: z.number().int(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
+    deleted_at: z.string().datetime().nullable().optional(),
 });
 
 export type VectorDatabase = z.infer<typeof VectorDatabaseSchema>;

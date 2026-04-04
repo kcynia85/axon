@@ -10,7 +10,9 @@ from app.modules.settings.application.schemas import (
     CreateLLMProviderRequest, UpdateLLMProviderRequest,
     CreateLLMModelRequest, UpdateLLMModelRequest,
     CreateLLMRouterRequest, UpdateLLMRouterRequest,
-    CreateEmbeddingModelRequest, CreateChunkingStrategyRequest, CreateVectorDatabaseRequest,
+    CreateEmbeddingModelRequest, UpdateEmbeddingModelRequest,
+    CreateChunkingStrategyRequest, UpdateChunkingStrategyRequest,
+    CreateVectorDatabaseRequest,
     SimulateChunkingRequest, SimulateChunkingResponse,
     TestPromptRequest, SanityCheckResponse, ConnectionTestResponse,
     AvailableModelResponse
@@ -287,11 +289,13 @@ class SettingsService:
     async def create_embedding_model(self, request: CreateEmbeddingModelRequest) -> EmbeddingModel:
         model = EmbeddingModel(
             id=uuid4(),
+            provider_id=request.provider_id,
             model_provider_name=request.model_provider_name,
             model_id=request.model_id,
             model_vector_dimensions=request.model_vector_dimensions,
             model_max_context_tokens=request.model_max_context_tokens,
             model_cost_per_1m_tokens=request.model_cost_per_1m_tokens,
+            is_draft=request.is_draft,
             created_at=now_utc(),
             updated_at=now_utc()
         )
@@ -299,6 +303,16 @@ class SettingsService:
 
     async def list_embedding_models(self) -> List[EmbeddingModel]:
         return await self.repo.list_embedding_models()
+
+    async def get_embedding_model(self, id: UUID) -> Optional[EmbeddingModel]:
+        return await self.repo.get_embedding_model(id)
+
+    async def update_embedding_model(self, id: UUID, request: UpdateEmbeddingModelRequest) -> EmbeddingModel:
+        data = request.model_dump(exclude_unset=True)
+        updated = await self.repo.update_embedding_model(id, data)
+        if not updated:
+            raise ValueError(f"Embedding model with id {id} not found")
+        return updated
 
     async def delete_embedding_model(self, id: UUID) -> bool:
         return await self.repo.delete_embedding_model(id)
@@ -313,6 +327,7 @@ class SettingsService:
             strategy_chunk_size=request.strategy_chunk_size,
             strategy_chunk_overlap=request.strategy_chunk_overlap,
             strategy_chunk_boundaries=request.strategy_chunk_boundaries,
+            is_draft=request.is_draft,
             created_at=now_utc(),
             updated_at=now_utc()
         )
@@ -320,6 +335,16 @@ class SettingsService:
 
     async def list_chunking_strategies(self) -> List[ChunkingStrategy]:
         return await self.repo.list_chunking_strategies()
+
+    async def get_chunking_strategy(self, id: UUID) -> Optional[ChunkingStrategy]:
+        return await self.repo.get_chunking_strategy(id)
+
+    async def update_chunking_strategy(self, id: UUID, request: UpdateChunkingStrategyRequest) -> ChunkingStrategy:
+        data = request.model_dump(exclude_unset=True)
+        updated = await self.repo.update_chunking_strategy(id, data)
+        if not updated:
+            raise ValueError(f"Chunking strategy with id {id} not found")
+        return updated
 
     async def delete_chunking_strategy(self, id: UUID) -> bool:
         return await self.repo.delete_chunking_strategy(id)

@@ -58,13 +58,11 @@ export const ChunkingSimulatorPoster = () => {
                     </div>
                     <div>
                         <h2 className="text-xl font-bold tracking-tight">Symulator Chunkowania</h2>
-                        <p className="text-xs text-zinc-500 font-medium italic">Tox-Engine Visualization</p>
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <div className="flex justify-between items-center px-1">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Wklej tekst do testów</span>
+                    <div className="flex justify-end items-center px-1">
                         <span className="text-[10px] font-mono text-zinc-600">{text.length} znaków</span>
                     </div>
                     <Textarea 
