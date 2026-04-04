@@ -2,30 +2,28 @@
 
 import * as React from "react";
 import { useVectorDatabases, useDeleteVectorDatabase } from "../application/useSettings";
-import { Card, CardContent } from "@/shared/ui/ui/Card";
-import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Badge } from "@/shared/ui/ui/Badge";
-import { CategoryChip } from "@/shared/ui/ui/CategoryChip";
-import { 
-    Database, 
-    Search,
-    ArrowUpDown,
-    Filter
-} from "lucide-react";
-import { Input } from "@/shared/ui/ui/Input";
-import { cn } from "@/shared/lib/utils";
-import { SortMenu } from "@/shared/ui/complex/SortMenu";
-import { FilterBigMenu } from "@/shared/ui/complex/FilterBigMenu";
+import { Database, Trash2 } from "lucide-react";
+import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
+import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
+import { FilterBar } from "@/shared/ui/complex/FilterBar";
+import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
+import { ResourceList } from "@/shared/ui/complex/ResourceList";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
 import { VectorDatabaseSidePeek } from "./VectorDatabaseSidePeek";
 import { useRouter } from "next/navigation";
-import { FilterGroup, ActiveFilter } from "@/shared/domain/filters";
+import { FilterGroup, ActiveFilter, SortOption } from "@/shared/domain/filters";
+import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 
-const SORT_OPTIONS = [
+const SORT_OPTIONS: readonly SortOption[] = [
     { id: "name_asc", label: "Name (A-Z)" },
     { id: "name_desc", label: "Name (Z-A)" },
     { id: "type", label: "Type" },
+];
+
+const QUICK_FILTERS: readonly QuickFilter[] = [
+    { label: "Hosting", groupId: "hosting" },
+    { label: "Status", groupId: "status" },
 ];
 
 const STATIC_HOSTING = [
@@ -42,9 +40,14 @@ export const VectorDatabasesList = () => {
 
     const [search, setSearch] = React.useState("");
     const [sortBy, setSortBy] = React.useState("name_asc");
+    const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
     const [selectedDb, setSelectedDb] = React.useState<any | null>(null);
     const [activeFilters, setActiveFilters] = React.useState<ActiveFilter[]>([]);
     const [pendingFilterIds, setPendingFilterIds] = React.useState<string[]>([]);
+
+    // Deletion Modal State
+    const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
+    const [dbToDelete, setDbToDelete] = React.useState<{ id: string; name: string } | null>(null);
 
     const filterGroups = React.useMemo(() => {
         if (!dbs) return [];
@@ -194,154 +197,166 @@ export const VectorDatabasesList = () => {
         setPendingFilterIds(selectedIds);
     };
 
-    const handleDelete = (id: string, name: string) => {
-        deleteWithUndo(id, name, () => deleteDb(id));
-        setSelectedDb(null);
+    const handleToggleFilter = (id: string) => {
+        const option = filterGroups.flatMap(g => g.options.map(o => ({...o, groupId: g.id}))).find(o => o.id === id);
+        if (option) {
+            if (activeFilters.some(f => f.id === id)) {
+                setActiveFilters(prev => prev.filter(f => f.id !== id));
+                setPendingFilterIds(prev => prev.filter(pId => pId !== id));
+            } else {
+                setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
+                setPendingFilterIds([...pendingFilterIds, id]);
+            }
+        }
     };
 
-    if (isLoading) {
-        return (
-            <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                    <Skeleton className="h-[52px] flex-1 max-w-sm rounded-md" />
-                </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {[1, 2, 3].map((index) => <Skeleton key={index} className="h-32 w-full rounded-xl" />)}
-                </div>
-            </div>
-        );
-    }
+    const handleRemoveFilter = (id: string) => {
+        setActiveFilters(prev => prev.filter(f => f.id !== id));
+        setPendingFilterIds(prev => prev.filter(pId => pId !== id));
+    };
 
-    const displayDbs = filteredDbs.length > 0 || search || activeFilters.length > 0 ? filteredDbs : [
+    const handleClearAll = () => {
+        setActiveFilters([]);
+        setPendingFilterIds([]);
+    };
+
+    const confirmDelete = (id: string, name: string) => {
+        setDbToDelete({ id, name });
+        setDeleteModalOpen(true);
+    };
+
+    const handleDeleteExecution = () => {
+        if (dbToDelete) {
+            deleteWithUndo(dbToDelete.id, dbToDelete.name, () => deleteDb(dbToDelete.id));
+            setDeleteModalOpen(false);
+            setDbToDelete(null);
+        }
+    };
+
+    const displayDbs = filteredDbs.map(db => {
+        const isConnected = db.vector_database_connection_status.toUpperCase() === "CONNECTED";
+        const hostType = getHostingType(db);
+        return {
+            ...db,
+            title: db.vector_database_name,
+            description: db.vector_database_type,
+            categories: [
+                hostType === "cloud" ? "Cloud" : "Self-Hosted",
+                isConnected ? "Connected" : "Disconnected"
+            ]
+        };
+    });
+
+    // Mock data if empty
+    const itemsToDisplay = displayDbs.length > 0 || search || activeFilters.length > 0 ? displayDbs : [
         {
             id: "postgres-mock",
+            title: "Postgres (pgvector)",
+            description: "Postgres_pgvector",
+            categories: ["Self-Hosted", "Connected"],
+            isMock: true,
             vector_database_name: "Postgres (pgvector)",
             vector_database_type: "Postgres_pgvector",
-            vector_database_connection_url: "aws-eu-central-1",
             vector_database_connection_status: "CONNECTED",
+            vector_database_connection_url: "aws-eu-central-1",
             vector_database_collection_name: "axon_knowledge_vectors_1536",
             vector_database_embedding_model_reference: "text-embedding-3-small",
-            vector_database_expected_dimensions: 1536,
             vector_database_total_vectors: 450200,
-            vector_database_size: 45,
-            isMock: true
+            vector_database_size: 45
         },
         {
             id: "chroma-mock",
+            title: "ChromaDB",
+            description: "ChromaDB",
+            categories: ["Self-Hosted", "Connected"],
+            isMock: true,
             vector_database_name: "ChromaDB",
             vector_database_type: "ChromaDB",
-            vector_database_connection_url: "self-hosted",
             vector_database_connection_status: "CONNECTED",
+            vector_database_connection_url: "self-hosted",
             vector_database_collection_name: "local_cache",
             vector_database_embedding_model_reference: "all-MiniLM-L6-v2",
-            vector_database_expected_dimensions: 768,
             vector_database_total_vectors: 520,
-            vector_database_size: 2,
-            isMock: true
+            vector_database_size: 2
         }
     ];
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-8 flex-1">
-                    <div className="relative flex-1 max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
-                        <Input
-                            placeholder="Search databases..."
-                            className="pl-10 h-[52px] text-xs border-zinc-200 dark:border-zinc-800"
-                            value={search}
-                            onChange={(event) => setSearch(event.target.value)}
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-6 h-9">
-                        <FilterBigMenu
-                            groups={filterGroups}
-                            resultsCount={previewCount}
-                            onApply={handleApplyFilters}
-                            onSelectionChange={handleSelectionChange}
-                            onClearAll={() => { setActiveFilters([]); setPendingFilterIds([]); }}
-                            trigger={
-                                <div className={cn(
-                                    "flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent transition-all pb-1.5 cursor-pointer group outline-none translate-y-[2px]",
-                                    activeFilters.length > 0 
-                                        ? "text-black dark:text-white border-black dark:border-white" 
-                                        : "text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white"
-                                )}>
-                                    <Filter size={14} className="group-hover:scale-110 transition-transform" />
-                                    <span>Filters</span>
-                                    {activeFilters.length > 0 && (
-                                        <Badge variant="secondary" className="ml-0.5 h-4 min-w-4 px-1 rounded-full text-[9px] font-black bg-black dark:bg-white text-white dark:text-black">
-                                            {activeFilters.length}
-                                        </Badge>
-                                    )}
-                                </div>
-                            }
-                        />
-
-                        <SortMenu 
-                            options={SORT_OPTIONS}
-                            activeOptionId={sortBy}
-                            onSelect={(id) => setSortBy(id)}
-                            trigger={
-                                <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] border-b-2 border-transparent text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all pb-1.5 cursor-pointer group outline-none translate-y-[2px]">
-                                    <ArrowUpDown size={14} className="group-hover:scale-110 transition-transform" />
-                                    <span>Sort</span>
-                                </div>
-                            }
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {displayDbs.map((db) => {
-                    const isConnected = db.vector_database_connection_status.toUpperCase() === "CONNECTED";
-                    
-                    return (
-                        <Card 
-                            key={db.id} 
-                            className="group hover:border-primary/50 transition-all flex flex-col overflow-hidden border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm hover:shadow-md cursor-pointer h-full"
-                            onClick={() => setSelectedDb(db)}
-                        >
-                            <CardContent className="pt-1 pb-4 flex items-start gap-4">
-                                <div className="p-2.5 rounded-xl shrink-0 bg-primary/10 text-primary">
-                                    <Database className="w-5 h-5" />
-                                </div>
-                                <div className="flex flex-col gap-1 min-w-0 flex-1">
-                                    <h3 className="text-base font-bold tracking-tight truncate leading-none mt-0.5">{db.vector_database_name}</h3>
-                                    <div className={cn(
-                                        "text-xs font-medium",
-                                        isConnected ? "text-zinc-400" : "text-zinc-500"
-                                    )}>
-                                        {isConnected ? "Połączony" : "Rozłączony"}
-                                    </div>
-                                    <div className="pt-2">
-                                         <CategoryChip label={db.vector_database_connection_url || "internal"} />
-                        
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
-
-                {displayDbs.length === 0 && (
-                    <div className="col-span-full h-48 flex flex-col items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl text-zinc-400 space-y-2">
-                        <Database className="w-8 h-8 opacity-20" />
-                        <span className="text-xs font-medium">No vector databases found</span>
-                    </div>
+        <>
+            <BrowserLayout
+                searchQuery={search}
+                onSearchChange={setSearch}
+                searchPlaceholder="Search databases..."
+                activeFilters={activeFilters.length > 0 && (
+                    <FilterBar
+                        activeFilters={activeFilters}
+                        onRemove={handleRemoveFilter}
+                        onClearAll={handleClearAll}
+                    />
                 )}
-            </div>
+                actionBar={
+                    <ActionBar
+                        filterGroups={filterGroups}
+                        activeFilters={activeFilters}
+                        quickFilters={QUICK_FILTERS}
+                        onToggleFilter={handleToggleFilter}
+                        onApplyFilters={handleApplyFilters}
+                        onSelectionChange={handleSelectionChange}
+                        onClearAllFilters={handleClearAll}
+                        onPendingFilterIdsChange={handleSelectionChange}
+                        resultsCount={previewCount}
+                        sortOptions={SORT_OPTIONS}
+                        sortBy={sortBy}
+                        onSortChange={setSortBy}
+                        viewMode={viewMode}
+                        onViewModeChange={setViewMode}
+                    />
+                }
+            >
+                <ResourceList
+                    items={itemsToDisplay}
+                    isLoading={isLoading}
+                    viewMode={viewMode}
+                    renderItem={(db) => (
+                        <ResourceCard
+                            key={db.id}
+                            title={db.title}
+                            description={db.description}
+                            href="#"
+                            icon={Database}
+                            categories={db.categories}
+                            onClick={() => setSelectedDb(db)}
+                            onEdit={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                router.push(`/settings/knowledge-engine/vectors/${db.id}`);
+                            }}
+                            onDelete={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                confirmDelete(db.id, db.title);
+                            }}
+                        />
+                    )}
+                />
+            </BrowserLayout>
 
             <VectorDatabaseSidePeek 
                 db={selectedDb}
                 isOpen={!!selectedDb}
                 onClose={() => setSelectedDb(null)}
                 onEdit={(db) => router.push(`/settings/knowledge-engine/vectors/${db.id}`)}
-                onDelete={(id) => handleDelete(id, selectedDb?.vector_database_name)}
+                onDelete={(id) => confirmDelete(id, selectedDb?.vector_database_name)}
             />
-        </div>
+
+            <DestructiveDeleteModal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleDeleteExecution}
+                title="Usuń Bazę"
+                resourceName={dbToDelete?.name || "Baza"}
+                affectedResources={[]}
+            />
+        </>
     );
 };

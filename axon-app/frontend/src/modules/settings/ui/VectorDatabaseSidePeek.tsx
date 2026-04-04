@@ -18,6 +18,7 @@ import { cn } from "@/shared/lib/utils";
 import type { VectorDatabase } from "@/shared/domain/settings";
 import { CategoryChip } from "@/shared/ui/ui/CategoryChip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/ui/ui/Dialog";
+import { Badge } from "@/shared/ui/ui/Badge";
 
 type VectorDatabaseSidePeekProps = {
   readonly db: VectorDatabase | (VectorDatabase & { isMock?: boolean }) | null;
@@ -38,8 +39,8 @@ export const VectorDatabaseSidePeek = ({
 
     if (!db) return null;
 
-    const isConnected = db.vector_database_connection_status.toUpperCase() === "CONNECTED";
-    const isPostgres = db.vector_database_type.toUpperCase().includes("POSTGRES");
+    const isConnected = db.vector_database_connection_status?.toUpperCase() === "CONNECTED";
+    const isPostgres = db.vector_database_type?.toUpperCase().includes("POSTGRES") ?? false;
 
     const handleDelete = () => {
         if (db.id && onDelete) {
@@ -92,11 +93,11 @@ export const VectorDatabaseSidePeek = ({
                     <SidePeekGrid>
                         <SidePeekGridItem 
                             label="Host" 
-                            value={<CategoryChip label={db.vector_database_connection_url || "aws-eu-central-1"} className="font-mono" />} 
+                            value={<span className="text-white font-mono">{db.vector_database_connection_url || "aws-eu-central-1"}</span>} 
                         />
                         <SidePeekGridItem 
                             label="Typ" 
-                            value={<CategoryChip label={db.vector_database_type.replace(/_/g, " ")} />} 
+                            value={<span className="text-white">{(db.vector_database_type || "N/A").replace(/_/g, " ")}</span>} 
                         />
                     </SidePeekGrid>
 
@@ -112,7 +113,9 @@ export const VectorDatabaseSidePeek = ({
                     {/* ── Embedding Model ── */}
                     <SidePeekSection title="Embedding Model">
                         <div className="p-3 rounded-lg bg-muted/30 border border-primary/5">
-                            <CategoryChip label={db.vector_database_embedding_model_reference || "text-embedding-3-small"} />
+                            <p className="text-base font-mono font-semibold text-white">
+                                {db.vector_database_embedding_model_reference || "text-embedding-3-small"}
+                            </p>
                         </div>
                     </SidePeekSection>
 
@@ -120,19 +123,28 @@ export const VectorDatabaseSidePeek = ({
                     <SidePeekSection title="Statystyki">
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
-                                <p className="text-base font-semibold text-white">
-                                    {(db.vector_database_total_vectors || 450200).toLocaleString()} wektorów
-                                </p>
+                                <span className="text-base font-mono font-semibold text-white">
+                                    {(db.vector_database_total_vectors || 450200).toLocaleString()}
+                                </span>
+                                <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                                    vectors
+                                </Badge>
                             </div>
                             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
-                                <p className="text-base font-semibold text-white">
-                                    {db.vector_database_size ? `${db.vector_database_size} MB` : "45 MB"}
-                                </p>
+                                <span className="text-base font-mono font-semibold text-white">
+                                    {db.vector_database_size || 45}
+                                </span>
+                                <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                                    mb
+                                </Badge>
                             </div>
                             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
-                                <p className="text-base font-semibold text-white">
-                                    Avg. Query: 24 ms
-                                </p>
+                                <span className="text-base font-mono font-semibold text-white">
+                                    24
+                                </span>
+                                <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                                   ms (avg. latency)
+                                </Badge>
                             </div>
                         </div>
                     </SidePeekSection>

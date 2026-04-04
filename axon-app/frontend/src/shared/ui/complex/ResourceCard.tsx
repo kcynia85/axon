@@ -177,20 +177,20 @@ export const ResourceCard = ({
                         </h4>
                     </div>
 
-                    {/* Categories - Moved up to be under title */}
-                    <div className="flex flex-wrap gap-1.5 min-h-[24px] mb-2">
-                        {categories?.slice(0, 4).map(category => (
-                            <CategoryChip key={category} label={category} />
-                        ))}
-                    </div>
-
-                    {/* Description - Fixed height/lines */}
-                    <div className="min-h-[50px] mb-2">
+                    {/* Description - Directly under title */}
+                    <div className="mb-2">
                         {description && (
-                            <p className="text-[13px] text-muted-foreground line-clamp-3 leading-relaxed font-medium">
+                            <p className="text-[13px] text-muted-foreground line-clamp-2 leading-relaxed font-medium">
                                 {truncatedDescription}
                             </p>
                         )}
+                    </div>
+
+                    {/* Categories - Under description */}
+                    <div className="flex flex-wrap gap-1.5 min-h-[24px] mb-2 mt-auto">
+                        {categories?.slice(0, 4).map(category => (
+                            <CategoryChip key={category} label={category} />
+                        ))}
                     </div>
                     
                     <div className="mt-auto">

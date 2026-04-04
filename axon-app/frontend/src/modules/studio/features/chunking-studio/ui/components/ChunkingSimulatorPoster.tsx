@@ -8,6 +8,7 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { Play, Layers, Scissors, RefreshCw } from "lucide-react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useSimulateChunking } from "@/modules/settings/application/useSettings";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/shared/ui/ui/Accordion";
 
 export const ChunkingSimulatorPoster = () => {
     const { control } = useFormContext();
@@ -49,6 +50,9 @@ export const ChunkingSimulatorPoster = () => {
         }
     };
 
+    // For test purposes, limit to max 3 chunks
+    const displayChunks = chunks.slice(0, 3);
+
     return (
         <div className="w-full h-full flex flex-col gap-6 p-6 overflow-y-auto">
             <div className="space-y-4">
@@ -89,25 +93,35 @@ export const ChunkingSimulatorPoster = () => {
                         <Scissors className="w-3.5 h-3.5" /> Wynik (Chunks)
                     </h3>
                     <Badge variant="outline" className="text-[10px] font-mono font-bold text-primary border-primary/20 bg-primary/5">
-                        Kawałków: {chunks.length}
+                        Kawałków: {displayChunks.length} {chunks.length > 3 && `(z ${chunks.length})`}
                     </Badge>
                 </div>
 
-                <div className="grid gap-4 pb-10">
-                    {chunks.map((chunk, i) => (
-                        <Card key={i} className="bg-zinc-900/50 border-zinc-800/50 hover:border-primary/20 transition-all">
-                            <div className="p-4 space-y-3">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Chunk {i + 1}</span>
-                                    <span className="text-[10px] font-mono text-zinc-500">{chunk.length} znaków</span>
-                                </div>
-                                <p className="text-[11px] leading-relaxed font-serif text-zinc-300 whitespace-pre-wrap">
-                                    {chunk}
-                                </p>
-                            </div>
-                        </Card>
-                    ))}
-                    
+                <div className="pb-10">
+                    <Accordion type="single" collapsible className="w-full space-y-4">
+                        {displayChunks.map((chunk, i) => (
+                            <AccordionItem 
+                                key={i} 
+                                value={`chunk-${i}`} 
+                                className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl overflow-hidden data-[state=open]:border-primary/20 transition-all"
+                            >
+                                <AccordionTrigger className="px-4 py-3 hover:bg-white/5 hover:no-underline transition-colors">
+                                    <div className="flex justify-between items-center w-full pr-4">
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Chunk {i + 1}</span>
+                                        <span className="text-[10px] font-mono text-zinc-500">{chunk.length} znaków</span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="px-4 pb-4 pt-1">
+                                    <div className="p-3 rounded-lg bg-zinc-950/50 border border-zinc-800/50">
+                                        <p className="text-[11px] leading-relaxed font-mono text-zinc-300 whitespace-pre-wrap break-words">
+                                            {chunk}
+                                        </p>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+
                     {chunks.length === 0 && (
                         <div className="h-40 border-2 border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center text-zinc-600 gap-2">
                             <Layers className="w-8 h-8 opacity-20" />

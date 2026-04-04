@@ -11,13 +11,17 @@ export default function NewChunkingStrategyPage() {
     const { mutateAsync: createStrategy, isPending } = useCreateChunkingStrategy();
 
     const handleSave = async (data: any) => {
-        await createStrategy(data);
-        if (data.is_draft) {
-            toast.info("Szkic strategii został zapisany.");
-        } else {
-            toast.success("Strategia została utworzona.");
+        try {
+            await createStrategy(data);
+            if (data.is_draft) {
+                toast.info("Szkic strategii został zapisany.");
+            } else {
+                toast.success("Strategia została utworzona.");
+            }
+            router.push("/settings/knowledge-engine/chunking");
+        } catch (error: any) {
+            toast.error(`Błąd zapisu: ${error.message || "Wystąpił nieoczekiwany błąd"}`);
         }
-        router.push("/settings/knowledge-engine/chunking");
     };
 
     const handleExit = () => {

@@ -16,15 +16,17 @@ export const StrategySeparatorsSection = ({ onSyncDraft }: Props) => {
     const { control, setValue, formState: { errors } } = useFormContext();
     
     // Watch the entire boundaries object for better reactivity
-    const method = useWatch({ control, name: "strategy_chunking_method" });
+    const rawMethod = useWatch({ control, name: "strategy_chunking_method" });
     const boundaries = useWatch({ control, name: "strategy_chunk_boundaries" });
     
+    const method = rawMethod?.toLowerCase().replace(/_/g, "");
+
     const currentSeparators = React.useMemo(() => {
         return boundaries?.separators || ["\\n\\n", "\\n", " "];
     }, [boundaries]);
 
     // Case 1: Recursive Character (Level Selection)
-    if (method === "Recursive_Character") {
+    if (method === "recursivecharacter") {
         const currentLevel = currentSeparators.length;
 
         const handleLevelChange = (level: number) => {
@@ -82,7 +84,7 @@ export const StrategySeparatorsSection = ({ onSyncDraft }: Props) => {
     }
 
     // Case 2: Simple Character (Single Separator)
-    if (method === "Character") {
+    if (method === "character") {
         return (
             <FormSection 
                 id="separators"
@@ -103,6 +105,10 @@ export const StrategySeparatorsSection = ({ onSyncDraft }: Props) => {
                             render={({ field }) => (
                                 <FormTextField
                                     {...field}
+                                    onChange={(e) => {
+                                        field.onChange(e);
+                                        onSyncDraft();
+                                    }}
                                     onBlur={() => {
                                         field.onBlur();
                                         onSyncDraft();

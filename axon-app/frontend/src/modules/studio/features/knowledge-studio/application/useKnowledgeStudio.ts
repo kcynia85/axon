@@ -6,7 +6,6 @@ export const useKnowledgeStudio = () => {
         fileName: null,
         fileSize: null,
         metadata: [],
-        model: "text-embedding-3-small",
         chunkType: "General Text",
         hubs: []
     });

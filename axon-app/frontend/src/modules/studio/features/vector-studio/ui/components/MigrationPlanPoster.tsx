@@ -10,7 +10,7 @@ export const MigrationPlanPoster = () => {
     const { control } = useFormContext();
     const dimensions = useWatch({
         control,
-        name: "model_vector_dimensions",
+        name: "vector_database_expected_dimensions",
     }) || "XXXX";
 
     return (
@@ -46,7 +46,7 @@ export const MigrationPlanPoster = () => {
                             <AccordionItem value="warning" className="border-none">
                                 <AccordionTrigger className="py-3 px-4 rounded-lg bg-amber-500/5 hover:bg-amber-500/10 text-amber-500 hover:no-underline font-bold text-[14px] transition-all border border-amber-500/10">
                                     <div className="flex items-center gap-2">
-                                        <Info className="w-4 h-4" />
+                                        <Info className="w-8 h-8" />
                                         Uwaga przeczytaj przed indeksacją
                                     </div>
                                 </AccordionTrigger>

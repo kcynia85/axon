@@ -21,6 +21,7 @@ import type { ChunkingStrategy } from "@/shared/domain/settings";
 import { CategoryChip } from "@/shared/ui/ui/CategoryChip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/ui/ui/Dialog";
 import { Badge } from "@/shared/ui/ui/Badge";
+import { useChunkingStrategyDraft } from "@/modules/studio/features/chunking-studio/application/hooks/useChunkingStrategyDraft";
 
 type ChunkingStrategySidePeekProps = {
   readonly strategy: ChunkingStrategy | null;
@@ -31,7 +32,9 @@ type ChunkingStrategySidePeekProps = {
 }
 
 const formatMethodName = (method: string) => {
-    return method.replace(/_/g, " ");
+    if (!method) return "Unknown";
+    const formatted = method.replace(/_/g, " ");
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1).toLowerCase();
 };
 
 export const ChunkingStrategySidePeek = ({ 
@@ -42,8 +45,17 @@ export const ChunkingStrategySidePeek = ({
     onDelete 
 }: ChunkingStrategySidePeekProps) => {
     const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+    const { draft } = useChunkingStrategyDraft(strategy?.id);
 
     if (!strategy) return null;
+
+    // Hydration: use draft values if they exist, otherwise use strategy from props
+    const displayData = {
+        ...strategy,
+        ...(draft || {})
+    };
+
+    const isModified = !!draft && Object.keys(draft).length > 0;
 
     const handleDelete = () => {
         if (strategy.id && onDelete) {
@@ -53,17 +65,17 @@ export const ChunkingStrategySidePeek = ({
         }
     };
 
-    const isTokenBased = strategy.strategy_chunking_method === "Token_Splitter";
-    const isSemantic = strategy.strategy_chunking_method === "Semantic";
-    const separators = (strategy.strategy_chunk_boundaries as any)?.separators || [];
+    const isTokenBased = displayData.strategy_chunking_method === "Token_Splitter";
+    const isSemantic = displayData.strategy_chunking_method === "Semantic";
+    const separators = (displayData.strategy_chunk_boundaries as any)?.separators || [];
 
     return (
         <>
             <SidePeek
                 open={isOpen}
                 onOpenChange={(open) => !open && onClose()}
-                title={strategy.strategy_name}
-                description={formatMethodName(strategy.strategy_chunking_method)}
+                title={displayData.strategy_name || "Chunking Strategy"}
+                description={formatMethodName(displayData.strategy_chunking_method)}
                 modal={false}
                 image={
                     <div className="p-3 rounded-xl bg-primary/10 text-primary">
@@ -93,39 +105,46 @@ export const ChunkingStrategySidePeek = ({
                 <div className="space-y-12">
                     {/* ── Method ── */}
                     <SidePeekSection title="Metoda Podziału">
-                        <div className="p-3 rounded-lg bg-muted/30 border border-primary/5 flex items-center gap-3">
-                            <CategoryChip label={formatMethodName(strategy.strategy_chunking_method)} />
-                            {strategy.is_draft && (
+                        <div className="p-3 rounded-lg bg-muted/30 border border-primary/5 flex items-center gap-3 justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="text-white text-base font-semibold">{formatMethodName(displayData.strategy_chunking_method)}</span>
+                                {isModified && (
+                                    <Badge variant="outline" className="text-[10px] h-5 px-2 font-black uppercase tracking-widest border-primary/20 bg-primary/5 text-primary">
+                                        Modified (Draft)
+                                    </Badge>
+                                )}
+                            </div>
+                            {displayData.is_draft && !isModified && (
                                 <Badge variant="outline" className="text-[10px] h-5 px-2 font-black uppercase tracking-widest border-amber-500/20 bg-amber-500/5 text-amber-500">
-                                    Szkic
+                                    Draft
                                 </Badge>
                             )}
                         </div>
                     </SidePeekSection>
 
-                    {/* ── Size & Overlap ── */}
-                    <SidePeekGrid>
-                        <SidePeekGridItem 
-                            label={isTokenBased ? "Chunk Size (Tokens)" : "Chunk Size (Chars)"} 
-                            value={
+                    {/* ── Size & Overlap (Single Column) ── */}
+                    <SidePeekSection title="Parametry rozmiaru">
+                        <div className="space-y-1.5">
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
                                 <div className="flex items-center gap-2">
-                                    <Binary className="w-4 h-4 text-zinc-500" />
-                                    <span className="text-base font-mono font-bold text-white">{strategy.strategy_chunk_size}</span>
+                                    <span className="text-base font-mono font-bold text-white">{displayData.strategy_chunk_size || 0}</span>
                                 </div>
-                            } 
-                        />
-                        {!isSemantic && (
-                            <SidePeekGridItem 
-                                label="Overlap" 
-                                value={
+                                <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                                    {isTokenBased ? "tokens" : "characters"}
+                                </Badge>
+                            </div>
+                            {!isSemantic && (
+                                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
                                     <div className="flex items-center gap-2">
-                                        <Layers className="w-4 h-4 text-zinc-500" />
-                                        <span className="text-base font-mono font-bold text-white">{strategy.strategy_chunk_overlap}</span>
+                                        <span className="text-base font-mono font-bold text-white">{displayData.strategy_chunk_overlap || 0}</span>
                                     </div>
-                                } 
-                            />
-                        )}
-                    </SidePeekGrid>
+                                    <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                                        overlap
+                                    </Badge>
+                                </div>
+                            )}
+                        </div>
+                    </SidePeekSection>
 
                     {/* ── Separators ── */}
                     {separators.length > 0 && (

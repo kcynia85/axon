@@ -7,7 +7,6 @@ export interface KnowledgeResourceData {
     fileName: string | null;
     fileSize: string | null;
     metadata: FormKeyValueItem[];
-    model: string;
     chunkType: string;
     hubs: string[];
 }

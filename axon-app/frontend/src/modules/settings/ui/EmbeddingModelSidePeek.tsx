@@ -18,6 +18,7 @@ import { cn } from "@/shared/lib/utils";
 import type { EmbeddingModel } from "@/shared/domain/settings";
 import { CategoryChip } from "@/shared/ui/ui/CategoryChip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/ui/ui/Dialog";
+import { Badge } from "@/shared/ui/ui/Badge";
 
 type EmbeddingModelSidePeekProps = {
   readonly model: EmbeddingModel | null;
@@ -38,7 +39,7 @@ export const EmbeddingModelSidePeek = ({
 
     if (!model) return null;
 
-    const isMultimodal = model.model_id.toLowerCase().includes("multimodal") || model.model_id.toLowerCase().includes("vision");
+    const isMultimodal = model.model_id?.toLowerCase().includes("multimodal") || model.model_id?.toLowerCase().includes("vision") || false;
 
     const handleDelete = () => {
         if (model.id && onDelete) {
@@ -53,8 +54,8 @@ export const EmbeddingModelSidePeek = ({
             <SidePeek
                 open={isOpen}
                 onOpenChange={(open) => !open && onClose()}
-                title={model.model_id}
-                description={`${model.model_provider_name} / Aktywny`}
+                title={model.model_id || "Embedding Model"}
+                description={`${model.model_provider_name || "Unknown"} / Aktywny`}
                 modal={false}
                 image={
                     <div className="p-3 rounded-xl bg-primary/10 text-primary">
@@ -84,27 +85,35 @@ export const EmbeddingModelSidePeek = ({
                 <div className="space-y-12">
                     {/* ── Input ── */}
                     <SidePeekSection title="Input">
-                        <div className="p-3 rounded-lg bg-muted/30 border border-primary/5 flex items-center gap-3">
-                            <CategoryChip label={isMultimodal ? "Multimodal" : "Text"} />
-                            <span className="opacity-70 font-normal text-sm text-zinc-400">(max {model.model_max_context_tokens} tokens)</span>
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                            <div className="flex items-center gap-3">
+                                <span className="text-base font-semibold text-white">{isMultimodal ? "Multimodal" : "Text"}</span>
+                                <span className="text-xs text-zinc-500 font-mono">(max {model.model_max_context_tokens || 0})</span>
+                            </div>
+                            <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                                tokens
+                            </Badge>
                         </div>
                     </SidePeekSection>
 
                     {/* ── Dimensions ── */}
                     <SidePeekSection title="Dimensions">
-                        <div className="p-3 rounded-lg bg-muted/30 border border-primary/5">
-                            <p className="text-base font-mono font-semibold text-white">
-                                {model.model_vector_dimensions}
-                            </p>
+                        <div className="p-3 rounded-lg bg-muted/30 border border-primary/5 flex items-center justify-between">
+                            <span className="text-base font-mono font-semibold text-white">
+                                {model.model_vector_dimensions || "N/A"}
+                            </span>
                         </div>
                     </SidePeekSection>
 
                     {/* ── Cost ── */}
                     <SidePeekSection title="Cost">
-                        <div className="p-3 rounded-lg bg-muted/30 border border-primary/5">
-                            <p className="text-base font-semibold text-white">
-                                $ {model.model_cost_per_1m_tokens} <span className="opacity-70 font-normal text-sm ml-1 text-zinc-400">/ 1M tokenów</span>
-                            </p>
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                            <span className="text-base font-semibold text-white">
+                                $ {model.model_cost_per_1m_tokens || 0}
+                            </span>
+                            <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
+                                per 1m tokens
+                            </Badge>
                         </div>
                     </SidePeekSection>
                 </div>

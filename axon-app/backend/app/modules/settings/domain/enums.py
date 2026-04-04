@@ -18,8 +18,14 @@ class RouterStrategy(str, Enum):
 
 class ChunkingMethod(str, Enum):
     RECURSIVE_CHARACTER = "Recursive_Character"
+    CHARACTER = "Character"
+    MARKDOWN = "Markdown"
+    HTML = "HTML"
     CODE_SPLITTER = "Code_Splitter"
     TOKEN_SPLITTER = "Token_Splitter"
+    LATEX = "LaTeX"
+    JSON = "JSON"
+    SEMANTIC = "Semantic"
 
 class VectorDBType(str, Enum):
     POSTGRES_PGVECTOR = "Postgres_pgvector"

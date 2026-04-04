@@ -26,7 +26,7 @@ export const FormItemField = ({
 				</p>
 			)}
 			<FormControl>{children}</FormControl>
-			{error ? <FormMessage className="mt-2" /> : <FormMessage className="mt-2" />}
+			<FormMessage className="mt-2">{error}</FormMessage>
 		</FormItem>
 	);
 };

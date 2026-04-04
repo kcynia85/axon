@@ -28,6 +28,7 @@ type ResourceListProps<T> = {
   readonly virtualize?: boolean;
   readonly itemHeight?: number; // Estimated height for virtualization
   readonly containerHeight?: string | number;
+  readonly prependedItem?: React.ReactNode;
 }
 
 export const ResourceList = <T,>({
@@ -49,6 +50,7 @@ export const ResourceList = <T,>({
   virtualize = false,
   itemHeight = 150,
   containerHeight = "70vh",
+  prependedItem,
 }: ResourceListProps<T>) => {
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -84,7 +86,7 @@ export const ResourceList = <T,>({
     );
   }
 
-  if (!items || items.length === 0) {
+  if ((!items || items.length === 0) && !prependedItem) {
     return (
       <EmptyState
         icon={emptyIcon}
@@ -109,12 +111,17 @@ export const ResourceList = <T,>({
             position: "relative",
           }}
         >
+          {prependedItem && (
+            <div className="pb-3 w-full">
+              {prependedItem}
+            </div>
+          )}
           {rowVirtualizer.getVirtualItems().map((virtualRow) => (
             <div
               key={virtualRow.index}
               style={{
                 position: "absolute",
-                top: 0,
+                top: prependedItem ? itemHeight : 0, // Simplified offset
                 left: 0,
                 width: "100%",
                 height: `${virtualRow.size}px`,
@@ -135,6 +142,7 @@ export const ResourceList = <T,>({
 
   return (
     <div className={cn(layoutClassName, containerClassName)}>
+      {prependedItem}
       {safeItems.map((item, index) => (
         <React.Fragment key={index}>
           {renderItem(item)}

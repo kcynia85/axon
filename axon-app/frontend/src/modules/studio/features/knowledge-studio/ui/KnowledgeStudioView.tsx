@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { X, Plus, Wand2, RefreshCw } from "lucide-react";
+import { useForm, FormProvider, Controller } from "react-hook-form";
+import { X, Plus, Wand2, RefreshCw, ChevronDown, Loader2 } from "lucide-react";
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { Button } from "@/shared/ui/ui/Button";
@@ -20,12 +20,8 @@ import { FormField } from "@/shared/ui/ui/Form";
 import { RagDebugger } from "./RagDebugger";
 import { KnowledgeResourceStatusCard } from "./KnowledgeResourceStatusCard";
 import { FormFileUpload } from "@/shared/ui/form/FormFileUpload";
-
-const EMBEDDING_MODELS = [
-    { name: "text-embedding-3-small (domyślny)", id: "text-embedding-3-small" },
-    { name: "text-embedding-3-large", id: "text-embedding-3-large" },
-    { name: "text-embedding-ada-002", id: "text-embedding-ada-002" },
-];
+import { useChunkingStrategies } from "@/modules/settings/application/useSettings";
+import { cn } from "@/shared/lib/utils";
 
 const HUB_OPTIONS = [
     { name: "Delivery", id: "delivery" },
@@ -50,14 +46,20 @@ export const KnowledgeStudioView = ({
     setCanvasContainerReference: (node: HTMLDivElement | null) => void;
 }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { data: strategies = [], isLoading: isLoadingStrategies } = useChunkingStrategies();
 
     const form = useForm({
         defaultValues: {
             chunkType: data.chunkType,
-            model: data.model,
             hubs: data.hubs,
         }
     });
+
+    const strategyOptions = strategies.map(s => ({
+        id: s.id,
+        name: s.strategy_name,
+        subtitle: s.strategy_chunking_method
+    }));
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -81,7 +83,7 @@ export const KnowledgeStudioView = ({
                     <Button
                         variant="ghost"
                         size="icon"
-                        onClick={onExit}
+                        onClick={onCancel}
                         className="hover:bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all h-9 w-9"
                     >
                         <X className="w-4 h-4" />
@@ -91,12 +93,10 @@ export const KnowledgeStudioView = ({
                 poster={
                     <div className="space-y-8 w-full">
                         {data.id && (
-                            <KnowledgeResourceStatusCard 
-                                model={data.model}
+                            <KnowledgeResourceStatusCard
                                 chunksCount={4}
                             />
-                        )}
-                        <RagDebugger fileName={data.fileName} strategy={data.chunkType} />
+                        )}                        <RagDebugger fileName={data.fileName} strategy={data.chunkType} />
                     </div>
                 }
                 canvas={
@@ -175,57 +175,44 @@ export const KnowledgeStudioView = ({
                             </FormSection>
 
                             {/* 3. Strategia Przetwarzania */}
-                            <FormSection id="STRATEGY" number={3} title="Strategia Przetwarzania" description="Wybierz model i typ przetwarzania zasobu.">
+                            <FormSection id="STRATEGY" number={3} title="Strategia Przetwarzania" description="Wybierz typ przetwarzania zasobu.">
                                 <div className="space-y-12">
                                     <div className="space-y-6">
-                                        <FormSubheading>Model Embeddingu</FormSubheading>
-                                        <div className="w-full max-w-2xl">
-                                            <FormField
-                                                control={form.control}
-                                                name="model"
-                                                render={({ field }) => (
-                                                    <FormItemField>
-                                                        <FormSelect
-                                                            options={EMBEDDING_MODELS}
-                                                            value={field.value || ""}
-                                                            onChange={(val) => {
-                                                                field.onChange(val);
-                                                                onDataChange({ model: val as string });
-                                                            }}
-                                                            placeholder="Wybierz model..."
-                                                            searchPlaceholder="Szukaj modelu..."
-                                                        />
-                                                    </FormItemField>
-                                                )}
-                                            />
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="space-y-6">
                                         <FormSubheading>Chunk Types</FormSubheading>
-                                        <FormField
+                                        <Controller
                                             control={form.control}
                                             name="chunkType"
                                             render={({ field }) => (
                                                 <FormItemField>
-                                                    <div className="grid grid-cols-1 gap-6">
-                                                        {[
-                                                            { title: 'General Text', description: 'Standardowe dzielenie tekstu z nakładaniem się fragmentów (dokumentacja, artykuły).' },
-                                                            { title: 'Codebase', description: 'Dzielenie z zachowaniem struktury kodu źródłowego (funkcje, klasy).' },
-                                                            { title: 'Precise / Legal', description: 'Dokładne dzielenie na mniejsze fragmenty z rygorystycznym zachowaniem słownictwa.' }
-                                                        ].map((type) => (
-                                                            <FormRadio
-                                                                key={type.title}
-                                                                title={type.title}
-                                                                description={type.description}
-                                                                checked={field.value === type.title}
-                                                                onChange={() => {
-                                                                    field.onChange(type.title);
-                                                                    onDataChange({ chunkType: type.title });
-                                                                }}
-                                                            />
-                                                        ))}
-                                                    </div>
+                                                    <FormSelect
+                                                        options={strategyOptions}
+                                                        value={field.value}
+                                                        onChange={(val) => {
+                                                            const selected = strategyOptions.find(opt => opt.id === val);
+                                                            const newValue = selected?.name || val as string;
+                                                            field.onChange(newValue);
+                                                            onDataChange({ chunkType: newValue });
+                                                        }}
+                                                        placeholder={isLoadingStrategies ? "Ładowanie strategii..." : "Wybierz strategię chunkingu..."}
+                                                        renderTrigger={(selected: any) => (
+                                                            <div className="flex items-center gap-3 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
+                                                                <div className="flex-1 text-left">
+                                                                    <div className={cn(
+                                                                        "text-lg font-mono transition-colors",
+                                                                        selected.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+                                                                    )}>
+                                                                        {isLoadingStrategies ? "Ładowanie..." : (selected.length > 0 ? selected[0].name : "Wybierz strategię...")}
+                                                                    </div>
+                                                                    {selected.length > 0 && selected[0].subtitle && (
+                                                                        <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mt-0.5">
+                                                                            {selected[0].subtitle}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                {isLoadingStrategies ? <Loader2 className="w-5 h-5 animate-spin text-zinc-600" /> : <ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />}
+                                                            </div>
+                                                        )}
+                                                    />
                                                 </FormItemField>
                                             )}
                                         />

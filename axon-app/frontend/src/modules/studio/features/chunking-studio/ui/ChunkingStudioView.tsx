@@ -54,8 +54,9 @@ export const ChunkingStudioView = ({
     ];
 
     const visibleSections = sections.filter(s => {
-        const method = form.watch("strategy_chunking_method");
-        if (s.id === "separators") return method === "Recursive_Character" || method === "Character";
+        const rawMethod = form.watch("strategy_chunking_method");
+        const method = rawMethod?.toLowerCase().replace(/_/g, "");
+        if (s.id === "separators") return method === "recursivecharacter" || method === "character";
         return true;
     });
 
@@ -77,6 +78,10 @@ export const ChunkingStudioView = ({
         await onSave({ ...data, is_draft: false });
         clearDraft();
     };
+
+    const handleInvalid = useCallback(() => {
+        toast.error("Formularz zawiera błędy. Sprawdź wymagane pola.");
+    }, []);
 
     return (
         <FormProvider {...form}>
@@ -123,7 +128,7 @@ export const ChunkingStudioView = ({
                             <ActionButton 
                                 label={isSaving ? "Zapisywanie..." : "Zapisz Strategię"}
                                 icon={Save}
-                                onClick={form.handleSubmit(handleFinalSave)} 
+                                onClick={form.handleSubmit(handleFinalSave, handleInvalid)} 
                             />
                         </div>
                     }

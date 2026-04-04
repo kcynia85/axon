@@ -1,19 +1,18 @@
+"use client";
+
+import React from "react";
+import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { VectorDatabasesList } from "@/modules/settings/ui/VectorDatabasesList";
-import { PageHeader } from "@/shared/ui/layout/PageHeader";
-import { PageContainer } from "@/shared/ui/layout/PageContainer";
-import { PageContent } from "@/shared/ui/layout/PageContent";
 
 const VectorDBPage = () => {
     return (
-        <PageContainer>
-            <PageHeader
-                title="Vector Databases"
-                description="Configure vector storage backends for semantic search."
-            />
-            <PageContent>
-                <VectorDatabasesList />
-            </PageContent>
-        </PageContainer>
+        <PageLayout
+            title="Vector Databases"
+            description="Configure vector storage backends for semantic search."
+            breadcrumbs={[]}
+        >
+            <VectorDatabasesList />
+        </PageLayout>
     );
 };
 

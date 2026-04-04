@@ -32,7 +32,7 @@ export const KnowledgeStudioSectionNav = ({ activeSection, onSectionClick, data 
             case "METADATA":
                 return data.metadata.length > 0 ? 1 : 0;
             case "STRATEGY":
-                return (data.model && data.chunkType) ? 1 : 0;
+                return data.chunkType ? 1 : 0;
             case "HUBS":
                 return data.hubs.length > 0 ? 1 : 0;
             default:

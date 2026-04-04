@@ -10,7 +10,6 @@ import { EmbeddingModelStudioSchema, type EmbeddingModelStudioValues } from "../
 import { EmbeddingIdentitySection } from "./sections/EmbeddingIdentitySection";
 import { EmbeddingParamsSection } from "./sections/EmbeddingParamsSection";
 import { EmbeddingCostSection } from "./sections/EmbeddingCostSection";
-import { MigrationPlanPoster } from "./components/MigrationPlanPoster";
 import { GenericStudioSectionNav } from "@/modules/studio/ui/components/StudioSectionNav/GenericStudioSectionNav";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { useEmbeddingModelDraft } from "../application/hooks/useEmbeddingModelDraft";
@@ -104,7 +103,6 @@ export const EmbeddingStudioView = ({
                             </form>
                         </div>
                     }
-                    poster={<MigrationPlanPoster />}
                     footer={
                         <div className="flex items-center gap-4">
                             <Button
@@ -116,7 +114,7 @@ export const EmbeddingStudioView = ({
                                 Anuluj
                             </Button>
                             <ActionButton 
-                                label={isSaving ? "Zapisywanie..." : "Zapisz i Przeindeksuj"}
+                                label={isSaving ? "Zapisywanie..." : "Zapisz Ustawienia"}
                                 icon={HardDrive}
                                 onClick={form.handleSubmit(handleFinalSave)} 
                             />

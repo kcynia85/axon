@@ -15,12 +15,13 @@ export default function SettingsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="h-full flex flex-col pt-[60px] relative overflow-hidden">
+    <div className="flex-1 overflow-y-auto pt-[60px]">
       <SettingsNavIsland />
       
-      <div className="flex-1 overflow-auto bg-white dark:bg-[#09090b]">
+      <div className="flex-1 overflow-auto">
         {children}
       </div>
     </div>
   );
 }
+
