@@ -15,7 +15,6 @@ import {
     Link as LinkIcon, 
     Search, 
     Archive,
-    ExternalLink,
     ChevronDown
 } from "lucide-react";
 import { TemplateContext } from "@/modules/spaces/domain/types";
@@ -29,44 +28,43 @@ const DETECTED_WORKSPACE_OUTPUTS = [
     { node: "Copywriter Agent", artifact: "draft_v1.json", type: "json" },
 ];
 
-type SpaceCrewContextTabProps = {
+export type SpaceCrewContextTabProperties = {
     readonly isContextComplete: boolean;
     readonly contextRequirements: readonly TemplateContext[];
-    readonly nodeSearch: string;
-    readonly setNodeSearch: (query: string) => void;
-    readonly handleContextLinkChange: (id: string, link: string) => void;
-    readonly handleLinkContextFromNode: (id: string, nodeLabel: string, artifactLabel: string) => void;
+    readonly nodeSearchQuery: string;
+    readonly onSearchQueryChange: (query: string) => void;
+    readonly onContextLinkChange: (contextId: string, link: string) => void;
+    readonly onLinkContextFromNode: (contextId: string, nodeLabel: string, artifactLabel: string) => void;
 };
 
 export const SpaceCrewContextTab = ({
-    isContextComplete,
     contextRequirements,
-    nodeSearch,
-    setNodeSearch,
-    handleContextLinkChange,
-    handleLinkContextFromNode
-}: SpaceCrewContextTabProps) => {
+    nodeSearchQuery,
+    onSearchQueryChange,
+    onContextLinkChange,
+    onLinkContextFromNode
+}: SpaceCrewContextTabProperties) => {
     return (
         <ScrollShadow className="h-full px-8 pt-10 pb-48">
             <div className="space-y-12">
-                {contextRequirements.map((context) => {
-                    const compatibleOutputs = DETECTED_WORKSPACE_OUTPUTS.filter(out =>
-                        (!context.expectedType ||
-                        context.expectedType === 'any' ||
-                        out.type === context.expectedType) &&
-                        (out.node.toLowerCase().includes(nodeSearch.toLowerCase()) || 
-                         out.artifact.toLowerCase().includes(nodeSearch.toLowerCase()))
+                {contextRequirements.map((contextItem) => {
+                    const compatibleOutputs = DETECTED_WORKSPACE_OUTPUTS.filter(outputItem =>
+                        (!contextItem.expectedType ||
+                        contextItem.expectedType === 'any' ||
+                        outputItem.type === contextItem.expectedType) &&
+                        (outputItem.node.toLowerCase().includes(nodeSearchQuery.toLowerCase()) || 
+                         outputItem.artifact.toLowerCase().includes(nodeSearchQuery.toLowerCase()))
                     );
 
-                    const isMissing = !context.link && !context.sourceNodeLabel;
-                    const formatLabel = context.expectedType ? `[ ${context.expectedType.toUpperCase()} ]` : '[ TEXT ]';
+                    const isMissing = !contextItem.link && !contextItem.sourceNodeLabel;
+                    const formatLabel = contextItem.expectedType ? `[ ${contextItem.expectedType.toUpperCase()} ]` : '[ TEXT ]';
 
                     return (
-                        <div key={context.id} className="space-y-5">
+                        <div key={contextItem.id} className="space-y-5">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <h4 className={cn("text-[13px] font-black tracking-tighter font-mono", isMissing ? "text-red-500" : "text-white")}>
-                                        {context.label} <span className="text-[10px] text-zinc-600 font-mono ml-1">{formatLabel}</span>
+                                        {contextItem.label} <span className="text-[10px] text-zinc-600 font-mono ml-1">{formatLabel}</span>
                                     </h4>
                                 </div>
                                 {isMissing && (
@@ -76,14 +74,14 @@ export const SpaceCrewContextTab = ({
                                 )}
                             </div>
 
-                            {context.sourceNodeLabel ? (
+                            {contextItem.sourceNodeLabel ? (
                                 <div className="p-4 bg-zinc-950/50 border-2 border-white rounded-2xl flex items-center gap-3">
                                     <div className="p-2.5 rounded-xl bg-zinc-900 text-white">
                                         <Network size={16} />
                                     </div>
                                     <div className="flex flex-col flex-1 min-w-0">
-                                        <span className="text-[11px] font-black text-white truncate uppercase tracking-tight">{context.sourceNodeLabel}</span>
-                                        <span className="text-[10px] font-bold text-zinc-500 font-mono truncate">{context.sourceArtifactLabel}</span>
+                                        <span className="text-[11px] font-black text-white truncate uppercase tracking-tight">{contextItem.sourceNodeLabel}</span>
+                                        <span className="text-[10px] font-bold text-zinc-500 font-mono truncate">{contextItem.sourceArtifactLabel}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <CheckCircle2 size={16} className="text-white" />
@@ -91,7 +89,7 @@ export const SpaceCrewContextTab = ({
                                             size="sm"
                                             variant="light"
                                             className="min-w-0 h-8 px-2 text-[10px] font-black text-zinc-500 hover:text-white uppercase tracking-widest"
-                                            onPress={() => handleContextLinkChange(context.id, "")}
+                                            onPress={() => onContextLinkChange(contextItem.id, "")}
                                         >
                                             Clear
                                         </Button>
@@ -103,8 +101,8 @@ export const SpaceCrewContextTab = ({
                                         size="sm"
                                         variant="bordered"
                                         placeholder="Paste link or link from node..."
-                                        value={context.link || ""}
-                                        onValueChange={(value) => handleContextLinkChange(context.id, value)}
+                                        value={contextItem.link || ""}
+                                        onValueChange={(value) => onContextLinkChange(contextItem.id, value)}
                                         startContent={<LinkIcon size={14} className={cn(isMissing ? "text-red-500/40" : "text-white")} />}
                                         endContent={!isMissing && <CheckCircle2 size={16} className="text-white" />}
                                         classNames={{
@@ -125,17 +123,17 @@ export const SpaceCrewContextTab = ({
                                             aria-label="Node Outputs"
                                             placeholder="LINK FROM NODE OUTPUT"
                                             selectedKeys={[]}
-                                            isDisabled={compatibleOutputs.length === 0 && nodeSearch === ""}
-                                            onSelectionChange={(keys) => {
-                                                const key = Array.from(keys)[0];
-                                                if (key !== undefined) {
-                                                    const source = compatibleOutputs[Number(key)];
-                                                    if (source) {
-                                                        handleLinkContextFromNode(context.id, source.node, source.artifact);
+                                            isDisabled={compatibleOutputs.length === 0 && nodeSearchQuery === ""}
+                                            onSelectionChange={(selectionKeys) => {
+                                                const selectedKey = Array.from(selectionKeys)[0];
+                                                if (selectedKey !== undefined) {
+                                                    const sourceItem = compatibleOutputs[Number(selectedKey)];
+                                                    if (sourceItem) {
+                                                        onLinkContextFromNode(contextItem.id, sourceItem.node, sourceItem.artifact);
                                                     }
                                                 }
                                             }}
-                                            onOpenChange={(isOpen) => !isOpen && setNodeSearch("")}
+                                            onOpenChange={(isDropdownOpen) => !isDropdownOpen && onSearchQueryChange("")}
                                             classNames={{
                                                 base: "w-full",
                                                 trigger: cn(
@@ -160,11 +158,11 @@ export const SpaceCrewContextTab = ({
                                                         <Input
                                                             size="sm"
                                                             placeholder="Search node or artifact..."
-                                                            value={nodeSearch}
-                                                            onChange={(e) => setNodeSearch(e.target.value)}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key !== "ArrowDown" && e.key !== "ArrowUp" && e.key !== "Enter" && e.key !== "Escape") {
-                                                                    e.stopPropagation();
+                                                            value={nodeSearchQuery}
+                                                            onChange={(event) => onSearchQueryChange(event.target.value)}
+                                                            onKeyDown={(event) => {
+                                                                if (event.key !== "ArrowDown" && event.key !== "ArrowUp" && event.key !== "Enter" && event.key !== "Escape") {
+                                                                    event.stopPropagation();
                                                                 }
                                                             }}
                                                             startContent={<Search size={14} className="text-zinc-600" />}
@@ -178,25 +176,25 @@ export const SpaceCrewContextTab = ({
                                             }}
                                         >
                                             {compatibleOutputs.length > 0 ? (
-                                                compatibleOutputs.map((source, index) => (
+                                                compatibleOutputs.map((sourceItem, sourceIndex) => (
                                                     <SelectItem 
-                                                        key={index} 
-                                                        textValue={source.node}
+                                                        key={sourceIndex} 
+                                                        textValue={sourceItem.node}
                                                         className="data-[hover=true]:bg-white/[0.05] rounded-xl py-3 px-4 group transition-all"
                                                     >
                                                         <div className="flex flex-col gap-1.5">
                                                             <div className="flex items-center justify-between gap-4">
                                                                 <span className="text-[11px] font-black uppercase tracking-wider text-zinc-400 group-data-[hover=true]:text-zinc-200 transition-colors">
-                                                                    {source.node}
+                                                                    {sourceItem.node}
                                                                 </span>
                                                                 <span className="text-[8px] font-black px-1.5 py-0.5 bg-zinc-900/50 text-zinc-600 rounded border border-zinc-800 uppercase tracking-tighter shrink-0 group-data-[hover=true]:border-zinc-700 transition-colors">
-                                                                    {source.type}
+                                                                    {sourceItem.type}
                                                                 </span>
                                                             </div>
                                                             <div className="flex items-center gap-2">
                                                                 <Archive size={12} className="text-zinc-600 group-data-[hover=true]:text-zinc-400 transition-colors" />
                                                                 <span className="text-[10px] font-bold text-zinc-500 font-mono truncate group-data-[hover=true]:text-zinc-300 transition-colors">
-                                                                    {source.artifact}
+                                                                    {sourceItem.artifact}
                                                                 </span>
                                                             </div>
                                                         </div>

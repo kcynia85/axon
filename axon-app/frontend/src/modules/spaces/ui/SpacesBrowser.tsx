@@ -3,12 +3,12 @@
 import React from "react";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { SortOption } from "@/shared/domain/filters";
+import { useSpacesBrowser } from "../application/hooks/useSpacesBrowser";
+import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
+import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { SpaceList } from "./SpaceList";
 import { RecentlyUsed } from "./RecentlyUsed";
-import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
-import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
-import { useSpacesBrowser } from "../application/hooks/useSpacesBrowser";
-import type { SpacesBrowserProps } from "./types";
+import type { SpacesBrowserProperties } from "./types";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -18,11 +18,11 @@ const SORT_OPTIONS: readonly SortOption[] = [
 ];
 
 const QUICK_FILTERS: readonly QuickFilter[] = [
-  { label: "Status", groupId: "status" },
-  { label: "Typ", groupId: "type" },
+  { label: "By Status", groupId: "status" },
+  { label: "By Type", groupId: "type" },
 ];
 
-export const SpacesBrowser = ({ initialSpaces }: SpacesBrowserProps) => {
+export const SpacesBrowser = ({ initialSpaces = [] }: SpacesBrowserProperties) => {
   const {
     searchQuery,
     setSearchQuery,
@@ -45,10 +45,7 @@ export const SpacesBrowser = ({ initialSpaces }: SpacesBrowserProps) => {
     <BrowserLayout
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
-      searchPlaceholder="Search Spaces..."
-      topContent={
-        <RecentlyUsed spaces={initialSpaces} />
-      }
+      searchPlaceholder="Search spaces..."
       activeFilters={activeFilters.length > 0 && (
         <FilterBar 
           activeFilters={activeFilters}
@@ -56,6 +53,7 @@ export const SpacesBrowser = ({ initialSpaces }: SpacesBrowserProps) => {
           onClearAll={handleClearAll}
         />
       )}
+      topContent={<RecentlyUsed spaces={initialSpaces.slice(0, 3)} />}
       actionBar={
         <ActionBar 
           filterGroups={filterGroups}
@@ -74,7 +72,10 @@ export const SpacesBrowser = ({ initialSpaces }: SpacesBrowserProps) => {
         />
       }
     >
-      <SpaceList spaces={processedSpaces} viewMode={viewMode} />
+      <SpaceList 
+        spaces={processedSpaces}
+        viewMode={viewMode}
+      />
     </BrowserLayout>
   );
 };

@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Resolver } from "react-hook-form";
-import { useMemo, useCallback } from "react";
 import { CrewStudioFormSchema, type CrewStudioFormData } from "../types/crew-schema";
 
 /**
@@ -11,7 +10,7 @@ export const useCrewForm = (
 	initialData?: Partial<CrewStudioFormData>,
 	onSyncDraft?: (data: CrewStudioFormData) => void
 ) => {
-	const effectiveData = useMemo(() => {
+	const getEffectiveData = () => {
 		if (!initialData) return undefined;
 		return {
 			crew_process_type: initialData.crew_process_type || "Hierarchical",
@@ -26,7 +25,9 @@ export const useCrewForm = (
 			tasks: initialData.tasks || [{ description: "", specialist_id: "" }],
 			cost: initialData.cost || 0,
 		} as CrewStudioFormData;
-	}, [initialData]);
+	};
+
+	const effectiveData = getEffectiveData();
 
 	const form = useForm<CrewStudioFormData>({
 		resolver: zodResolver(CrewStudioFormSchema) as unknown as Resolver<CrewStudioFormData>,
@@ -57,16 +58,16 @@ export const useCrewForm = (
 	/**
 	 * Manual trigger for UI persistence
 	 */
-	const syncDraft = useCallback(() => {
+	const syncDraft = () => {
 		if (onSyncDraft) {
 			onSyncDraft(getValues());
 		}
-	}, [getValues, onSyncDraft]);
+	};
 
 	/**
 	 * DERIVED STATE: Dynamic Cost Calculation
 	 */
-	const estimatedCost = useMemo(() => {
+	const calculateEstimatedCost = () => {
 		const BASE_AGENT_RATE = 45.0; // Sample fixed rate
 		
 		if (currentType === "Sequential") {
@@ -74,7 +75,9 @@ export const useCrewForm = (
 		}
 		
 		return members.length * BASE_AGENT_RATE;
-	}, [currentType, members.length, tasks.length]);
+	};
+
+	const estimatedCost = calculateEstimatedCost();
 
 	/**
 	 * Action to change collaboration type

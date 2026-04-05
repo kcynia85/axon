@@ -1,11 +1,12 @@
 from uuid import UUID
 from typing import List, Optional
 from fastapi import Depends, HTTPException, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.knowledge.domain.models import Asset
-from app.modules.knowledge.infrastructure.repo import AssetRepository
-from app.modules.knowledge.application.schemas import AssetUpdate
-from app.modules.knowledge.dependencies import get_asset_repo
+from app.modules.knowledge.infrastructure import repo as asset_repo
+from app.modules.knowledge.application.schemas import AssetUpdate, SuccessResponse
+from app.modules.knowledge.dependencies import get_db
 
 # Function-First Service Layer
 
@@ -13,26 +14,25 @@ async def list_assets_use_case(
     limit: int = 100, 
     offset: int = 0,
     type: Optional[str] = Query(None),
-    repo: AssetRepository = Depends(get_asset_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> List[Asset]:
-    return await repo.list_assets(limit=limit, offset=offset, asset_type=type)
+    return await asset_repo.list_assets(session, limit=limit, offset=offset, asset_type=type)
 
 async def create_asset_use_case(
     asset: Asset,
-    repo: AssetRepository = Depends(get_asset_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> Asset:
-    # check if slug exists? unique constraint will handle it but better to check
-    existing = await repo.get_by_slug(asset.slug)
+    existing = await asset_repo.get_asset_by_slug(session, asset.slug)
     if existing:
         raise HTTPException(status_code=400, detail=f"Asset with slug '{asset.slug}' already exists")
     
-    return await repo.create(asset)
+    return await asset_repo.create_asset(session, asset)
 
 async def get_asset_use_case(
     slug: str,
-    repo: AssetRepository = Depends(get_asset_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> Asset:
-    asset = await repo.get_by_slug(slug)
+    asset = await asset_repo.get_asset_by_slug(session, slug)
     if not asset:
         raise HTTPException(status_code=404, detail=f"Asset with slug '{slug}' not found")
     return asset
@@ -40,18 +40,18 @@ async def get_asset_use_case(
 async def update_asset_use_case(
     asset_id: UUID,
     update_data: AssetUpdate,
-    repo: AssetRepository = Depends(get_asset_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> Asset:
-    updated_asset = await repo.update(asset_id, update_data.model_dump(exclude_unset=True))
+    updated_asset = await asset_repo.update_asset(session, asset_id, update_data.model_dump(exclude_unset=True))
     if not updated_asset:
         raise HTTPException(status_code=404, detail=f"Asset with ID '{asset_id}' not found")
     return updated_asset
 
 async def delete_asset_use_case(
     asset_id: UUID,
-    repo: AssetRepository = Depends(get_asset_repo)
-) -> dict:
-    success = await repo.delete(asset_id)
+    session: AsyncSession = Depends(get_db)
+) -> SuccessResponse:
+    success = await asset_repo.delete_asset(session, asset_id)
     if not success:
         raise HTTPException(status_code=404, detail=f"Asset with ID '{asset_id}' not found")
-    return {"message": "Asset deleted successfully"}
+    return SuccessResponse(message="Asset deleted successfully", id=asset_id)

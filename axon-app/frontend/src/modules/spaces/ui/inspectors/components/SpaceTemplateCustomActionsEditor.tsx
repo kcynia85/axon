@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/ui/inspectors/components/SpaceTemplateCustomActionsEditor.tsx
 
-import React, { useMemo } from "react";
+import React from "react";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCreateBlockNote } from "@blocknote/react";
 import "@blocknote/mantine/style.css";
@@ -15,7 +15,8 @@ export const SpaceTemplateCustomActionsEditor = ({
     initialContent, 
     onChange 
 }: SpaceTemplateCustomActionsEditorProps) => {
-    const initialBlocks = useMemo(() => {
+    // Derived state - React Compiler handles optimization
+    const getInitialBlocks = () => {
         if (!initialContent) return undefined;
         try {
             return JSON.parse(initialContent);
@@ -23,10 +24,10 @@ export const SpaceTemplateCustomActionsEditor = ({
             console.error("Failed to parse BlockNote content", e);
             return undefined;
         }
-    }, [initialContent]);
+    };
 
     const editor = useCreateBlockNote({
-        initialContent: initialBlocks,
+        initialContent: getInitialBlocks(),
     });
 
     const handleChange = () => {

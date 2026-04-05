@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/ui/pure/SpaceAutomationNodeInspectorView.tsx
 
-import React, { useState } from "react";
+import React from "react";
 import {
     Button,
     Tabs,
@@ -36,13 +36,17 @@ import { SpaceInspectorFooter } from "../inspectors/components/SpaceInspectorFoo
 import { SpaceInspectorPanel } from "../inspectors/components/SpaceInspectorPanel";
 import { SpaceCrewContextTab } from "../inspectors/crews/shared/SpaceCrewContextTab";
 
-type SpaceAutomationNodeInspectorViewProps = {
-    readonly data: SpaceAutomationDomainData;
+export type SpaceAutomationNodeInspectorViewProps = {
+    readonly automationData: SpaceAutomationDomainData;
     readonly isTriggering: boolean;
     readonly validationError: string | null;
     readonly hasTimeoutError: boolean;
     readonly isContextDone: boolean;
     readonly isArtefactsDone: boolean;
+    readonly selectedTabIdentifier: string;
+    readonly componentSearchQuery: string;
+    readonly onTabChange: (tabIdentifier: string) => void;
+    readonly onSearchQueryChange: (query: string) => void;
     readonly onContextLinkChange: (contextId: string, link: string) => void;
     readonly onLinkContextFromNode: (contextId: string, nodeLabel: string, artifactLabel: string) => void;
     readonly onArtefactLinkChange: (artefactId: string, link: string) => void;
@@ -53,18 +57,22 @@ type SpaceAutomationNodeInspectorViewProps = {
     readonly onTriggerWorkflow: () => void;
 };
 
-const ARTEFACT_STATUS_CONFIG = {
+const ARTEFACT_STATUS_VISUAL_CONFIG = {
     in_review: { label: "In Review", color: "text-blue-400", dot: "bg-blue-400", icon: Clock },
     approved: { label: "Approved", color: "text-green-500", dot: "bg-green-500", icon: CheckCircle },
 } as const;
 
 export const SpaceAutomationNodeInspectorView = ({
-    data,
+    automationData,
     isTriggering,
     validationError,
     hasTimeoutError,
     isContextDone,
     isArtefactsDone,
+    selectedTabIdentifier,
+    componentSearchQuery,
+    onTabChange,
+    onSearchQueryChange,
     onContextLinkChange,
     onLinkContextFromNode,
     onArtefactLinkChange,
@@ -74,10 +82,7 @@ export const SpaceAutomationNodeInspectorView = ({
     onAddArtefact,
     onTriggerWorkflow,
 }: SpaceAutomationNodeInspectorViewProps) => {
-    const [selectedTab, setSelectedTab] = useState<string>("workflow");
-    const [nodeSearch, setNodeSearch] = useState("");
-
-    const artefacts = data.artefacts || [];
+    const artefacts = automationData.artefacts || [];
 
     return (
         <SpaceInspectorPanel>
@@ -85,8 +90,8 @@ export const SpaceAutomationNodeInspectorView = ({
                 aria-label="Automation Inspector" 
                 size="sm" 
                 variant="underlined"
-                selectedKey={selectedTab}
-                onSelectionChange={(key) => setSelectedTab(key as string)}
+                selectedKey={selectedTabIdentifier}
+                onSelectionChange={(key) => onTabChange(key as string)}
                 classNames={{
                     base: "w-full border-b border-zinc-800",
                     tabList: "px-6 w-full gap-6",
@@ -109,13 +114,13 @@ export const SpaceAutomationNodeInspectorView = ({
                                             <Webhook size={20} className="text-orange-500" />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-black text-white">{data.label}</p>
+                                            <p className="text-xs font-black text-white">{automationData.label}</p>
                                             <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight">Active Trigger</p>
                                         </div>
                                     </div>
                                     <div className="pt-2 border-t border-zinc-900 flex justify-between items-center">
                                         <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Status:</span>
-                                        <span className="text-[10px] font-mono text-zinc-400 uppercase">{data.state}</span>
+                                        <span className="text-[10px] font-mono text-zinc-400 uppercase">{automationData.state}</span>
                                     </div>
                                 </div>
                             </div>
@@ -175,9 +180,9 @@ export const SpaceAutomationNodeInspectorView = ({
                     <div className="h-[calc(100vh-192px)] pb-40">
                         <SpaceCrewContextTab 
                             isContextComplete={isContextDone}
-                            contextRequirements={data.contexts || []}
-                            nodeSearch={nodeSearch}
-                            setNodeSearch={setNodeSearch}
+                            contextRequirements={automationData.contexts || []}
+                            nodeSearch={componentSearchQuery}
+                            setNodeSearch={onSearchQueryChange}
                             handleContextLinkChange={onContextLinkChange}
                             handleLinkContextFromNode={onLinkContextFromNode}
                         />
@@ -210,27 +215,27 @@ export const SpaceAutomationNodeInspectorView = ({
                             </div>
 
                             <div className="space-y-4">
-                                {artefacts.map((art) => {
-                                    const isFilled = (art.link || "").trim().length > 0;
+                                {artefacts.map((artefactItem) => {
+                                    const isFilled = (artefactItem.link || "").trim().length > 0;
                                     return (
-                                        <div key={art.id} className="p-5 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-5 group relative transition-all hover:border-zinc-600">
+                                        <div key={artefactItem.id} className="p-5 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-5 group relative transition-all hover:border-zinc-600">
                                             <button 
-                                                onClick={() => onDeleteArtefact(art.id)}
+                                                onClick={() => onDeleteArtefact(artefactItem.id)}
                                                 className="absolute top-4 right-4 p-1.5 text-zinc-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                                             >
                                                 <Trash2 size={12} />
                                             </button>
 
                                             <div className="space-y-3">
-                                                <h4 className="text-xs font-black text-white pr-6 tracking-tight">{art.label}</h4>
+                                                <h4 className="text-xs font-black text-white pr-6 tracking-tight">{artefactItem.label}</h4>
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-full flex gap-2 items-center">
                                                         <Input 
                                                             size="sm" 
                                                             variant="bordered"
                                                             placeholder="Paste Result URL"
-                                                            value={art.link || ""}
-                                                            onValueChange={(val) => onArtefactLinkChange(art.id, val)}
+                                                            value={artefactItem.link || ""}
+                                                            onValueChange={(value) => onArtefactLinkChange(artefactItem.id, value)}
                                                             startContent={<LinkIcon size={12} className={cn(isFilled ? "text-white" : "text-zinc-500")} />}
                                                             endContent={isFilled && <CheckCircle2 size={14} className="text-white" />}
                                                             classNames={{ 
@@ -244,10 +249,10 @@ export const SpaceAutomationNodeInspectorView = ({
                                                         <Button 
                                                             isIconOnly 
                                                             as="a" 
-                                                            href={art.link || '#'} 
+                                                            href={artefactItem.link || '#'} 
                                                             target="_blank" 
                                                             size="sm" 
-                                                            isDisabled={!art.link}
+                                                            isDisabled={!artefactItem.link}
                                                             className="w-11 h-11 min-w-11 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white shrink-0 disabled:opacity-30 rounded-xl"
                                                         >
                                                             <ExternalLink size={14} />
@@ -267,14 +272,14 @@ export const SpaceAutomationNodeInspectorView = ({
                                                                 endContent={<ChevronDown size={12} />}
                                                             >
                                                                 <div className="flex items-center gap-1.5">
-                                                                    <div className={cn("w-1.5 h-1.5 rounded-full", ARTEFACT_STATUS_CONFIG[art.status]?.dot || "bg-blue-400")} />
-                                                                    {ARTEFACT_STATUS_CONFIG[art.status]?.label || "In Review"}
+                                                                    <div className={cn("w-1.5 h-1.5 rounded-full", ARTEFACT_STATUS_VISUAL_CONFIG[artefactItem.status]?.dot || "bg-blue-400")} />
+                                                                    {ARTEFACT_STATUS_VISUAL_CONFIG[artefactItem.status]?.label || "In Review"}
                                                                 </div>
                                                             </Button>
                                                         </DropdownTrigger>
                                                         <DropdownMenu 
                                                             aria-label="Artefact Status" 
-                                                            onAction={(key) => onArtefactStatusChange(art.id, key as TemplateArtefact['status'])}
+                                                            onAction={(key) => onArtefactStatusChange(artefactItem.id, key as TemplateArtefact['status'])}
                                                             classNames={{
                                                                 base: "bg-zinc-950 border border-zinc-800 p-1"
                                                             }}
@@ -282,17 +287,17 @@ export const SpaceAutomationNodeInspectorView = ({
                                                             {(['in_review', 'approved'] as const).map((key) => (
                                                                 <DropdownItem 
                                                                     key={key} 
-                                                                    startContent={React.createElement(ARTEFACT_STATUS_CONFIG[key].icon, { size: 12, className: ARTEFACT_STATUS_CONFIG[key].color })}
+                                                                    startContent={React.createElement(ARTEFACT_STATUS_VISUAL_CONFIG[key].icon, { size: 12, className: ARTEFACT_STATUS_VISUAL_CONFIG[key].color })}
                                                                     className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white"
                                                                 >
-                                                                    {ARTEFACT_STATUS_CONFIG[key].label}
+                                                                    {ARTEFACT_STATUS_VISUAL_CONFIG[key].label}
                                                                 </DropdownItem>
                                                             ))}
                                                         </DropdownMenu>
                                                     </Dropdown>
 
                                                     <Tooltip 
-                                                        content={art.isOutput ? "Unmark as Workflow Output" : "Mark as Workflow Output"}
+                                                        content={artefactItem.isOutput ? "Unmark as Workflow Output" : "Mark as Workflow Output"}
                                                         placement="top"
                                                         classNames={{
                                                             content: "py-1 px-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-950 border border-zinc-800 shadow-md"
@@ -306,9 +311,9 @@ export const SpaceAutomationNodeInspectorView = ({
                                                                 variant="bordered" 
                                                                 className={cn(
                                                                     "h-10 w-10 border-zinc-800 transition-all rounded-lg",
-                                                                    art.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
+                                                                    artefactItem.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
                                                                 )}
-                                                                onPress={() => onArtefactOutputToggle(art.id)}
+                                                                onPress={() => onArtefactOutputToggle(artefactItem.id)}
                                                             >
                                                                 <ArrowUpRight size={14} />
                                                             </Button>
@@ -316,7 +321,7 @@ export const SpaceAutomationNodeInspectorView = ({
                                                     </Tooltip>
                                                 </div>
 
-                                                {art.isOutput && (
+                                                {artefactItem.isOutput && (
                                                     <div className="shrink-0 flex items-center">
                                                         <span className="text-[9px] font-black uppercase tracking-widest text-orange-500 px-2 py-1 rounded bg-orange-500/10 border border-orange-500/20">
                                                             Active Output
@@ -354,7 +359,7 @@ export const SpaceAutomationNodeInspectorView = ({
                         className="w-full font-black uppercase tracking-widest text-[10px] bg-zinc-200 text-black rounded-md hover:bg-white transition-all h-10 shadow-lg"
                         startContent={<ExternalLink size={14} />}
                     >
-                        Open {data.label}
+                        Open {automationData.label}
                     </Button>
                 </div>
             </SpaceInspectorFooter>

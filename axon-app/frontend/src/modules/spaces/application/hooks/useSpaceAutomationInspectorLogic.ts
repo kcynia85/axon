@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceAutomationInspectorLogic.ts
 
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { SpaceAutomationDomainData, TemplateAction, TemplateArtefact } from "../../domain/types";
 
 export const useSpaceAutomationInspectorLogic = (
@@ -11,7 +11,7 @@ export const useSpaceAutomationInspectorLogic = (
     const [validationError, setValidationError] = useState<string | null>(null);
     const [hasTimeoutError, setHasTimeoutError] = useState(false);
 
-    const handleActionToggle = useCallback((actionId: string) => {
+    const handleActionToggle = (actionId: string) => {
         const updatedActions = (data.actions || []).map((action) =>
             action.id === actionId ? { ...action, isCompleted: !action.isCompleted } : action
         );
@@ -23,21 +23,21 @@ export const useSpaceAutomationInspectorLogic = (
             actions: updatedActions,
             status: newStatus
         });
-    }, [data.actions, onPropertyChange]);
+    };
 
-    const handleCustomActionsChange = useCallback((content: string) => {
+    const handleCustomActionsChange = (content: string) => {
         onPropertyChange('customActionsContent', content);
-    }, [onPropertyChange]);
+    };
 
-    const handleContextLinkChange = useCallback((contextId: string, link: string) => {
+    const handleContextLinkChange = (contextId: string, link: string) => {
         setValidationError(null); // Clear error on change
         const updatedContexts = (data.contexts || []).map((context) =>
             context.id === contextId ? { ...context, link, sourceNodeLabel: undefined, sourceArtifactLabel: undefined } : context
         );
         onPropertyChange('contexts', updatedContexts);
-    }, [data.contexts, onPropertyChange]);
+    };
 
-    const handleLinkContextFromNode = useCallback((contextId: string, nodeLabel: string, artifactLabel: string) => {
+    const handleLinkContextFromNode = (contextId: string, nodeLabel: string, artifactLabel: string) => {
         setValidationError(null);
         const updatedContexts = (data.contexts || []).map((context) =>
             context.id === contextId
@@ -45,37 +45,37 @@ export const useSpaceAutomationInspectorLogic = (
                 : context
         );
         onPropertyChange('contexts', updatedContexts);
-    }, [data.contexts, onPropertyChange]);
+    };
 
-    const handleArtefactLinkChange = useCallback((artefactId: string, link: string) => {
+    const handleArtefactLinkChange = (artefactId: string, link: string) => {
         const updatedArtefacts = (data.artefacts || []).map((art) =>
             art.id === artefactId ? { ...art, link } : art
         );
         onPropertyChange('artefacts', updatedArtefacts);
-    }, [data.artefacts, onPropertyChange]);
+    };
 
-    const handleArtefactStatusChange = useCallback((artefactId: string, status: TemplateArtefact['status']) => {
+    const handleArtefactStatusChange = (artefactId: string, status: TemplateArtefact['status']) => {
         const updatedArtefacts = (data.artefacts || []).map((art) =>
             art.id === artefactId
                 ? { ...art, status, isOutput: status !== 'approved' ? false : art.isOutput }
                 : art
         );
         onPropertyChange('artefacts', updatedArtefacts);
-    }, [data.artefacts, onPropertyChange]);
+    };
 
-    const handleArtefactOutputToggle = useCallback((artefactId: string) => {
+    const handleArtefactOutputToggle = (artefactId: string) => {
         const updatedArtefacts = (data.artefacts || []).map((art) =>
             art.id === artefactId ? { ...art, isOutput: !art.isOutput } : art
         );
         onPropertyChange('artefacts', updatedArtefacts);
-    }, [data.artefacts, onPropertyChange]);
+    };
 
-    const handleDeleteArtefact = useCallback((artefactId: string) => {
+    const handleDeleteArtefact = (artefactId: string) => {
         const updatedArtefacts = (data.artefacts || []).filter((art) => art.id !== artefactId);
         onPropertyChange('artefacts', updatedArtefacts);
-    }, [data.artefacts, onPropertyChange]);
+    };
 
-    const handleAddArtefact = useCallback(() => {
+    const handleAddArtefact = () => {
         const newArtefact: TemplateArtefact = {
             id: crypto.randomUUID(),
             label: "Manual Result.json",
@@ -86,17 +86,15 @@ export const useSpaceAutomationInspectorLogic = (
         const updatedArtefacts = [...(data.artefacts || []), newArtefact];
         onPropertyChange('artefacts', updatedArtefacts);
         setHasTimeoutError(false); // Clear error if user takes manual action
-    }, [data.artefacts, onPropertyChange]);
+    };
 
     // Logic for tab completion indicators
-    const isContextDone = useMemo(() => {
-        if (!data.contexts || data.contexts.length === 0) return true; // No context needed
-        return data.contexts.every(ctx =>
-            (!!ctx.link && ctx.link.trim() !== "") || (!!ctx.sourceNodeLabel)
-        );
-    }, [data.contexts]);
+    // Derived state - React Compiler handles optimization
+    const isContextDone = (!data.contexts || data.contexts.length === 0) 
+        ? true 
+        : data.contexts.every(ctx => (!!ctx.link && ctx.link.trim() !== "") || (!!ctx.sourceNodeLabel));
 
-    const handleTriggerWorkflow = useCallback(() => {
+    const handleTriggerWorkflow = () => {
         if (!isContextDone) {
             setValidationError("Proszę uzupełnić wszystkie linki w zakładce Context przed uruchomieniem.");
             return;
@@ -108,7 +106,6 @@ export const useSpaceAutomationInspectorLogic = (
 
         // Simulating n8n response delay
         setTimeout(() => {
-            // 50% chance to simulate timeout
             const isTimeout = Math.random() > 0.5;
 
             if (isTimeout) {
@@ -134,27 +131,22 @@ export const useSpaceAutomationInspectorLogic = (
 
             setIsTriggering(false);
         }, 2000);
-    }, [data.artefacts, isContextDone, onPropertyChange]);
+    };
 
-    const groupedActions = useMemo(() => {
-        return (data.actions || []).reduce<Record<string, TemplateAction[]>>((accumulator, action) => {
-            const sectionName = action.section || 'General';
-            if (!accumulator[sectionName]) {
-                accumulator[sectionName] = [];
-            }
-            accumulator[sectionName].push(action);
-            return accumulator;
-        }, {});
-    }, [data.actions]);
+    const groupedActions = (data.actions || []).reduce<Record<string, TemplateAction[]>>((accumulator, action) => {
+        const sectionName = action.section || 'General';
+        if (!accumulator[sectionName]) {
+            accumulator[sectionName] = [];
+        }
+        accumulator[sectionName].push(action);
+        return accumulator;
+    }, {});
 
     const isAllDone = data.state === 'done';
 
-    const isArtefactsDone = useMemo(() => {
-        if (!data.artefacts || data.artefacts.length === 0) return false;
-        return data.artefacts.every(art =>
-            !!art.link && art.link.trim() !== "" && art.status === 'approved'
-        );
-    }, [data.artefacts]);
+    const isArtefactsDone = (!data.artefacts || data.artefacts.length === 0) 
+        ? false 
+        : data.artefacts.every(art => !!art.link && art.link.trim() !== "" && art.status === 'approved');
 
     return {
         handleActionToggle,

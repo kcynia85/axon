@@ -1,25 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useSpaceServiceInspectorLogic } from "../../application/hooks/useSpaceServiceInspectorLogic";
 import { SpaceServiceNodeInspectorView } from "../pure/SpaceServiceNodeInspectorView";
 import type { SpaceServiceInspectorProperties } from "../types";
 
 /**
- * SpaceServiceNodeInspector - Pure view component for service node details.
- * Delegates logic to useSpaceServiceInspectorLogic hook.
+ * SpaceServiceNodeInspector - Container component for service node details.
+ * Manages state and logic, delegating presentation to the Pure View.
  */
 export const SpaceServiceNodeInspector = ({
-    data,
+    serviceData,
+    nodeId,
+    onArtifactStatusChange,
     onPropertyChange
 }: SpaceServiceInspectorProperties) => {
-    const logic = useSpaceServiceInspectorLogic(data, onPropertyChange as any);
+    const [selectedTabIdentifier, setSelectedTabIdentifier] = useState<string>("context");
+    const [componentSearchQuery, setComponentSearchQuery] = useState("");
+    const [capabilitySearchQuery, setCapabilitySearchQuery] = useState("");
+
+    const logic = useSpaceServiceInspectorLogic(serviceData, onPropertyChange as any);
 
     return (
         <SpaceServiceNodeInspectorView
-            data={data}
+            serviceData={serviceData}
             isContextDone={logic.isContextDone}
             isArtefactsDone={logic.isArtefactsDone}
+            selectedTabIdentifier={selectedTabIdentifier}
+            componentSearchQuery={componentSearchQuery}
+            capabilitySearchQuery={capabilitySearchQuery}
+            onTabChange={setSelectedTabIdentifier}
+            onSearchQueryChange={setComponentSearchQuery}
+            onCapabilitySearchChange={setCapabilitySearchQuery}
             onContextLinkChange={logic.handleContextLinkChange}
             onLinkContextFromNode={logic.handleLinkContextFromNode}
             onArtefactLinkChange={logic.handleArtefactLinkChange}

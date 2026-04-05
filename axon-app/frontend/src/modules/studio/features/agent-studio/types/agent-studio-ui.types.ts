@@ -21,4 +21,5 @@ export type AgentStudioViewProps = {
     readonly renderIcon: (iconName: string | React.ElementType, size?: number, className?: string) => React.ReactNode;
     readonly sections: readonly SectionConfig[];
     readonly setCanvasContainerReference: (scrollContainerNode: HTMLDivElement | null) => void;
+    readonly isEditing?: boolean;
 };

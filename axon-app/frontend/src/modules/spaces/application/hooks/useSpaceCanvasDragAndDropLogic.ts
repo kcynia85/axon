@@ -1,6 +1,5 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceCanvasDragAndDropLogic.ts
 
-import { useCallback } from 'react';
 import type { Node } from '@xyflow/react';
 import { useReactFlow } from '@xyflow/react';
 import { toast } from "sonner";
@@ -11,139 +10,100 @@ export const useSpaceCanvasDragAndDropLogic = (
 ) => {
   const { screenToFlowPosition, getNodes } = useReactFlow();
 
-  const handleDragOverEvent = useCallback((event: React.DragEvent) => {
+  const handleDragOverEvent = (event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
-  }, []);
-
-  const handleDropEvent = useCallback(
-    (event: React.DragEvent) => {
-      event.preventDefault();
-
-      const dragAndDropTransferType = event.dataTransfer.getData('application/reactflow');
-      const serializedTransferData = event.dataTransfer.getData('application/axon-data');
-
-      if (!dragAndDropTransferType || !serializedTransferData) {
-        return;
-      }
-
-      const deserializedTransferData = JSON.parse(serializedTransferData) as Record<string, unknown>;
-      const assignedZoneColor = deserializedTransferData.zoneColor as string | undefined;
-      const componentLabel = (deserializedTransferData.label as string) || "Component";
-
-      // If it was dragged as 'entity' from sidebar level 2, use its real type (agent, template, etc.)
-      const nodeTypeForNewNode = dragAndDropTransferType === 'entity'
-        ? (deserializedTransferData.type as string)
-        : dragAndDropTransferType;
-
-      // screenToFlowPosition converts window coordinates to canvas coordinates correctly
-      const flowPos = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-
-      const allNodes = getNodes();
-      
-      // Find a Zone node that contains the drop position
-      const parentZone = [...allNodes].reverse().find(node => {
-        if (node.type !== 'zone') return false;
-        
-        // Calculate absolute position of the zone
-        let absX = node.position.x;
-        let absY = node.position.y;
-        let parentId = node.parentId;
-        while (parentId) {
-          const parent = allNodes.find(n => n.id === parentId);
-          if (parent) {
-            absX += parent.position.x;
-            absY += parent.position.y;
-            parentId = parent.parentId;
-          } else break;
-        }
-
-        const width = node.measured?.width ?? (typeof node.style?.width === 'number' ? node.style.width : 500);
-        const height = node.measured?.height ?? (typeof node.style?.height === 'number' ? node.style.height : 400);
-
-        const isInside = (
-          flowPos.x >= absX &&
-          flowPos.x <= absX + width &&
-          flowPos.y >= absY &&
-          flowPos.y <= absY + height
-        );
-
-        if (!isInside) return false;
-
-        // WALIDACJA WORKSPACE: Jeśli jesteśmy w środku strefy, sprawdzamy czy kolor się zgadza
-        if (assignedZoneColor && node.data.color !== assignedZoneColor && node.data.zoneColor !== assignedZoneColor) {
-          const targetZoneName = (node.data.label as string) || "this zone";
-          toast.error("Ograniczenie Workspace", {
-            description: `${componentLabel} może zostać umieszczony tylko w sekcji Design / ${assignedZoneColor.toUpperCase()}.`,
-            duration: 4000,
-          });
-          return false;
-        }
-
-        return true;
-      });
-
-      // Jeśli komponent ma przypisany kolor, a nie znaleźliśmy pasującej strefy pod kursorem - przerywamy.
-      if (assignedZoneColor && !parentZone) {
-        // Jeśli nie znaleźliśmy parentZone (bo albo jesteśmy poza Zone, albo kolor się nie zgadzał - co obsłużył toast wyżej)
-        return;
-      }
-
-      const isTemplate = nodeTypeForNewNode === 'template';
-
-      // Map template_inputs/outputs (from Workspace config) → contexts/artefacts (canvas node)
-      const templateCanvasData = isTemplate
-        ? mapTemplateWorkspaceConfigToNodeData(deserializedTransferData)
-        : {};
-
-      // If dropped inside a zone, calculate relative position
-      let finalPosition = flowPos;
-      if (parentZone && nodeTypeForNewNode !== 'zone') {
-        let absX = parentZone.position.x;
-        let absY = parentZone.position.y;
-        let parentId = parentZone.parentId;
-        while (parentId) {
-          const parent = allNodes.find(n => n.id === parentId);
-          if (parent) {
-            absX += parent.position.x;
-            absY += parent.position.y;
-            parentId = parent.parentId;
-          } else break;
-        }
-        
-        finalPosition = {
-          x: flowPos.x - absX,
-          y: flowPos.y - absY
-        };
-      }
-
-      const newlyCreatedNode: Node = {
-        id: `drag_and_drop_node_${Math.random().toString(36).substring(2, 11)}`,
-        type: nodeTypeForNewNode,
-        position: finalPosition,
-        parentId: (parentZone && nodeTypeForNewNode !== 'zone') ? parentZone.id : undefined,
-        extent: (parentZone && nodeTypeForNewNode !== 'zone') ? 'parent' : undefined,
-        data: {
-          ...deserializedTransferData,
-          ...templateCanvasData,
-          ...(isTemplate && { actions: [], status: 'working' }),
-          state: 'missing_context',
-          // Inherit zone color if dropped into one, or keep assigned
-          zoneColor: assignedZoneColor || (parentZone ? (parentZone.data.color || parentZone.data.zoneColor) : 'purple'),
-        },
-        style: nodeTypeForNewNode === 'zone' ? { width: 500, height: 400 } : undefined,
-      };
-
-      updateCanvasNodes((previousCanvasNodes) => previousCanvasNodes.concat(newlyCreatedNode));
-    },
-    [updateCanvasNodes, screenToFlowPosition, getNodes],
-  );
-
-  return {
-    handleDragOverEvent,
-    handleDropEvent,
   };
+
+  const handleDropEvent = (event: React.DragEvent) => {
+    event.preventDefault();
+
+    const dragAndDropTransferType = event.dataTransfer.getData('application/reactflow');
+    const serializedTransferData = event.dataTransfer.getData('application/axon-data');
+
+    if (!dragAndDropTransferType || !serializedTransferData) return;
+
+    const deserializedTransferData = JSON.parse(serializedTransferData) as Record<string, unknown>;
+    const assignedZoneColor = deserializedTransferData.zoneColor as string | undefined;
+    const componentLabel = (deserializedTransferData.label as string) || "Component";
+
+    const nodeTypeForNewNode = dragAndDropTransferType === 'entity'
+      ? (deserializedTransferData.type as string)
+      : dragAndDropTransferType;
+
+    const flowPos = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+    const allNodes = getNodes();
+    
+    const parentZone = [...allNodes].reverse().find(node => {
+      if (node.type !== 'zone') return false;
+      
+      let absX = node.position.x;
+      let absY = node.position.y;
+      let parentId = node.parentId;
+      while (parentId) {
+        const parent = allNodes.find(n => n.id === parentId);
+        if (parent) {
+          absX += parent.position.x;
+          absY += parent.position.y;
+          parentId = parent.parentId;
+        } else break;
+      }
+
+      const width = node.measured?.width ?? (typeof node.style?.width === 'number' ? node.style.width : 500);
+      const height = node.measured?.height ?? (typeof node.style?.height === 'number' ? node.style.height : 400);
+
+      const isInside = (flowPos.x >= absX && flowPos.x <= absX + width && flowPos.y >= absY && flowPos.y <= absY + height);
+      if (!isInside) return false;
+
+      if (assignedZoneColor && node.data.color !== assignedZoneColor && node.data.zoneColor !== assignedZoneColor) {
+        toast.error("Ograniczenie Workspace", {
+          description: `${componentLabel} może zostać umieszczony tylko w sekcji Design / ${assignedZoneColor.toUpperCase()}.`,
+          duration: 4000,
+        });
+        return false;
+      }
+      return true;
+    });
+
+    if (assignedZoneColor && !parentZone) return;
+
+    const isTemplate = nodeTypeForNewNode === 'template';
+    const templateCanvasData = isTemplate ? mapTemplateWorkspaceConfigToNodeData(deserializedTransferData) : {};
+
+    let finalPosition = flowPos;
+    if (parentZone && nodeTypeForNewNode !== 'zone') {
+      let absX = parentZone.position.x;
+      let absY = parentZone.position.y;
+      let parentId = parentZone.parentId;
+      while (parentId) {
+        const parent = allNodes.find(n => n.id === parentId);
+        if (parent) {
+          absX += parent.position.x;
+          absY += parent.position.y;
+          parentId = parent.parentId;
+        } else break;
+      }
+      finalPosition = { x: flowPos.x - absX, y: flowPos.y - absY };
+    }
+
+    const newlyCreatedNode: Node = {
+      id: `drag_and_drop_node_${Math.random().toString(36).substring(2, 11)}`,
+      type: nodeTypeForNewNode,
+      position: finalPosition,
+      parentId: (parentZone && nodeTypeForNewNode !== 'zone') ? parentZone.id : undefined,
+      extent: (parentZone && nodeTypeForNewNode !== 'zone') ? 'parent' : undefined,
+      data: {
+        ...deserializedTransferData,
+        ...templateCanvasData,
+        ...(isTemplate && { actions: [], status: 'working' }),
+        state: 'missing_context',
+        zoneColor: assignedZoneColor || (parentZone ? (parentZone.data.color || parentZone.data.zoneColor) : 'purple'),
+      },
+      style: nodeTypeForNewNode === 'zone' ? { width: 500, height: 400 } : undefined,
+    };
+
+    updateCanvasNodes((previousCanvasNodes) => previousCanvasNodes.concat(newlyCreatedNode));
+  };
+
+  return { handleDragOverEvent, handleDropEvent };
 };

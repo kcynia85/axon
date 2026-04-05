@@ -12,50 +12,45 @@ import {
 } from "@heroui/react";
 import { 
     FileText, 
-    CheckCircle2, 
     ChevronRight, 
     Clock, 
     ChevronUp, 
     ChevronDown, 
-    Link as LinkIcon,
     ExternalLink,
     CheckCircle,
     ArrowUpRight,
     History,
     RotateCcw,
-    X,
-    Edit3
 } from "lucide-react";
 import { TemplateArtefact } from "@/modules/spaces/domain/types";
 import { cn } from "@/shared/lib/utils";
 
-const ARTEFACT_STATUS_CONFIG = {
+const ARTEFACT_STATUS_VISUAL_CONFIG = {
     in_review: { label: "In Review", color: "text-blue-400", dot: "bg-blue-400", icon: Clock },
     approved: { label: "Approved", color: "text-green-500", dot: "bg-green-500", icon: CheckCircle },
 } as const;
 
 const SpaceArtefactBlockNoteEditor = dynamic(
-    () => import("../../components/SpaceArtefactBlockNoteEditor").then(mod => mod.SpaceArtefactBlockNoteEditor),
+    () => import("../../components/SpaceArtefactBlockNoteEditor").then(module => module.SpaceArtefactBlockNoteEditor),
     { ssr: false }
 );
 
-type SpaceCrewArtefactsTabProps = {
+export type SpaceCrewArtefactsTabProperties = {
     readonly isDone: boolean;
     readonly artefacts: readonly TemplateArtefact[];
     readonly progressValue: number;
     readonly isWorking: boolean;
     readonly editingArtefactId: string | null;
-    readonly setEditingArtefactId: (id: string | null) => void;
+    readonly setEditingArtefactId: (artefactId: string | null) => void;
     readonly expandedVersionHistory: Record<string, boolean>;
-    readonly toggleVersionHistory: (id: string) => void;
-    readonly handleRestoreVersion: (id: string, label: string) => void;
-    readonly handleArtefactStatusChange: (id: string, status: TemplateArtefact['status']) => void;
-    readonly handleArtefactOutputToggle: (id: string) => void;
-    readonly handleArtefactContentChange: (id: string, content: string) => void;
+    readonly toggleVersionHistory: (artefactId: string) => void;
+    readonly handleRestoreVersion: (artefactId: string, versionLabel: string) => void;
+    readonly handleArtefactStatusChange: (artefactId: string, status: TemplateArtefact['status']) => void;
+    readonly handleArtefactOutputToggle: (artefactId: string) => void;
+    readonly handleArtefactContentChange: (artefactId: string, content: string) => void;
 };
 
 export const SpaceCrewArtefactsTab = ({
-    isDone,
     artefacts,
     progressValue,
     isWorking,
@@ -67,7 +62,7 @@ export const SpaceCrewArtefactsTab = ({
     handleArtefactStatusChange,
     handleArtefactOutputToggle,
     handleArtefactContentChange
-}: SpaceCrewArtefactsTabProps) => {
+}: SpaceCrewArtefactsTabProperties) => {
     return (
         <ScrollShadow className="h-[calc(100vh-220px)] p-8">
             <div className="space-y-10">
@@ -88,32 +83,32 @@ export const SpaceCrewArtefactsTab = ({
                                     <ChevronRight className="rotate-180" size={18} />
                                 </Button>
                                 <h4 className="text-xs font-black text-white uppercase tracking-widest group-hover:text-blue-400 transition-colors">
-                                    {artefacts.find(a => a.id === editingArtefactId)?.label}
+                                    {artefacts.find(artefact => artefact.id === editingArtefactId)?.label}
                                 </h4>
                             </div>
                         </div>
 
                         <SpaceArtefactBlockNoteEditor 
-                            initialContent={artefacts.find(a => a.id === editingArtefactId)?.content}
+                            initialContent={artefacts.find(artefact => artefact.id === editingArtefactId)?.content}
                             onChange={(content) => handleArtefactContentChange(editingArtefactId, content)}
                         />
                     </div>
                 ) : (
-                    artefacts.map((art) => (
-                        <div key={art.id} className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-3.5">
+                    artefacts.map((artefactItem) => (
+                        <div key={artefactItem.id} className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-3.5">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setEditingArtefactId(art.id)}>
-                                    <h4 className="text-xs font-black text-white tracking-tight group-hover:text-blue-400 transition-colors">{art.label}</h4>
-                                    {art.isOutput && (
+                                <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setEditingArtefactId(artefactItem.id)}>
+                                    <h4 className="text-xs font-black text-white tracking-tight group-hover:text-blue-400 transition-colors">{artefactItem.label}</h4>
+                                    {artefactItem.isOutput && (
                                         <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[8px] font-black text-orange-500 uppercase tracking-widest">
                                             Output <ArrowUpRight size={8} />
                                         </div>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    {art.link && (
+                                    {artefactItem.link && (
                                         <a
-                                            href={art.link}
+                                            href={artefactItem.link}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1"
@@ -134,14 +129,14 @@ export const SpaceCrewArtefactsTab = ({
                                             endContent={<ChevronDown size={12} />}
                                         >
                                             <div className="flex items-center gap-1.5">
-                                                <div className={cn("w-1.5 h-1.5 rounded-full", ARTEFACT_STATUS_CONFIG[art.status]?.dot || "bg-blue-400")} />
-                                                {ARTEFACT_STATUS_CONFIG[art.status]?.label || "In Review"}
+                                                <div className={cn("w-1.5 h-1.5 rounded-full", ARTEFACT_STATUS_VISUAL_CONFIG[artefactItem.status]?.dot || "bg-blue-400")} />
+                                                {ARTEFACT_STATUS_VISUAL_CONFIG[artefactItem.status]?.label || "In Review"}
                                             </div>
                                         </Button>
                                     </DropdownTrigger>
                                     <DropdownMenu
                                         aria-label="Artefact Status"
-                                        onAction={(key) => handleArtefactStatusChange(art.id, key as TemplateArtefact['status'])}
+                                        onAction={(key) => handleArtefactStatusChange(artefactItem.id, key as TemplateArtefact['status'])}
                                         classNames={{
                                             base: "bg-zinc-950 border border-zinc-800 p-1",
                                         }}
@@ -149,10 +144,10 @@ export const SpaceCrewArtefactsTab = ({
                                         {(['in_review', 'approved'] as const).map((key) => (
                                             <DropdownItem
                                                 key={key}
-                                                startContent={React.createElement(ARTEFACT_STATUS_CONFIG[key].icon, { size: 12, className: ARTEFACT_STATUS_CONFIG[key].color })}
+                                                startContent={React.createElement(ARTEFACT_STATUS_VISUAL_CONFIG[key].icon, { size: 12, className: ARTEFACT_STATUS_VISUAL_CONFIG[key].color })}
                                                 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white"
                                             >
-                                                {ARTEFACT_STATUS_CONFIG[key].label}
+                                                {ARTEFACT_STATUS_VISUAL_CONFIG[key].label}
                                             </DropdownItem>
                                         ))}
                                     </DropdownMenu>
@@ -164,9 +159,9 @@ export const SpaceCrewArtefactsTab = ({
                                     variant="bordered"
                                     className={cn(
                                         "h-10 w-10 border-zinc-800 transition-all",
-                                        art.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
+                                        artefactItem.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
                                     )}
-                                    onPress={() => handleArtefactOutputToggle(art.id)}
+                                    onPress={() => handleArtefactOutputToggle(artefactItem.id)}
                                     title="Mark as Workflow Output"
                                 >
                                     <ArrowUpRight size={14} />
@@ -175,30 +170,30 @@ export const SpaceCrewArtefactsTab = ({
 
                             <div className="pt-2 border-t border-zinc-900/50 mt-2">
                                 <button 
-                                    onClick={() => toggleVersionHistory(art.id)}
+                                    onClick={() => toggleVersionHistory(artefactItem.id)}
                                     className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors"
                                 >
                                     <History size={10} />
                                     Version History
-                                    {expandedVersionHistory[art.id] ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+                                    {expandedVersionHistory[artefactItem.id] ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
                                 </button>
 
-                                {expandedVersionHistory[art.id] && (
+                                {expandedVersionHistory[artefactItem.id] && (
                                     <div className="mt-3 space-y-2 pl-2 border-l border-zinc-900 animate-in fade-in slide-in-from-left-1 duration-200">
                                         {[
-                                            { v: 'v2', date: 'Today, 14:20', tokens: '6,450' },
-                                            { v: 'v1', date: 'Yesterday, 18:05', tokens: '5,900' }
-                                        ].map((ver, idx) => (
+                                            { version: 'v2', date: 'Today, 14:20', tokens: '6,450' },
+                                            { version: 'v1', date: 'Yesterday, 18:05', tokens: '5,900' }
+                                        ].map((versionItem, versionIndex) => (
                                             <div 
-                                                key={idx} 
+                                                key={versionIndex} 
                                                 className="flex items-center justify-between group/ver py-1.5 px-2 hover:bg-zinc-900/50 rounded-lg transition-all cursor-pointer"
-                                                onClick={() => handleRestoreVersion(art.id, ver.v)}
+                                                onClick={() => handleRestoreVersion(artefactItem.id, versionItem.version)}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-[10px] font-mono text-zinc-500">{ver.v}</span>
+                                                    <span className="text-[10px] font-mono text-zinc-500">{versionItem.version}</span>
                                                     <div className="flex flex-col">
-                                                        <span className="text-[9px] font-black text-zinc-400 uppercase tracking-tight">{ver.date}</span>
-                                                        <span className="text-[8px] font-mono text-zinc-600">{ver.tokens} tokens</span>
+                                                        <span className="text-[9px] font-black text-zinc-400 uppercase tracking-tight">{versionItem.date}</span>
+                                                        <span className="text-[8px] font-mono text-zinc-600">{versionItem.tokens} tokens</span>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 opacity-0 group-hover/ver:opacity-100 transition-opacity">

@@ -1,15 +1,19 @@
 // frontend/src/modules/spaces/ui/nodes/SpaceEntityCanvasNode.tsx
 
-import { memo } from 'react';
+import React from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { SpaceEntityNodeView } from './pure/SpaceEntityNodeView';
 import { mapEntityToViewModel } from '../mappers/SpaceNodeViewModelMapper';
-import { SpaceEntityNodeDomainData } from '../../domain/types';
+import { SpaceEntityNodeView } from './pure/SpaceEntityNodeView';
+import { SpaceEntityDomainData } from '../../domain/types';
 import { SpaceCanvasNodeProperties } from '../types';
 
-export const SpaceEntityCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
-    const viewModel = mapEntityToViewModel(
-        nodeProperties.data as unknown as SpaceEntityNodeDomainData, 
+/**
+ * SpaceEntityCanvasNode - Container component for entity node on the canvas.
+ * Orchestrates mapping domain data to view model and rendering the Pure View.
+ */
+export const SpaceEntityCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) => {
+    const entityViewModel = mapEntityToViewModel(
+        nodeProperties.data as unknown as SpaceEntityDomainData, 
         nodeProperties.selected ?? false
     );
 
@@ -18,18 +22,18 @@ export const SpaceEntityCanvasNode = memo((nodeProperties: SpaceCanvasNodeProper
             <Handle 
                 type="target" 
                 position={Position.Left} 
-                className={viewModel.visual.handleClassName} 
+                className={entityViewModel.visual.handleClassName} 
             />
             
-            <SpaceEntityNodeView viewModel={viewModel} />
+            <SpaceEntityNodeView viewModel={entityViewModel} />
 
             <Handle 
                 type="source" 
                 position={Position.Right} 
-                className={viewModel.visual.handleClassName} 
+                className={entityViewModel.visual.handleClassName} 
             />
         </div>
     );
-});
+};
 
 SpaceEntityCanvasNode.displayName = 'SpaceEntityCanvasNode';

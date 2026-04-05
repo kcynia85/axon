@@ -1,6 +1,5 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceCanvasModificationOperations.ts
 
-import { useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import type { Node, Edge } from '@xyflow/react';
 import { mapTemplateWorkspaceConfigToNodeData } from '../../domain/defaults';
@@ -12,7 +11,7 @@ export const useSpaceCanvasModificationOperations = (
 ) => {
   const { getNodes } = useReactFlow();
 
-  const addNewNodeToCanvas = useCallback((
+  const addNewNodeToCanvas = (
     nodeType: string,
     initialNodeData: Record<string, unknown>,
     targetWorkspaceId: string
@@ -35,13 +34,8 @@ export const useSpaceCanvasModificationOperations = (
     }
 
     const uniqueNodeIdentifier = `node_${Math.random().toString(36).substring(2, 11)}`;
-
     const isTemplate = nodeType === 'template';
-
-    // Map template_inputs/outputs (from Workspace config) → contexts/artefacts (canvas node)
-    const templateCanvasData = isTemplate
-      ? mapTemplateWorkspaceConfigToNodeData(initialNodeData)
-      : {};
+    const templateCanvasData = isTemplate ? mapTemplateWorkspaceConfigToNodeData(initialNodeData) : {};
 
     const newlyCreatedNode: Node = {
       id: uniqueNodeIdentifier,
@@ -58,17 +52,17 @@ export const useSpaceCanvasModificationOperations = (
     };
 
     updateCanvasNodes((previousCanvasNodes) => previousCanvasNodes.concat(newlyCreatedNode));
-  }, [getNodes, updateCanvasNodes, takeSnapshot]);
+  };
 
-  const updateNodeDataOnCanvas = useCallback((nodeId: string, newNodeData: Record<string, unknown>) => {
+  const updateNodeDataOnCanvas = (nodeId: string, newNodeData: Record<string, unknown>) => {
     updateCanvasNodes((previousCanvasNodes) =>
       previousCanvasNodes.map((node) =>
         node.id === nodeId ? { ...node, data: { ...node.data, ...newNodeData } } : node
       ),
     );
-  }, [updateCanvasNodes]);
+  };
 
-  const duplicateNode = useCallback((node: Node) => {
+  const duplicateNode = (node: Node) => {
     takeSnapshot();
     const uniqueNodeIdentifier = `node_${Math.random().toString(36).substring(2, 11)}`;
     const duplicatedNode: Node = {
@@ -81,21 +75,18 @@ export const useSpaceCanvasModificationOperations = (
       selected: false,
     };
     updateCanvasNodes((nodes) => nodes.concat(duplicatedNode));
-  }, [updateCanvasNodes, takeSnapshot]);
+  };
 
-  const deleteNodes = useCallback((nodeIds: string[]) => {
+  const deleteNodes = (nodeIds: string[]) => {
     takeSnapshot();
-    // 1. Remove nodes
     updateCanvasNodes((nodes) => nodes.filter((node) => !nodeIds.includes(node.id)));
-    // 2. Remove associated edges
     updateCanvasEdges((edges) => edges.filter((edge) => !nodeIds.includes(edge.source) && !nodeIds.includes(edge.target)));
-  }, [updateCanvasNodes, updateCanvasEdges, takeSnapshot]);
+  };
 
-  const updateNodesStatus = useCallback((nodeIds: string[], status: string) => {
+  const updateNodesStatus = (nodeIds: string[], status: string) => {
     updateCanvasNodes((nodes) =>
       nodes.map((node) => {
         if (nodeIds.includes(node.id)) {
-          // Different node types might use different status fields
           const isService = node.type === 'service';
           const statusField = isService ? 'status' : 'state';
           return {
@@ -109,7 +100,7 @@ export const useSpaceCanvasModificationOperations = (
         return node;
       })
     );
-  }, [updateCanvasNodes]);
+  };
 
   return {
     addNewNodeToCanvas,

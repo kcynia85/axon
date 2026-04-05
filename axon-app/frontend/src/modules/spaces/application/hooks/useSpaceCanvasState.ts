@@ -1,6 +1,5 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceCanvasState.ts
 
-import { useMemo } from 'react';
 import { useNodesState, useEdgesState } from '@xyflow/react';
 import type { Node, Edge } from '@xyflow/react';
 import { DEFAULT_INITIAL_NODES, DEFAULT_INITIAL_EDGES } from '../../domain/defaults';
@@ -14,10 +13,8 @@ export const useSpaceCanvasState = (initialCanvasConfiguration?: unknown): Space
   const [canvasNodes, setCanvasNodes, handleCanvasNodesChange] = useNodesState(initialNodesForCanvas);
   const [canvasEdges, setCanvasEdges, handleCanvasEdgesChange] = useEdgesState(initialEdgesForCanvas);
 
-  const currentlySelectedNode = useMemo(
-    () => canvasNodes.find((node) => node.selected) || null,
-    [canvasNodes]
-  );
+  // Derived state - React Compiler handles optimization
+  const currentlySelectedNode = canvasNodes.find((node) => node.selected) || null;
 
   return {
     canvasNodes,

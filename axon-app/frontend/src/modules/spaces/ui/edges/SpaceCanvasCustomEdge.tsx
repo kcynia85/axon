@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/ui/edges/SpaceCanvasCustomEdge.tsx
 
-import React, { memo, useCallback } from 'react';
+import React from 'react';
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -9,7 +9,7 @@ import {
   useReactFlow,
 } from '@xyflow/react';
 
-export const SpaceCanvasCustomEdge = memo(({
+export const SpaceCanvasCustomEdge = ({
   id: edgeUniqueIdentifier,
   sourceX: horizontalCoordinateOfSourceNode,
   sourceY: verticalCoordinateOfSourceNode,
@@ -35,11 +35,11 @@ export const SpaceCanvasCustomEdge = memo(({
     targetPosition: connectionPositionOnTargetNode,
   });
 
-  const handleEdgeRemovalInteraction = useCallback(() => {
+  const handleEdgeRemovalInteraction = () => {
     updateCanvasEdges((currentEdges) => 
         currentEdges.filter((edge) => edge.id !== edgeUniqueIdentifier)
     );
-  }, [edgeUniqueIdentifier, updateCanvasEdges]);
+  };
 
   return (
     <>
@@ -69,6 +69,6 @@ export const SpaceCanvasCustomEdge = memo(({
       </EdgeLabelRenderer>
     </>
   );
-});
+};
 
 SpaceCanvasCustomEdge.displayName = "SpaceCanvasCustomEdge";

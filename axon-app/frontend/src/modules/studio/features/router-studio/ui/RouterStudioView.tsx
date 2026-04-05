@@ -46,7 +46,7 @@ export const RouterStudioView = ({
 					}
 					canvas={
 						<div className="px-16 pb-48 pt-20 w-full">
-							<form className="space-y-16 w-full" onSubmit={(e) => e.preventDefault()}>
+							<form className="space-y-16 w-full" onSubmit={(formEvent) => formEvent.preventDefault()}>
 								<RouterGeneralSection />
 								<RouterPriorityChainSection />
 							</form>

@@ -2,7 +2,7 @@
 
 "use client";
 
-import { SpaceCanvasView } from "@/modules/spaces/ui/View";
+import { SpaceCanvasView } from "@/modules/spaces/ui/SpaceCanvasView";
 import { PageContainer } from "@/shared/ui/layout/PageContainer";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { ReactFlowProvider } from '@xyflow/react';

@@ -1,14 +1,18 @@
 // frontend/src/modules/spaces/ui/nodes/SpacePatternCanvasNode.tsx
 
-import { memo } from 'react';
+import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { mapPatternToViewModel } from '../mappers/SpaceNodeViewModelMapper';
 import { SpacePatternNodeView } from './pure/SpacePatternNodeView';
 import { SpacePatternDomainData } from '../../domain/types';
 import { SpaceCanvasNodeProperties } from '../types';
 
-export const SpacePatternCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
-    const viewModel = mapPatternToViewModel(
+/**
+ * SpacePatternCanvasNode - Container component for pattern node on the canvas.
+ * Orchestrates mapping domain data to view model and rendering the Pure View.
+ */
+export const SpacePatternCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) => {
+    const patternViewModel = mapPatternToViewModel(
         nodeProperties.data as unknown as SpacePatternDomainData, 
         nodeProperties.selected ?? false
     );
@@ -18,18 +22,18 @@ export const SpacePatternCanvasNode = memo((nodeProperties: SpaceCanvasNodePrope
             <Handle 
                 type="target" 
                 position={Position.Left} 
-                className={viewModel.visual.handleClassName} 
+                className={patternViewModel.visual.handleClassName} 
             />
             
-            <SpacePatternNodeView viewModel={viewModel} />
+            <SpacePatternNodeView viewModel={patternViewModel} />
 
             <Handle 
                 type="source" 
                 position={Position.Right} 
-                className={viewModel.visual.handleClassName} 
+                className={patternViewModel.visual.handleClassName} 
             />
         </div>
     );
-});
+};
 
 SpacePatternCanvasNode.displayName = 'SpacePatternCanvasNode';

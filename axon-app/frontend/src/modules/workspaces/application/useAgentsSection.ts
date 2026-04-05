@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useAgents } from "@/modules/agents/infrastructure/useAgents";
 import { useCostEstimate } from "@/modules/agents/application/useCostEstimate";
 
@@ -9,15 +9,16 @@ export const useAgentsSection = (workspaceId: string) => {
     const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
     const { data: costEstimate, isLoading: isCostLoading } = useCostEstimate(selectedAgentId);
 
+    // Derived state - React Compiler handles optimization
     const selectedAgent = agents?.find((agentItem) => agentItem.id === selectedAgentId);
 
-    const handleSelectAgent = useCallback((id: string) => {
+    const handleSelectAgent = (id: string) => {
         setSelectedAgentId(id);
-    }, []);
+    };
 
-    const handleClosePeek = useCallback(() => {
+    const handleClosePeek = () => {
         setSelectedAgentId(null);
-    }, []);
+    };
 
     return {
         agents,

@@ -37,71 +37,71 @@ const mapVisualProperties = (
     colorIdentifier: string,
     isSelected: boolean
 ): NodeVisualProperties => {
-    const styles = getVisualStylesForZoneColor(colorIdentifier);
-    const handleBackgroundColor = isSelected ? styles.handleBackgroundClassName : '!bg-zinc-700';
+    const visualStyles = getVisualStylesForZoneColor(colorIdentifier);
+    const handleBackgroundColor = isSelected ? visualStyles.handleBackgroundClassName : '!bg-zinc-700';
 
     return {
-        containerClassName: `w-[280px] bg-black border-2 transition-all rounded-2xl node-container ${isSelected ? `${styles.borderClassName} ${styles.shadowClassName}` : 'border-zinc-700'}`,
+        containerClassName: `w-[280px] bg-black border-2 transition-all rounded-2xl node-container ${isSelected ? `${visualStyles.borderClassName} ${visualStyles.shadowClassName}` : 'border-zinc-700'}`,
         headerClassName: "p-4 flex items-start gap-3 node-header",
-        iconClassName: `p-2 rounded-lg bg-zinc-900 border border-zinc-800 node-icon ${styles.textClassName}`,
+        iconClassName: `p-2 rounded-lg bg-zinc-900 border border-zinc-800 node-icon ${visualStyles.textClassName}`,
         titleClassName: "text-sm font-black text-white tracking-tight node-title",
         subtitleClassName: "text-[9px] font-black text-zinc-500 uppercase tracking-widest node-subtitle",
         handleClassName: `!w-3 !h-3 !border-zinc-800 ${handleBackgroundColor} hover:!bg-zinc-200 transition-colors !z-50 !cursor-pointer`,
     };
 };
 
-export const mapAgentToViewModel = (data: SpaceAgentDomainData, isSelected: boolean): SpaceAgentViewModel => {
+export const mapAgentToViewModel = (agentDomainData: SpaceAgentDomainData, isSelected: boolean): SpaceAgentViewModel => {
     return {
-        visual: mapVisualProperties(data.zoneColor as any, isSelected),
-        zoneColor: data.zoneColor,
-        displayName: data.label,
-        statusText: data.state.replace('_', ' ').toUpperCase(),
-        progressValue: data.progress,
-        progressLabel: `${data.progress}%`,
-        isBriefing: data.state === 'briefing',
-        isWorking: data.state === 'working',
-        isDone: data.state === 'done',
-        isConsultation: data.state === 'conversation',
-        isAlignment: data.state === 'alignment',
-        isCritique: data.state === 'critique',
-        isMissingContext: data.state === 'missing_context',
+        visual: mapVisualProperties(agentDomainData.zoneColor as any, isSelected),
+        zoneColor: agentDomainData.zoneColor,
+        displayName: agentDomainData.label,
+        statusText: agentDomainData.state.replace('_', ' ').toUpperCase(),
+        progressValue: agentDomainData.progress,
+        progressLabel: `${agentDomainData.progress}%`,
+        isBriefing: agentDomainData.state === 'briefing',
+        isWorking: agentDomainData.state === 'working',
+        isDone: agentDomainData.state === 'done',
+        isConsultation: agentDomainData.state === 'conversation',
+        isAlignment: agentDomainData.state === 'alignment',
+        isCritique: agentDomainData.state === 'critique',
+        isMissingContext: agentDomainData.state === 'missing_context',
         VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.agent,
     };
 };
 
-export const mapAutomationToViewModel = (data: SpaceAutomationDomainData, isSelected: boolean): SpaceAutomationViewModel => {
-    const artefacts = data.artefacts || [];
-    const outputArtefact = artefacts.find(art => art.isOutput) || artefacts[0];
+export const mapAutomationToViewModel = (automationDomainData: SpaceAutomationDomainData, isSelected: boolean): SpaceAutomationViewModel => {
+    const artefactsList = automationDomainData.artefacts || [];
+    const outputArtefactItem = artefactsList.find(artefactItem => artefactItem.isOutput) || artefactsList[0];
 
-    const hasOutputArtefacts = artefacts.some(art => art.isOutput);
-    const styles = getVisualStylesForZoneColor(data.zoneColor);
+    const hasOutputArtefacts = artefactsList.some(artefactItem => artefactItem.isOutput);
+    const visualStyles = getVisualStylesForZoneColor(automationDomainData.zoneColor);
 
     return {
-        visual: mapVisualProperties(data.zoneColor as any, isSelected),
-        displayName: data.label,
-        statusText: data.state.toUpperCase(),
-        artifactLabel: outputArtefact?.label || 'no results',
-        artifactStatusText: (outputArtefact?.status || 'in_review').replace('_', ' ').toUpperCase(),
-        hasArtifact: !!outputArtefact,
+        visual: mapVisualProperties(automationDomainData.zoneColor as any, isSelected),
+        displayName: automationDomainData.label,
+        statusText: automationDomainData.state.toUpperCase(),
+        artifactLabel: outputArtefactItem?.label || 'no results',
+        artifactStatusText: (outputArtefactItem?.status || 'in_review').replace('_', ' ').toUpperCase(),
+        hasArtifact: !!outputArtefactItem,
         hasOutputArtefacts,
-        activeOutputClassName: styles.activeOutputClassName,
+        activeOutputClassName: visualStyles.activeOutputClassName,
         VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.automation,
     };
 };
 
-export const mapCrewToViewModel = (data: SpaceCrewDomainData, isSelected: boolean): SpaceCrewViewModel => {
-    const visual = mapVisualProperties(data.zoneColor as any, isSelected);
+export const mapCrewToViewModel = (crewDomainData: SpaceCrewDomainData, isSelected: boolean): SpaceCrewViewModel => {
+    const visualProperties = mapVisualProperties(crewDomainData.zoneColor as any, isSelected);
     // Overriding container width for Crew
-    const crewVisual = { ...visual, containerClassName: visual.containerClassName.replace('w-[280px]', 'w-[320px]') };
+    const crewVisualProperties = { ...visualProperties, containerClassName: visualProperties.containerClassName.replace('w-[280px]', 'w-[320px]') };
 
-    const totalTasks = data.tasks?.length || 0;
-    const completedTasks = data.tasks?.filter(t => t.status === 'done').length || 0;
-    const progressValue = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    const totalTasksCount = crewDomainData.tasks?.length || 0;
+    const completedTasksCount = crewDomainData.tasks?.filter(taskItem => taskItem.status === 'done').length || 0;
+    const progressPercentageValue = totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
 
-    const activeTask = data.tasks?.find(t => t.status === 'working');
-    const activeAgentTitle = activeTask?.assignedAgentTitle;
+    const activeTaskItem = crewDomainData.tasks?.find(taskItem => taskItem.status === 'working');
+    const activeAgentTitleText = activeTaskItem?.assignedAgentTitle;
 
-    const statusMap: Record<string, string> = {
+    const statusDisplayMap: Record<string, string> = {
         'missing_context': 'Context Missing',
         'briefing': 'Briefing...',
         'working': 'Working...',
@@ -110,112 +110,112 @@ export const mapCrewToViewModel = (data: SpaceCrewDomainData, isSelected: boolea
     };
 
     return {
-        visual: crewVisual,
-        zoneColor: data.zoneColor,
-        displayName: data.label,
-        statusText: statusMap[data.state] || data.state.replace('_', ' ').toUpperCase(),
-        teamRoles: data.roles || ['Web Researcher', 'Content Writer'],
-        activeAgentTitle,
-        alertMessage: data.state === 'missing_context' ? 'Missing required context' : undefined,
-        isWorking: data.state === 'working',
-        isConsultation: data.state === 'conversation',
-        isBriefing: data.state === 'briefing',
-        isMissingContext: data.state === 'missing_context',
-        isDone: data.state === 'done',
-        progressValue,
-        progressLabel: `${progressValue}%`,
+        visual: crewVisualProperties,
+        zoneColor: crewDomainData.zoneColor,
+        displayName: crewDomainData.label,
+        statusText: statusDisplayMap[crewDomainData.state] || crewDomainData.state.replace('_', ' ').toUpperCase(),
+        teamRoles: crewDomainData.roles || ['Web Researcher', 'Content Writer'],
+        activeAgentTitle: activeAgentTitleText,
+        alertMessage: crewDomainData.state === 'missing_context' ? 'Missing required context' : undefined,
+        isWorking: crewDomainData.state === 'working',
+        isConsultation: crewDomainData.state === 'conversation',
+        isBriefing: crewDomainData.state === 'briefing',
+        isMissingContext: crewDomainData.state === 'missing_context',
+        isDone: crewDomainData.state === 'done',
+        progressValue: progressPercentageValue,
+        progressLabel: `${progressPercentageValue}%`,
         VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.crew,
     };
 };
 
-export const mapPatternToViewModel = (data: SpacePatternDomainData, isSelected: boolean): SpacePatternViewModel => {
-    const styles = getVisualStylesForZoneColor(data.zoneColor);
+export const mapPatternToViewModel = (patternDomainData: SpacePatternDomainData, isSelected: boolean): SpacePatternViewModel => {
+    const visualStyles = getVisualStylesForZoneColor(patternDomainData.zoneColor);
     return {
-        visual: mapVisualProperties(data.zoneColor as any, isSelected),
-        displayName: data.label,
+        visual: mapVisualProperties(patternDomainData.zoneColor as any, isSelected),
+        displayName: patternDomainData.label,
         categoryText: 'STANDARD PATTERN',
-        iconBackgroundClassName: styles.iconBackgroundClassName || 'bg-zinc-900',
+        iconBackgroundClassName: visualStyles.iconBackgroundClassName || 'bg-zinc-900',
         VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.pattern,
     };
 };
 
-export const mapServiceToViewModel = (data: SpaceServiceDomainData, isSelected: boolean): SpaceServiceViewModel => {
-    const hasOutputArtefacts = (data.artefacts || []).some(art => art.isOutput);
-    const styles = getVisualStylesForZoneColor(data.zoneColor);
+export const mapServiceToViewModel = (serviceDomainData: SpaceServiceDomainData, isSelected: boolean): SpaceServiceViewModel => {
+    const hasOutputArtefacts = (serviceDomainData.artefacts || []).some(artefactItem => artefactItem.isOutput);
+    const visualStyles = getVisualStylesForZoneColor(serviceDomainData.zoneColor);
 
     return {
-        visual: mapVisualProperties(data.zoneColor as any, isSelected),
-        displayName: data.label,
-        actionName: data.actionName,
-        isProcessing: data.status === 'in_progress',
-        artefacts: (data.artefacts || []).map(art => ({
-            id: art.id,
-            label: art.label || 'no results',
-            status: (art.status || 'in_review').replace('_', ' ').toUpperCase(),
+        visual: mapVisualProperties(serviceDomainData.zoneColor as any, isSelected),
+        displayName: serviceDomainData.label,
+        actionName: serviceDomainData.actionName,
+        isProcessing: serviceDomainData.status === 'in_progress',
+        artefacts: (serviceDomainData.artefacts || []).map(artefactItem => ({
+            id: artefactItem.id,
+            label: artefactItem.label || 'no results',
+            status: (artefactItem.status || 'in_review').replace('_', ' ').toUpperCase(),
         })),
         hasOutputArtefacts,
-        activeOutputClassName: styles.activeOutputClassName,
+        activeOutputClassName: visualStyles.activeOutputClassName,
         VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.service,
     };
 };
 
-export const mapTemplateToViewModel = (data: SpaceTemplateDomainData, isSelected: boolean): SpaceTemplateViewModel => {
-    const totalActions = data.actions?.length || 0;
-    const completedActions = data.actions?.filter((action) => action.isCompleted).length || 0;
-    const progressValue = totalActions > 0 ? (completedActions / totalActions) * 100 : 0;
+export const mapTemplateToViewModel = (templateDomainData: SpaceTemplateDomainData, isSelected: boolean): SpaceTemplateViewModel => {
+    const totalActionsCount = templateDomainData.actions?.length || 0;
+    const completedActionsCount = templateDomainData.actions?.filter((actionItem) => actionItem.isCompleted).length || 0;
+    const progressPercentageValue = totalActionsCount > 0 ? (completedActionsCount / totalActionsCount) * 100 : 0;
 
-    const artefacts = data.artefacts || [];
-    const outputArtefact = artefacts.find(art => art.isOutput) || artefacts[0];
+    const artefactsList = templateDomainData.artefacts || [];
+    const outputArtefactItem = artefactsList.find(artefactItem => artefactItem.isOutput) || artefactsList[0];
 
-    const hasOutputArtefacts = artefacts.some(art => art.isOutput);
-    const styles = getVisualStylesForZoneColor(data.zoneColor);
+    const hasOutputArtefacts = artefactsList.some(artefactItem => artefactItem.isOutput);
+    const visualStyles = getVisualStylesForZoneColor(templateDomainData.zoneColor);
 
     return {
-        visual: mapVisualProperties(data.zoneColor as any, isSelected),
-        displayName: data.label,
-        statusText: (data.status || 'Active').toUpperCase(),
-        progressText: `${completedActions}/${totalActions} ACTIONS`,
-        progressValue,
-        artifactLabel: outputArtefact?.label || 'no results',
-        artifactStatusText: (outputArtefact?.status || 'in_review').replace('_', ' ').toUpperCase(),
-        hasArtifact: !!outputArtefact,
+        visual: mapVisualProperties(templateDomainData.zoneColor as any, isSelected),
+        displayName: templateDomainData.label,
+        statusText: (templateDomainData.status || 'Active').toUpperCase(),
+        progressText: `${completedActionsCount}/${totalActionsCount} ACTIONS`,
+        progressValue: progressPercentageValue,
+        artifactLabel: outputArtefactItem?.label || 'no results',
+        artifactStatusText: (outputArtefactItem?.status || 'in_review').replace('_', ' ').toUpperCase(),
+        hasArtifact: !!outputArtefactItem,
         hasOutputArtefacts,
-        activeOutputClassName: styles.activeOutputClassName,
+        activeOutputClassName: visualStyles.activeOutputClassName,
         VisualIcon: MAP_OF_NODE_TYPES_TO_VISUAL_ICONS.template,
     };
 };
 
-export const mapZoneToViewModel = (data: SpaceZoneDomainData, isSelected: boolean): SpaceZoneViewModel => {
-    const color = data.color || 'blue';
-    const styles = getVisualStylesForZoneColor(color);
+export const mapZoneToViewModel = (zoneDomainData: SpaceZoneDomainData, isSelected: boolean): SpaceZoneViewModel => {
+    const colorIdentifier = zoneDomainData.color || 'blue';
+    const visualStyles = getVisualStylesForZoneColor(colorIdentifier);
 
     return {
-        visual: mapVisualProperties(color, isSelected),
+        visual: mapVisualProperties(colorIdentifier, isSelected),
         isSelected,
-        displayName: (data.label || 'Unit').toUpperCase(),
-        containerClassName: `h-full w-full rounded-[2rem] border-2 border-dashed transition-all p-8 flex flex-col relative group ${styles.borderClassName?.split(' ')[0]} ${isSelected ? styles.backgroundClassName : 'bg-transparent'}`,
-        labelClassName: `text-[10px] font-black uppercase tracking-[0.25em] ${styles.textClassName}`,
-        resizerLineClassName: styles.resizerLineClassName || 'border-blue-500',
-        resizerHandleClassName: styles.resizerHandleClassName || 'border-blue-500',
-        handleClassName: `!w-6 !h-6 !border-2 !border-zinc-800 ${styles.handleBackgroundClassName?.replace('border-', 'bg-')} !opacity-100 hover:scale-110 transition-all !z-50 !cursor-pointer`,
-        ports: data.ports || [],
+        displayName: (zoneDomainData.label || 'Unit').toUpperCase(),
+        containerClassName: `h-full w-full rounded-[2rem] border-2 border-dashed transition-all p-8 flex flex-col relative group ${visualStyles.borderClassName?.split(' ')[0]} ${isSelected ? visualStyles.backgroundClassName : 'bg-transparent'}`,
+        labelClassName: `text-[10px] font-black uppercase tracking-[0.25em] ${visualStyles.textClassName}`,
+        resizerLineClassName: visualStyles.resizerLineClassName || 'border-blue-500',
+        resizerHandleClassName: visualStyles.resizerHandleClassName || 'border-blue-500',
+        handleClassName: `!w-6 !h-6 !border-2 !border-zinc-800 ${visualStyles.handleBackgroundClassName?.replace('border-', 'bg-')} !opacity-100 hover:scale-110 transition-all !z-50 !cursor-pointer`,
+        ports: zoneDomainData.ports || [],
         VisualIcon: Box,
     };
 };
 
-export const mapEntityToViewModel = (data: SpaceEntityNodeDomainData, isSelected: boolean): SpaceEntityViewModel => {
-    const visual = mapVisualProperties(data.zoneColor, isSelected);
+export const mapEntityToViewModel = (entityDomainData: SpaceEntityNodeDomainData, isSelected: boolean): SpaceEntityViewModel => {
+    const visualProperties = mapVisualProperties(entityDomainData.zoneColor, isSelected);
     // Entity nodes are slightly smaller in width by default in original code
-    const entityVisual = { ...visual, containerClassName: visual.containerClassName.replace('w-[280px]', 'w-[240px]') };
-    const VisualIcon = MAP_OF_NODE_TYPES_TO_VISUAL_ICONS[data.type] || Box;
+    const entityVisualProperties = { ...visualProperties, containerClassName: visualProperties.containerClassName.replace('w-[280px]', 'w-[240px]') };
+    const VisualIcon = MAP_OF_NODE_TYPES_TO_VISUAL_ICONS[entityDomainData.type] || Box;
 
     return {
-        visual: entityVisual,
-        displayName: data.label,
-        componentType: data.type.toUpperCase(),
-        description: data.description,
-        statusLabel: data.type === 'agent' ? (data.status || 'Idle').toUpperCase() : undefined,
-        isStatusActive: data.status === 'active',
+        visual: entityVisualProperties,
+        displayName: entityDomainData.label,
+        componentType: entityDomainData.type.toUpperCase(),
+        description: entityDomainData.description,
+        statusLabel: entityDomainData.type === 'agent' ? (entityDomainData.status || 'Idle').toUpperCase() : undefined,
+        isStatusActive: entityDomainData.status === 'active',
         VisualIcon,
     };
 };

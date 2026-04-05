@@ -1,15 +1,22 @@
 // frontend/src/modules/spaces/ui/inspectors/SpaceAutomationNodeInspector.tsx
 
-import React from "react";
-import { SpaceAutomationDomainData } from "../../domain/types";
+import React, { useState } from "react";
 import { SpaceAutomationInspectorProperties } from "../types";
 import { useSpaceAutomationInspectorLogic } from "../../application/hooks/useSpaceAutomationInspectorLogic";
 import { SpaceAutomationNodeInspectorView } from "../pure/SpaceAutomationNodeInspectorView";
 
+/**
+ * SpaceAutomationNodeInspector - Container component for automation node details.
+ * Manages state and logic, delegating presentation to the Pure View.
+ */
 export const SpaceAutomationNodeInspector = ({ 
-    data, 
+    automationData, 
+    nodeId,
     onPropertyChange 
 }: SpaceAutomationInspectorProperties) => {
+    const [selectedTabIdentifier, setSelectedTabIdentifier] = useState<string>("workflow");
+    const [componentSearchQuery, setComponentSearchQuery] = useState("");
+
     const {
         handleContextLinkChange,
         handleLinkContextFromNode,
@@ -24,16 +31,20 @@ export const SpaceAutomationNodeInspector = ({
         hasTimeoutError,
         isContextDone,
         isArtefactsDone,
-    } = useSpaceAutomationInspectorLogic(data, onPropertyChange as any);
+    } = useSpaceAutomationInspectorLogic(automationData, onPropertyChange as any);
 
     return (
         <SpaceAutomationNodeInspectorView 
-            data={data}
+            automationData={automationData}
             isTriggering={isTriggering}
             validationError={validationError}
             hasTimeoutError={hasTimeoutError}
             isContextDone={isContextDone}
             isArtefactsDone={isArtefactsDone}
+            selectedTabIdentifier={selectedTabIdentifier}
+            componentSearchQuery={componentSearchQuery}
+            onTabChange={setSelectedTabIdentifier}
+            onSearchQueryChange={setComponentSearchQuery}
             onContextLinkChange={handleContextLinkChange}
             onLinkContextFromNode={handleLinkContextFromNode}
             onArtefactLinkChange={handleArtefactLinkChange}

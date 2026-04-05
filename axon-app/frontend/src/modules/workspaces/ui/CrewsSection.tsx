@@ -5,16 +5,9 @@ import { useRouter } from "next/navigation";
 import { useCrews, useDeleteCrew } from "../application/useCrews";
 import { useAgents } from "@/modules/agents/infrastructure/useAgents";
 import { useCrewDraft } from "@/modules/studio/features/crew-studio/application/useCrewDraft";
-import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Card } from "@/shared/ui/ui/Card";
-import { Button } from "@/shared/ui/ui/Button";
-import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
-import { CrewProfilePeek } from "./CrewProfilePeek";
-import { getAgentAvatarUrl } from "@/shared/lib/utils";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
-import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { CrewsSectionView } from "./CrewsSectionView";
 
 type CrewsSectionProps = {
   readonly workspaceId: string;
@@ -54,43 +47,8 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
     setCrewToDeleteId(null);
   };
 
-  if (isCrewsLoading) {
-    return (
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((index) => (
-          <Skeleton key={index} className="h-32 w-full shadow-sm rounded-xl" />
-        ))}
-      </div>
-    );
-  }
-
-  // Map agent IDs to their info for better visual representation in cards and peek
-  const agentsMap = React.useMemo(() => {
-    const map: Record<string, { name: string; visualUrl?: string | null }> = {};
-
-    // Strictly use real data from API
-    agents?.forEach(agent => {
-      map[agent.id] = {
-        name: agent.agent_role_text || agent.agent_name || "Specialist Agent",
-        visualUrl: agent.agent_visual_url
-      };
-    });
-    return map;
-  }, [agents]);
-
-  // Compatibility map for WorkspaceCardHorizontal
-  const agentVisualsMap = React.useMemo(() => {
-    const map: Record<string, string> = {};
-    Object.entries(agentsMap).forEach(([id, info]) => {
-      map[id] = getAgentAvatarUrl(id, info.visualUrl);
-    });
-    return map;
-  }, [agentsMap]);
-
-  // Map draft to Crew structure for peek
-  const draftCrew = React.useMemo(() => {
-    if (!draft) return null;
-    return {
+  // Derived state - React Compiler handles optimization
+  const draftCrew = draft ? {
       id: "draft",
       crew_name: draft.crew_name || "New Team",
       crew_description: draft.crew_description || "Work in progress...",
@@ -105,83 +63,46 @@ export const CrewsSection = ({ workspaceId, colorName = "default" }: CrewsSectio
       },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-    } as any;
-  }, [draft, workspaceId]);
+  } : null;
 
   const activeCrew = isDraftSelected ? draftCrew : (crews?.find((crewItem) => crewItem.id === selectedCrewId) || null);
 
-  const displayCrews = React.useMemo(() => {
-    if (!crews) return [];
-    return crews.slice(0, 4);
-  }, [crews]);
+  const handleSelect = (id: string) => {
+    setIsDraftSelected(false);
+    setSelectedCrewId(id);
+  };
+
+  const handleEdit = (id?: string) => {
+    if (!id || id === "draft") {
+      router.push(`/workspaces/${workspaceId}/crews/studio`);
+    } else {
+      router.push(`/workspaces/${workspaceId}/crews/studio/${id}`);
+    }
+  };
+
+  const handleAdd = () => {
+    router.push(`/workspaces/${workspaceId}/crews/studio`);
+  };
 
   return (
-    <>
-      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {displayCrews.map((crew) => (
-          <WorkspaceCardHorizontal 
-            key={crew.id}
-            variant="crew"
-            title={crew.crew_name}
-            description={crew.crew_description}
-            href="#"
-            tags={crew.crew_keywords}
-            resourceId={crew.id}
-            onEdit={() => {
-              router.push(`/workspaces/${workspaceId}/crews/studio/${crew.id}`);
-            }}
-            onClick={() => {
-              setIsDraftSelected(false);
-              setSelectedCrewId(crew.id);
-            }}
-            onDelete={handleDelete}
-            colorName={colorName}
-            agentIds={crew.agent_member_ids}
-            agentVisualsMap={agentVisualsMap}
-          />
-        ))}
-
-        {(!crews || crews.length === 0) && (
-          <Card className="border-dashed h-40 flex flex-col items-center justify-center px-8 text-muted-foreground text-sm italic rounded-xl bg-muted/5 col-span-full gap-4">
-            <span>No crews assembled. Strategy requires team effort.</span>
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              onClick={() => router.push(`/workspaces/${workspaceId}/crews/studio`)}
-              className="gap-2 font-semibold"
-            >
-              <Plus className="w-4 h-4" /> Add Crew
-            </Button>
-          </Card>
-        )}
-      </div>
-
-      <CrewProfilePeek 
-        crew={activeCrew}
-        isOpen={isDraftSelected || !!selectedCrewId}
-        onClose={() => {
-          setIsDraftSelected(false);
-          setSelectedCrewId(null);
+    <CrewsSectionView 
+        workspaceId={workspaceId}
+        crews={crews}
+        isCrewsLoading={isCrewsLoading}
+        agents={agents}
+        activeCrew={activeCrew}
+        crewToDeleteId={crewToDeleteId}
+        colorName={colorName}
+        onSelectCrew={handleSelect}
+        onClosePeek={() => {
+            setIsDraftSelected(false);
+            setSelectedCrewId(null);
         }}
-        agentsMap={agentsMap}
-        onDelete={handleDelete}
-        onEdit={() => {
-          if (isDraftSelected) {
-            router.push(`/workspaces/${workspaceId}/crews/studio`);
-          } else if (selectedCrewId) {
-            router.push(`/workspaces/${workspaceId}/crews/studio/${selectedCrewId}`);
-          }
-        }}
-      />
-
-      <DestructiveDeleteModal
-        isOpen={!!crewToDeleteId}
-        onClose={() => setCrewToDeleteId(null)}
-        onConfirm={confirmDelete}
-        title="Delete Crew"
-        resourceName={crews?.find(c => c.id === crewToDeleteId)?.crew_name || "Crew"}
-        affectedResources={[]}
-      />
-    </>
+        onDeleteClick={handleDelete}
+        onConfirmDelete={confirmDelete}
+        onCancelDelete={() => setCrewToDeleteId(null)}
+        onEditCrew={handleEdit}
+        onAddCrew={handleAdd}
+    />
   );
 };

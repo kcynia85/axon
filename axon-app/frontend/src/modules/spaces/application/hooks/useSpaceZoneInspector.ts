@@ -1,13 +1,13 @@
 'use client';
 
-import { useMemo } from "react";
 import { useReactFlow, Node } from "@xyflow/react";
 import { TemplateArtefact } from "../../domain/types";
 
 export const useSpaceZoneInspector = (data: any, nodeId: string, onPropertyChange: any, canvasNodes: Node[] = []) => {
     const { setNodes, fitView } = useReactFlow();
 
-    const childArtefacts = useMemo(() => {
+    // Derived state - React Compiler handles optimization
+    const childArtefacts = (() => {
         const artefacts: { nodeId: string; nodeLabel: string; artefact: TemplateArtefact }[] = [];
         
         canvasNodes.filter(n => n.parentId === nodeId).forEach(childNode => {
@@ -29,7 +29,7 @@ export const useSpaceZoneInspector = (data: any, nodeId: string, onPropertyChang
         });
         
         return artefacts;
-    }, [canvasNodes, nodeId]);
+    })();
 
     const handleNavigateToNode = (targetNodeId: string) => {
         setNodes((nds) => nds.map(n => ({

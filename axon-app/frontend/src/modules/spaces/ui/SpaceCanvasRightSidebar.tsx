@@ -2,16 +2,20 @@
 
 import React from "react";
 import { 
-    SpaceCanvasSidebarProps, 
+    SpaceCanvasSidebarProperties, 
 } from "./types";
 import { useSpaceCanvasInspectorManagement } from "../application/hooks/useSpaceCanvasInspectorManagement";
 import { SpaceCanvasRightSidebarView } from "./pure/SpaceCanvasRightSidebarView";
 
+/**
+ * SpaceCanvasRightSidebar - Container component for the right inspector sidebar.
+ * Orchestrates node inspection logic and renders the Pure View.
+ */
 export const SpaceCanvasRightSidebar = ({ 
     currentlySelectedNodeInformation, 
     handleNodeDataPropertyChange,
     canvasNodes
-}: SpaceCanvasSidebarProps) => {
+}: SpaceCanvasSidebarProperties) => {
     const {
         effectiveNodeType,
         isNodeSelectedRepresentingAZone,

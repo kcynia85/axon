@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/ui/nodes/SpaceZoneCanvasNode.tsx
 
-import { memo } from 'react';
+import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { mapZoneToViewModel } from '../mappers/SpaceNodeViewModelMapper';
 import { SpaceZoneNodeView } from './pure/SpaceZoneNodeView';
@@ -8,42 +8,46 @@ import { SpaceZoneDomainData } from '../../domain/types';
 import { SpaceCanvasNodeProperties } from '../types';
 import { Tooltip } from '@heroui/react';
 
-export const SpaceZoneCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
-    const viewModel = mapZoneToViewModel(
+/**
+ * SpaceZoneCanvasNode - Container component for zone node on the canvas.
+ * Handles complex multi-port logic and renders the Pure View.
+ */
+export const SpaceZoneCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) => {
+    const zoneViewModel = mapZoneToViewModel(
         nodeProperties.data as unknown as SpaceZoneDomainData, 
         nodeProperties.selected ?? false
     );
 
-    const inputPorts = viewModel.ports?.filter(p => p.type === 'input') || [];
-    const outputPorts = viewModel.ports?.filter(p => p.type === 'output') || [];
+    const inputPorts = zoneViewModel.ports?.filter(portItem => portItem.type === 'input') || [];
+    const outputPorts = zoneViewModel.ports?.filter(portItem => portItem.type === 'output') || [];
 
     return (
         <>
-            <SpaceZoneNodeView viewModel={viewModel} />
+            <SpaceZoneNodeView viewModel={zoneViewModel} />
 
             {/* Render Input Ports on the Left Edge */}
-            {inputPorts.length > 0 ? inputPorts.map((port, index) => {
-                const topPosition = `${(index + 1) * (100 / (inputPorts.length + 1))}%`;
+            {inputPorts.length > 0 ? inputPorts.map((portItem, portIndex) => {
+                const verticalPositionInPercentage = `${(portIndex + 1) * (100 / (inputPorts.length + 1))}%`;
                 return (
-                    <div key={port.id}>
+                    <div key={portItem.id}>
                         {/* External Handle: Target (Data coming from outside) */}
-                        <Tooltip content={`External Input: ${port.label} (${port.dataType})`} placement="left" size="sm" classNames={{ base: "text-[9px] font-bold" }}>
+                        <Tooltip content={`External Input: ${portItem.label} (${portItem.dataType})`} placement="left" size="sm" classNames={{ base: "text-[9px] font-bold" }}>
                             <Handle
-                                id={`${port.id}-ext`}
+                                id={`${portItem.id}-ext`}
                                 type="target"
                                 position={Position.Left}
-                                className={`${viewModel.handleClassName} -left-2`}
-                                style={{ top: topPosition }}
+                                className={`${zoneViewModel.handleClassName} -left-2`}
+                                style={{ top: verticalPositionInPercentage }}
                             />
                         </Tooltip>
                         {/* Internal Handle: Source (Data available for internal nodes) */}
-                        <Tooltip content={`Internal Source: ${port.label}`} placement="right" size="sm" classNames={{ base: "text-[9px] font-bold" }}>
+                        <Tooltip content={`Internal Source: ${portItem.label}`} placement="right" size="sm" classNames={{ base: "text-[9px] font-bold" }}>
                             <Handle
-                                id={`${port.id}-int`}
+                                id={`${portItem.id}-int`}
                                 type="source"
                                 position={Position.Left}
-                                className={`${viewModel.handleClassName} left-0 opacity-50 border-dashed scale-75`}
-                                style={{ top: topPosition }}
+                                className={`${zoneViewModel.handleClassName} left-0 opacity-50 border-dashed scale-75`}
+                                style={{ top: verticalPositionInPercentage }}
                             />
                         </Tooltip>
                     </div>
@@ -52,33 +56,33 @@ export const SpaceZoneCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperti
                 <Handle
                     type="target"
                     position={Position.Left}
-                    className={viewModel.visual.handleClassName}                    style={{ left: -8 }}
+                    className={zoneViewModel.visual.handleClassName}                    style={{ left: -8 }}
                 />
             )}
 
             {/* Render Output Ports on the Right Edge */}
-            {outputPorts.length > 0 ? outputPorts.map((port, index) => {
-                const topPosition = `${(index + 1) * (100 / (outputPorts.length + 1))}%`;
+            {outputPorts.length > 0 ? outputPorts.map((portItem, portIndex) => {
+                const verticalPositionInPercentage = `${(portIndex + 1) * (100 / (outputPorts.length + 1))}%`;
                 return (
-                    <div key={port.id}>
+                    <div key={portItem.id}>
                         {/* Internal Handle: Target (Data coming from internal nodes) */}
-                        <Tooltip content={`Internal Target: ${port.label}`} placement="left" size="sm" classNames={{ base: "text-[9px] font-bold" }}>
+                        <Tooltip content={`Internal Target: ${portItem.label}`} placement="left" size="sm" classNames={{ base: "text-[9px] font-bold" }}>
                             <Handle
-                                id={`${port.id}-int`}
+                                id={`${portItem.id}-int`}
                                 type="target"
                                 position={Position.Right}
-                                className={`${viewModel.handleClassName} right-0 opacity-50 border-dashed scale-75`}
-                                style={{ top: topPosition }}
+                                className={`${zoneViewModel.handleClassName} right-0 opacity-50 border-dashed scale-75`}
+                                style={{ top: verticalPositionInPercentage }}
                             />
                         </Tooltip>
                         {/* External Handle: Source (Data sent to outside) */}
-                        <Tooltip content={`External Output: ${port.label} (${port.dataType})`} placement="right" size="sm" classNames={{ base: "text-[9px] font-bold" }}>
+                        <Tooltip content={`External Output: ${portItem.label} (${portItem.dataType})`} placement="right" size="sm" classNames={{ base: "text-[9px] font-bold" }}>
                             <Handle
-                                id={`${port.id}-ext`}
+                                id={`${portItem.id}-ext`}
                                 type="source"
                                 position={Position.Right}
-                                className={`${viewModel.handleClassName} -right-2`}
-                                style={{ top: topPosition }}
+                                className={`${zoneViewModel.handleClassName} -right-2`}
+                                style={{ top: verticalPositionInPercentage }}
                             />
                         </Tooltip>
                     </div>
@@ -87,11 +91,11 @@ export const SpaceZoneCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperti
                 <Handle
                     type="source"
                     position={Position.Right}
-                    className={viewModel.visual.handleClassName}                    style={{ right: -8 }}
+                    className={zoneViewModel.visual.handleClassName}                    style={{ right: -8 }}
                 />
             )}
         </>
     );
-});
+};
 
 SpaceZoneCanvasNode.displayName = 'SpaceZoneCanvasNode';

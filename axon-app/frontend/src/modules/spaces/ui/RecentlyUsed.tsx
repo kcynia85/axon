@@ -1,30 +1,26 @@
 import React from "react";
-import { Clock, Layout } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
+import { Clock } from "lucide-react";
 import { QuickAccessCard } from "@/shared/ui/complex/QuickAccessCard";
 import { QuickAccessGrid } from "@/shared/ui/complex/QuickAccessGrid";
-import type { RecentlyUsedProps } from "./types";
+import { cn } from "@/shared/lib/utils";
+import type { RecentlyUsedProperties } from "./types";
 
-export const RecentlyUsed = ({ spaces, className }: RecentlyUsedProps) => {
-  if (spaces.length === 0) return null;
-
+export const RecentlyUsed = ({ spaces: recentlyUsedSpaces, className: containerClassName }: RecentlyUsedProperties) => {
   return (
-    <div className={cn("space-y-3", className)}>
-      <div className="flex items-center justify-between px-1">
-        <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-          <Clock size={12} />
-          Recently Used
-        </h3>
+    <div className={cn("space-y-6", containerClassName)}>
+      <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2 w-full px-1">
+        <Clock className="w-3.5 h-3.5" />
+        Recently Used Spaces
       </div>
-      
+
       <QuickAccessGrid>
-        {spaces.slice(0, 3).map((space) => (
-          <QuickAccessCard 
-            key={space.id}
-            title={space.name}
-            status={space.lastEdited}
-            icon={Layout}
-            href={`/spaces/${space.id}`}
+        {recentlyUsedSpaces.map((spaceItem) => (
+          <QuickAccessCard
+            key={spaceItem.id}
+            title={spaceItem.name}
+            badge="Space"
+            status={`Created ${new Date(spaceItem.created_at).toLocaleDateString()}`}
+            href={`/spaces/${spaceItem.id}`}
           />
         ))}
       </QuickAccessGrid>

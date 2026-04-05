@@ -45,19 +45,19 @@ export const useAgentStudioView = (initialData?: Partial<CreateAgentFormData>, a
         "IDENTITY"
     );
 
-	const handleSelectEmpty = useCallback(() => {
+	const handleSelectEmpty = () => {
 		setStep("design");
-	}, []);
+	};
 
-	const handleSelectArchetype = useCallback((archetype: StudioArchetype) => {
+	const handleSelectArchetype = (archetype: StudioArchetype) => {
 		for (const [key, value] of Object.entries(archetype.config)) {
 			form.setValue(key as keyof CreateAgentFormData, value as any);
 		}
 		setStep("design");
 		syncDraft();
-	}, [form, syncDraft]);
+	};
 
-	const renderIcon = useCallback((IconName: string | React.ElementType, size?: number, className?: string) => {
+	const renderIcon = (IconName: string | React.ElementType, size?: number, className?: string) => {
 		const icons: Record<string, React.ElementType> = {
 			Shield,
 			Code,
@@ -67,9 +67,9 @@ export const useAgentStudioView = (initialData?: Partial<CreateAgentFormData>, a
 			Search,
 			Info,
 		};
-		const Comp = typeof IconName === "string" ? icons[IconName] : IconName;
-		return Comp ? React.createElement(Comp, { size, className }) : null;
-	}, []);
+		const Component = typeof IconName === "string" ? icons[IconName] : IconName;
+		return Component ? React.createElement(Component, { size, className }) : null;
+	};
 
 	return {
 		form,

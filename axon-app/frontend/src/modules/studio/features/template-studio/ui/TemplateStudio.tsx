@@ -73,7 +73,7 @@ export const TemplateStudio = ({
 					}
 					canvas={
 						<div className="px-24 pb-48">
-							<form className="space-y-0" onSubmit={(e) => e.preventDefault()}>
+							<form className="space-y-0" onSubmit={(formEvent) => formEvent.preventDefault()}>
 								<DefinitionSection onSyncDraft={onSyncDraft} />
 								<InstructionSection onSyncDraft={onSyncDraft} />
 								<ContextSection onSyncDraft={onSyncDraft} />

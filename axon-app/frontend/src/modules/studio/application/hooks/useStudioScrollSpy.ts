@@ -6,72 +6,79 @@ import { useSyncExternalStore, useCallback, useRef } from "react";
  * Standard: Full descriptive names, 0% useEffect.
  */
 export const useStudioScrollSpy = <SectionId extends string>(
-    sectionIdentifiers: readonly SectionId[],
-    initialSectionIdentifier: SectionId,
-    intersectionOptions: IntersectionObserverInit = { threshold: 0.5, rootMargin: "-10% 0px -40% 0px" }
+	sectionIdentifiers: readonly SectionId[],
+	initialSectionIdentifier: SectionId,
+	intersectionOptions: IntersectionObserverInit = { threshold: 0.5, rootMargin: "-10% 0px -40% 0px" },
 ) => {
-    const activeSectionIdentifierReference = useRef<SectionId>(initialSectionIdentifier);
-    const subscriberCallbacksReference = useRef<Set<() => void>>(new Set());
+	const activeSectionIdentifierReference = useRef<SectionId>(initialSectionIdentifier);
+	const subscriberCallbacksReference = useRef<Set<() => void>>(new Set());
+	const intersectionObserverReference = useRef<IntersectionObserver | null>(null);
 
-    const subscribeToSectionChanges = useCallback((onStoreChange: () => void) => {
-        subscriberCallbacksReference.current.add(onStoreChange);
-        return () => subscriberCallbacksReference.current.delete(onStoreChange);
-    }, []);
+	const subscribeToSectionChanges = (onStoreChange: () => void) => {
+		subscriberCallbacksReference.current.add(onStoreChange);
+		return () => subscriberCallbacksReference.current.delete(onStoreChange);
+	};
 
-    const getActiveSectionSnapshot = useCallback(() => activeSectionIdentifierReference.current, []);
-    const getServerSnapshot = useCallback(() => initialSectionIdentifier, [initialSectionIdentifier]);
+	const getActiveSectionSnapshot = () => activeSectionIdentifierReference.current;
+	const getServerSnapshot = () => initialSectionIdentifier;
 
-    const setCanvasContainerReference = useCallback((scrollContainerNode: HTMLDivElement | null) => {
-        if (!scrollContainerNode) return;
+	const setCanvasContainerReference = (scrollContainerNode: HTMLDivElement | null) => {
+		// Cleanup previous observer
+		if (intersectionObserverReference.current) {
+			intersectionObserverReference.current.disconnect();
+			intersectionObserverReference.current = null;
+		}
 
-        const intersectionObserver = new IntersectionObserver((intersectionEntries) => {
-            let bestIntersectionEntry: IntersectionObserverEntry | null = null;
-            let maximumIntersectionRatio = 0;
+		if (!scrollContainerNode) return;
 
-            for (const entry of intersectionEntries) {
-                if (entry.isIntersecting && entry.intersectionRatio > maximumIntersectionRatio) {
-                    maximumIntersectionRatio = entry.intersectionRatio;
-                    bestIntersectionEntry = entry;
-                }
-            }
+		const intersectionObserver = new IntersectionObserver((intersectionEntries) => {
+			let bestIntersectionEntry: IntersectionObserverEntry | null = null;
+			let maximumIntersectionRatio = 0;
 
-            if (bestIntersectionEntry) {
-                const detectedSectionIdentifier = bestIntersectionEntry.target.id as SectionId;
-                if (activeSectionIdentifierReference.current !== detectedSectionIdentifier) {
-                    activeSectionIdentifierReference.current = detectedSectionIdentifier;
-                    for (const callback of subscriberCallbacksReference.current) {
-                        callback();
-                    }
-                }
-            }
-        }, { ...intersectionOptions, root: scrollContainerNode });
+			for (const entry of intersectionEntries) {
+				if (entry.isIntersecting && entry.intersectionRatio > maximumIntersectionRatio) {
+					maximumIntersectionRatio = entry.intersectionRatio;
+					bestIntersectionEntry = entry;
+				}
+			}
 
-        for (const identifier of sectionIdentifiers) {
-            const sectionElement = document.getElementById(identifier);
-            if (sectionElement) {
-                intersectionObserver.observe(sectionElement);
-            }
-        }
+			if (bestIntersectionEntry) {
+				const detectedSectionIdentifier = bestIntersectionEntry.target.id as SectionId;
+				if (activeSectionIdentifierReference.current !== detectedSectionIdentifier) {
+					activeSectionIdentifierReference.current = detectedSectionIdentifier;
+					for (const callback of subscriberCallbacksReference.current) {
+						callback();
+					}
+				}
+			}
+		}, { ...intersectionOptions, root: scrollContainerNode });
 
-        return () => intersectionObserver.disconnect();
-    }, [sectionIdentifiers, intersectionOptions]);
+		for (const identifier of sectionIdentifiers) {
+			const sectionElement = document.getElementById(identifier);
+			if (sectionElement) {
+				intersectionObserver.observe(sectionElement);
+			}
+		}
 
-    const activeSectionIdentifier = useSyncExternalStore(
-        subscribeToSectionChanges, 
-        getActiveSectionSnapshot,
-        getServerSnapshot
-    );
+		intersectionObserverReference.current = intersectionObserver;
+	};
 
-    const scrollToSectionIdentifier = useCallback((sectionIdentifier: SectionId) => {
-        const targetSectionElement = document.getElementById(sectionIdentifier);
-        if (targetSectionElement) {
-            targetSectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-    }, []);
+	const activeSectionIdentifier = useSyncExternalStore(
+		subscribeToSectionChanges,
+		getActiveSectionSnapshot,
+		getServerSnapshot,
+	);
 
-    return {
-        activeSectionIdentifier,
-        setCanvasContainerReference,
-        scrollToSectionIdentifier
-    };
+	const scrollToSectionIdentifier = (sectionIdentifier: SectionId) => {
+		const targetSectionElement = document.getElementById(sectionIdentifier);
+		if (targetSectionElement) {
+			targetSectionElement.scrollIntoView({ behavior: "smooth", block: "start" });
+		}
+	};
+
+	return {
+		activeSectionIdentifier,
+		setCanvasContainerReference,
+		scrollToSectionIdentifier,
+	};
 };

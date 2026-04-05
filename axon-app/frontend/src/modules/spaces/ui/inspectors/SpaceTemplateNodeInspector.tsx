@@ -6,18 +6,19 @@ import { SpaceTemplateNodeInspectorView } from "../pure/SpaceTemplateNodeInspect
 import type { SpaceTemplateInspectorProperties } from "../types";
 
 /**
- * SpaceTemplateNodeInspector - Pure view component for template node details.
- * Delegates logic to useSpaceTemplateInspectorLogic hook.
+ * SpaceTemplateNodeInspector - Container component for template node details.
+ * Manages state and logic, delegating presentation to the Pure View.
  */
 export const SpaceTemplateNodeInspector = ({ 
-    data, 
+    templateData, 
+    nodeId,
     onPropertyChange 
 }: SpaceTemplateInspectorProperties) => {
-    const logic = useSpaceTemplateInspectorLogic(data, onPropertyChange as any);
+    const logic = useSpaceTemplateInspectorLogic(templateData, onPropertyChange as any);
 
     return (
         <SpaceTemplateNodeInspectorView 
-            data={data}
+            templateData={templateData}
             isAllDone={logic.isAllDone}
             isContextDone={logic.isContextDone}
             isArtefactsDone={logic.isArtefactsDone}

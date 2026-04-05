@@ -1,6 +1,7 @@
-import React, { useCallback, useRef, useState } from "react";
+import React from "react";
 import { ModelStudioView } from "./ModelStudioView";
 import { useModelForm } from "../application/hooks/useModelForm";
+import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";
 import type { ModelFormData } from "../types/model-schema";
 import { toast } from "sonner";
 
@@ -18,7 +19,7 @@ const NAVIGATION_ITEMS = [
 	{ id: "custom-params", label: "Parametry Niestandardowe", number: 3 },
 	{ id: "system-prompt", label: "Globalne Instrukcje", number: 4 },
 	{ id: "pricing", label: "Ekonomia", number: 5 },
-];
+] as const;
 
 export const ModelStudio = ({
 	modelId,
@@ -28,27 +29,17 @@ export const ModelStudio = ({
 	isSaving = false,
 }: ModelStudioProps) => {
 	const form = useModelForm(initialData);
-	const [activeSection, setActiveSection] = useState("identity");
-	const canvasContainerRef = useRef<HTMLElement | null>(null);
-
-	const handleSectionClick = useCallback((sectionId: string) => {
-		setActiveSection(sectionId);
-		const element = document.getElementById(sectionId);
-		if (element) {
-			const container = element.closest('.overflow-y-auto') || window;
-			const elementPosition = element.getBoundingClientRect().top;
-			const offsetPosition = elementPosition + (container instanceof Window ? window.scrollY : container.scrollTop) - 100;
-
-			container.scrollTo({
-				top: offsetPosition,
-				behavior: "smooth"
-			});
-		}
-	}, []);
-
-	const setCanvasContainerReference = useCallback((node: HTMLElement | null) => {
-		canvasContainerRef.current = node;
-	}, []);
+	
+	const sectionIdentifiers = NAVIGATION_ITEMS.map(item => item.id);
+	
+	const { 
+		activeSectionIdentifier, 
+		setCanvasContainerReference, 
+		scrollToSectionIdentifier 
+	} = useStudioScrollSpy<string>(
+		sectionIdentifiers,
+		"identity"
+	);
 
 	const handleOnSave = form.handleSubmit(
 		(data) => {
@@ -67,9 +58,9 @@ export const ModelStudio = ({
 		<ModelStudioView
 			form={form}
 			modelId={modelId}
-			navigationItems={NAVIGATION_ITEMS}
-			activeSection={activeSection}
-			onSectionClick={handleSectionClick}
+			navigationItems={NAVIGATION_ITEMS as any}
+			activeSection={activeSectionIdentifier}
+			onSectionClick={scrollToSectionIdentifier}
 			onSave={handleOnSave}
 			onCancel={onCancel}
 			isSaving={isSaving}

@@ -1,14 +1,18 @@
 // frontend/src/modules/spaces/ui/nodes/SpaceCrewCanvasNode.tsx
 
-import { memo } from 'react';
+import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { mapCrewToViewModel } from '../mappers/SpaceNodeViewModelMapper';
 import { SpaceCrewNodeView } from './pure/SpaceCrewNodeView';
 import { SpaceCrewDomainData } from '../../domain/types';
 import { SpaceCanvasNodeProperties } from '../types';
 
-export const SpaceCrewCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
-    const viewModel = mapCrewToViewModel(
+/**
+ * SpaceCrewCanvasNode - Container component for crew node on the canvas.
+ * Orchestrates mapping domain data to view model and rendering the Pure View.
+ */
+export const SpaceCrewCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) => {
+    const crewViewModel = mapCrewToViewModel(
         nodeProperties.data as unknown as SpaceCrewDomainData, 
         nodeProperties.selected ?? false
     );
@@ -18,18 +22,18 @@ export const SpaceCrewCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperti
             <Handle 
                 type="target" 
                 position={Position.Left} 
-                className={viewModel.visual.handleClassName} 
+                className={crewViewModel.visual.handleClassName} 
             />
             
-            <SpaceCrewNodeView viewModel={viewModel} />
+            <SpaceCrewNodeView viewModel={crewViewModel} />
 
             <Handle 
                 type="source" 
                 position={Position.Right} 
-                className={viewModel.visual.handleClassName} 
+                className={crewViewModel.visual.handleClassName} 
             />
         </div>
     );
-});
+};
 
 SpaceCrewCanvasNode.displayName = 'SpaceCrewCanvasNode';

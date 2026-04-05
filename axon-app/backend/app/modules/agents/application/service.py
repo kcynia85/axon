@@ -2,11 +2,12 @@ from fastapi import Depends
 from typing import List, Optional
 from uuid import UUID
 import inngest
-from app.modules.agents.application.schemas import ChatRequest
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.modules.agents.application.schemas import ChatRequest, CostEstimateResponse, ContextUsage, CostBreakdown, AffectedCrew
 from app.modules.agents.application import orchestrator
-from app.modules.agents.dependencies import get_inngest_client, get_agent_repo
+from app.modules.agents.dependencies import get_inngest_client, get_db
 from app.modules.agents.domain.models import Tool, AgentConfig
-from app.modules.agents.infrastructure.repo import AgentConfigRepository
+from app.modules.agents.infrastructure import repo as agent_repo
 
 # Function-First Service Layer
 
@@ -67,59 +68,61 @@ async def get_available_tools() -> List[Tool]:
 
 async def list_agents_use_case(
     workspace: Optional[str] = None,
-    repo: AgentConfigRepository = Depends(get_agent_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> List[AgentConfig]:
-    return await repo.list_all(workspace=workspace)
+    return await agent_repo.list_agent_configs(session, workspace=workspace)
 
 async def create_agent_use_case(
     agent: AgentConfig,
-    repo: AgentConfigRepository = Depends(get_agent_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> AgentConfig:
-    return await repo.create(agent)
+    return await agent_repo.create_agent_config(session, agent)
 
 async def get_agent_use_case(
     id: UUID,
-    repo: AgentConfigRepository = Depends(get_agent_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> Optional[AgentConfig]:
-    return await repo.get(id)
+    return await agent_repo.get_agent_config(session, id)
 
 async def update_agent_use_case(
     id: UUID,
     agent: AgentConfig,
-    repo: AgentConfigRepository = Depends(get_agent_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> Optional[AgentConfig]:
-    return await repo.update(id, agent.model_dump(exclude_unset=True))
+    return await agent_repo.update_agent_config(session, id, agent.model_dump(exclude_unset=True))
 
 async def delete_agent_use_case(
     id: UUID,
-    repo: AgentConfigRepository = Depends(get_agent_repo)
+    session: AsyncSession = Depends(get_db)
 ) -> bool:
-    return await repo.delete(id)
+    return await agent_repo.delete_agent_config(session, id)
 
 async def inspect_agent_deletion_use_case(
     id: UUID,
-    repo: AgentConfigRepository = Depends(get_agent_repo)
-) -> List[dict]:
+    session: AsyncSession = Depends(get_db)
+) -> List[AffectedCrew]:
     """Returns assignments that would be affected by deleting this agent."""
-    return await repo.get_assigned_crews(id)
+    crews = await agent_repo.get_agent_assigned_crews(session, id)
+    return [AffectedCrew(**c) for c in crews]
 
 import tiktoken
-from app.modules.settings.infrastructure.repo import SettingsRepository
-from app.modules.settings.dependencies import get_settings_repo
+from app.modules.settings.infrastructure import repo as settings_repo
+from app.modules.settings.dependencies import get_db as get_settings_db # Shared DB session usually
 
 async def estimate_cost_use_case(
     id: UUID,
-    repo: AgentConfigRepository = Depends(get_agent_repo),
-    settings_repo: SettingsRepository = Depends(get_settings_repo)
-) -> dict:
-    agent = await repo.get(id)
+    session: AsyncSession = Depends(get_db)
+) -> Optional[CostEstimateResponse]:
+    agent = await agent_repo.get_agent_config(session, id)
     if not agent:
-        return {}
+        return None
     
     model_id = agent.llm_model_id
     model = None
     if model_id:
-        model = await settings_repo.get_llm_model(model_id)
+        # Assuming settings repo also refactored to functions
+        from app.modules.settings.infrastructure.repo import get_llm_model
+        model = await get_llm_model(session, model_id)
     
     # 1. Calculate Prompt Tokens
     full_prompt = f"{agent.agent_role_text or ''}\n{agent.agent_goal or ''}\n{agent.agent_backstory or ''}"
@@ -127,8 +130,6 @@ async def estimate_cost_use_case(
         full_prompt += "\n" + "\n".join(agent.guardrails.get("instructions", []))
         full_prompt += "\n" + "\n".join(agent.guardrails.get("constraints", []))
     
-    # Simple token counting using cl100k_base (OpenAI default)
-    # TODO: Use strategy from provider config if available
     try:
         encoding = tiktoken.get_encoding("cl100k_base")
         input_tokens = len(encoding.encode(full_prompt))
@@ -147,8 +148,6 @@ async def estimate_cost_use_case(
         context_window = model.model_context_window or 4096
     
     input_cost = (input_tokens / 1_000_000) * input_price_1m
-    
-    # Estimate output cost (assuming average 500 tokens)
     avg_output_tokens = 500
     output_cost = (avg_output_tokens / 1_000_000) * output_price_1m
     
@@ -157,20 +156,20 @@ async def estimate_cost_use_case(
     
     total_estimate = input_cost + output_cost + static_setup_cost + rag_cost
     
-    return {
-        "staticCost": static_setup_cost + rag_cost,
-        "dynamicCost": input_cost + output_cost,
-        "totalEstimate": total_estimate,
-        "contextUsage": {
-            "current": input_tokens,
-            "total": context_window
-        },
-        "breakdown": {
-            "agentSetup": static_setup_cost,
-            "ragUsage": rag_cost,
-            "toolCalls": 0.0,
-            "inputTokens": input_cost,
-            "outputTokens": output_cost
-        },
-        "suggestions": ["Consider a shorter prompt" if input_tokens > 2000 else "Model configuration looks good"]
-    }
+    return CostEstimateResponse(
+        staticCost=static_setup_cost + rag_cost,
+        dynamicCost=input_cost + output_cost,
+        totalEstimate=total_estimate,
+        contextUsage=ContextUsage(
+            current=input_tokens,
+            total=context_window
+        ),
+        breakdown=CostBreakdown(
+            agentSetup=static_setup_cost,
+            ragUsage=rag_cost,
+            toolCalls=0.0,
+            inputTokens=input_cost,
+            outputTokens=output_cost
+        ),
+        suggestions=["Consider a shorter prompt" if input_tokens > 2000 else "Model configuration looks good"]
+    )

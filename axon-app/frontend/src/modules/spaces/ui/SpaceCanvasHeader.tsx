@@ -1,9 +1,11 @@
-// frontend/src/modules/spaces/ui/SpaceCanvasHeader.tsx
-
 import React from "react";
-import { SpaceCanvasHeaderProperties } from "./types";
 import { SpaceCanvasHeaderView } from "./pure/SpaceCanvasHeaderView";
+import type { SpaceCanvasHeaderProperties } from "./types";
 
-export const SpaceCanvasHeader = (props: SpaceCanvasHeaderProperties) => {
-    return <SpaceCanvasHeaderView {...props} />;
+/**
+ * SpaceCanvasHeader - Container component for the canvas header.
+ * Passes data to the Pure View.
+ */
+export const SpaceCanvasHeader = (properties: SpaceCanvasHeaderProperties) => {
+    return <SpaceCanvasHeaderView {...properties} />;
 };

@@ -6,42 +6,46 @@ import { SpaceCrewSequentialNodeInspector } from "./crews/SpaceCrewSequentialNod
 import { SpaceCrewHierarchicalNodeInspector } from "./crews/SpaceCrewHierarchicalNodeInspector";
 import { SpaceCrewParallelNodeInspector } from "./crews/SpaceCrewParallelNodeInspector";
 
+/**
+ * SpaceCrewNodeInspector - Container component that routes to specific crew inspectors
+ * based on the process type. Adheres to full naming conventions and project standards.
+ */
 export const SpaceCrewNodeInspector = ({ 
-    data, 
+    crewData, 
     nodeId,
     onStatusChange,
     onPropertyChange
 }: SpaceCrewInspectorProperties) => {
-    const processType = data.process_type || 'sequential';
+    const processType = crewData.process_type || 'sequential';
 
-    if (processType === 'hierarchical') {
-        return (
-            <SpaceCrewHierarchicalNodeInspector 
-                data={data} 
-                nodeId={nodeId} 
-                onStatusChange={onStatusChange} 
-                onPropertyChange={onPropertyChange} 
-            />
-        );
+    switch (processType) {
+        case 'hierarchical':
+            return (
+                <SpaceCrewHierarchicalNodeInspector 
+                    data={crewData} 
+                    nodeId={nodeId} 
+                    onStatusChange={onStatusChange} 
+                    onPropertyChange={onPropertyChange} 
+                />
+            );
+        case 'parallel':
+            return (
+                <SpaceCrewParallelNodeInspector 
+                    data={crewData} 
+                    nodeId={nodeId} 
+                    onStatusChange={onStatusChange} 
+                    onPropertyChange={onPropertyChange} 
+                />
+            );
+        case 'sequential':
+        default:
+            return (
+                <SpaceCrewSequentialNodeInspector 
+                    data={crewData} 
+                    nodeId={nodeId} 
+                    onStatusChange={onStatusChange} 
+                    onPropertyChange={onPropertyChange} 
+                />
+            );
     }
-
-    if (processType === 'parallel') {
-        return (
-            <SpaceCrewParallelNodeInspector 
-                data={data} 
-                nodeId={nodeId} 
-                onStatusChange={onStatusChange} 
-                onPropertyChange={onPropertyChange} 
-            />
-        );
-    }
-
-    return (
-        <SpaceCrewSequentialNodeInspector 
-            data={data} 
-            nodeId={nodeId} 
-            onStatusChange={onStatusChange} 
-            onPropertyChange={onPropertyChange} 
-        />
-    );
 };

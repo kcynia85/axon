@@ -24,99 +24,104 @@ import { AgentStudioViewProps } from "../types/agent-studio-ui.types";
  * Adheres to Pure View principle.
  */
 export const AgentStudioView = ({
-    form,
-    step,
-    onSetStep,
-    onExit,
-    onSave,
-    onSyncDraft,
-    onKeyDown,
-    activeSectionIdentifier,
-    onSectionClick,
-    onSelectEmpty,
-    onSelectArchetype,
-    renderIcon,
-    sections,
-    setCanvasContainerReference
+	form,
+	step,
+	onSetStep,
+	onExit,
+	onSave,
+	onSyncDraft,
+	onKeyDown,
+	activeSectionIdentifier,
+	onSectionClick,
+	onSelectEmpty,
+	onSelectArchetype,
+	renderIcon,
+	sections,
+	setCanvasContainerReference,
+	isEditing,
 }: AgentStudioViewProps) => {
-    if (step === "discovery") {
-        return (
-            <StudioDiscovery
-                title="Agent Studio"
-                emptyLabel="Start Blank"
-                emptySublabel="Design your cognitive agent from the ground up"
-                libraryLabel="Browse Library"
-                librarySublabel="Import an existing agent from your organization"
-                archetypes={ARCHETYPES}
-                categories={["Product", "Technical", "Creative", "Research"]}
-                onSelectEmpty={onSelectEmpty}
-                onSelectArchetype={onSelectArchetype}
-                onExit={onExit}
-                renderIcon={renderIcon}
-            />
-        );
-    }
+	if (step === "discovery") {
+		return (
+			<StudioDiscovery
+				title="Agent Studio"
+				emptyLabel="Start Blank"
+				emptySublabel="Design your cognitive agent from the ground up"
+				libraryLabel="Browse Library"
+				librarySublabel="Import an existing agent from your organization"
+				archetypes={ARCHETYPES}
+				categories={["Product", "Technical", "Creative", "Research"]}
+				onSelectEmpty={onSelectEmpty}
+				onSelectArchetype={onSelectArchetype}
+				onExit={onExit}
+				renderIcon={renderIcon}
+			/>
+		);
+	}
 
-    return (
-        <FormProvider {...form}>
-            <div
-                onKeyDown={onKeyDown}
-                className="outline-none h-full w-full"
-                tabIndex={0}
-            >
-                <StudioLayout
-                    studioLabel="Agent"
-                    canvasRef={setCanvasContainerReference}
-                    exitButton={
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={onExit}
-                            className="hover:bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all h-9 w-9"
-                        >
-                            <X className="w-4 h-4" />
-                        </Button>
-                    }
-                    navigator={
-                        <StudioSectionNav
-                            sections={sections as any}
-                            activeSection={activeSectionIdentifier}
-                            onSectionClick={onSectionClick}
-                            onExitToLibrary={() => onSetStep("discovery")}
-                        />
-                    }
-                    canvas={
-                        <div className="px-16 pb-48 pt-20 w-full">
-                            <form className="space-y-16 w-full" onSubmit={(submitEvent) => submitEvent.preventDefault()}>
-                                <IdentitySection syncDraft={onSyncDraft} />
-                                <CognitionSection syncDraft={onSyncDraft} />
-                                <EngineSection syncDraft={onSyncDraft} />
-                                <SkillsSection syncDraft={onSyncDraft} />
-                                <ContextSection syncDraft={onSyncDraft} />
-                                <ArtefactsSection syncDraft={onSyncDraft} />
-                                <AvailabilitySection />
-                            </form>
-                        </div>
-                    }
-                    poster={<ConnectedLivePoster />}
-                    footer={
-                        <div className="flex items-center gap-4">
-                            <Button
-                                variant="ghost"
-                                size="lg"
-                                onClick={onExit}
-                                className="hover:bg-zinc-900 h-11 font-mono text-base tracking-widest px-6 text-zinc-500 hover:text-white transition-all"
-                            >
-                                Anuluj
-                            </Button>
-                            <ActionButton
-                                label="Zapisz Agenta"
-                                onClick={onSave}
-                            />
-                        </div>
-                    }
-                />
-            </div>
-        </FormProvider>
-    );
+	return (
+		<FormProvider {...form}>
+			<div
+				onKeyDown={onKeyDown}
+				className="outline-none h-full w-full"
+				// biome-ignore lint/a11y/noNoninteractiveTabindex: needs focus for studio shortcuts
+				tabIndex={0}
+			>
+				<StudioLayout
+					studioLabel="Agent"
+					canvasRef={setCanvasContainerReference}
+					exitButton={
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => (isEditing ? onExit() : onSetStep("discovery"))}
+							className="hover:bg-zinc-900 gap-2 text-zinc-400 hover:text-white px-4 font-mono text-[10px] uppercase tracking-[0.2em] border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
+						>
+							<X className="w-4 h-4" /> Exit Studio
+						</Button>
+					}
+					navigator={
+						<StudioSectionNav
+							sections={sections as any}
+							activeSection={activeSectionIdentifier}
+							onSectionClick={onSectionClick}
+							onExitToLibrary={() => (isEditing ? onExit() : onSetStep("discovery"))}
+						/>
+					}
+					canvas={
+						<div className="px-24 pb-48">
+							<form
+								className="space-y-0"
+								onSubmit={(formEvent) => formEvent.preventDefault()}
+							>
+								<IdentitySection syncDraft={onSyncDraft} />
+								<CognitionSection syncDraft={onSyncDraft} />
+								<EngineSection syncDraft={onSyncDraft} />
+								<SkillsSection syncDraft={onSyncDraft} />
+								<ContextSection syncDraft={onSyncDraft} />
+								<ArtefactsSection syncDraft={onSyncDraft} />
+								<AvailabilitySection syncDraft={onSyncDraft} />
+							</form>
+						</div>
+					}
+					poster={<ConnectedLivePoster />}
+					footer={
+						<div className="flex items-center gap-4">
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={onExit}
+								className="hover:bg-zinc-900 h-9 font-mono text-base tracking-widest px-6 text-zinc-500 hover:text-white transition-all"
+							>
+								Anuluj
+							</Button>
+							<ActionButton
+								label={isEditing ? "Zaktualizuj Agenta" : "Zapisz Agenta"}
+								onClick={onSave}
+							/>
+						</div>
+					}
+				/>
+			</div>
+		</FormProvider>
+	);
 };

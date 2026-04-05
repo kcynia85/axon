@@ -31,17 +31,17 @@ import { cn } from "@/shared/lib/utils";
 import { SpaceInspectorPanel } from "../inspectors/components/SpaceInspectorPanel";
 
 const SpaceTemplateCustomActionsEditor = dynamic(
-    () => import("../inspectors/components/SpaceTemplateCustomActionsEditor").then(mod => mod.SpaceTemplateCustomActionsEditor),
+    () => import("../inspectors/components/SpaceTemplateCustomActionsEditor").then(module => module.SpaceTemplateCustomActionsEditor),
     { ssr: false }
 );
 
-type SpaceTemplateNodeInspectorViewProps = {
-    readonly data: SpaceTemplateDomainData;
+export type SpaceTemplateNodeInspectorViewProps = {
+    readonly templateData: SpaceTemplateDomainData;
     readonly isAllDone: boolean;
     readonly isContextDone: boolean;
     readonly isArtefactsDone: boolean;
     readonly groupedActions: Record<string, TemplateAction[]>;
-    readonly onActionToggle: (id: string) => void;
+    readonly onActionToggle: (actionId: string) => void;
     readonly onCustomActionsChange: (content: string) => void;
     readonly onContextLinkChange: (contextId: string, link: string) => void;
     readonly onArtefactLinkChange: (artefactId: string, link: string) => void;
@@ -49,13 +49,13 @@ type SpaceTemplateNodeInspectorViewProps = {
     readonly onArtefactOutputToggle: (artefactId: string) => void;
 };
 
-const ARTEFACT_STATUS_CONFIG = {
+const ARTEFACT_STATUS_VISUAL_CONFIG = {
     in_review: { label: "In Review", color: "text-blue-400", dot: "bg-blue-400", icon: Clock },
     approved: { label: "Approved", color: "text-green-500", dot: "bg-green-500", icon: CheckCircle },
 } as const;
 
 export const SpaceTemplateNodeInspectorView = ({
-    data,
+    templateData,
     isAllDone,
     isContextDone,
     isArtefactsDone,
@@ -92,29 +92,29 @@ export const SpaceTemplateNodeInspectorView = ({
                 >
                     <ScrollShadow className="h-[calc(100vh-192px)] p-8">
                         <div className="space-y-12">
-                            {Object.entries(groupedActions).map(([sectionName, actions]) => (
+                            {Object.entries(groupedActions).map(([sectionName, actionsList]) => (
                                 <div key={sectionName} className="space-y-5">
                                     <div className="flex flex-col gap-1.5">
                                         <h4 className="text-sm font-black text-white">{sectionName}</h4>
                                         <Divider className="bg-zinc-800/50" />
                                     </div>
                                     <div className="flex flex-col gap-3.5 pl-1">
-                                        {actions.map((action) => (
+                                        {actionsList.map((actionItem) => (
                                             <Checkbox
-                                                key={action.id}
+                                                key={actionItem.id}
                                                 size="sm"
                                                 radius="full"
-                                                isSelected={action.isCompleted}
-                                                onValueChange={() => onActionToggle(action.id)}
+                                                isSelected={actionItem.isCompleted}
+                                                onValueChange={() => onActionToggle(actionItem.id)}
                                                 classNames={{
                                                     label: cn(
                                                         "text-xs font-bold transition-all",
-                                                        action.isCompleted ? "text-zinc-500 line-through" : "text-zinc-300"
+                                                        actionItem.isCompleted ? "text-zinc-500 line-through" : "text-zinc-300"
                                                     ),
                                                     wrapper: "after:bg-zinc-200"
                                                 }}
                                             >
-                                                {action.label}
+                                                {actionItem.label}
                                             </Checkbox>
                                         ))}
                                     </div>
@@ -129,7 +129,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                 </div>
                                 <div>
                                     <SpaceTemplateCustomActionsEditor
-                                        initialContent={data.customActionsContent}
+                                        initialContent={templateData.customActionsContent}
                                         onChange={onCustomActionsChange}
                                     />
                                 </div>
@@ -150,13 +150,13 @@ export const SpaceTemplateNodeInspectorView = ({
                 >
                     <ScrollShadow className="h-[calc(100vh-192px)] p-8">
                         <div className="space-y-8">
-                            {data.contexts?.map((context) => (
-                                <div key={context.id} className="space-y-3">
+                            {templateData.contexts?.map((contextItem) => (
+                                <div key={contextItem.id} className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <h4 className="text-xs font-black text-white tracking-tight">{context.label}</h4>
-                                        {context.link && (
+                                        <h4 className="text-xs font-black text-white tracking-tight">{contextItem.label}</h4>
+                                        {contextItem.link && (
                                             <a
-                                                href={context.link}
+                                                href={contextItem.link}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1"
@@ -169,8 +169,8 @@ export const SpaceTemplateNodeInspectorView = ({
                                         size="sm"
                                         variant="bordered"
                                         placeholder="Wklej link..."
-                                        value={context.link || ""}
-                                        onValueChange={(value) => onContextLinkChange(context.id, value)}
+                                        value={contextItem.link || ""}
+                                        onValueChange={(value) => onContextLinkChange(contextItem.id, value)}
                                         startContent={<LinkIcon size={12} className="text-zinc-500" />}
                                         classNames={{
                                             input: "text-[10px] font-bold text-zinc-200",
@@ -179,7 +179,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                     />
                                 </div>
                             ))}
-                            {(!data.contexts || data.contexts.length === 0) && (
+                            {(!templateData.contexts || templateData.contexts.length === 0) && (
                                 <p className="text-xs text-zinc-600 italic text-center py-10">No context links provided.</p>
                             )}
                         </div>
@@ -192,9 +192,9 @@ export const SpaceTemplateNodeInspectorView = ({
                         <div className="flex items-center gap-2">
                             <Archive size={12} />
                             Artefacts
-                            {data.artefacts?.some(a => a.status === 'in_review') ? (
+                            {templateData.artefacts?.some(artefact => artefact.status === 'in_review') ? (
                                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
-                            ) : data.artefacts && data.artefacts.length > 0 ? (
+                            ) : templateData.artefacts && templateData.artefacts.length > 0 ? (
                                 <CheckCircle2 size={10} className="text-green-500" />
                             ) : null}
                         </div>
@@ -202,21 +202,21 @@ export const SpaceTemplateNodeInspectorView = ({
                 >
                     <ScrollShadow className="h-[calc(100vh-192px)] p-8">
                         <div className="space-y-10">
-                            {data.artefacts?.map((art) => (
-                                <div key={art.id} className="space-y-3.5">
+                            {templateData.artefacts?.map((artefactItem) => (
+                                <div key={artefactItem.id} className="space-y-3.5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
-                                            <h4 className="text-xs font-black text-white tracking-tight">{art.label}</h4>
-                                            {art.isOutput && (
+                                            <h4 className="text-xs font-black text-white tracking-tight">{artefactItem.label}</h4>
+                                            {artefactItem.isOutput && (
                                                 <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[8px] font-black text-orange-500 uppercase tracking-widest">
                                                     Output <ArrowUpRight size={8} />
                                                 </div>
                                             )}
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            {art.link && (
+                                            {artefactItem.link && (
                                                 <a
-                                                    href={art.link}
+                                                    href={artefactItem.link}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-[9px] font-black text-zinc-500 hover:text-white uppercase tracking-widest transition-colors flex items-center gap-1"
@@ -232,8 +232,8 @@ export const SpaceTemplateNodeInspectorView = ({
                                             size="sm"
                                             variant="bordered"
                                             placeholder="Wklej link..."
-                                            value={art.link || ""}
-                                            onValueChange={(value) => onArtefactLinkChange(art.id, value)}
+                                            value={artefactItem.link || ""}
+                                            onValueChange={(value) => onArtefactLinkChange(artefactItem.id, value)}
                                             startContent={<LinkIcon size={12} className="text-zinc-500" />}
                                             classNames={{
                                                 base: "w-full",
@@ -252,14 +252,14 @@ export const SpaceTemplateNodeInspectorView = ({
                                                         endContent={<ChevronDown size={12} />}
                                                     >
                                                         <div className="flex items-center gap-1.5">
-                                                            <div className={cn("w-1.5 h-1.5 rounded-full", ARTEFACT_STATUS_CONFIG[art.status]?.dot || "bg-blue-400")} />
-                                                            {ARTEFACT_STATUS_CONFIG[art.status]?.label || "In Review"}
+                                                            <div className={cn("w-1.5 h-1.5 rounded-full", ARTEFACT_STATUS_VISUAL_CONFIG[artefactItem.status]?.dot || "bg-blue-400")} />
+                                                            {ARTEFACT_STATUS_VISUAL_CONFIG[artefactItem.status]?.label || "In Review"}
                                                         </div>
                                                     </Button>
                                                 </DropdownTrigger>
                                                 <DropdownMenu
                                                     aria-label="Artefact Status"
-                                                    onAction={(key) => onArtefactStatusChange(art.id, key as TemplateArtefact['status'])}
+                                                    onAction={(key) => onArtefactStatusChange(artefactItem.id, key as TemplateArtefact['status'])}
                                                     classNames={{
                                                         base: "bg-zinc-950 border border-zinc-800 p-1",
                                                     }}
@@ -267,10 +267,10 @@ export const SpaceTemplateNodeInspectorView = ({
                                                     {(['in_review', 'approved'] as const).map((key) => (
                                                         <DropdownItem
                                                             key={key}
-                                                            startContent={React.createElement(ARTEFACT_STATUS_CONFIG[key].icon, { size: 12, className: ARTEFACT_STATUS_CONFIG[key].color })}
+                                                            startContent={React.createElement(ARTEFACT_STATUS_VISUAL_CONFIG[key].icon, { size: 12, className: ARTEFACT_STATUS_VISUAL_CONFIG[key].color })}
                                                             className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white"
                                                         >
-                                                            {ARTEFACT_STATUS_CONFIG[key].label}
+                                                            {ARTEFACT_STATUS_VISUAL_CONFIG[key].label}
                                                         </DropdownItem>
                                                     ))}
                                                 </DropdownMenu>
@@ -282,9 +282,9 @@ export const SpaceTemplateNodeInspectorView = ({
                                                 variant="bordered"
                                                 className={cn(
                                                     "h-10 w-10 border-zinc-800 transition-all",
-                                                    art.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
+                                                    artefactItem.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
                                                 )}
-                                                onPress={() => onArtefactOutputToggle(art.id)}
+                                                onPress={() => onArtefactOutputToggle(artefactItem.id)}
                                                 title="Mark as Workflow Output"
                                             >
                                                 <ArrowUpRight size={14} />
@@ -294,7 +294,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                 </div>
                             ))}
 
-                            {(!data.artefacts || data.artefacts.length === 0) && (
+                            {(!templateData.artefacts || templateData.artefacts.length === 0) && (
                                 <p className="text-xs text-zinc-600 italic text-center py-10">No artefacts provided.</p>
                             )}
                         </div>

@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import { 
@@ -16,23 +14,25 @@ import { AiAssistantCard } from "@/shared/ui/complex/AiAssistantCard";
 
 import { UIState } from "@/modules/agents/infrastructure/AiProvider";
 
-type HomeViewProps = {
+export type RecentlyUsedItem = {
+    readonly title: string;
+    readonly type: string;
+    readonly time: string;
+    readonly href: string;
+}
+
+export type HomeViewProps = {
     readonly messages: UIState;
     readonly inputValue: string;
+    readonly recentlyUsed: readonly RecentlyUsedItem[];
     readonly onInputChange: (value: string) => void;
     readonly onSubmission: (event?: React.FormEvent) => void;
     readonly onKeyDown: (event: React.KeyboardEvent) => void;
 }
 
-const recentlyUsed = [
-    { title: "Market Landscape", type: "Space", time: "2 hours ago", href: "/spaces/1" },
-    { title: "Axon MVP", type: "Project", time: "3 hours ago", href: "/projects/p1" },
-    { title: "Market Research", type: "Space", time: "Yesterday", href: "/spaces/2" },
-    { title: "Product Strategy", type: "Project", time: "Yesterday", href: "/projects/p2" },
-];
-
 export const HomeView = ({
     inputValue,
+    recentlyUsed,
     onInputChange,
     onSubmission,
     onKeyDown,

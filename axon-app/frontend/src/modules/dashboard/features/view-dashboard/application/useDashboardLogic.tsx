@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useUIState, useActions } from "ai/rsc";
 import type { AI, UIState } from "@/modules/agents/infrastructure/AiProvider";
 import React from "react";
@@ -10,7 +10,7 @@ export const useDashboardLogic = () => {
     const { submitUserMessage } = useActions<typeof AI>();
     const [inputValue, setInputValue] = useState<string>("");
 
-    const handleSubmission = useCallback(async (event?: React.FormEvent) => {
+    const handleSubmission = async (event?: React.FormEvent) => {
         event?.preventDefault();
         if (!inputValue.trim()) return;
 
@@ -36,14 +36,14 @@ export const useDashboardLogic = () => {
         } catch (error) {
             console.error("Error submitting message:", error);
         }
-    }, [inputValue, setMessages, submitUserMessage]);
+    };
 
-    const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+    const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
             void handleSubmission();
         }
-    }, [handleSubmission]);
+    };
 
     return {
         messages,

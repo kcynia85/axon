@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useRef } from 'react';
 import type { Node, Edge } from '@xyflow/react';
 
 interface CanvasSnapshot {
@@ -15,7 +15,7 @@ export const useSpaceCanvasHistory = (
   const historyRef = useRef<CanvasSnapshot[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
-  const takeSnapshot = useCallback(() => {
+  const takeSnapshot = () => {
     const snapshot: CanvasSnapshot = {
       nodes: JSON.parse(JSON.stringify(nodes)),
       edges: JSON.parse(JSON.stringify(edges)),
@@ -30,9 +30,9 @@ export const useSpaceCanvasHistory = (
         historyRef.current.shift();
         setHistoryIndex(prev => prev - 1);
     }
-  }, [nodes, edges, historyIndex]);
+  };
 
-  const undo = useCallback(() => {
+  const undo = () => {
     if (historyIndex > 0) {
       const prevIndex = historyIndex - 1;
       const snapshot = historyRef.current[prevIndex];
@@ -40,9 +40,9 @@ export const useSpaceCanvasHistory = (
       setEdges(JSON.parse(JSON.stringify(snapshot.edges)));
       setHistoryIndex(prevIndex);
     }
-  }, [historyIndex, setNodes, setEdges]);
+  };
 
-  const redo = useCallback(() => {
+  const redo = () => {
     if (historyIndex < historyRef.current.length - 1) {
       const nextIndex = historyIndex + 1;
       const snapshot = historyRef.current[nextIndex];
@@ -50,9 +50,9 @@ export const useSpaceCanvasHistory = (
       setEdges(JSON.parse(JSON.stringify(snapshot.edges)));
       setHistoryIndex(nextIndex);
     }
-  }, [historyIndex, setNodes, setEdges]);
+  };
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
     if ((event.metaKey || event.ctrlKey) && event.key === 'z') {
       if (event.shiftKey) {
         redo();
@@ -60,7 +60,7 @@ export const useSpaceCanvasHistory = (
         undo();
       }
     }
-  }, [undo, redo]);
+  };
 
   return { takeSnapshot, undo, redo, handleKeyDown };
 };

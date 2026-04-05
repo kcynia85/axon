@@ -1,20 +1,19 @@
-// frontend/src/modules/spaces/ui/inspectors/components/SpaceInspectorPanel.tsx
-
 import React from "react";
-import { CardBody } from "@heroui/react";
+import { cn } from "@/shared/lib/utils";
 
-type SpaceInspectorPanelProps = {
+export type SpaceInspectorPanelProperties = {
     readonly children: React.ReactNode;
+    readonly className?: string;
 };
 
 /**
- * A shared container component for all Node Inspectors.
- * Ensures a consistent layout structure (black background, relative positioning for footers, etc.)
+ * SpaceInspectorPanel - Layout component for inspector sidebar.
+ * Adheres to Pure View and full naming conventions.
  */
-export const SpaceInspectorPanel = ({ children }: SpaceInspectorPanelProps) => {
+export const SpaceInspectorPanel = ({ children, className: containerClassName }: SpaceInspectorPanelProperties) => {
     return (
-        <CardBody className="p-0 flex flex-col h-full bg-black relative">
+        <div className={cn("w-full h-full flex flex-col bg-zinc-950/50 backdrop-blur-xl border-l border-zinc-800", containerClassName)}>
             {children}
-        </CardBody>
+        </div>
     );
 };

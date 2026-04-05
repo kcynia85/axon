@@ -50,13 +50,13 @@ export const AutomationStudio = ({ onSave, onCancel, form, isEditing, syncDraft 
             console.error("Form validation errors:", errors);
             
             // Extract messages even from nested objects (definition.name, connection.url etc)
-            const getErrors = (obj: any): string[] => {
+            const getErrors = (validationErrorsObject: any): string[] => {
                 let messages: string[] = [];
-                for (const key in obj) {
-                    if (obj[key]?.message) {
-                        messages.push(obj[key].message);
-                    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                        messages = [...messages, ...getErrors(obj[key])];
+                for (const key in validationErrorsObject) {
+                    if (validationErrorsObject[key]?.message) {
+                        messages.push(validationErrorsObject[key].message);
+                    } else if (typeof validationErrorsObject[key] === 'object' && validationErrorsObject[key] !== null) {
+                        messages = [...messages, ...getErrors(validationErrorsObject[key])];
                     }
                 }
                 return messages;

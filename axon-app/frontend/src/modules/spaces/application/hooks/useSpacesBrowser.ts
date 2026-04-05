@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Space } from "../../domain";
 import { FilterGroup, ActiveFilter } from "@/shared/domain/filters";
 
@@ -111,11 +111,10 @@ export const useSpacesBrowser = (initialSpaces: readonly Space[]) => {
     });
   };
 
-  const previewResultsCount = useMemo(() => {
-    return getFilteredSpaces(initialSpaces, searchQuery, pendingFilterIds).length;
-  }, [initialSpaces, searchQuery, pendingFilterIds]);
+  // Derived state - React Compiler handles optimization
+  const previewResultsCount = getFilteredSpaces(initialSpaces, searchQuery, pendingFilterIds).length;
 
-  const processedSpaces = useMemo(() => {
+  const processedSpaces = (() => {
     const appliedFilterIds = activeFilters.map(f => f.id);
     const result = getFilteredSpaces(initialSpaces, searchQuery, appliedFilterIds);
 
@@ -135,7 +134,7 @@ export const useSpacesBrowser = (initialSpaces: readonly Space[]) => {
     });
 
     return result;
-  }, [initialSpaces, searchQuery, sortBy, activeFilters]);
+  })();
 
   return {
     searchQuery,

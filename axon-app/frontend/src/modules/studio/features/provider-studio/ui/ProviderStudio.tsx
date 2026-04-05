@@ -1,58 +1,52 @@
 "use client";
 
-import React, { useCallback, useRef, useState, useMemo } from "react";
+import React from "react";
 import { ProviderStudioProps } from "../types/provider-studio.types";
 import { ProviderStudioView } from "./ProviderStudioView";
 import { useProviderForm } from "../application/hooks/useProviderForm";
-import { PROVIDER_STUDIO_SECTIONS, ProviderStudioSectionId } from "../types/sections.constants";
+import { PROVIDER_STUDIO_SECTIONS } from "../types/sections.constants";
 import { useProviderStudioSectionNav } from "../application/hooks/useProviderStudioSectionNav";
+import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";
 
 export const ProviderStudio = ({
-    providerId,
-    initialData,
-    onSave,
-    onCancel,
-    isSaving = false
+	providerId,
+	initialData,
+	onSave,
+	onCancel,
+	isSaving = false,
 }: ProviderStudioProps) => {
-    const form = useProviderForm(initialData) as any;
-    const [activeSection, setActiveSection] = useState<ProviderStudioSectionId>("auth");
-    const canvasContainerRef = useRef<HTMLElement | null>(null);
+	const form = useProviderForm(initialData);
+	const sectionIdentifiers = PROVIDER_STUDIO_SECTIONS.map((section) => section.id);
 
-    const { items: navigationItems } = useProviderStudioSectionNav({
-        sections: PROVIDER_STUDIO_SECTIONS,
-        activeSection,
-        form
-    });
+	const {
+		activeSectionIdentifier,
+		setCanvasContainerReference,
+		scrollToSectionIdentifier,
+	} = useStudioScrollSpy<string>(sectionIdentifiers, "auth");
 
-    const handleSectionClick = useCallback((sectionId: ProviderStudioSectionId) => {
-        const element = document.getElementById(sectionId);
-        if (element && canvasContainerRef.current) {
-            element.scrollIntoView({ behavior: "smooth", block: "start" });
-            setActiveSection(sectionId);
-        }
-    }, []);
+	const { items: navigationItems } = useProviderStudioSectionNav({
+		sections: PROVIDER_STUDIO_SECTIONS,
+		activeSection: activeSectionIdentifier as any,
+		form: form as any,
+	});
 
-    const setCanvasContainerReference = useCallback((node: HTMLElement | null) => {
-        canvasContainerRef.current = node;
-    }, []);
+	const handleOnSave = form.handleSubmit((data) => {
+		onSave(data);
+	});
 
-    const handleOnSave = form.handleSubmit((data) => {
-        onSave(data);
-    });
-
-    return (
-        <ProviderStudioView
-            form={form}
-            navigationItems={navigationItems}
-            activeSectionIdentifier={activeSection}
-            onSectionClick={handleSectionClick}
-            onSave={handleOnSave}
-            onCancel={onCancel}
-            isSaving={isSaving}
-            isValid={form.formState.isValid}
-            isDirty={form.formState.isDirty}
-            providerId={providerId}
-            setCanvasContainerReference={setCanvasContainerReference}
-        />
-    );
+	return (
+		<ProviderStudioView
+			form={form as any}
+			navigationItems={navigationItems}
+			activeSectionIdentifier={activeSectionIdentifier as any}
+			onSectionClick={scrollToSectionIdentifier as any}
+			onSave={handleOnSave}
+			onCancel={onCancel}
+			isSaving={isSaving}
+			isValid={form.formState.isValid}
+			isDirty={form.formState.isDirty}
+			providerId={providerId}
+			setCanvasContainerReference={setCanvasContainerReference}
+		/>
+	);
 };

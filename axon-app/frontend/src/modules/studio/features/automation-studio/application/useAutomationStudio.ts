@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useAutomationDraft } from "./useAutomationDraft";
 import {
@@ -25,7 +24,7 @@ export const useAutomationStudio = (automationId?: string | null) => {
 	const { mutateAsync: createAutomation, isPending: isCreating } = useCreateAutomation(workspaceId);
 	const { mutateAsync: updateAutomation, isPending: isUpdating } = useUpdateAutomation(workspaceId);
 
-	const initialData = useMemo(() => {
+	const getInitialData = () => {
 		if (!automationId || !automation) return undefined;
 
 		return {
@@ -54,7 +53,9 @@ export const useAutomationStudio = (automationId?: string | null) => {
 			},
 			availability: automation.availability_workspace || [workspaceId],
 		} as Partial<AutomationFormData>;
-	}, [automationId, automation, workspaceId]);
+	};
+
+	const initialData = getInitialData();
 
 	const form = useForm<AutomationFormData>({
 		resolver: zodResolver(automationFormSchema) as any,
@@ -78,9 +79,9 @@ export const useAutomationStudio = (automationId?: string | null) => {
 		},
 	});
 
-	const handleExit = useCallback(() => {
+	const handleExit = () => {
 		router.push(`/workspaces/${workspaceId}/automations`);
-	}, [router, workspaceId]);
+	};
 
 	const handleSubmit = async (data: AutomationFormData) => {
 		try {
@@ -92,13 +93,13 @@ export const useAutomationStudio = (automationId?: string | null) => {
 				automation_platform: data.connection.platform,
 				automation_http_method: data.connection.method,
 				availability_workspace: data.availability,
-				automation_input_schema: data.dataInterface.context.reduce((acc, curr) => ({
-					...acc,
-					[curr.name]: { field_type: curr.field_type, is_required: curr.is_required },
+				automation_input_schema: data.dataInterface.context.reduce((accumulator, currentField) => ({
+					...accumulator,
+					[currentField.name]: { field_type: currentField.field_type, is_required: currentField.is_required },
 				}), {}),
-				automation_output_schema: data.dataInterface.artefacts.reduce((acc, curr) => ({
-					...acc,
-					[curr.name]: { field_type: curr.field_type, is_required: curr.is_required },
+				automation_output_schema: data.dataInterface.artefacts.reduce((accumulator, currentField) => ({
+					...accumulator,
+					[currentField.name]: { field_type: currentField.field_type, is_required: currentField.is_required },
 				}), {}),
 			};
 
@@ -117,9 +118,9 @@ export const useAutomationStudio = (automationId?: string | null) => {
 		}
 	};
 
-	const syncDraft = useCallback(() => {
+	const syncDraft = () => {
 		saveDraft(form.getValues());
-	}, [form, saveDraft]);
+	};
 
 	return {
 		form,

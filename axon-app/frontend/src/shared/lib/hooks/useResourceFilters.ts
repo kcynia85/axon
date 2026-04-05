@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState } from "react";
 import { ActiveFilter, FilterGroup } from "@/shared/domain/filters";
 
 type UseResourceFiltersOptions<T> = {
@@ -20,7 +20,7 @@ export const useResourceFilters = <T>({
   const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
   const [filterGroups, setFilterGroups] = useState<readonly FilterGroup[]>(initialFilterGroups);
 
-  const handleToggleFilter = useCallback((id: string) => {
+  const handleToggleFilter = (id: string) => {
     const isCurrentlyActive = activeFilters.some(f => f.id === id);
     if (isCurrentlyActive) {
       const nextFilters = activeFilters.filter(f => f.id !== id);
@@ -44,9 +44,9 @@ export const useResourceFilters = <T>({
         } : g));
       }
     }
-  }, [activeFilters, filterGroups]);
+  };
 
-  const handleRemoveFilter = useCallback((id: string) => {
+  const handleRemoveFilter = (id: string) => {
     const nextFilters = activeFilters.filter(f => f.id !== id);
     setActiveFilters(nextFilters);
     setPendingFilterIds(nextFilters.map(f => f.id));
@@ -56,18 +56,18 @@ export const useResourceFilters = <T>({
         opt.id === id ? { ...opt, isChecked: false } : opt
       )
     })));
-  }, [activeFilters]);
+  };
 
-  const handleClearAll = useCallback(() => {
+  const handleClearAll = () => {
     setActiveFilters([]);
     setPendingFilterIds([]);
     setFilterGroups(prev => prev.map(group => ({
       ...group,
       options: group.options.map(opt => ({ ...opt, isChecked: false }))
     })));
-  }, []);
+  };
 
-  const handleApplyFilters = useCallback((selectedIds: string[]) => {
+  const handleApplyFilters = (selectedIds: string[]) => {
     setPendingFilterIds(selectedIds);
     setFilterGroups(prev => prev.map(group => ({
       ...group,
@@ -86,15 +86,15 @@ export const useResourceFilters = <T>({
       });
     });
     setActiveFilters(newActiveFilters);
-  }, [filterGroups]);
+  };
 
-  const getFilteredItems = useCallback((items: readonly T[]) => {
+  const getFilteredItems = (items: readonly T[]) => {
     return filterItems(items, searchQuery, activeFilters.map(f => f.id));
-  }, [filterItems, searchQuery, activeFilters]);
+  };
 
-  const getPreviewCount = useCallback((items: readonly T[]) => {
+  const getPreviewCount = (items: readonly T[]) => {
     return filterItems(items, searchQuery, pendingFilterIds).length;
-  }, [filterItems, searchQuery, pendingFilterIds]);
+  };
 
   return {
     searchQuery,

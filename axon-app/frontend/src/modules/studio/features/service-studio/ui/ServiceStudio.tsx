@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useServiceForm } from "../application/useServiceForm";
 import { ServiceStudioSectionId } from "../types/sections.constants";
 import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";

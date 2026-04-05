@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Project } from "@/modules/projects/domain";
 import { useResourceFilters } from "@/shared/lib/hooks/useResourceFilters";
 import { useViewMode } from "@/shared/lib/hooks/useViewMode";
@@ -18,9 +18,8 @@ export const useProjectsBrowser = (initialProjects: readonly Project[] = []) => 
 
   const { data: artifacts = [], isLoading: isLoadingArtifacts } = useProjectArtifactsQuery(selectedProjectId);
 
-  const selectedProject = useMemo(() => 
-    projects.find(p => p.id === selectedProjectId) || null,
-  [projects, selectedProjectId]);
+  // Derived state - React Compiler handles optimization
+  const selectedProject = projects.find(p => p.id === selectedProjectId) || null;
 
   const filterItems = (items: readonly Project[], query: string, filterIds: string[]) => {
     return items.filter(project => {
@@ -69,28 +68,26 @@ export const useProjectsBrowser = (initialProjects: readonly Project[] = []) => 
     setIsSidebarOpen(true);
   };
 
-  const processedProjectViewModels = useMemo(() => {
-    return filterConfig.getFilteredItems(projects)
-      .sort((a, b) => {
-        const nameA = (a.project_name || a.name || "").toLowerCase();
-        const nameB = (b.project_name || b.name || "").toLowerCase();
-        const dateA = new Date(a.created_at || 0).getTime();
-        const dateB = new Date(b.created_at || 0).getTime();
+  // Derived state - React Compiler handles optimization
+  const filteredProjects = filterConfig.getFilteredItems(projects);
+  
+  filteredProjects.sort((a, b) => {
+    const nameA = (a.project_name || a.name || "").toLowerCase();
+    const nameB = (b.project_name || b.name || "").toLowerCase();
+    const dateA = new Date(a.created_at || 0).getTime();
+    const dateB = new Date(b.created_at || 0).getTime();
 
-        switch (filterConfig.sortBy) {
-          case "name-asc": return nameA.localeCompare(nameB);
-          case "name-desc": return nameB.localeCompare(nameA);
-          case "date-asc": return dateA - dateB;
-          case "date-desc": return dateB - dateA;
-          default: return 0;
-        }
-      })
-      .map(mapProjectToViewModel);
-  }, [projects, filterConfig]);
+    switch (filterConfig.sortBy) {
+      case "name-asc": return nameA.localeCompare(nameB);
+      case "name-desc": return nameB.localeCompare(nameA);
+      case "date-asc": return dateA - dateB;
+      case "date-desc": return dateB - dateA;
+      default: return 0;
+    }
+  });
 
-  const recentlyUsedViewModels = useMemo(() => {
-      return projects.slice(0, 3).map(mapProjectToViewModel);
-  }, [projects]);
+  const processedProjectViewModels = filteredProjects.map(mapProjectToViewModel);
+  const recentlyUsedViewModels = projects.slice(0, 3).map(mapProjectToViewModel);
 
   return {
     projects,

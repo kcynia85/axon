@@ -22,8 +22,8 @@ export const useAutomationDraft = (workspaceId: string, automationId?: string | 
       if (!saved) return null;
       try {
         return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse automation draft", e);
+      } catch (error) {
+        console.error("Failed to parse automation draft", error);
         return null;
       }
     },

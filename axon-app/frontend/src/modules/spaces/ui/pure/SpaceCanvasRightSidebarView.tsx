@@ -52,46 +52,46 @@ export const SpaceCanvasRightSidebarView = ({
             <Card className="bg-black border border-zinc-200 shadow-[0_0_40px_rgba(0,0,0,0.7)] w-[380px] h-full rounded-2xl overflow-hidden">
                 {isNodeSelectedRepresentingAZone ? (
                     <SpaceZoneNodeInspector
-                        data={currentlySelectedNodeInformation.data as SpaceZoneDomainData}
+                        zoneData={currentlySelectedNodeInformation.data as SpaceZoneDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={(name, value) => handlePropertyChange(name, value)}
                         canvasNodes={canvasNodes}
                     />
                 ) : effectiveNodeType === 'agent' ? (
                     <SpaceAgentNodeInspector
-                        data={currentlySelectedNodeInformation.data as SpaceAgentDomainData}
+                        agentData={currentlySelectedNodeInformation.data as SpaceAgentDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onStatusChange={handleStatusChange}
                         onPropertyChange={handlePropertyChange}
                     />
                 ) : effectiveNodeType === 'crew' ? (
                     <SpaceCrewNodeInspector
-                        data={currentlySelectedNodeInformation.data as SpaceCrewDomainData}
+                        crewData={currentlySelectedNodeInformation.data as SpaceCrewDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onStatusChange={handleStatusChange}
                         onPropertyChange={handlePropertyChange}
                     />
                 ) : effectiveNodeType === 'pattern' ? (
                     <SpacePatternNodeInspector
-                        data={currentlySelectedNodeInformation}
+                        patternData={currentlySelectedNodeInformation}
                         onPropertyChange={handlePropertyChange}
                     />
                 ) : effectiveNodeType === 'automation' ? (
                     <SpaceAutomationNodeInspector
-                        data={currentlySelectedNodeInformation.data as SpaceAutomationDomainData}
+                        automationData={currentlySelectedNodeInformation.data as SpaceAutomationDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={handlePropertyChange}
                     />
                 ) : effectiveNodeType === 'service' ? (
                     <SpaceServiceNodeInspector
-                        data={currentlySelectedNodeInformation.data as SpaceServiceDomainData}
+                        serviceData={currentlySelectedNodeInformation.data as SpaceServiceDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onArtifactStatusChange={handleArtifactStatusChange}
                         onPropertyChange={handlePropertyChange}
                     />
                 ) : effectiveNodeType === 'template' ? (
                     <SpaceTemplateNodeInspector
-                        data={currentlySelectedNodeInformation.data as SpaceTemplateDomainData}
+                        templateData={currentlySelectedNodeInformation.data as SpaceTemplateDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={handlePropertyChange}
                     />

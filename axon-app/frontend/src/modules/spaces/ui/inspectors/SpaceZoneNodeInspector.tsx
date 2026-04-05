@@ -9,12 +9,12 @@ import { useSpaceZoneInspector } from "../../application/hooks/useSpaceZoneInspe
 import type { SpaceZoneInspectorProperties } from "../types";
 
 export const SpaceZoneNodeInspector = ({ 
-    data, 
+    zoneData, 
     nodeId,
     onPropertyChange,
     canvasNodes = []
 }: SpaceZoneInspectorProperties) => {
-    const { state, actions } = useSpaceZoneInspector(data, nodeId, onPropertyChange, canvasNodes);
+    const { state, actions } = useSpaceZoneInspector(zoneData, nodeId, onPropertyChange, canvasNodes);
 
     return (
         <SpaceInspectorPanel>
@@ -43,7 +43,7 @@ export const SpaceZoneNodeInspector = ({
                                 variant="bordered"
                                 placeholder="Describe the high-level context required for this zone to operate..."
                                 value={state.requiredContext}
-                                onChange={(e) => actions.onPropertyChange(e.target.value)}
+                                onChange={(event) => actions.onPropertyChange(event.target.value)}
                                 minRows={6}
                                 classNames={{
                                     input: "text-xs font-mono text-zinc-300",

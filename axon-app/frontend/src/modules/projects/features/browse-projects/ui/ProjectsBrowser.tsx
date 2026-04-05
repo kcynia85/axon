@@ -1,16 +1,11 @@
 'use client';
 
 import React from "react";
-import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { SortOption } from "@/shared/domain/filters";
-import { SidePeek } from "@/shared/ui/layout/SidePeek";
-import { ProjectDetailsView } from "../../project-details/ui/ProjectDetailsView";
-import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { useProjectsBrowser } from "../application/useProjectsBrowser";
 import { ProjectsBrowserProps } from "./types";
-import { ProjectsBrowserContent } from "./components/ProjectsBrowserContent";
-import { RecentlyUsedProjects } from "./RecentlyUsedProjects";
-import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
+import { QuickFilter } from "@/shared/ui/complex/ActionBar";
+import { ProjectsBrowserView } from "./ProjectsBrowserView";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -60,67 +55,36 @@ export const ProjectsBrowser = ({ initialProjects = [] }: ProjectsBrowserProps) 
   } = filterConfig;
 
   return (
-    <>
-      <BrowserLayout
+    <ProjectsBrowserView 
+        projects={projects}
+        processedProjectViewModels={processedProjectViewModels}
+        recentlyUsedViewModels={recentlyUsedViewModels}
+        viewMode={viewMode}
+        isLoading={isLoading}
+        isError={isError}
+        selectedProject={selectedProject}
+        artifacts={artifacts}
+        isLoadingArtifacts={isLoadingArtifacts}
+        isSidebarOpen={isSidebarOpen}
+        activeTab={activeTab}
         searchQuery={searchQuery}
+        sortBy={sortBy}
+        sortOptions={SORT_OPTIONS}
+        activeFilters={activeFilters}
+        filterGroups={filterGroups}
+        quickFilters={QUICK_FILTERS}
         onSearchChange={setSearchQuery}
-        searchPlaceholder="Search projects..."
-        activeFilters={activeFilters.length > 0 && (
-          <FilterBar 
-            activeFilters={activeFilters}
-            onRemove={handleRemoveFilter}
-            onClearAll={handleClearAll}
-          />
-        )}
-        topContent={
-          <RecentlyUsedProjects 
-            projects={recentlyUsedViewModels} 
-            onSelect={handleViewDetails} 
-          />
-        }
-        actionBar={
-          <ActionBar 
-            filterGroups={filterGroups}
-            activeFilters={activeFilters}
-            quickFilters={QUICK_FILTERS}
-            onToggleFilter={handleToggleFilter}
-            onApplyFilters={handleApplyFilters}
-            onClearAllFilters={handleClearAll}
-            onPendingFilterIdsChange={setPendingFilterIds}
-            resultsCount={getPreviewCount(projects)}
-            sortOptions={SORT_OPTIONS}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-          />
-        }
-      >
-        <ProjectsBrowserContent 
-            projects={processedProjectViewModels}
-            viewMode={viewMode}
-            onViewDetails={handleViewDetails}
-            isLoading={isLoading}
-            isError={isError}
-        />
-      </BrowserLayout>
-
-      {/* Project Details Sidebar */}
-      <SidePeek 
-        title={selectedProject?.project_name || "Project Details"}
-        open={isSidebarOpen} 
-        onOpenChange={setIsSidebarOpen}
-      >
-        {selectedProject && (
-            <ProjectDetailsView 
-                project={selectedProject} 
-                artifacts={artifacts} 
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                isLoadingArtifacts={isLoadingArtifacts}
-            />
-        )}
-      </SidePeek>
-    </>
+        onSortChange={setSortBy}
+        onViewModeChange={setViewMode}
+        onToggleFilter={handleToggleFilter}
+        onRemoveFilter={handleRemoveFilter}
+        onClearAllFilters={handleClearAll}
+        onApplyFilters={handleApplyFilters}
+        onPendingFilterIdsChange={setPendingFilterIds}
+        onViewDetails={handleViewDetails}
+        onSidebarOpenChange={setIsSidebarOpen}
+        onTabChange={setActiveTab}
+        previewCount={getPreviewCount(projects)}
+    />
   );
 };

@@ -46,6 +46,7 @@ This skill restructures React components into a maintainable, high-performance a
 - **Pure View:** Views should be deterministic and easy to test.
 - **Naming:** Follow `[Name]View.tsx` strictly for UI components.
 - **No classes:** Functions only.
+- **Zero Manual Optimization:** Do not use `useCallback`, `useMemo`, or `React.memo`. React Compiler handles these optimizations automatically. Remove them if encountered.
 
 ## Output
 - Refactored Container-Presenter pair.

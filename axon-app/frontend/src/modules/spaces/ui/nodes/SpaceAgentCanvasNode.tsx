@@ -1,15 +1,18 @@
 // frontend/src/modules/spaces/ui/nodes/SpaceAgentCanvasNode.tsx
 
-import { memo } from 'react';
+import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { mapAgentToViewModel } from '../mappers/SpaceNodeViewModelMapper';
 import { SpaceAgentNodeView } from './pure/SpaceAgentNodeView';
 import { SpaceAgentDomainData } from '../../domain/types';
 import { SpaceCanvasNodeProperties } from '../types';
 
-
-export const SpaceAgentCanvasNode = memo((nodeProperties: SpaceCanvasNodeProperties) => {
-    const viewModel = mapAgentToViewModel(
+/**
+ * SpaceAgentCanvasNode - Container component for agent node on the canvas.
+ * Orchestrates mapping domain data to view model and rendering the Pure View.
+ */
+export const SpaceAgentCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) => {
+    const agentViewModel = mapAgentToViewModel(
         nodeProperties.data as unknown as SpaceAgentDomainData, 
         nodeProperties.selected ?? false
     );
@@ -19,18 +22,18 @@ export const SpaceAgentCanvasNode = memo((nodeProperties: SpaceCanvasNodePropert
             <Handle 
                 type="target" 
                 position={Position.Left} 
-                className={viewModel.visual.handleClassName} 
+                className={agentViewModel.visual.handleClassName} 
             />
             
-            <SpaceAgentNodeView viewModel={viewModel} />
+            <SpaceAgentNodeView viewModel={agentViewModel} />
 
             <Handle 
                 type="source" 
                 position={Position.Right} 
-                className={viewModel.visual.handleClassName} 
+                className={agentViewModel.visual.handleClassName} 
             />
         </div>
     );
-});
+};
 
 SpaceAgentCanvasNode.displayName = 'SpaceAgentCanvasNode';

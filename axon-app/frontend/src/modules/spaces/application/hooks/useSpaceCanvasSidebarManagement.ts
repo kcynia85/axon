@@ -1,6 +1,6 @@
 // frontend/src/modules/spaces/application/hooks/useSpaceCanvasSidebarManagement.ts
 
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import { 
     LIST_OF_AVAILABLE_WORKSPACES, 
     MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY,
@@ -29,17 +29,17 @@ export const useSpaceCanvasSidebarManagement = () => {
     const [currentlySelectedWorkspaceIdentifier, setCurrentlySelectedWorkspaceIdentifier] = useState<string | null>(null);
     const [componentSearchQuery, setComponentSearchQuery] = useState("");
 
-    const selectWorkspaceUnit = useCallback((workspaceIdentifier: string) => {
+    const selectWorkspaceUnit = (workspaceIdentifier: string) => {
         setCurrentlySelectedWorkspaceIdentifier(workspaceIdentifier);
         setComponentSearchQuery("");
-    }, []);
+    };
 
-    const returnToWorkspaceSelection = useCallback(() => {
+    const returnToWorkspaceSelection = () => {
         setCurrentlySelectedWorkspaceIdentifier(null);
         setComponentSearchQuery("");
-    }, []);
+    };
 
-    const handleDragAndDropStart = useCallback((
+    const handleDragAndDropStart = (
         dragEvent: React.DragEvent<HTMLElement>, 
         nodeType: string, 
         transferData: unknown
@@ -47,34 +47,30 @@ export const useSpaceCanvasSidebarManagement = () => {
         dragEvent.dataTransfer.setData('application/reactflow', nodeType);
         dragEvent.dataTransfer.setData('application/axon-data', JSON.stringify(transferData));
         dragEvent.dataTransfer.effectAllowed = 'move';
-    }, []);
+    };
 
-    const workspaceUnitsForDisplay = useMemo<readonly WorkspaceUnitDisplay[]>(() => {
-        return LIST_OF_AVAILABLE_WORKSPACES.map((workspaceUnit) => {
-            const visualStyles = getVisualStylesForZoneColor(workspaceUnit.visualColor);
-            return {
-                identifier: workspaceUnit.identifier,
-                displayName: workspaceUnit.displayName,
-                // Use the Level 1 specific hover color (now includes 'hover:' prefix)
-                hoverClassName: visualStyles.level1HoverBackgroundClassName,
-                onClick: () => selectWorkspaceUnit(workspaceUnit.identifier),
-                onDragStart: (dragEvent: React.DragEvent<HTMLElement>) => 
-                    handleDragAndDropStart(dragEvent, 'zone', {
-                        label: workspaceUnit.displayName,
-                        type: workspaceUnit.identifier,
-                        color: workspaceUnit.visualColor
-                    })
-            };
-        });
-    }, [selectWorkspaceUnit, handleDragAndDropStart]);
+    // Derived state - React Compiler handles optimization
+    const workspaceUnitsForDisplay: readonly WorkspaceUnitDisplay[] = LIST_OF_AVAILABLE_WORKSPACES.map((workspaceUnit) => {
+        const visualStyles = getVisualStylesForZoneColor(workspaceUnit.visualColor);
+        return {
+            identifier: workspaceUnit.identifier,
+            displayName: workspaceUnit.displayName,
+            hoverClassName: visualStyles.level1HoverBackgroundClassName,
+            onClick: () => selectWorkspaceUnit(workspaceUnit.identifier),
+            onDragStart: (dragEvent: React.DragEvent<HTMLElement>) => 
+                handleDragAndDropStart(dragEvent, 'zone', {
+                    label: workspaceUnit.displayName,
+                    type: workspaceUnit.identifier,
+                    color: workspaceUnit.visualColor
+                })
+        };
+    });
 
-    const activeWorkspaceDisplayName = useMemo(() => {
-        return LIST_OF_AVAILABLE_WORKSPACES.find(
-            (workspace) => workspace.identifier === currentlySelectedWorkspaceIdentifier
-        )?.displayName || "";
-    }, [currentlySelectedWorkspaceIdentifier]);
+    const activeWorkspaceDisplayName = LIST_OF_AVAILABLE_WORKSPACES.find(
+        (workspace) => workspace.identifier === currentlySelectedWorkspaceIdentifier
+    )?.displayName || "";
 
-    const activeWorkspaceHeaderClassName = useMemo(() => {
+    const activeWorkspaceHeaderClassName = (() => {
         if (!currentlySelectedWorkspaceIdentifier) return "";
         const workspaceUnit = LIST_OF_AVAILABLE_WORKSPACES.find(
             (workspace) => workspace.identifier === currentlySelectedWorkspaceIdentifier
@@ -83,9 +79,9 @@ export const useSpaceCanvasSidebarManagement = () => {
         
         const visualStyles = getVisualStylesForZoneColor(workspaceUnit.visualColor);
         return visualStyles.hoverBackgroundClassName || "bg-blue-600";
-    }, [currentlySelectedWorkspaceIdentifier]);
+    })();
 
-    const filteredComponentCategoriesForDisplay = useMemo(() => {
+    const filteredComponentCategoriesForDisplay = (() => {
         const query = componentSearchQuery.trim().toLowerCase();
         const activeColor = currentlySelectedWorkspaceIdentifier ? MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[currentlySelectedWorkspaceIdentifier] : 'default';
         const visualStyles = getVisualStylesForZoneColor(activeColor);
@@ -98,7 +94,6 @@ export const useSpaceCanvasSidebarManagement = () => {
                     displayName: componentItem.componentName,
                     type: componentItem.componentType,
                     zoneColor: activeColor,
-                    // Level 2 also uses the vibrant hover color from mapper
                     hoverClassName: visualStyles.level1HoverBackgroundClassName,
                     onDragStart: (dragEvent: React.DragEvent<HTMLElement>) => 
                         handleDragAndDropStart(dragEvent, 'entity', {
@@ -111,7 +106,7 @@ export const useSpaceCanvasSidebarManagement = () => {
             accumulator[categoryKey] = filteredList;
             return accumulator;
         }, {});
-    }, [componentSearchQuery, currentlySelectedWorkspaceIdentifier, handleDragAndDropStart]);
+    })();
 
     return {
         currentlySelectedWorkspaceIdentifier,

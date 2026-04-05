@@ -6,8 +6,8 @@ import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";
 import { useSpacePatternInspector } from "../../application/hooks/useSpacePatternInspector";
 import { SpacePatternInspectorProperties } from "../types";
 
-export const SpacePatternNodeInspector = ({ data, onPropertyChange }: SpacePatternInspectorProperties) => {
-    const { state } = useSpacePatternInspector(data as any);
+export const SpacePatternNodeInspector = ({ patternData, onPropertyChange }: SpacePatternInspectorProperties) => {
+    const { state } = useSpacePatternInspector(patternData as any);
 
     return (
         <SpaceInspectorPanel>
@@ -26,9 +26,9 @@ export const SpacePatternNodeInspector = ({ data, onPropertyChange }: SpacePatte
                 <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Pipeline Steps</label>
                     <ul className="space-y-3">
-                        {state.pipelineSteps.map((step, i) => (
-                            <li key={i} className="flex items-center gap-3 text-xs font-bold text-zinc-300">
-                                <span className="w-5 h-5 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500">{i + 1}</span>
+                        {state.pipelineSteps.map((step, index) => (
+                            <li key={index} className="flex items-center gap-3 text-xs font-bold text-zinc-300">
+                                <span className="w-5 h-5 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500">{index + 1}</span>
                                 {step}
                             </li>
                         ))}
