@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { resourcesApi } from "@/modules/resources/infrastructure/api";
 import InternalToolsList from "@/modules/resources/ui/InternalToolsList";
@@ -16,6 +16,10 @@ import { InternalTool } from "@/shared/domain/resources";
 import { Pagination } from "@/shared/ui/layout/Pagination";
 import { useResourceFilters } from "@/shared/lib/hooks/useResourceFilters";
 
+/**
+ * InternalToolsPage: Management interface for internal functional skills.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
 export default function InternalToolsPage() {
     const queryClient = useQueryClient();
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -26,23 +30,23 @@ export default function InternalToolsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 12;
 
-    const { data: tools = [], isLoading } = useQuery({
+    const { data: internalTools = [], isLoading } = useQuery({
         queryKey: ["internal-tools"],
         queryFn: resourcesApi.getInternalTools,
     });
 
-    const filterItems = useCallback((items: readonly InternalTool[], query: string, filterIds: string[]) => {
-        return items.filter(t => {
+    const filterItemsFunction = (itemsToFilter: readonly InternalTool[], query: string, filterIds: string[]) => {
+        return itemsToFilter.filter(toolItem => {
             const matchesSearch = query === "" || 
-                t.tool_display_name.toLowerCase().includes(query.toLowerCase()) ||
-                t.tool_function_name.toLowerCase().includes(query.toLowerCase()) ||
-                t.tool_description.toLowerCase().includes(query.toLowerCase());
+                toolItem.tool_display_name.toLowerCase().includes(query.toLowerCase()) ||
+                toolItem.tool_function_name.toLowerCase().includes(query.toLowerCase()) ||
+                toolItem.tool_description.toLowerCase().includes(query.toLowerCase());
             
             if (!matchesSearch) return false;
             if (filterIds.length === 0) return true;
 
-            const matchesCategory = filterIds.some(id => id === t.tool_category);
-            const matchesTags = filterIds.some(id => t.tool_keywords?.includes(id));
+            const matchesCategory = filterIds.some(id => id === toolItem.tool_category);
+            const matchesTags = filterIds.some(id => toolItem.tool_keywords?.includes(id));
 
             // Logic: if category filters are present, must match one. if tags present, must match one.
             const hasCategoryFilters = filterIds.some(id => ["PRIMEVAL", "AI_UTILS", "LOCAL", "SYSTEMS"].includes(id.toUpperCase()));
@@ -53,7 +57,7 @@ export default function InternalToolsPage() {
 
             return categoryMatch && tagMatch;
         });
-    }, []);
+    };
 
     const {
         searchQuery,
@@ -69,7 +73,7 @@ export default function InternalToolsPage() {
         getPreviewCount,
         setPendingFilterIds,
     } = useResourceFilters<InternalTool>({
-        filterItems,
+        filterItems: filterItemsFunction,
         initialSortBy: "name-asc",
         initialFilterGroups: [
             {
@@ -98,14 +102,12 @@ export default function InternalToolsPage() {
         ]
     });
 
-    const filteredTools = useMemo(() => {
-        const items = getFilteredItems(tools);
-        return [...items].sort((a, b) => {
-            if (sortBy === "name-asc") return a.tool_display_name.localeCompare(b.tool_display_name);
-            if (sortBy === "name-desc") return b.tool_display_name.localeCompare(a.tool_display_name);
-            return 0;
-        });
-    }, [tools, getFilteredItems, sortBy]);
+    // Zero manual optimization - React Compiler handles it
+    const filteredTools = getFilteredItems(internalTools).sort((toolA, toolB) => {
+        if (sortBy === "name-asc") return toolA.tool_display_name.localeCompare(toolB.tool_display_name);
+        if (sortBy === "name-desc") return toolB.tool_display_name.localeCompare(toolA.tool_display_name);
+        return 0;
+    });
 
     const { mutate: syncTools, isPending: isSyncing } = useMutation({
         mutationFn: resourcesApi.syncInternalTools,
@@ -122,21 +124,26 @@ export default function InternalToolsPage() {
         }
     });
 
-    // Reset pagination when search, sort or filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery, sortBy, activeFilters]);
-
     const totalPages = Math.ceil(filteredTools.length / pageSize);
-    const paginatedTools = useMemo(() => {
-        const start = (currentPage - 1) * pageSize;
-        return filteredTools.slice(start, start + pageSize);
-    }, [filteredTools, currentPage, pageSize]);
+    const startIndex = (currentPage - 1) * pageSize;
+    const paginatedTools = filteredTools.slice(startIndex, startIndex + pageSize);
 
-    const handleSelectTool = useCallback((tool: InternalTool) => {
+    const handleSelectTool = (tool: InternalTool) => {
         setSelectedTool(tool);
         setIsSidebarOpen(true);
-    }, []);
+    };
+
+    // Use a composite key to force re-render/reset state if needed, 
+    // or simply handle it in setSortBy/setSearchQuery etc.
+    const handleSearchWithReset = (query: string) => {
+        setSearchQuery(query);
+        setCurrentPage(1);
+    };
+
+    const handleApplyFiltersWithReset = (selectedIds: string[]) => {
+        handleApplyFilters(selectedIds);
+        setCurrentPage(1);
+    };
 
     return (
         <div className="w-full">
@@ -158,30 +165,30 @@ export default function InternalToolsPage() {
                 pagination={
                     totalPages > 1 ? (
                         <Pagination 
-                            pages={Array.from({ length: totalPages }, (_, i) => ({ 
-                                number: i + 1, 
-                                isActive: currentPage === i + 1 
+                            pages={Array.from({ length: totalPages }, (_, index) => ({ 
+                                number: index + 1, 
+                                isActive: currentPage === index + 1 
                             }))}
                             onPageChange={setCurrentPage}
                             canGoBack={currentPage > 1}
                             canGoNext={currentPage < totalPages}
-                            onBack={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            onNext={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            onBack={() => setCurrentPage(previousPage => Math.max(1, previousPage - 1))}
+                            onNext={() => setCurrentPage(previousPage => Math.min(totalPages, previousPage + 1))}
                         />
                     ) : null
                 }
             >
                 <BrowserLayout
                     searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
+                    onSearchChange={handleSearchWithReset}
                     searchPlaceholder="Search internal tools..."
                     actionBar={
                         <ActionBar 
-                            resultsCount={getPreviewCount(tools)}
+                            resultsCount={getPreviewCount(internalTools)}
                             filterGroups={filterGroups}
                             activeFilters={activeFilters}
                             onToggleFilter={handleToggleFilter}
-                            onApplyFilters={handleApplyFilters}
+                            onApplyFilters={handleApplyFiltersWithReset}
                             onClearAllFilters={handleClearAll}
                             onPendingFilterIdsChange={setPendingFilterIds}
                             sortOptions={[
@@ -189,7 +196,7 @@ export default function InternalToolsPage() {
                                 { id: "name-desc", label: "Name (Z-A)" }
                             ]}
                             sortBy={sortBy}
-                            onSortChange={setSortBy}
+                            onSortChange={(value) => { setSortBy(value); setCurrentPage(1); }}
                             viewMode={viewMode}
                             onViewModeChange={setViewMode}
                         />

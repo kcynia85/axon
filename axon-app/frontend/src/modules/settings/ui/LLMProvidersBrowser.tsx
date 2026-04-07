@@ -1,20 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from "react";
-import { FilterBar } from "@/shared/ui/complex/FilterBar";
+import React, { useState } from "react";
 import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
-import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
-import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
-import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
-import { ResourceList } from "@/shared/ui/complex/ResourceList";
-import { Button } from "@/shared/ui/ui/Button";
-import { LLMProviderSidePeek, Provider } from "./LLMProviderSidePeek";
-import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { QuickFilter } from "@/shared/ui/complex/ActionBar";
+import { Provider } from "./LLMProviderSidePeek";
 import { useLLMModels } from "../application/useSettings";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
 import { useLLMProviders, useDeleteLLMProvider } from "../application/useLLMProviders";
 import { useRouter } from "next/navigation";
+import { LLMProvidersBrowserView } from "./LLMProvidersBrowserView";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Nazwa (A-Z)" },
@@ -38,9 +33,6 @@ const FILTER_GROUPS: readonly FilterGroup[] = [
     }
 ];
 
-/**
- * LLMProvidersBrowser - Browser for LLM Providers (OpenAI, OpenRouter, Ollama etc).
- */
 export const LLMProvidersBrowser = () => {
   const router = useRouter();
   const { data: providers = [], isLoading, isError } = useLLMProviders();
@@ -60,80 +52,9 @@ export const LLMProvidersBrowser = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [providerToDeleteId, setProviderToDeleteId] = useState<string | null>(null);
 
-  const providerToDelete = useMemo(() => {
-    return providers.find(p => p.id === providerToDeleteId);
-  }, [providers, providerToDeleteId]);
-
-  const affectedResources = useMemo(() => {
-    if (!providerToDeleteId) return [];
-    return allModels
-      .filter(m => m.llm_provider_id === providerToDeleteId)
-      .map(m => ({
-        id: m.id,
-        name: m.model_display_name,
-        role: "Linked Model"
-      }));
-  }, [allModels, providerToDeleteId]);
-
-  const selectedProvider = useMemo(() => {
-    if (!selectedProviderId) return null;
-    const p = providers.find(prov => prov.id === selectedProviderId);
-    if (!p) return null;
-    return {
-        id: p.id,
-        title: p.provider_name,
-        type: p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted",
-        schema: p.provider_type === "meta" ? "Native API" : "OpenAI v1",
-        apiKey: p.provider_api_key || "N/A",
-        pricing: p.provider_type === "meta" ? "Live API Sync" : "Pay-as-you-go",
-        url: p.provider_api_endpoint || undefined,
-        categories: [p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted"]
-    } as Provider;
-  }, [providers, selectedProviderId]);
-
-  const previewCount = useMemo(() => {
-    return providers.filter(p => {
-        if (pendingIds.has(p.id)) return false;
-        
-        const title = p.provider_name.toLowerCase();
-        const query = searchQuery.toLowerCase();
-        if (searchQuery && !title.includes(query)) return false;
-
-        if (pendingFilterIds.length === 0) return true;
-        return pendingFilterIds.includes(p.provider_type);
-    }).length;
-  }, [providers, searchQuery, pendingFilterIds, pendingIds]);
-
-  const filteredProviders = useMemo(() => {
-    let result = providers
-      .filter(p => !pendingIds.has(p.id))
-      .filter(p => {
-          if (activeFilters.length === 0) return true;
-          return activeFilters.some(f => f.id === p.provider_type);
-      })
-      .map(p => ({
-        id: p.id,
-        title: p.provider_name,
-        type: p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted",
-        schema: p.provider_type === "meta" ? "Native API" : "OpenAI v1",
-        apiKey: p.provider_api_key || "N/A",
-        pricing: p.provider_type === "meta" ? "Live API Sync" : "Pay-as-you-go",
-        url: p.provider_api_endpoint || undefined,
-        categories: [p.provider_type === "cloud" ? "Cloud / SaaS" : p.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted"]
-    }));
-
-    // Search
-    if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        result = result.filter(r => r.title.toLowerCase().includes(query));
-    }
-
-    return result;
-  }, [providers, searchQuery, pendingIds, activeFilters]);
-
   const handleRemoveFilter = (id: string) => {
-    setActiveFilters(prev => prev.filter(f => f.id !== id));
-    setPendingFilterIds(prev => prev.filter(pId => pId !== id));
+    setActiveFilters(previousFilters => previousFilters.filter(filter => filter.id !== id));
+    setPendingFilterIds(previousIds => previousIds.filter(pendingId => pendingId !== id));
   };
 
   const handleClearAll = () => {
@@ -144,9 +65,9 @@ export const LLMProvidersBrowser = () => {
   const handleApplyFilters = (selectedIds: string[]) => {
       const nextFilters: ActiveFilter[] = [];
       FILTER_GROUPS.forEach(group => {
-          group.options.forEach(opt => {
-              if (selectedIds.includes(opt.id)) {
-                  nextFilters.push({ id: opt.id, label: opt.label, category: group.id });
+          group.options.forEach(option => {
+              if (selectedIds.includes(option.id)) {
+                  nextFilters.push({ id: option.id, label: option.label, category: group.id });
               }
           });
       });
@@ -159,9 +80,9 @@ export const LLMProvidersBrowser = () => {
   };
 
   const handleToggleFilter = (id: string) => {
-      const option = FILTER_GROUPS.flatMap(g => g.options.map(o => ({...o, groupId: g.id}))).find(o => o.id === id);
+      const option = FILTER_GROUPS.flatMap(group => group.options.map(option => ({...option, groupId: group.id}))).find(option => option.id === id);
       if (option) {
-          if (activeFilters.some(f => f.id === id)) {
+          if (activeFilters.some(filter => filter.id === id)) {
               handleRemoveFilter(id);
           } else {
               setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
@@ -181,7 +102,7 @@ export const LLMProvidersBrowser = () => {
 
   const handleDeleteProviderExecution = async () => {
     if (!providerToDeleteId) return;
-    const provider = providers.find(p => p.id === providerToDeleteId);
+    const provider = providers.find(provider => provider.id === providerToDeleteId);
     if (!provider) return;
 
     deleteWithUndo(provider.id, provider.provider_name, () => deleteProvider(provider.id));
@@ -197,84 +118,99 @@ export const LLMProvidersBrowser = () => {
     router.push(`/settings/llms/providers/${provider.id}`);
   };
 
+  // Derived state - React Compiler will optimize
+  const getFilteredProviders = () => {
+    let result = providers
+      .filter(provider => !pendingIds.has(provider.id))
+      .filter(provider => {
+          if (activeFilters.length === 0) return true;
+          return activeFilters.some(filter => filter.id === provider.provider_type);
+      })
+      .map(provider => ({
+        id: provider.id,
+        title: provider.provider_name,
+        type: provider.provider_type === "cloud" ? "Cloud / SaaS" : provider.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted",
+        schema: provider.provider_type === "meta" ? "Native API" : "OpenAI v1",
+        apiKey: provider.provider_api_key || "N/A",
+        pricing: provider.provider_type === "meta" ? "Live API Sync" : "Pay-as-you-go",
+        url: provider.provider_api_endpoint || undefined,
+        categories: [provider.provider_type === "cloud" ? "Cloud / SaaS" : provider.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted"]
+    }));
+
+    if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        result = result.filter(item => item.title.toLowerCase().includes(query));
+    }
+
+    return result;
+  };
+
+  const getSelectedProvider = (): Provider | null => {
+    if (!selectedProviderId) return null;
+    const provider = providers.find(providerItem => providerItem.id === selectedProviderId);
+    if (!provider) return null;
+    return {
+        id: provider.id,
+        title: provider.provider_name,
+        type: provider.provider_type === "cloud" ? "Cloud / SaaS" : provider.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted",
+        schema: provider.provider_type === "meta" ? "Native API" : "OpenAI v1",
+        apiKey: provider.provider_api_key || "N/A",
+        pricing: provider.provider_type === "meta" ? "Live API Sync" : "Pay-as-you-go",
+        url: provider.provider_api_endpoint || undefined,
+        categories: [provider.provider_type === "cloud" ? "Cloud / SaaS" : provider.provider_type === "meta" ? "Meta-Provider" : "Local / Self-Hosted"]
+    } as Provider;
+  };
+
+  const getAffectedResources = () => {
+    if (!providerToDeleteId) return [];
+    return allModels
+      .filter(model => model.llm_provider_id === providerToDeleteId)
+      .map(model => ({
+        id: model.id,
+        name: model.model_display_name,
+        role: "Linked Model"
+      }));
+  };
+
+  const filteredProviders = getFilteredProviders();
+  const selectedProvider = getSelectedProvider();
+  const providerToDelete = providers.find(provider => provider.id === providerToDeleteId);
+  const affectedResources = getAffectedResources();
+
   return (
-    <BrowserLayout
+    <LLMProvidersBrowserView
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
-      searchPlaceholder="Szukaj dostawców..."
-      activeFilters={activeFilters.length > 0 && (
-        <FilterBar 
-          activeFilters={activeFilters}
-          onRemove={handleRemoveFilter}
-          onClearAll={handleClearAll}
-        />
-      )}
-      actionBar={
-        <ActionBar 
-          filterGroups={FILTER_GROUPS}
-          activeFilters={activeFilters}
-          quickFilters={QUICK_FILTERS}
-          onToggleFilter={handleToggleFilter}
-          onApplyFilters={handleApplyFilters} 
-          onSelectionChange={handleSelectionChange}
-          onClearAllFilters={handleClearAll}
-          onPendingFilterIdsChange={handleSelectionChange}
-          resultsCount={previewCount}
-          sortOptions={SORT_OPTIONS}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        />
-      }
-    >
-      <ResourceList
-        items={filteredProviders}
-        isLoading={isLoading}
-        isError={isError}
-        viewMode={viewMode}
-        renderItem={(provider) => (
-            <ResourceCard
-                key={provider.id}
-                title={provider.title}
-                description={null}
-                href="#"
-                onClick={() => handleProviderClick(provider)}
-                categories={provider.categories}
-                onEdit={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const p = providers.find(prov => prov.id === provider.id);
-                    if (p) handleConfigureProvider(p as any);
-                }}
-                onDelete={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    confirmDeleteProvider(provider.id);
-                }}
-            />
-        )}
-      />
-
-      <LLMProviderSidePeek 
-        provider={selectedProvider}
-        isOpen={!!selectedProvider}
-        onClose={() => setSelectedProviderId(null)}
-        onConfigure={handleConfigureProvider}
-        onDelete={confirmDeleteProvider}
-      />
-
-      <DestructiveDeleteModal
-        isOpen={deleteModalOpen}
-        onClose={() => {
-            setDeleteModalOpen(false);
-            setProviderToDeleteId(null);
-        }}
-        onConfirm={handleDeleteProviderExecution}
-        title="Usuń Dostawcę"
-        resourceName={providerToDelete?.provider_name || "Dostawca"}
-        affectedResources={affectedResources}
-      />
-    </BrowserLayout>
+      viewMode={viewMode}
+      setViewMode={setViewMode}
+      sortBy={sortBy}
+      onSortChange={setSortBy}
+      activeFilters={activeFilters}
+      filterGroups={FILTER_GROUPS}
+      quickFilters={QUICK_FILTERS}
+      sortOptions={SORT_OPTIONS}
+      onToggleFilter={handleToggleFilter}
+      onRemoveFilter={handleRemoveFilter}
+      onClearAllFilters={handleClearAll}
+      onApplyFilters={handleApplyFilters}
+      onSelectionChange={handleSelectionChange}
+      filteredProviders={filteredProviders}
+      previewCount={filteredProviders.length}
+      isLoading={isLoading}
+      isError={isError}
+      selectedProvider={selectedProvider}
+      onProviderClick={handleProviderClick}
+      onConfigureProvider={handleConfigureProvider}
+      onDeleteProvider={confirmDeleteProvider}
+      onCloseSidePeek={() => setSelectedProviderId(null)}
+      deleteModalOpen={deleteModalOpen}
+      onCancelDelete={() => {
+          setDeleteModalOpen(false);
+          setProviderToDeleteId(null);
+      }}
+      onConfirmDelete={handleDeleteProviderExecution}
+      providerToDeleteName={providerToDelete?.provider_name}
+      affectedResources={affectedResources}
+    />
   );
 };

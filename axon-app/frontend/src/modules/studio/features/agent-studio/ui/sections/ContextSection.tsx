@@ -21,16 +21,17 @@ export const ContextSection = (props: ContextSectionProps) => {
 					render={({ field }) => (
 						<FormItemField>
 							<FormPropertyTable
-								items={(field.value || []) as FormPropertyTableItem[]}
-								onChange={(val) => {
-									field.onChange(val);
-									syncDraft();
-								}}
-								onBlur={syncDraft}
-								namePlaceholder="e.g. user_query"
-								addPlaceholder="Add parameter..."
-								typeOptions={CONTEXT_TYPES}
+							        items={(field.value || []) as FormPropertyTableItem[]}
+							        onChange={(value) => {
+							                field.onChange(value);
+							                syncDraft();
+							        }}
+							        onBlur={syncDraft}
+							        namePlaceholder="e.g. user_query"
+							        addPlaceholder="Add parameter..."
+							        typeOptions={CONTEXT_TYPES}
 							/>
+
 						</FormItemField>
 					)}
 				/>

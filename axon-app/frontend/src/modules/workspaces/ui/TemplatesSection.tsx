@@ -57,47 +57,41 @@ export const TemplatesSection = ({ workspaceId, colorName = "default" }: Templat
   const confirmDelete = () => {
     if (!templateToDeleteId) return;
     
-    const template = templates?.find(t => t.id === templateToDeleteId);
-    const name = template?.template_name || "Template";
-    deleteWithUndo(templateToDeleteId, name, () => deleteTemplateMutation.mutate(templateToDeleteId));
+    const template = templates?.find(templateItem => templateItem.id === templateToDeleteId);
+    const templateName = template?.template_name || "Template";
+    deleteWithUndo(templateToDeleteId, templateName, () => deleteTemplateMutation.mutate(templateToDeleteId));
     setTemplateToDeleteId(null);
   };
 
-  // Map draft to Template structure for peek
-  const draftTemplate = React.useMemo(() => {
-    if (!draft) return null;
-    return {
-      id: "draft",
-      template_name: draft.name || "New Template",
-      template_description: draft.description || "Work in progress...",
-      template_markdown_content: draft.markdown || "",
-      template_keywords: draft.keywords || [],
-      template_inputs: draft.context_items?.map(i => ({
-          id: (i as any).id || "draft-in",
-          label: i.name,
-          expectedType: i.field_type,
-          isRequired: i.is_required
-      })) || [],
-      template_outputs: draft.artefact_items?.map(o => ({
-          id: (o as any).id || "draft-out",
-          label: o.name,
-          outputType: o.field_type,
-          isRequired: o.is_required
-      })) || [],
-      template_checklist_items: [],
-      availability_workspace: draft.availability_workspace || [workspaceId],
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    } as any;
-  }, [draft, workspaceId]);
+  // Map draft to Template structure for peek - No useMemo
+  const draftTemplate = draft ? {
+    id: "draft",
+    template_name: draft.name || "New Template",
+    template_description: draft.description || "Work in progress...",
+    template_markdown_content: draft.markdown || "",
+    template_keywords: draft.keywords || [],
+    template_inputs: draft.context_items?.map(contextItem => ({
+        id: (contextItem as any).id || "draft-in",
+        label: contextItem.name,
+        expectedType: contextItem.field_type,
+        isRequired: contextItem.is_required
+    })) || [],
+    template_outputs: draft.artefact_items?.map(outputItem => ({
+        id: (outputItem as any).id || "draft-out",
+        label: outputItem.name,
+        outputType: outputItem.field_type,
+        isRequired: outputItem.is_required
+    })) || [],
+    template_checklist_items: [],
+    availability_workspace: draft.availability_workspace || [workspaceId],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  } : null;
 
-  const selectedTemplate = templates?.find((t) => t.id === selectedTemplateId) || null;
+  const selectedTemplate = templates?.find((templateItem) => templateItem.id === selectedTemplateId) || null;
   const activeTemplate = isDraftSelected ? draftTemplate : selectedTemplate;
 
-  const displayTemplates = React.useMemo(() => {
-    if (!templates) return [];
-    return templates.slice(0, 3);
-  }, [templates]);
+  const displayTemplates = (templates || []).slice(0, 3);
 
   return (
     <>

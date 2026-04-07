@@ -4,15 +4,13 @@ import { useRouter } from "next/navigation";
 import { KnowledgeStudioView } from "./KnowledgeStudioView";
 import { useKnowledgeStudio } from "../application/useKnowledgeStudio";
 
+/**
+ * KnowledgeStudioContainer: Intelligent client container for the knowledge design experience.
+ * Standard: Container pattern, orchestrates state and navigation.
+ */
 export const KnowledgeStudioContainer = () => {
     const router = useRouter();
-    const { 
-        handleDataChange, 
-        handleSave, 
-        handleAutoTag, 
-        handleSelectFile, 
-        ...studioState 
-    } = useKnowledgeStudio();
+    const studioState = useKnowledgeStudio();
 
     const handleCancel = () => {
         router.back();
@@ -21,10 +19,10 @@ export const KnowledgeStudioContainer = () => {
     return (
         <KnowledgeStudioView
             {...studioState}
-            onDataChange={handleDataChange}
-            onSave={handleSave}
-            onAutoTag={handleAutoTag}
-            onSelectFile={handleSelectFile}
+            onDataChange={studioState.handleDataChange}
+            onSave={studioState.handleSave}
+            onAutoTag={studioState.handleAutoTag}
+            onSelectFile={studioState.handleSelectFile}
             onCancel={handleCancel}
         />
     );

@@ -10,7 +10,11 @@ import type { IdentitySectionProps } from "../../types/sections/identity.types";
 import { useIdentitySection } from "../../application/hooks/sections/useIdentitySection";
 import { IDENTITY_FIELDS } from "../../types/agent-studio.constants";
 
-export const IdentitySection = React.memo((props: IdentitySectionProps) => {
+/**
+ * IdentitySection: Agent identification fields (Name, Role, Goal, Backstory, Avatar).
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
+export const IdentitySection = (props: IdentitySectionProps) => {
 	const { control, syncDraft } = useIdentitySection(props);
 
 	return (
@@ -68,8 +72,8 @@ export const IdentitySection = React.memo((props: IdentitySectionProps) => {
 						<FormItemField label="Keywords">
 							<FormTagInput
 								value={field.value || []}
-								onChange={(val) => {
-									field.onChange(val);
+								onChange={(value) => {
+									field.onChange(value);
 									syncDraft();
 								}}
 								onBlur={syncDraft}
@@ -80,6 +84,4 @@ export const IdentitySection = React.memo((props: IdentitySectionProps) => {
 			</div>
 		</FormSection>
 	);
-});
-
-IdentitySection.displayName = "IdentitySection";
+};

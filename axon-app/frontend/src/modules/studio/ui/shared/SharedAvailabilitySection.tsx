@@ -38,24 +38,24 @@ export const SharedAvailabilitySection = ({ name, number = 4, onSyncDraft }: Pro
             return workspace.id.toLowerCase() === normalizedInput || workspace.label.toLowerCase() === normalizedInput;
           };
 
-          const isGlobalSelected = selectedWorkspaces.some(val => isMatch({ id: GLOBAL_AVAILABILITY, label: GLOBAL_AVAILABILITY }, val));
+          const isGlobalSelected = selectedWorkspaces.some(value => isMatch({ id: GLOBAL_AVAILABILITY, label: GLOBAL_AVAILABILITY }, value));
 
           const toggleWorkspace = (workspace: { id: string; label: string }) => {
-            let next: string[] = [];
+            let nextWorkspaces: string[] = [];
             
             if (workspace.id === GLOBAL_AVAILABILITY) {
-              next = isGlobalSelected ? [] : [GLOBAL_AVAILABILITY];
+              nextWorkspaces = isGlobalSelected ? [] : [GLOBAL_AVAILABILITY];
             } else {
-              const alreadyPresent = selectedWorkspaces.some(val => isMatch(workspace, val));
+              const alreadyPresent = selectedWorkspaces.some(value => isMatch(workspace, value));
 
               if (alreadyPresent) {
                 // Remove all variants (ID, Label, different cases)
-                next = selectedWorkspaces.filter(val => !isMatch(workspace, val));
+                nextWorkspaces = selectedWorkspaces.filter(value => !isMatch(workspace, value));
               } else {
-                next = [...selectedWorkspaces, workspace.id];
+                nextWorkspaces = [...selectedWorkspaces, workspace.id];
               }
             }
-            field.onChange(next);
+            field.onChange(nextWorkspaces);
             onSyncDraft?.();
           };
 
@@ -63,7 +63,7 @@ export const SharedAvailabilitySection = ({ name, number = 4, onSyncDraft }: Pro
             <FormItemField>
               <div className="grid grid-cols-1 gap-4">
                 {ALL_WORKSPACE_OPTIONS.map((workspace) => {
-                  const isSelected = selectedWorkspaces.some(val => isMatch(workspace, val));
+                  const isSelected = selectedWorkspaces.some(value => isMatch(workspace, value));
                   const isDisabled = isGlobalSelected && workspace.id !== GLOBAL_AVAILABILITY;
 
                   return (

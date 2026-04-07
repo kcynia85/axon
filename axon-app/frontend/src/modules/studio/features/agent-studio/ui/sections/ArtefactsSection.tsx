@@ -21,16 +21,17 @@ export const ArtefactsSection = (props: ArtefactsSectionProps) => {
 					render={({ field }) => (
 						<FormItemField>
 							<FormPropertyTable
-								items={(field.value || []) as FormPropertyTableItem[]}
-								onChange={(val) => {
-									field.onChange(val);
-									syncDraft();
-								}}
-								onBlur={syncDraft}
-								namePlaceholder="e.g. final_report"
-								addPlaceholder="Add artefact..."
-								typeOptions={ARTEFACT_TYPES}
+							        items={(field.value || []) as FormPropertyTableItem[]}
+							        onChange={(value) => {
+							                field.onChange(value);
+							                syncDraft();
+							        }}
+							        onBlur={syncDraft}
+							        namePlaceholder="e.g. final_report"
+							        addPlaceholder="Add artefact..."
+							        typeOptions={ARTEFACT_TYPES}
 							/>
+
 						</FormItemField>
 					)}
 				/>

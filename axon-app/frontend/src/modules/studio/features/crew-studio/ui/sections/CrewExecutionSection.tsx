@@ -43,7 +43,8 @@ export const CrewExecutionSection = ({ availableAgents, onSyncDraft }: Props) =>
 			: "Team Members (Agents)";
 
 	return (
-		<FormSection id="execution" number={3} title={sectionTitle}>
+		<FormSection id="execution" number={3} title={sectionTitle} variant="island">
+
 			<div className="max-w-4xl">
 				{renderExecution()}
 			</div>

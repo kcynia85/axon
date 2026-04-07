@@ -15,7 +15,8 @@ export const ArchetypeIdentitySection = ({ syncDraft }: ArchetypeIdentitySection
 	const { control } = useFormContext<ArchetypeFormValues>();
 
 	return (
-		<FormSection id="IDENTITY" number={1} title="Identity">
+		<FormSection id="IDENTITY" number={1} title="Identity" variant="island">
+
 			<div className="space-y-12">
 				<FormField
 					name="name"
@@ -87,14 +88,15 @@ export const ArchetypeIdentitySection = ({ syncDraft }: ArchetypeIdentitySection
 					render={({ field, fieldState }) => (
 						<FormItemField label="Keywords" error={fieldState.error?.message}>
 							<FormTagInput
-								value={field.value || []}
-								onChange={(val) => {
-									field.onChange(val);
-									syncDraft?.();
-								}}
-								onBlur={syncDraft}
-								placeholder="Dodaj słowa kluczowe (enter aby zatwierdzić)..."
+							        value={field.value || []}
+							        onChange={(value) => {
+							                field.onChange(value);
+							                syncDraft?.();
+							        }}
+							        onBlur={syncDraft}
+							        placeholder="Dodaj słowa kluczowe (enter aby zatwierdzić)..."
 							/>
+
 						</FormItemField>
 					)}
 				/>

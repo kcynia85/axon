@@ -15,11 +15,13 @@ export const ServiceCategoriesSection = () => {
 	
 	return (
 		<FormSection
-			id="categories"
-			number={2}
-			title="Categories"
-			description="Classify your service to help the organization discover and reuse it."
+		        id="categories"
+		        number={2}
+		        title="Categories"
+		        description="Classify your service to help the organization discover and reuse it."
+		        variant="island"
 		>
+
 			<FormField
 				control={control}
 				name="categories"

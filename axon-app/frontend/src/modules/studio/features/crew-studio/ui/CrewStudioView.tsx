@@ -38,6 +38,7 @@ export const CrewStudioView = ({
         <FormProvider {...form}>
             <div className="h-full w-full outline-none" tabIndex={0}>
                 <StudioLayout
+                    studioLabel="Team"
                     canvasRef={setCanvasContainerReference as any}
                     exitButton={
                         <Button
@@ -58,8 +59,11 @@ export const CrewStudioView = ({
                         />
                     }
                     canvas={
-                        <div className="px-24 pb-48">
-                            <form className="space-y-0" onSubmit={(formEvent) => formEvent.preventDefault()}>
+                        <div className="px-16 pb-48 pt-20 w-full">
+                            <form
+                                className="space-y-16 w-full"
+                                onSubmit={(formEvent) => formEvent.preventDefault()}
+                            >
                                 <CrewBasicInfoSection onSyncDraft={onSyncDraft} />
                                 <CrewTypeSelectionSection onTypeChange={onTypeChange} onSyncDraft={onSyncDraft} />
                                 <CrewExecutionSection availableAgents={availableAgents as any} onSyncDraft={onSyncDraft} />

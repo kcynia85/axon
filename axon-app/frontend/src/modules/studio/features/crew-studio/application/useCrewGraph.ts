@@ -1,6 +1,5 @@
 import { useFormContext, useWatch } from "react-hook-form";
 import type { CrewStudioFormData } from "../types/crew-schema";
-import { useMemo } from "react";
 
 export type GraphNode = {
 	id: string;
@@ -41,131 +40,130 @@ export const useCrewGraph = ({ availableAgents }: UseCrewGraphProps): GraphData 
 	const tasks = useWatch({ control, name: "tasks" }) || [];
 	const ownerId = useWatch({ control, name: "owner_agent_id" });
 
-	return useMemo(() => {
-		const nodes: GraphNode[] = [];
-		const edges: GraphEdge[] = [];
+	const nodes: GraphNode[] = [];
+	const edges: GraphEdge[] = [];
 
-		const getAgent = (id: string) => availableAgents.find(a => a.id === id);
+	const getAgent = (id: string) => availableAgents.find(a => a.id === id);
 
-		// Dynamic spacing constant
-		const NODE_SPACING = 140; 
+	// Dynamic spacing constant
+	const NODE_SPACING = 140; 
 
-		if (type === "Hierarchical") {
-			const memberCount = members.length;
-			// Calculate radius to prevent overlapping nodes on the arc
-			// Circumference of semi-circle arc must fit all nodes
-			const requiredRadius = (memberCount * NODE_SPACING) / Math.PI;
-			const radius = Math.max(220, requiredRadius);
+	if (type === "Hierarchical") {
+		const memberCount = members.length;
+		// Calculate radius to prevent overlapping nodes on the arc
+		// Circumference of semi-circle arc must fit all nodes
+		const requiredRadius = (memberCount * NODE_SPACING) / Math.PI;
+		const radius = Math.max(220, requiredRadius);
 
-			// Manager at the top
-			const manager = getAgent(ownerId || "");
+		// Manager at the top
+		const manager = getAgent(ownerId || "");
+		nodes.push({
+			id: "manager",
+			type: "manager",
+			name: manager?.name || "Assign Manager",
+			avatarUrl: manager?.avatarUrl,
+			x: 250,
+			y: 150,
+		});
+
+		// Members in an arc below
+		members.forEach((id, index) => {
+			const agent = getAgent(id);
+			if (!agent) return;
+
+			// Distribute nodes evenly along the 180-degree arc (PI radians)
+			const angle = (Math.PI / (memberCount + 1)) * (index + 1) + Math.PI;
+			const x = 250 + Math.cos(angle) * radius;
+			const y = 150 - Math.sin(angle) * radius;
+
 			nodes.push({
-				id: "manager",
-				type: "manager",
-				name: manager?.name || "Assign Manager",
-				avatarUrl: manager?.avatarUrl,
-				x: 250,
-				y: 150,
+				id: `member-${id}`,
+				type: "member",
+				name: agent.name,
+				avatarUrl: agent.avatarUrl,
+				x,
+				y,
 			});
 
-			// Members in an arc below
-			members.forEach((id, index) => {
-				const agent = getAgent(id);
-				if (!agent) return;
+			edges.push({
+				id: `edge-manager-${id}`,
+				from: "manager",
+				to: `member-${id}`,
+				type: "solid",
+			});
+		});
+	} else if (type === "Parallel") {
+		const memberCount = members.length;
+		// Circumference of the full circle must fit all nodes
+		const requiredRadius = (memberCount * NODE_SPACING) / (2 * Math.PI);
+		const radius = Math.max(200, requiredRadius);
 
-				// Distribute nodes evenly along the 180-degree arc (PI radians)
-				const angle = (Math.PI / (memberCount + 1)) * (index + 1) + Math.PI;
-				const x = 250 + Math.cos(angle) * radius;
-				const y = 150 - Math.sin(angle) * radius;
+		// Crew Center
+		nodes.push({
+			id: "crew-center",
+			type: "crew",
+			name: name,
+			x: 250,
+			y: 320,
+		});
 
-				nodes.push({
-					id: `member-${id}`,
-					type: "member",
-					name: agent.name,
-					avatarUrl: agent.avatarUrl,
-					x,
-					y,
-				});
+		// Members in a circle
+		members.forEach((id, index) => {
+			const agent = getAgent(id);
+			if (!agent) return;
 
+			const angle = (2 * Math.PI / memberCount) * index;
+			const x = 250 + Math.cos(angle) * radius;
+			const y = 320 + Math.sin(angle) * radius;
+
+			nodes.push({
+				id: `member-${id}`,
+				type: "member",
+				name: agent.name,
+				avatarUrl: agent.avatarUrl,
+				x,
+				y,
+			});
+
+			edges.push({
+				id: `edge-center-${id}`,
+				from: "crew-center",
+				to: `member-${id}`,
+				type: "dashed",
+			});
+		});
+	} else if (type === "Sequential") {
+		// Tasks in a sequence - Vertical Layout with fixed safe spacing
+		const spacing = 200; 
+		const startY = 150;
+
+		tasks.forEach((task, index) => {
+			const agent = getAgent(task.specialist_id || "");
+			const nodeId = task.id || `task-${index}`;
+
+			nodes.push({
+				id: nodeId,
+				type: "task",
+				name: agent?.name || "Assign Specialist",
+				avatarUrl: agent?.avatarUrl,
+				x: 250,
+				y: startY + index * spacing,
+				sequenceNumber: index + 1,
+			});
+
+			if (index > 0) {
+				const prevNodeId = tasks[index-1].id || `task-${index-1}`;
 				edges.push({
-					id: `edge-manager-${id}`,
-					from: "manager",
-					to: `member-${id}`,
+					id: `edge-task-${index-1}-${index}`,
+					from: prevNodeId,
+					to: nodeId,
 					type: "solid",
 				});
-			});
-		} else if (type === "Parallel") {
-			const memberCount = members.length;
-			// Circumference of the full circle must fit all nodes
-			const requiredRadius = (memberCount * NODE_SPACING) / (2 * Math.PI);
-			const radius = Math.max(200, requiredRadius);
-
-			// Crew Center
-			nodes.push({
-				id: "crew-center",
-				type: "crew",
-				name: name,
-				x: 250,
-				y: 320,
-			});
-
-			// Members in a circle
-			members.forEach((id, index) => {
-				const agent = getAgent(id);
-				if (!agent) return;
-
-				const angle = (2 * Math.PI / memberCount) * index;
-				const x = 250 + Math.cos(angle) * radius;
-				const y = 320 + Math.sin(angle) * radius;
-
-				nodes.push({
-					id: `member-${id}`,
-					type: "member",
-					name: agent.name,
-					avatarUrl: agent.avatarUrl,
-					x,
-					y,
-				});
-
-				edges.push({
-					id: `edge-center-${id}`,
-					from: "crew-center",
-					to: `member-${id}`,
-					type: "dashed",
-				});
-			});
-		} else if (type === "Sequential") {
-			// Tasks in a sequence - Vertical Layout with fixed safe spacing
-			const spacing = 200; 
-			const startY = 150;
-
-			tasks.forEach((task, index) => {
-				const agent = getAgent(task.specialist_id || "");
-				const nodeId = task.id || `task-${index}`;
-
-				nodes.push({
-					id: nodeId,
-					type: "task",
-					name: agent?.name || "Assign Specialist",
-					avatarUrl: agent?.avatarUrl,
-					x: 250,
-					y: startY + index * spacing,
-					sequenceNumber: index + 1,
-				});
-
-				if (index > 0) {
-					const prevNodeId = tasks[index-1].id || `task-${index-1}`;
-					edges.push({
-						id: `edge-task-${index-1}-${index}`,
-						from: prevNodeId,
-						to: nodeId,
-						type: "solid",
-					});
-				}
-			});
-		}
+			}
+		});
+	}
 
 
-		return { nodes, edges };
-	}, [type, name, members, tasks, ownerId, availableAgents]);
+	return { nodes, edges };
 };
+

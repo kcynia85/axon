@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, forwardRef } from "react";
+import React, { useState, forwardRef } from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { cn } from "@/shared/lib/utils";
 import { Check, Filter } from "lucide-react";
@@ -19,8 +19,8 @@ interface FilterBigMenuProps {
 const getInitialOptions = (groups: readonly FilterGroup[]) => {
     const initial: Record<string, boolean> = {};
     groups.forEach(group => {
-      group.options.forEach(opt => {
-        initial[opt.id] = opt.isChecked;
+      group.options.forEach(option => {
+        initial[option.id] = option.isChecked;
       });
     });
     return initial;
@@ -29,6 +29,7 @@ const getInitialOptions = (groups: readonly FilterGroup[]) => {
 /**
  * FilterBigMenu - Pattern: Horizontal Mega-Menu
  * Displays filter groups side-by-side in a terminal-inspired layout.
+ * Standard: Pure View pattern, Zero manual memoization.
  */
 export const FilterBigMenu = forwardRef<HTMLDivElement, FilterBigMenuProps>(({
   groups,
@@ -41,46 +42,46 @@ export const FilterBigMenu = forwardRef<HTMLDivElement, FilterBigMenuProps>(({
   const [tagSearch, setTagSearch] = useState<Record<string, string>>({});
   
   const [localOptions, setLocalOptions] = useState<Record<string, boolean>>(() => getInitialOptions(groups));
-  const [prevGroups, setPrevGroups] = useState(groups);
+  const [previousGroups, setPreviousGroups] = useState(groups);
 
   // Sync state with props during render (React recommended pattern for prop-to-state sync)
-  if (groups !== prevGroups) {
-    setPrevGroups(groups);
+  if (groups !== previousGroups) {
+    setPreviousGroups(groups);
     setLocalOptions(getInitialOptions(groups));
   }
 
   // Notify parent about initial or changed selection
-  const notifySelection = useCallback((options: Record<string, boolean>) => {
+  const notifySelection = (options: Record<string, boolean>) => {
     if (onSelectionChange) {
       const selectedIds = Object.entries(options)
         .filter(([_, checked]) => checked)
         .map(([id]) => id);
       onSelectionChange(selectedIds);
     }
-  }, [onSelectionChange]);
-
-  const toggleOption = (id: string) => {
-    const next = { ...localOptions, [id]: !localOptions[id] };
-    setLocalOptions(next);
-    notifySelection(next);
   };
 
-  const handleApply = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const toggleOption = (id: string) => {
+    const nextOptions = { ...localOptions, [id]: !localOptions[id] };
+    setLocalOptions(nextOptions);
+    notifySelection(nextOptions);
+  };
+
+  const handleApply = (mouseEvent: React.MouseEvent) => {
+    mouseEvent.stopPropagation();
     const selectedIds = Object.entries(localOptions)
       .filter(([_, checked]) => checked)
       .map(([id]) => id);
     onApply(selectedIds);
   };
 
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const cleared: Record<string, boolean> = {};
+  const handleClear = (mouseEvent: React.MouseEvent) => {
+    mouseEvent.stopPropagation();
+    const clearedOptions: Record<string, boolean> = {};
     Object.keys(localOptions).forEach(id => {
-      cleared[id] = false;
+      clearedOptions[id] = false;
     });
-    setLocalOptions(cleared);
-    notifySelection(cleared);
+    setLocalOptions(clearedOptions);
+    notifySelection(clearedOptions);
     onClearAll();
   };
 
@@ -92,15 +93,15 @@ export const FilterBigMenu = forwardRef<HTMLDivElement, FilterBigMenuProps>(({
             <span className="text-zinc-400 font-mono font-black text-[11px] uppercase tracking-wider">{group.title}</span>
           </div>
           <div className="flex flex-col gap-1.5">
-            {group.options.map((opt) => {
-              const isChecked = localOptions[opt.id];
+            {group.options.map((option) => {
+              const isChecked = localOptions[option.id];
               return (
                 <div 
-                  key={opt.id} 
+                  key={option.id} 
                   className="flex items-center gap-3 py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-sm transition-colors group/item"
-                  onClick={(e) => {
-                      e.preventDefault();
-                      toggleOption(opt.id);
+                  onClick={(mouseEvent) => {
+                      mouseEvent.preventDefault();
+                      toggleOption(option.id);
                   }}
                 >
                   <div className={cn(
@@ -113,7 +114,7 @@ export const FilterBigMenu = forwardRef<HTMLDivElement, FilterBigMenuProps>(({
                     "text-xs font-mono transition-colors truncate",
                     isChecked ? "text-zinc-900 dark:text-white font-bold" : "text-zinc-500 group-hover/item:text-zinc-700 dark:group-hover/item:text-zinc-300"
                   )}>
-                    {opt.label}
+                    {option.label}
                   </span>
                 </div>
               );

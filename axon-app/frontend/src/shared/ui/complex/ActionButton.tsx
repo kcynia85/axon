@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef } from "react";
+import React, { useRef } from "react";
 import { Button, ButtonProps } from "@/shared/ui/ui/Button";
 import { Plus, LucideIcon } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
@@ -37,21 +37,21 @@ export const ActionButton = ({
     ) ?? false
   }) > 0;
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerReference = useRef<NodeJS.Timeout | null>(null);
 
-  const handleDebouncedClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    if (timerRef.current) return; // Ignore rapid clicks
+  const handleDebouncedClick = (mouseEvent: React.MouseEvent<HTMLButtonElement>) => {
+    if (timerReference.current) return; // Ignore rapid clicks
 
     if (onClick) {
-      onClick(e);
+      onClick(mouseEvent);
     }
 
     // Set a short cooling period to prevent accidental double clicks 
     // before the mutation state kicks in
-    timerRef.current = setTimeout(() => {
-      timerRef.current = null;
+    timerReference.current = setTimeout(() => {
+      timerReference.current = null;
     }, debounceMs);
-  }, [onClick, debounceMs]);
+  };
 
   const innerContent = (
     <>

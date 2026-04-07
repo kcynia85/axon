@@ -25,21 +25,18 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
   const [selectedPatternId, setSelectedPatternId] = React.useState<string | null>(null);
   const [patternToDeleteId, setPatternToDeleteId] = React.useState<string | null>(null);
 
-  const displayPatterns = React.useMemo(() => {
-    if (!patterns) return [];
-    return patterns.slice(0, 4);
-  }, [patterns]);
+  const displayPatterns = (patterns || []).slice(0, 4);
 
-  const handleDelete = (id: string) => {
-    setPatternToDeleteId(id);
+  const handleDelete = (patternId: string) => {
+    setPatternToDeleteId(patternId);
   };
 
   const confirmDelete = () => {
     if (patternToDeleteId) {
-      const id = patternToDeleteId;
-      const pattern = patterns?.find(p => p.id === id);
+      const patternId = patternToDeleteId;
+      const pattern = patterns?.find(patternItem => patternItem.id === patternId);
       if (pattern) {
-        deleteWithUndo(id, pattern.pattern_name, () => deletePattern(id));
+        deleteWithUndo(patternId, pattern.pattern_name, () => deletePattern(patternId));
       }
       setPatternToDeleteId(null);
     }
@@ -63,7 +60,7 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
     );
   }
 
-  const selectedPattern = patterns.find((p) => p.id === selectedPatternId) || null;
+  const selectedPattern = patterns.find((patternItem) => patternItem.id === selectedPatternId) || null;
 
   return (
     <>
@@ -99,7 +96,7 @@ export const PatternsSection = ({ workspaceId, colorName = "default" }: Patterns
         onClose={() => setPatternToDeleteId(null)}
         onConfirm={confirmDelete}
         title="Delete Pattern"
-        resourceName={patterns.find(p => p.id === patternToDeleteId)?.pattern_name || "this pattern"}
+        resourceName={patterns.find(patternItem => patternItem.id === patternToDeleteId)?.pattern_name || "this pattern"}
         affectedResources={[]}
       />
     </>

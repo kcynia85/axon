@@ -21,6 +21,11 @@ type LLMRoutersListProps = {
     readonly onEdit?: (router: LLMRouter) => void;
 };
 
+type PriorityChainItem = {
+    readonly model_id: string;
+    readonly error_timeout: number;
+};
+
 export const LLMRoutersList = ({
     items: providedItems,
     isLoading: providedIsLoading,
@@ -37,8 +42,8 @@ export const LLMRoutersList = ({
     const isLoading = providedIsLoading ?? routersLoading;
     const isError = providedIsError ?? routersError;
 
-    const getModelName = (id: string) => {
-        const model = models.find(m => m.id === id);
+    const getModelName = (modelId: string) => {
+        const model = models.find(model => model.id === modelId);
         return model?.model_display_name || "Unknown Model";
     };
 
@@ -62,12 +67,14 @@ export const LLMRoutersList = ({
                 let chainModels: { id: string; name: string }[] = [];
                 
                 if (router.priority_chain && router.priority_chain.length > 0) {
-                    chainModels = (router.priority_chain as any[]).slice(0, 2).map(item => ({
-                        id: item.model_id,
-                        name: getModelName(item.model_id)
+                    chainModels = (router.priority_chain as unknown as PriorityChainItem[]).slice(0, 2).map(chainItem => ({
+                        id: chainItem.model_id,
+                        name: getModelName(chainItem.model_id)
                     }));
                 } else {
-                    chainModels.push({ id: router.primary_model_id, name: getModelName(router.primary_model_id) });
+                    if (router.primary_model_id) {
+                        chainModels.push({ id: router.primary_model_id, name: getModelName(router.primary_model_id) });
+                    }
                     if (router.fallback_model_id) {
                         chainModels.push({ 
                             id: router.fallback_model_id, 

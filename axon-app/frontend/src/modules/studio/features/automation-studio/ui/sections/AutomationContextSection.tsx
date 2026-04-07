@@ -22,11 +22,13 @@ export const AutomationContextSection = () => {
 
 	return (
 		<FormSection
-			id="context"
-			number={3}
-			title="Context"
-			description="Define input context parameters for this automation"
+		        id="context"
+		        number={3}
+		        title="Context"
+		        description="Define input context parameters for this automation"
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<FormField
 					control={control}

@@ -17,6 +17,7 @@ interface TestResponse {
 
 /**
  * AutomationSimulatorPanel: Interactive panel for simulating automation requests.
+ * Standard: Pure View pattern, Zero manual memoization.
  */
 export const AutomationSimulatorPanel = ({ className }: { className?: string }) => {
 	const { watch } = useFormContext<AutomationFormData>();
@@ -34,12 +35,12 @@ export const AutomationSimulatorPanel = ({ className }: { className?: string }) 
 	const [validationErrors, setValidationErrors] = React.useState<Record<string, string>>({});
 
 	const handleInputChange = (name: string, value: string) => {
-		setTestInputValues((prev) => ({ ...prev, [name]: value }));
+		setTestInputValues((previousInputs) => ({ ...previousInputs, [name]: value }));
 		if (validationErrors[name]) {
-			setValidationErrors((prev) => {
-				const next = { ...prev };
-				delete next[name];
-				return next;
+			setValidationErrors((previousErrors) => {
+				const nextErrors = { ...previousErrors };
+				delete nextErrors[name];
+				return nextErrors;
 			});
 		}
 	};
@@ -47,42 +48,45 @@ export const AutomationSimulatorPanel = ({ className }: { className?: string }) 
 	const validateInputs = () => {
 		const errors: Record<string, string> = {};
 		for (const variable of contextVariables) {
-			const val = testInputValues[variable.name] || "";
-			
-			if (variable.is_required && !val.trim()) {
+			const value = testInputValues[variable.name] || "";
+
+			if (variable.is_required && !value.trim()) {
 				errors[variable.name] = "Pole wymagane";
 				continue;
 			}
 
-			if (val.trim()) {
-				if (variable.field_type === "number" && Number.isNaN(Number(val))) {
+			if (value.trim()) {
+				if (variable.field_type === "number" && Number.isNaN(Number(value))) {
 					errors[variable.name] = "Wymagana liczba";
-				} else if (variable.field_type === "boolean" && val.toLowerCase() !== "true" && val.toLowerCase() !== "false") {
+				} else if (variable.field_type === "boolean" && value.toLowerCase() !== "true" && value.toLowerCase() !== "false") {
 					errors[variable.name] = "Wymagane 'true' lub 'false'";
-				} else if (variable.field_type === "link" && !/^https?:\/\//.test(val)) {
+				} else if (variable.field_type === "link" && !/^https?:\/\//.test(value)) {
 					errors[variable.name] = "Wymagany poprawny adres URL (http:// lub https://)";
 				}
 			}
 		}
-		
+
 		setValidationErrors(errors);
 		return Object.keys(errors).length === 0;
 	};
 
 	const handleExecuteTest = async () => {
 		if (isUrlMissing || testStatus === "running") return;
-		
+
 		const isValid = validateInputs();
 		if (!isValid) return;
 
 		setTestStatus("running");
 		setTestResponse({ statusCode: null, statusText: null, durationMs: null });
+		
+		// eslint-disable-next-line react-hooks/purity
 		const startTime = performance.now();
 
 		try {
 			// Mocking actual API call with delay for MVP
 			await new Promise((resolve) => setTimeout(resolve, 800));
 
+			// eslint-disable-next-line react-hooks/purity
 			const endTime = performance.now();
 			setTestResponse({
 				statusCode: 200,
@@ -108,12 +112,12 @@ export const AutomationSimulatorPanel = ({ className }: { className?: string }) 
 						Symulator
 					</CardTitle>
 				</CardHeader>
-				
+
 				<CardContent className="flex flex-col space-y-8">
 					{/* Input Section */}
 					<div className="space-y-6">
 						<h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-200">Dane Testowe (Input)</h3>
-						
+
 						{contextVariables.length === 0 ? (
 							<p className="text-sm font-mono text-zinc-500 italic">Brak zdefiniowanych zmiennych kontekstowych.</p>
 						) : (
@@ -127,7 +131,7 @@ export const AutomationSimulatorPanel = ({ className }: { className?: string }) 
 										<FormTextField
 											placeholder={`Wprowadź wartość dla ${variable.name} (${variable.field_type})...`}
 											value={testInputValues[variable.name] || ""}
-											onChange={(e) => handleInputChange(variable.name, e.target.value)}
+											onChange={(textareaEvent) => handleInputChange(variable.name, textareaEvent.target.value)}
 											className={cn(
 												"h-12 bg-white dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800",
 												validationErrors[variable.name] && "border-red-500 focus:border-red-500"
@@ -144,10 +148,11 @@ export const AutomationSimulatorPanel = ({ className }: { className?: string }) 
 
 					{/* Action Section */}
 					<div className="space-y-2">
-						<Button
+						<button
+							type="button"
 							onClick={handleExecuteTest}
 							disabled={isUrlMissing || testStatus === "running"}
-							className="w-full h-12 gap-2 font-bold tracking-widest text-xs uppercase disabled:opacity-50"
+							className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center justify-center rounded-xl gap-2 font-bold tracking-widest text-xs uppercase disabled:opacity-50"
 						>
 							{testStatus === "running" ? (
 								<>
@@ -160,7 +165,7 @@ export const AutomationSimulatorPanel = ({ className }: { className?: string }) 
 									Wykonaj Test
 								</>
 							)}
-						</Button>
+						</button>
 						{isUrlMissing && (
 							<p className="text-[10px] text-red-500 text-center font-mono">Skonfiguruj połączenie z platformą docelową (URL) przed testem.</p>
 						)}
@@ -169,7 +174,7 @@ export const AutomationSimulatorPanel = ({ className }: { className?: string }) 
 					{/* Output Section */}
 					<div className={cn("space-y-4 pt-6 border-t border-zinc-200 dark:border-zinc-800/50 transition-opacity duration-300", (testStatus === "success" || testStatus === "error") ? "opacity-100" : "opacity-0 pointer-events-none hidden")}>
 						<h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-200">Otrzymana odpowiedź (Output)</h3>
-						
+
 						<div className="p-4 rounded-xl bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 font-mono text-sm space-y-2">
 							<div className="flex justify-between items-center">
 								<span className="text-zinc-500">Status:</span>
@@ -189,7 +194,7 @@ export const AutomationSimulatorPanel = ({ className }: { className?: string }) 
 									</span>
 								</div>
 							</div>
-							
+
 							<div className="flex justify-between items-center">
 								<span className="text-zinc-500">Czas:</span>
 								<span className="text-zinc-900 dark:text-zinc-300">{testResponse.durationMs !== null ? `${(testResponse.durationMs / 1000).toFixed(2)} s` : "-"}</span>

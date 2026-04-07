@@ -45,10 +45,10 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
 
   const confirmDelete = () => {
     if (automationToDeleteId) {
-      const id = automationToDeleteId;
-      const automation = automations?.find(a => a.id === id);
+      const automationId = automationToDeleteId;
+      const automation = automations?.find(automationItem => automationItem.id === automationId);
       if (automation) {
-        deleteWithUndo(id, automation.automation_name, () => deleteAutomation(id));
+        deleteWithUndo(automationId, automation.automation_name, () => deleteAutomation(automationId));
       }
       setAutomationToDeleteId(null);
     }
@@ -78,10 +78,7 @@ export const AutomationsSection = ({ workspaceId, colorName = "default" }: Autom
     );
   }
 
-  const displayAutomations = React.useMemo(() => {
-    if (!automations) return [];
-    return automations.slice(0, 3);
-  }, [automations]);
+  const displayAutomations = (automations || []).slice(0, 3);
 
   return (
     <>

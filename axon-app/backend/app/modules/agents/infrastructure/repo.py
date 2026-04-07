@@ -3,10 +3,11 @@ from sqlalchemy import select, update, delete, or_
 from typing import Optional, List
 from uuid import UUID
 from app.modules.agents.domain.models import AgentConfig, ChatSession
+from app.modules.agents.domain.enums import AgentRole
 from app.modules.agents.infrastructure.tables import AgentConfigTable, ChatSessionTable
 from app.shared.utils.time import now_utc
 
-# Functional-First Repository Layer
+# --- Functional-First Repository Layer ---
 
 async def create_agent_config(session: AsyncSession, config: AgentConfig) -> AgentConfig:
     db_obj = AgentConfigTable(**config.model_dump())
@@ -23,6 +24,14 @@ async def get_agent_config(session: AsyncSession, id: UUID) -> Optional[AgentCon
         return AgentConfig.model_validate(row, from_attributes=True)
     return None
 
+async def get_agent_config_by_role(session: AsyncSession, role: AgentRole) -> Optional[AgentConfig]:
+    stmt = select(AgentConfigTable).where(AgentConfigTable.role == role)
+    result = await session.execute(stmt)
+    row = result.scalar_one_or_none()
+    if row:
+        return AgentConfig.model_validate(row, from_attributes=True)
+    return None
+
 async def list_agent_configs(session: AsyncSession, workspace: Optional[str] = None) -> List[AgentConfig]:
     stmt = select(AgentConfigTable).where(AgentConfigTable.deleted_at == None)
     if workspace:
@@ -33,12 +42,23 @@ async def list_agent_configs(session: AsyncSession, workspace: Optional[str] = N
     result = await session.execute(stmt)
     return [AgentConfig.model_validate(r, from_attributes=True) for r in result.scalars().all()]
 
+async def list_all_agent_configs(session: AsyncSession) -> List[AgentConfig]:
+    stmt = select(AgentConfigTable).where(AgentConfigTable.deleted_at == None)
+    result = await session.execute(stmt)
+    return [AgentConfig.model_validate(r, from_attributes=True) for r in result.scalars().all()]
+
 async def update_agent_config(session: AsyncSession, id: UUID, update_data: dict) -> Optional[AgentConfig]:
     update_data['updated_at'] = now_utc()
     stmt = update(AgentConfigTable).where(AgentConfigTable.id == id).values(**update_data)
     await session.execute(stmt)
     await session.commit()
     return await get_agent_config(session, id)
+
+async def upsert_agent_config(session: AsyncSession, config: AgentConfig) -> AgentConfig:
+    existing = await get_agent_config_by_role(session, config.role) if config.role else None
+    if existing:
+        return await update_agent_config(session, existing.id, config.model_dump(exclude={"id", "created_at"}))
+    return await create_agent_config(session, config)
 
 async def delete_agent_config(session: AsyncSession, id: UUID) -> bool:
     # 1. Remove from crew members association
@@ -93,6 +113,27 @@ async def get_agent_assigned_crews(session: AsyncSession, agent_id: UUID) -> Lis
             crews.append({"id": str(row.id), "name": row.crew_name, "role": "Member"})
     
     return crews
+
+# --- Class-Based Wrapper (for backward compatibility) ---
+
+class AgentConfigRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def list_all(self) -> List[AgentConfig]:
+        return await list_all_agent_configs(self.session)
+
+    async def get_by_role(self, role: AgentRole) -> Optional[AgentConfig]:
+        return await get_agent_config_by_role(self.session, role)
+
+    async def upsert(self, config: AgentConfig) -> AgentConfig:
+        return await upsert_agent_config(self.session, config)
+
+    async def get(self, id: UUID) -> Optional[AgentConfig]:
+        return await get_agent_config(self.session, id)
+
+    async def list(self, workspace: Optional[str] = None) -> List[AgentConfig]:
+        return await list_agent_configs(self.session, workspace)
 
 # --- Chat Sessions ---
 

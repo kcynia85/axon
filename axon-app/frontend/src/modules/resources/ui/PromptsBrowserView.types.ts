@@ -1,0 +1,37 @@
+import { PromptArchetype } from "@/shared/domain/resources";
+import { ActiveFilter, FilterGroup, SortOption } from "@/shared/domain/filters";
+import { QuickFilter } from "@/shared/ui/complex/ActionBar";
+
+export type PromptsBrowserViewProps = {
+  readonly prompts: readonly PromptArchetype[];
+  readonly displayPrompts: readonly (PromptArchetype & { isDraft?: boolean })[];
+  readonly recentlyUsedPrompts: readonly PromptArchetype[];
+  readonly viewMode: "grid" | "list";
+  readonly setViewMode: (mode: "grid" | "list") => void;
+  readonly isLoading: boolean;
+  readonly isError: boolean;
+  readonly isSidebarOpen: boolean;
+  readonly onSidebarOpenChange: (open: boolean) => void;
+  readonly activePrompt: (PromptArchetype & { isDraft?: boolean }) | null;
+  readonly searchQuery: string;
+  readonly onSearchChange: (query: string) => void;
+  readonly sortBy: string;
+  readonly onSortChange: (sortBy: string) => void;
+  readonly sortOptions: readonly SortOption[];
+  readonly activeFilters: readonly ActiveFilter[];
+  readonly filterGroups: readonly FilterGroup[];
+  readonly quickFilters: readonly QuickFilter[];
+  readonly onToggleFilter: (id: string) => void;
+  readonly onRemoveFilter: (id: string) => void;
+  readonly onClearAllFilters: () => void;
+  readonly onApplyFilters: (selectedIds: string[]) => void;
+  readonly onPendingFilterIdsChange: (selectedIds: string[]) => void;
+  readonly onEdit: () => void;
+  readonly onDelete: (id: string) => void;
+  readonly onViewDetails: (id: string) => void;
+  readonly previewCount: number;
+  readonly promptToDeleteId: string | null;
+  readonly onConfirmDelete: () => void;
+  readonly onCancelDelete: () => void;
+  readonly promptToDeleteName?: string;
+};

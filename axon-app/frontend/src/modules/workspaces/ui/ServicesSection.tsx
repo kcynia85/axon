@@ -14,6 +14,8 @@ import { ServiceProfilePeek } from "./ServiceProfilePeek";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 
+import { ExternalService } from "@/shared/domain/resources";
+
 type ServicesSectionProps = {
   readonly workspaceId: string;
   readonly colorName?: string;
@@ -28,8 +30,8 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
   const [selectedServiceId, setSelectedServiceId] = React.useState<string | null>(null);
   const [serviceToDeleteId, setServiceToDeleteId] = React.useState<string | null>(null);
 
-  const handleDelete = (id: string) => {
-    if (id === "draft") {
+  const handleDelete = (serviceId: string) => {
+    if (serviceId === "draft") {
       if (window.confirm("Are you sure you want to discard this draft?")) {
         clearDraft();
         toast.success("Szkic usługi usunięty");
@@ -37,27 +39,27 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
       return;
     }
     
-    setServiceToDeleteId(id);
+    setServiceToDeleteId(serviceId);
   };
 
   const confirmDelete = () => {
     if (!serviceToDeleteId) return;
     
-    const service = (services as any)?.find((s: any) => s.id === serviceToDeleteId);
-    const name = service?.service_name || "Service";
-    deleteWithUndo(serviceToDeleteId, name, () => deleteService(serviceToDeleteId));
+    const service = (services as readonly ExternalService[] | undefined)?.find(serviceItem => serviceItem.id === serviceToDeleteId);
+    const serviceName = service?.service_name || "Service";
+    deleteWithUndo(serviceToDeleteId, serviceName, () => deleteService(serviceToDeleteId));
     setServiceToDeleteId(null);
   };
 
-  const selectedService = (services as any)?.find((s: any) => s.id === selectedServiceId);
+  const selectedService = (services as readonly ExternalService[] | undefined)?.find(serviceItem => serviceItem.id === selectedServiceId) || null;
 
-  const handleEdit = (id: string) => {
-    router.push(`/workspaces/${workspaceId}/services/studio/${id}`);
+  const handleEdit = (serviceId: string) => {
+    router.push(`/workspaces/${workspaceId}/services/studio/${serviceId}`);
   };
 
   const displayServices = React.useMemo(() => {
     if (!services) return [];
-    return (services as any).slice(0, 3);
+    return (services as readonly ExternalService[]).slice(0, 3);
   }, [services]);
 
   if (isLoading) {
@@ -87,7 +89,7 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
   return (
     <>
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {displayServices.map((service: any) => (
+        {displayServices.map((service) => (
           <WorkspaceCardHorizontal 
             key={service.id}
             title={service.service_name}
@@ -106,6 +108,7 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
       </div>
 
       <ServiceProfilePeek 
+        key={selectedServiceId || "none"}
         service={selectedService}
         isOpen={!!selectedServiceId}
         onClose={() => setSelectedServiceId(null)}
@@ -118,7 +121,7 @@ export const ServicesSection = ({ workspaceId, colorName = "default" }: Services
         onClose={() => setServiceToDeleteId(null)}
         onConfirm={confirmDelete}
         title="Delete Service"
-        resourceName={(services as any)?.find((s: any) => s.id === serviceToDeleteId)?.service_name || "Service"}
+        resourceName={(services as readonly ExternalService[] | undefined)?.find(serviceItem => serviceItem.id === serviceToDeleteId)?.service_name || "Service"}
         affectedResources={[]}
       />
     </>

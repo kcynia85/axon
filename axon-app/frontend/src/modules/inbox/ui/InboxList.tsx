@@ -1,27 +1,29 @@
 "use client";
 
 import * as React from "react";
-import { useInboxItems, useResolveInboxItem } from "../application/useInbox";
+import { useResolveInboxItem } from "../application/useInbox";
 import {
     Check
 } from "lucide-react";
-import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
 import { InboxItem } from "@/shared/domain/inbox";
 import { InboxEmptyState } from "./InboxEmptyState";
 
 type InboxItemProps = {
     readonly item: InboxItem;
-    readonly onResolve: (id: string) => void;
+    readonly onResolve: (itemId: string) => void;
 }
 
-const InboxItemComponent = React.memo(({ 
+/**
+ * InboxItemComponent: Single notification row.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
+const InboxItemComponent = ({ 
     item, 
     onResolve 
 }: InboxItemProps) => {
-    const timeString = React.useMemo(() => 
-        new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    [item.created_at]);
+    // Zero manual optimization - React Compiler handles it
+    const timeString = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const isNew = item.item_status === "NEW";
     const isCritical = item.item_priority === "CRITICAL";
@@ -78,12 +80,12 @@ const InboxItemComponent = React.memo(({
                 </div>
             </div>
 
-            {/* Resolve Action - Matches New Project Modal "Done" style */}
+            {/* Resolve Action */}
             <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-start pt-0.5 shrink-0 ml-2 animate-in fade-in zoom-in">
                 {isNew && (
                     <button
-                        onClick={(e) => {
-                            e.stopPropagation();
+                        onClick={(mouseEvent) => {
+                            mouseEvent.stopPropagation();
                             onResolve(item.id);
                         }}
                         className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none"
@@ -94,24 +96,26 @@ const InboxItemComponent = React.memo(({
             </div>
         </div>
     );
-});
-
-InboxItemComponent.displayName = "InboxItemComponent";
+};
 
 type InboxListProps = {
     readonly items: readonly InboxItem[];
     readonly isLoading: boolean;
 }
 
-export const InboxList = React.memo(({ 
+/**
+ * InboxList: List container for notifications.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
+export const InboxList = ({ 
     items, 
     isLoading 
 }: InboxListProps) => {
     const { mutate: resolveItem } = useResolveInboxItem();
 
-    const handleResolve = React.useCallback((id: string) => {
-        resolveItem(id);
-    }, [resolveItem]);
+    const handleResolve = (itemId: string) => {
+        resolveItem(itemId);
+    };
 
     if (isLoading) {
         return (
@@ -135,15 +139,13 @@ export const InboxList = React.memo(({
 
     return (
         <div className="pb-20">
-            {items.map((item) => (
+            {items.map((inboxItem) => (
                 <InboxItemComponent 
-                    key={item.id} 
-                    item={item} 
+                    key={inboxItem.id} 
+                    item={inboxItem} 
                     onResolve={handleResolve} 
                 />
             ))}
         </div>
     );
-});
-
-InboxList.displayName = "InboxList";
+};

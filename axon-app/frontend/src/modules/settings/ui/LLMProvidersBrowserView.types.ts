@@ -1,0 +1,35 @@
+import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
+import { QuickFilter } from "@/shared/ui/complex/ActionBar";
+import { Provider } from "./LLMProviderSidePeek";
+
+export type LLMProvidersBrowserViewProps = {
+    readonly searchQuery: string;
+    readonly onSearchChange: (query: string) => void;
+    readonly viewMode: "grid" | "list";
+    readonly setViewMode: (mode: "grid" | "list") => void;
+    readonly sortBy: string;
+    readonly onSortChange: (sortBy: string) => void;
+    readonly activeFilters: readonly ActiveFilter[];
+    readonly filterGroups: readonly FilterGroup[];
+    readonly quickFilters: readonly QuickFilter[];
+    readonly sortOptions: readonly SortOption[];
+    readonly onToggleFilter: (id: string) => void;
+    readonly onRemoveFilter: (id: string) => void;
+    readonly onClearAllFilters: () => void;
+    readonly onApplyFilters: (selectedIds: string[]) => void;
+    readonly onSelectionChange: (selectedIds: string[]) => void;
+    readonly filteredProviders: readonly Provider[];
+    readonly previewCount: number;
+    readonly isLoading: boolean;
+    readonly isError: boolean;
+    readonly selectedProvider: Provider | null;
+    readonly onProviderClick: (provider: Provider) => void;
+    readonly onConfigureProvider: (provider: Provider) => void;
+    readonly onDeleteProvider: (id: string) => void;
+    readonly onCloseSidePeek: () => void;
+    readonly deleteModalOpen: boolean;
+    readonly onCancelDelete: () => void;
+    readonly onConfirmDelete: () => void;
+    readonly providerToDeleteName?: string;
+    readonly affectedResources: readonly { id: string; name: string; role: string }[];
+};

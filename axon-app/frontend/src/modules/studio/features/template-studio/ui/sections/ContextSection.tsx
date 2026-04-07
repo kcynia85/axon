@@ -14,11 +14,13 @@ export const ContextSection = ({ onSyncDraft }: Props) => {
 
 	return (
 		<FormSection 
-			id="context" 
-			number={3} 
-			title="Context"
-			description="Define contextual information that this template requires to be effective."
+		        id="context" 
+		        number={3} 
+		        title="Context"
+		        description="Define contextual information that this template requires to be effective."
+		        variant="island"
 		>
+
 			<div className="space-y-8">
 				<FormField
 					control={control}

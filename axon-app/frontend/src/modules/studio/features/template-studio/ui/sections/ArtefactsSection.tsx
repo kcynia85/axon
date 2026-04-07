@@ -14,11 +14,13 @@ export const ArtefactsSection = ({ onSyncDraft }: Props) => {
 
 	return (
 		<FormSection 
-			id="artefacts" 
-			number={4} 
-			title="Artefacts"
-			description="Define artefacts that should be produced or used during the process."
+		        id="artefacts" 
+		        number={4} 
+		        title="Artefacts"
+		        description="Define artefacts that should be produced or used during the process."
+		        variant="island"
 		>
+
 			<div className="space-y-8">
 				<FormField
 					control={control}

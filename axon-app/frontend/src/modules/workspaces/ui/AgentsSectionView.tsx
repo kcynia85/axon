@@ -5,15 +5,17 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
 import { Button } from "@/shared/ui/ui/Button";
 import { WorkspaceCard } from "@/shared/ui/complex/WorkspaceCard";
-import { AgentProfilePeek } from "./AgentProfilePeek";
+import { AgentProfilePeek } from "@/modules/agents/ui/AgentProfilePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { getAgentAvatarUrl } from "@/shared/lib/utils";
 
+import { Agent } from "@/modules/agents/domain/agent.schema";
+
 export type AgentsSectionViewProps = {
     readonly workspaceId: string;
-    readonly agents: any[] | undefined;
+    readonly agents: readonly Agent[] | undefined;
     readonly isAgentsLoading: boolean;
-    readonly activeAgent: any | null;
+    readonly activeAgent: Agent | null;
     readonly agentToDeleteId: string | null;
     readonly colorName?: string;
     readonly onSelectAgent: (id: string) => void;
@@ -42,7 +44,7 @@ export const AgentsSectionView = ({
 }: AgentsSectionViewProps): React.ReactNode => {
     // Derived state - React Compiler handles optimization
     const displayAgents = (agents || []).slice(0, 4);
-    const agentToDelete = agents?.find(a => a.id === agentToDeleteId);
+    const agentToDelete = agents?.find(agent => agent.id === agentToDeleteId);
     const agentToDeleteName = agentToDelete?.agent_name || agentToDelete?.agent_role_text || "Agent";
 
     if (isAgentsLoading) {

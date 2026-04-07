@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useFormContext, Controller, useWatch } from "react-hook-form";
 import type { ModelFormData } from "../../types/model-schema";
@@ -6,21 +8,32 @@ import { FormSelect } from "@/shared/ui/form/FormSelect";
 import { FormTextField } from "@/shared/ui/form/FormTextField";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { useLLMProviders, useAvailableModels } from "@/modules/settings/application/useLLMProviders";
-import { ChevronDown, ShoppingBag, CheckCircle2, Plus, Loader2, Activity } from "lucide-react";
+import { ChevronDown, Plus, Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { OpenRouterMarketplace } from "../components/OpenRouterMarketplace";
-import { Button } from "@/shared/ui/ui/Button";
 import { FormCheckbox } from "@/shared/ui/form/FormCheckbox";
 import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 import { Badge } from "@/shared/ui/ui/Badge";
-import { ModelSanityCheck } from "../components/ModelSanityCheck";
 
 interface ModelIdentitySectionProps {
-    modelId?: string;
-    onToggleSanity?: () => void;
-    isSanityOpen?: boolean;
+    readonly modelId?: string;
+    readonly onToggleSanity?: () => void;
+    readonly isSanityOpen?: boolean;
 }
 
+interface MarketModelData {
+    readonly id: string;
+    readonly name: string;
+    readonly context_window?: number;
+    readonly pricing_input?: number;
+    readonly pricing_output?: number;
+    readonly description?: string;
+}
+
+/**
+ * ModelIdentitySection: Configuration for LLM provider and specific model identification.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
 export const ModelIdentitySection = ({ modelId }: ModelIdentitySectionProps) => {
     const { control, setValue, formState: { errors } } = useFormContext<ModelFormData>();
     const { data: providers = [] } = useLLMProviders();
@@ -33,40 +46,37 @@ export const ModelIdentitySection = ({ modelId }: ModelIdentitySectionProps) => 
     // Fetch available models for the selected provider
     const { data: availableModels = [], isLoading: isLoadingModels } = useAvailableModels(selectedProviderId);
 
-    const providerOptions = React.useMemo(() => {
-        return providers.map(p => ({
-            id: p.id,
-            name: p.provider_name
-        }));
-    }, [providers]);
+    // Zero manual optimization - React Compiler handles it
+    const providerOptions = providers.map(provider => ({
+        id: provider.id,
+        name: provider.provider_name
+    }));
     
-    const selectedProvider = providers.find(p => p.id === selectedProviderId);
+    const selectedProvider = providers.find(provider => provider.id === selectedProviderId);
     const selectedProviderName = selectedProvider?.provider_name?.toLowerCase() || "";
     const isOpenRouter = selectedProviderName.includes("openrouter");
     
-    const modelOptions = React.useMemo(() => {
-        return availableModels.map(m => ({
-            id: m.id,
-            name: m.name
-        }));
-    }, [availableModels]);
+    const modelOptions = availableModels.map(model => ({
+        id: model.id,
+        name: model.name
+    }));
 
-    const handleModelSelect = (model: any) => {
-        setValue("model_id", model.id);
+    const handleModelSelect = (modelData: MarketModelData) => {
+        setValue("model_id", modelData.id);
         
-        const isReasoning = model.id.includes("o1") || model.id.includes("r1") || model.id.includes("405b") || (model.description?.toLowerCase().includes("reasoning"));
+        const isReasoning = modelData.id.includes("o1") || modelData.id.includes("r1") || modelData.id.includes("405b") || (modelData.description?.toLowerCase().includes("reasoning"));
 
         if (isOpenRouter) {
-            const parts = model.id.split('/');
-            const providerName = parts.length > 1 ? parts[0] : "";
-            setValue("alias_name", providerName ? `${providerName.charAt(0).toUpperCase() + providerName.slice(1)} ${model.name}` : model.name);
+            const parts = modelData.id.split('/');
+            const providerPrefix = parts.length > 1 ? parts[0] : "";
+            setValue("alias_name", providerPrefix ? `${providerPrefix.charAt(0).toUpperCase() + providerPrefix.slice(1)} ${modelData.name}` : modelData.name);
         } else {
-            setValue("alias_name", model.name);
+            setValue("alias_name", modelData.name);
         }
 
-        setValue("max_completion_tokens", model.context_window || 0, { shouldValidate: true, shouldDirty: true });
-        setValue("pricing_input", model.pricing_input || 0, { shouldValidate: true, shouldDirty: true });
-        setValue("pricing_output", model.pricing_output || 0, { shouldValidate: true, shouldDirty: true });
+        setValue("max_completion_tokens", modelData.context_window || 0, { shouldValidate: true, shouldDirty: true });
+        setValue("pricing_input", modelData.pricing_input || 0, { shouldValidate: true, shouldDirty: true });
+        setValue("pricing_output", modelData.pricing_output || 0, { shouldValidate: true, shouldDirty: true });
         
         if (isReasoning) {
             setValue("reasoning_effort", "Medium");
@@ -95,13 +105,13 @@ export const ModelIdentitySection = ({ modelId }: ModelIdentitySectionProps) => 
                                 value={field.value}
                                 onChange={field.onChange}
                                 placeholder="Wybierz dostawcę..."
-                                renderTrigger={(selected) => (
+                                renderTrigger={(selectedProviderItems) => (
                                     <div className="flex items-center gap-3 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
                                         <span className={cn(
                                             "text-lg font-bold transition-colors flex-1 text-left",
-                                            selected.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+                                            selectedProviderItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
                                         )}>
-                                            {selected.length > 0 ? selected[0].name : "Wybierz dostawcę..."}
+                                            {selectedProviderItems.length > 0 ? selectedProviderItems[0].name : "Wybierz dostawcę..."}
                                         </span>
                                         <ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
                                     </div>
@@ -178,21 +188,21 @@ export const ModelIdentitySection = ({ modelId }: ModelIdentitySectionProps) => 
                                 <FormSelect
                                     options={modelOptions}
                                     value={field.value}
-                                    onChange={(val) => {
-                                        field.onChange(val);
-                                        const modelData = availableModels.find(m => m.id === val);
+                                    onChange={(selectedValue) => {
+                                        field.onChange(selectedValue);
+                                        const modelData = availableModels.find(model => model.id === selectedValue);
                                         if (modelData) {
-                                            handleModelSelect(modelData);
+                                            handleModelSelect(modelData as MarketModelData);
                                         }
                                     }}
                                     placeholder={isLoadingModels ? "Ładowanie modeli..." : "Szukaj np. turbo..."}
-                                    renderTrigger={(selected: any) => (
+                                    renderTrigger={(selectedModelItems) => (
                                         <div className="flex items-center gap-3 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
                                             <span className={cn(
                                                 "text-lg font-mono transition-colors flex-1 text-left",
-                                                selected.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+                                                selectedModelItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
                                             )}>
-                                                {isLoadingModels ? "Ładowanie..." : (selected.length > 0 ? selected[0].name : "Szukaj np. turbo...")}
+                                                {isLoadingModels ? "Ładowanie..." : (selectedModelItems.length > 0 ? selectedModelItems[0].name : "Szukaj np. turbo...")}
                                             </span>
                                             {isLoadingModels ? <Loader2 className="w-5 h-5 animate-spin text-zinc-600" /> : <ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />}
                                         </div>

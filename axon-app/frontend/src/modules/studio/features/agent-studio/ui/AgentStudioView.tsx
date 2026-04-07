@@ -67,42 +67,43 @@ export const AgentStudioView = ({
 				tabIndex={0}
 			>
 				<StudioLayout
-					studioLabel="Agent"
-					canvasRef={setCanvasContainerReference}
-					exitButton={
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => (isEditing ? onExit() : onSetStep("discovery"))}
-							className="hover:bg-zinc-900 gap-2 text-zinc-400 hover:text-white px-4 font-mono text-[10px] uppercase tracking-[0.2em] border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
-						>
-							<X className="w-4 h-4" /> Exit Studio
-						</Button>
-					}
-					navigator={
-						<StudioSectionNav
-							sections={sections as any}
-							activeSection={activeSectionIdentifier}
-							onSectionClick={onSectionClick}
-							onExitToLibrary={() => (isEditing ? onExit() : onSetStep("discovery"))}
-						/>
-					}
-					canvas={
-						<div className="px-24 pb-48">
-							<form
-								className="space-y-0"
-								onSubmit={(formEvent) => formEvent.preventDefault()}
-							>
-								<IdentitySection syncDraft={onSyncDraft} />
-								<CognitionSection syncDraft={onSyncDraft} />
-								<EngineSection syncDraft={onSyncDraft} />
-								<SkillsSection syncDraft={onSyncDraft} />
-								<ContextSection syncDraft={onSyncDraft} />
-								<ArtefactsSection syncDraft={onSyncDraft} />
-								<AvailabilitySection syncDraft={onSyncDraft} />
-							</form>
-						</div>
-					}
+				        studioLabel="Agent"
+				        canvasRef={setCanvasContainerReference}
+				        exitButton={
+				                <Button
+				                        variant="ghost"
+				                        size="icon"
+				                        onClick={() => (isEditing ? onExit() : onSetStep("discovery"))}
+				                        className="hover:bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all h-9 w-9"
+				                >
+				                        <X className="w-4 h-4" />
+				                </Button>
+				        }
+				        navigator={
+				                <StudioSectionNav
+				                        sections={sections as any}
+				                        activeSection={activeSectionIdentifier}
+				                        onSectionClick={onSectionClick}
+				                        onExitToLibrary={() => (isEditing ? onExit() : onSetStep("discovery"))}
+				                />
+				        }
+				        canvas={
+				                <div className="px-16 pb-48 pt-20 w-full">
+				                        <form
+				                                className="space-y-16 w-full"
+				                                onSubmit={(formEvent) => formEvent.preventDefault()}
+				                        >
+				                                <IdentitySection syncDraft={onSyncDraft} />
+				                                <CognitionSection syncDraft={onSyncDraft} />
+				                                <EngineSection syncDraft={onSyncDraft} />
+				                                <SkillsSection syncDraft={onSyncDraft} />
+				                                <ContextSection syncDraft={onSyncDraft} />
+				                                <ArtefactsSection syncDraft={onSyncDraft} />
+				                                <AvailabilitySection syncDraft={onSyncDraft} />
+				                        </form>
+				                </div>
+				        }
+
 					poster={<ConnectedLivePoster />}
 					footer={
 						<div className="flex items-center gap-4">

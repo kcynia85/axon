@@ -34,7 +34,7 @@ interface ProviderAuthSectionProps {
 export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) => {
 	const { register, control, formState: { errors } } = useFormContext<ProviderFormData>();
 	const providerType = useWatch({ control, name: "provider_type" });
-	const [showPassword, useState] = React.useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -128,7 +128,7 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 						/>
 						<button
 							type="button"
-							onClick={() => useState(!showPassword)}
+							onClick={() => setShowPassword(!showPassword)}
 							className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors focus:outline-none"
 						>
 							{showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}

@@ -31,6 +31,7 @@ export const ServiceStudioView = ({
         <FormProvider {...form}>
             <div className="fixed inset-0 z-[200] h-screen w-screen bg-black outline-none" tabIndex={0}>
                 <StudioLayout
+                    studioLabel="Service"
                     canvasRef={setCanvasContainerReference}
                     exitButton={
                         <Button
@@ -50,9 +51,9 @@ export const ServiceStudioView = ({
                         />
                     }
                     canvas={
-                        <div className="px-24 pb-48">
+                        <div className="px-16 pb-48 pt-20 w-full">
                             <form 
-                                className="space-y-0" 
+                                className="space-y-16 w-full" 
                                 onSubmit={(submitEvent) => submitEvent.preventDefault()}
                                 onBlur={onBlur}
                             >

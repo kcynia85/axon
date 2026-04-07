@@ -62,8 +62,8 @@ export const WorkspaceCardHorizontal = ({
     isDraft = false,
     useDirectHoverMenu = true
 }: WorkspaceCardHorizontalProps) => {
-    const isPending = usePendingDeletionsStore((s) => s.isPending(resourceId || ""));
-    const styles = getVisualStylesForZoneColor(colorName);
+    const isPending = usePendingDeletionsStore((state) => state.isPending(resourceId || ""));
+    const visualStyles = getVisualStylesForZoneColor(colorName);
 
     if (isPending) return null;
 
@@ -84,7 +84,7 @@ export const WorkspaceCardHorizontal = ({
                             variant="ghost" 
                             size="icon" 
                             className="h-8 w-8 bg-black/60 text-white hover:bg-white/20"
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(e); }}
+                            onClick={(mouseEvent) => { mouseEvent.preventDefault(); mouseEvent.stopPropagation(); onEdit(mouseEvent); }}
                         >
                             <Edit2 className="w-4 h-4" />
                         </Button>
@@ -93,7 +93,7 @@ export const WorkspaceCardHorizontal = ({
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 bg-black/60 text-red-400 hover:bg-red-500/20 hover:text-red-500"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(resourceId); }}
+                        onClick={(mouseEvent) => { mouseEvent.preventDefault(); mouseEvent.stopPropagation(); onDelete(resourceId); }}
                     >
                         <Trash2 className="w-4 h-4" />
                     </Button>
@@ -106,7 +106,7 @@ export const WorkspaceCardHorizontal = ({
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button 
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                            onClick={(mouseEvent) => { mouseEvent.preventDefault(); mouseEvent.stopPropagation(); }}
                             className="p-1.5 rounded-md hover:bg-white/20 bg-black/60 text-zinc-300 hover:text-white transition-colors"
                         >
                             <MoreVertical className="w-4 h-4" />
@@ -115,10 +115,10 @@ export const WorkspaceCardHorizontal = ({
                     <DropdownMenuContent align="end">
                         {onEdit && (
                             <DropdownMenuItem 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    onEdit(e);
+                                onClick={(mouseEvent) => {
+                                    mouseEvent.preventDefault();
+                                    mouseEvent.stopPropagation();
+                                    onEdit(mouseEvent);
                                 }}
                             >
                                 <ChevronRight className="w-4 h-4 mr-2" />
@@ -127,9 +127,9 @@ export const WorkspaceCardHorizontal = ({
                         )}
                         <DropdownMenuItem 
                             variant="destructive"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
+                            onClick={(mouseEvent) => {
+                                mouseEvent.preventDefault();
+                                mouseEvent.stopPropagation();
                                 onDelete(resourceId); 
                             }}
                         >
@@ -151,11 +151,11 @@ export const WorkspaceCardHorizontal = ({
             <Link 
                 href={href} 
                 className={cn("group block w-full outline-none h-full", className)}
-                onClick={(e) => {
+                onClick={(mouseEvent) => {
                     if (onClick) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onClick(e);
+                        mouseEvent.preventDefault();
+                        mouseEvent.stopPropagation();
+                        onClick(mouseEvent);
                     }
                 }}
             >
@@ -172,14 +172,14 @@ export const WorkspaceCardHorizontal = ({
                         <div className="flex items-center transition-transform duration-500 ease-out origin-left">
                             {agentIds.length > 0 && !isDraft ? (
                                 <div className="flex -space-x-3 mr-3">
-                                    {displayedAgents.map((agentId, i) => {
-                                        const imgId = getDeterministicImgId(agentId);
-                                        const avatarUrl = agentVisualsMap[agentId] || `/images/avatars/agent-${imgId}.webp`;
+                                    {displayedAgents.map((agentId, index) => {
+                                        const imageIdentifier = getDeterministicImgId(agentId);
+                                        const avatarUrl = agentVisualsMap[agentId] || `/images/avatars/agent-${imageIdentifier}.webp`;
                                         return (
                                             <div key={agentId} className={cn(
                                                 "w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative",
-                                                styles.textClassName.replace('text-', 'border-'),
-                                                i === 0 ? "z-30" : i === 1 ? "z-20" : "z-10"
+                                                visualStyles.textClassName.replace('text-', 'border-'),
+                                                index === 0 ? "z-30" : index === 1 ? "z-20" : "z-10"
                                             )}>
                                                 <Image 
                                                     src={avatarUrl} 
@@ -200,17 +200,17 @@ export const WorkspaceCardHorizontal = ({
                             ) : Icon ? (
                                 <div className={cn(
                                     "w-10 h-10 rounded-xl bg-zinc-900 border flex items-center justify-center shadow-inner", 
-                                    isDraft ? "border-zinc-800" : styles.textClassName.replace('text-', 'border-')
+                                    isDraft ? "border-zinc-800" : visualStyles.textClassName.replace('text-', 'border-')
                                 )}>
-                                    <Icon className={cn("w-5 h-5", isDraft ? "text-zinc-500" : styles.textClassName)} />
+                                    <Icon className={cn("w-5 h-5", isDraft ? "text-zinc-500" : visualStyles.textClassName)} />
                                 </div>
                             ) : (
                                 // Fallback icon when no agents and no specific icon
                                 <div className={cn(
                                     "w-10 h-10 rounded-xl bg-zinc-900 border flex items-center justify-center shadow-inner", 
-                                    isDraft ? "border-zinc-800" : styles.textClassName.replace('text-', 'border-')
+                                    isDraft ? "border-zinc-800" : visualStyles.textClassName.replace('text-', 'border-')
                                 )}>
-                                    <Users className={cn("w-5 h-5", isDraft ? "text-zinc-500" : styles.textClassName)} />
+                                    <Users className={cn("w-5 h-5", isDraft ? "text-zinc-500" : visualStyles.textClassName)} />
                                 </div>
                             )}
                         </div>
@@ -255,7 +255,7 @@ export const WorkspaceCardHorizontal = ({
                     {/* Bottom Accent Bar */}
                     <div className={cn(
                         "absolute bottom-0 left-0 right-0 h-1 z-30", 
-                        isDraft ? "bg-transparent" : styles.hoverBackgroundClassName
+                        isDraft ? "bg-transparent" : visualStyles.hoverBackgroundClassName
                     )} />
                 </Card>
             </Link>
@@ -267,15 +267,15 @@ export const WorkspaceCardHorizontal = ({
         <Link 
             href={href} 
             className={cn("group block w-full outline-none min-h-[160px]", className)}
-            onClick={(e) => {
+            onClick={(mouseEvent) => {
                 if (onClick) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onClick(e);
+                    mouseEvent.preventDefault();
+                    mouseEvent.stopPropagation();
+                    onClick(mouseEvent);
                 }
             }}
         >
-            <Card className="flex flex-row items-start p-5 border-zinc-200 dark:border-zinc-800 bg-card hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative h-full">
+            <Card className="flex flex-row items-start p-5 gap-5 border-zinc-200 dark:border-zinc-800 bg-card hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative h-full">
                 
                 {renderActions()}
 
@@ -334,7 +334,7 @@ export const WorkspaceCardHorizontal = ({
                 {/* Bottom Accent Bar */}
                 <div className={cn(
                     "absolute bottom-0 left-0 right-0 h-1 z-30", 
-                    isDraft ? "bg-transparent" : styles.hoverBackgroundClassName
+                    isDraft ? "bg-transparent" : visualStyles.hoverBackgroundClassName
                 )} />
             </Card>
         </Link>

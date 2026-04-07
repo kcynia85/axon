@@ -15,11 +15,13 @@ export const DefinitionSection = ({ onSyncDraft }: Props) => {
 
 	return (
 		<FormSection 
-			id="definition" 
-			number={1} 
-			title="Definition"
-			description="Define the core purpose and metadata for this template."
+		        id="definition" 
+		        number={1} 
+		        title="Definition"
+		        description="Define the core purpose and metadata for this template."
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<FormField
 					control={control}

@@ -22,8 +22,8 @@ export const useTemplateDraft = (workspaceId: string, templateId?: string | null
       if (!saved) return null;
       try {
         return JSON.parse(saved);
-      } catch (e) {
-        console.error("Failed to parse template draft", e);
+      } catch (error) {
+        console.error("Failed to parse template draft", error);
         return null;
       }
     },

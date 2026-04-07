@@ -49,11 +49,13 @@ export const ServiceCapabilitiesSection = () => {
 
 	return (
 		<FormSection
-			id="capabilities"
-			number={3}
-			title="Capabilities"
-			description="Define specific features this service provides. Use AI to import from documentation URL."
+		        id="capabilities"
+		        number={3}
+		        title="Capabilities"
+		        description="Define specific features this service provides. Use AI to import from documentation URL."
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<div className="space-y-6">
 					<Button

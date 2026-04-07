@@ -11,7 +11,11 @@ import { ALL_HUBS } from "../../types/agent-studio.constants";
 import type { CognitionSectionProps } from "../../types/sections/cognition.types";
 import { useCognitionSection } from "../../application/hooks/sections/useCognitionSection";
 
-export const CognitionSection = React.memo((props: CognitionSectionProps) => {
+/**
+ * CognitionSection: Memory, Guardrails, and self-correction settings.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
+export const CognitionSection = (props: CognitionSectionProps) => {
 	const { control, syncDraft } = useCognitionSection(props);
 
 	return (
@@ -99,9 +103,9 @@ export const CognitionSection = React.memo((props: CognitionSectionProps) => {
 									placeholder="Input examples of desired output format... (e.g. User: Hello -> Agent: Greetings!)"
 									className="min-h-[100px] leading-relaxed text-sm focus:placeholder:text-zinc-900 dark:focus:placeholder:text-white transition-opacity"
 									{...field}
-									value={Array.isArray(field.value) ? field.value.map((v: any) => v.content || "").join("\n") : ""}
-									onChange={(e) => {
-										const lines = e.target.value.split("\n");
+									value={Array.isArray(field.value) ? field.value.map((exampleItem: any) => exampleItem.content || "").join("\n") : ""}
+									onChange={(textareaEvent) => {
+										const lines = textareaEvent.target.value.split("\n");
 										field.onChange(lines.map(line => ({ content: line })));
 									}}
 									onBlur={syncDraft}
@@ -131,6 +135,4 @@ export const CognitionSection = React.memo((props: CognitionSectionProps) => {
 			</div>
 		</FormSection>
 	);
-});
-
-CognitionSection.displayName = "CognitionSection";
+};

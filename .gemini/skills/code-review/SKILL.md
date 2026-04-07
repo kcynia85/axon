@@ -23,12 +23,14 @@ This skill performs a rigorous, systematic code review focused on readability, a
 
 ### 1. Readability & Naming
 - **No Abbreviations:** Do not use `err`, `btn`, `cfg`, `ctx`, `usr`, `msg`. Use full, descriptive names.
-- **Naming Conventions:** `PascalCase` for Components/Types, `camelCase` for functions/variables, `snake_case` for Python variables.
+- **Naming Conventions:** `PascalCase` for Components/Types, `camelCase` for functions/variables,, 
 
-### 2. React Standards (Zero useEffect)
+### 2. React Standards (Zero useEffect & Architecture)
 - **Zero useEffect:** Ensure `useEffect` is only used as an escape hatch. Check for derived state and event-based logic.
-- **Pure View:** UI components should be pure presentation. Business logic must be in hooks or services.
-- **React 19 Actions:** Verify usage of `useActionState` and `useFormStatus` for mutations.
+- **Pure View & Containers:** UI components must be pure presentation (`[Name]View.tsx`) with 0% logic, 0% useEffect, and 0% business state. Business logic, state, and orchestration must live in Containers or custom Application Hooks.
+- **React 19 Actions:** Verify usage of `useActionState` and `useFormStatus` for mutations and button states.
+- **Zero Manual Optimization:** Do not use `useCallback`, `useMemo`, or `React.memo`. React Compiler handles these optimizations automatically. Remove them if encountered.
+- **Colocated Types:** Types should be located next to the component (`[Feature].types.ts`).
 
 ### 3. Architecture & DDD
 - **Layer Integrity:** Ensure logic doesn't leak between `domain`, `application`, and `infrastructure`.

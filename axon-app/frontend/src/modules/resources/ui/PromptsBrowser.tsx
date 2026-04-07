@@ -1,27 +1,18 @@
 'use client';
 
-import React from "react";
-import { Edit2, Trash2, BookOpen } from "lucide-react";
-import { FilterBar } from "@/shared/ui/complex/FilterBar";
-import { SortOption } from "@/shared/domain/filters";
-import { SidePeek } from "@/shared/ui/layout/SidePeek";
-import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
+import React, { useState } from "react";
 import { usePromptsBrowser } from "../application/usePromptsBrowser";
-import { PromptsBrowserContent } from "./components/PromptsBrowserContent";
-import { RecentlyUsedPrompts } from "./components/RecentlyUsedPrompts";
-import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { PromptArchetype } from "@/shared/domain/resources";
-import { Badge } from "@/shared/ui/ui/Badge";
 import { useDeletePromptArchetype } from "../application/usePromptArchetypes";
 import { useArchetypeDraft } from "@/modules/studio/features/archetypes/application/useArchetypeDraft";
 import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/shared/ui/ui/Button";
 import { toast } from "sonner";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
-import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useQuery } from "@tanstack/react-query";
-import { resourcesApi } from "../infrastructure/api";
 import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
+import { PromptsBrowserView } from "./PromptsBrowserView";
+import { SortOption } from "@/shared/domain/filters";
+import { QuickFilter } from "@/shared/ui/complex/ActionBar";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -36,7 +27,7 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
 ];
 
 interface PromptsBrowserProps {
-  initialPrompts?: PromptArchetype[];
+  readonly initialPrompts?: PromptArchetype[];
 }
 
 export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => {
@@ -49,15 +40,8 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
 
   const { data: assets = [] } = useQuery({
     queryKey: ["assets"],
-    queryFn: async () => [], // Fallback for now
+    queryFn: async () => [], // Fallback
   });
-
-  const knowledgeHubsMap = React.useMemo(() => {
-    return assets.reduce((acc, asset) => {
-      acc[asset.id] = asset.title;
-      return acc;
-    }, {} as Record<string, string>);
-  }, [assets]);
 
   const {
     prompts,
@@ -91,10 +75,7 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
 
   const { mutate: deletePrompt } = useDeletePromptArchetype();
   const { deleteWithUndo } = useDeleteWithUndo();
-  const [promptToDeleteId, setPromptToDeleteId] = React.useState<string | null>(null);
-  
-  const [isInstructionsExpanded, setIsInstructionsExpanded] = React.useState(false);
-  const [isConstraintsExpanded, setIsConstraintsExpanded] = React.useState(false);
+  const [promptToDeleteId, setPromptToDeleteId] = useState<string | null>(null);
 
   const handleDelete = (id: string) => {
     if (id === "draft") {
@@ -125,10 +106,9 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
     }
   };
 
-  // Prepend draft to processed prompts and filter pending
-  const displayPrompts = React.useMemo(() => {
+  // Logic previously in useMemo, now handled directly (React Compiler will optimize)
+  const getDisplayPrompts = () => {
     const activePrompts = processedPrompts.filter(p => !pendingIds.has(p.id));
-    
     if (!draft) return activePrompts;
     
     const draftItem = {
@@ -141,9 +121,9 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
     } as unknown as PromptArchetype & { isDraft?: boolean };
     
     return [draftItem, ...activePrompts];
-  }, [draft, processedPrompts, pendingIds]);
+  };
 
-  const activePrompt = React.useMemo(() => {
+  const getActivePrompt = () => {
     if (selectedPrompt?.id === "draft") {
         return {
             id: "draft",
@@ -155,98 +135,45 @@ export const PromptsBrowser = ({ initialPrompts = [] }: PromptsBrowserProps) => 
         } as unknown as PromptArchetype & { isDraft?: boolean };
     }
     return selectedPrompt;
-  }, [selectedPrompt, draft]);
+  };
+
+  const displayPrompts = getDisplayPrompts();
+  const activePrompt = getActivePrompt();
+  const promptToDelete = processedPrompts.find(p => p.id === promptToDeleteId);
 
   return (
-    <>
-      <BrowserLayout
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchPlaceholder="Search archetypes..."
-        activeFilters={activeFilters.length > 0 && (
-          <FilterBar 
-            activeFilters={activeFilters}
-            onRemove={handleRemoveFilter}
-            onClearAll={handleClearAll}
-          />
-        )}
-        topContent={
-          <RecentlyUsedPrompts 
-            prompts={recentlyUsedPrompts.filter(p => !pendingIds.has(p.id))} 
-            onSelect={handleViewDetails} 
-          />
-        }
-        actionBar={
-          <ActionBar 
-            filterGroups={filterGroups}
-            activeFilters={activeFilters}
-            quickFilters={QUICK_FILTERS}
-            onToggleFilter={handleToggleFilter}
-            onApplyFilters={handleApplyFilters}
-            onClearAllFilters={handleClearAll}
-            onPendingFilterIdsChange={setPendingFilterIds}
-            resultsCount={getPreviewCount(prompts)}
-            sortOptions={SORT_OPTIONS}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-          />
-        }
-      >
-        <PromptsBrowserContent 
-            prompts={displayPrompts}
-            viewMode={viewMode}
-            onViewDetails={handleViewDetails}
-            onDelete={handleDelete}
-            isLoading={isLoading}
-            isError={isError}
-        />
-      </BrowserLayout>
-
-      {/* Prompt Details Sidebar */}
-      <SidePeek 
-        open={isSidebarOpen} 
-        onOpenChange={setIsSidebarOpen}
-        title={activePrompt?.archetype_name || "Archetype Details"}
-        footer={
-            <div className="flex w-full justify-between items-center gap-4">
-                <Button 
-                    variant="ghost" 
-                    size="icon-lg"
-                    className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 shrink-0" 
-                    onClick={() => {
-                        if (activePrompt?.id) {
-                            handleDelete(activePrompt.id);
-                            setIsSidebarOpen(false);
-                        }
-                    }}
-                >
-                    <Trash2 className="w-5 h-5" />
-                </Button>
-                <Button 
-                    className="bg-primary hover:bg-primary/90 font-bold" 
-                    size="lg"
-                    onClick={handleEdit}
-                >
-                    <Edit2 className="w-4 h-4 mr-2" /> {activePrompt?.isDraft ? "Kontynuuj projektowanie" : "Edytuj Archetyp"}
-                </Button>
-            </div>
-        }
-      >
-        <div className="space-y-12">
-            {/* ... Content remains same ... */}
-        </div>
-      </SidePeek>
-
-      <DestructiveDeleteModal
-        isOpen={!!promptToDeleteId}
-        onClose={() => setPromptToDeleteId(null)}
-        onConfirm={confirmDelete}
-        title="Delete Archetype"
-        resourceName={processedPrompts.find(p => p.id === promptToDeleteId)?.archetype_name || "this archetype"}
-        affectedResources={[]}
-      />
-    </>
+    <PromptsBrowserView
+      prompts={prompts}
+      displayPrompts={displayPrompts}
+      recentlyUsedPrompts={recentlyUsedPrompts.filter(p => !pendingIds.has(p.id))}
+      viewMode={viewMode}
+      setViewMode={setViewMode}
+      isLoading={isLoading}
+      isError={isError}
+      isSidebarOpen={isSidebarOpen}
+      onSidebarOpenChange={setIsSidebarOpen}
+      activePrompt={activePrompt}
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      sortBy={sortBy}
+      onSortChange={setSortBy}
+      sortOptions={SORT_OPTIONS}
+      activeFilters={activeFilters}
+      filterGroups={filterGroups}
+      quickFilters={QUICK_FILTERS}
+      onToggleFilter={handleToggleFilter}
+      onRemoveFilter={handleRemoveFilter}
+      onClearAllFilters={handleClearAll}
+      onApplyFilters={handleApplyFilters}
+      onPendingFilterIdsChange={setPendingFilterIds}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      onViewDetails={handleViewDetails}
+      previewCount={getPreviewCount(prompts)}
+      promptToDeleteId={promptToDeleteId}
+      onConfirmDelete={confirmDelete}
+      onCancelDelete={() => setPromptToDeleteId(null)}
+      promptToDeleteName={promptToDelete?.archetype_name}
+    />
   );
 };

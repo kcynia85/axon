@@ -7,12 +7,14 @@ import { Button } from "@/shared/ui/ui/Button";
 import { Cloud, HelpCircle, Edit2, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { getWorkspaceLabel } from "../domain/constants";
 
+import { ExternalService } from "@/shared/domain/resources";
+
 type ServiceProfilePeekProps = {
-  readonly service: any; // Type should be ExternalService from domain
+  readonly service: ExternalService | null;
   readonly isOpen: boolean;
   readonly onClose: () => void;
-  readonly onEdit: (id: string) => void;
-  readonly onDelete: (id: string) => void;
+  readonly onEdit: (serviceId: string) => void;
+  readonly onDelete: (serviceId: string) => void;
 };
 
 export const ServiceProfilePeek = ({
@@ -24,21 +26,13 @@ export const ServiceProfilePeek = ({
 }: ServiceProfilePeekProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Helper to clean up URL for display
-  const displayUrl = React.useMemo(() => {
-    if (!service?.service_url) return "external-service.io";
-    return service.service_url
+  // Helper to clean up URL for display - No useMemo, let React Compiler handle it
+  const displayUrl = service?.service_url 
+    ? service.service_url
       .replace(/^https?:\/\//, '')
       .replace(/^www\./, '')
-      .replace(/\/$/, '');
-  }, [service]);
-
-  // Reset expanded state when closing
-  React.useEffect(() => {
-    if (!isOpen) {
-      setIsExpanded(false);
-    }
-  }, [isOpen]);
+      .replace(/\/$/, '')
+    : "external-service.io";
 
   return (
     <SidePeek
@@ -111,9 +105,9 @@ export const ServiceProfilePeek = ({
           <section className="space-y-4">
             <h4 className="text-base font-bold text-muted-foreground">Keywords</h4>
             <div className="flex flex-wrap gap-1.5">
-              {service.service_keywords?.map((kw: string, i: number) => (
-                <Badge key={i} variant="secondary" className="text-base font-normal">
-                  #{kw}
+              {service.service_keywords?.map((keyword, index) => (
+                <Badge key={index} variant="secondary" className="text-base font-normal">
+                  #{keyword}
                 </Badge>
               )) || <span className="text-zinc-500 italic text-base">None</span>}
             </div>
@@ -128,9 +122,9 @@ export const ServiceProfilePeek = ({
             <div className="space-y-1.5">
               {(service.capabilities || [])
                 .slice(0, isExpanded ? undefined : 3)
-                .map((cap: any, i: number) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
-                  <span className="text-base font-mono font-semibold">{cap.capability_name}</span>
+                .map((capability, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                  <span className="text-base font-mono font-semibold">{capability.capability_name}</span>
                 </div>
               ))}
               {service.capabilities?.length > 3 && (
@@ -157,9 +151,9 @@ export const ServiceProfilePeek = ({
               Availability
             </h4>
             <div className="flex flex-wrap gap-1.5">
-              {service.availability_workspace?.map((ws: string) => (
-                <Badge key={ws} variant="outline" className="text-base font-normal">
-                  {getWorkspaceLabel(ws)}
+              {service.availability_workspace?.map((workspaceId) => (
+                <Badge key={workspaceId} variant="outline" className="text-base font-normal">
+                  {getWorkspaceLabel(workspaceId)}
                 </Badge>
               )) || <span className="text-zinc-500 italic text-base">None</span>}
             </div>

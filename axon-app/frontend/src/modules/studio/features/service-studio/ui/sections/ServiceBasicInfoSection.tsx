@@ -13,11 +13,13 @@ export const ServiceBasicInfoSection = () => {
 	
 	return (
 		<FormSection
-			id="basic-info"
-			number={1}
-			title="Basic Info"
-			description="Define the core identity and connection details for this external service."
+		        id="basic-info"
+		        number={1}
+		        title="Basic Info"
+		        description="Define the core identity and connection details for this external service."
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<FormField
 					control={control}

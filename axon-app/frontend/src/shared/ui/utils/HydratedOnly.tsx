@@ -16,6 +16,8 @@ export const HydratedOnly = ({ children, fallback = null }: Props) => {
 	const [hasHydrated, setHasHydrated] = useState(false);
 
 	useEffect(() => {
+		// biome-ignore lint/correctness/useExhaustiveDependencies: intentional on mount
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setHasHydrated(true);
 	}, []);
 

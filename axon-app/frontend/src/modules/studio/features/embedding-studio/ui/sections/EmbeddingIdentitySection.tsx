@@ -14,9 +14,13 @@ import { Badge } from "@/shared/ui/ui/Badge";
 import { OpenRouterEmbeddingMarketplace } from "../components/OpenRouterEmbeddingMarketplace";
 
 interface Props {
-    onSyncDraft: () => void;
+    readonly onSyncDraft: () => void;
 }
 
+/**
+ * EmbeddingIdentitySection: Configuration for embedding model provider and ID.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
 export const EmbeddingIdentitySection = ({ onSyncDraft }: Props) => {
     const { control, setValue, formState: { errors } } = useFormContext<EmbeddingModelStudioValues>();
     const { data: providers = [] } = useLLMProviders();
@@ -28,36 +32,31 @@ export const EmbeddingIdentitySection = ({ onSyncDraft }: Props) => {
     
     const { data: availableModels = [], isLoading: isLoadingModels } = useAvailableModels(selectedProviderId);
 
-    const providerOptions = React.useMemo(() => {
-        return providers.map(p => ({
-            id: p.id,
-            name: p.provider_name
-        }));
-    }, [providers]);
+    // Zero manual optimization - React Compiler handles it
+    const providerOptions = providers.map(provider => ({
+        id: provider.id,
+        name: provider.provider_name
+    }));
 
-    const selectedProvider = providers.find(p => p.id === selectedProviderId);
+    const selectedProvider = providers.find(provider => provider.id === selectedProviderId);
     const selectedProviderName = selectedProvider?.provider_name?.toLowerCase() || "";
     const isOpenRouter = selectedProviderName.includes("openrouter");
     const isAnthropic = selectedProviderName.includes("anthropic");
 
-    // Filter available models to show only embedding models (heuristic)
-    const embeddingModels = React.useMemo(() => {
-        return availableModels.filter(m => 
-            m.id.toLowerCase().includes("embed") || 
-            m.name.toLowerCase().includes("embed")
-        );
-    }, [availableModels]);
+    // Filter available models to show only embedding models (heuristic) - No useMemo
+    const embeddingModels = availableModels.filter(model => 
+        model.id.toLowerCase().includes("embed") || 
+        model.name.toLowerCase().includes("embed")
+    );
 
-    const modelOptions = React.useMemo(() => {
-        return embeddingModels.map(m => ({
-            id: m.id,
-            name: m.name
-        }));
-    }, [embeddingModels]);
+    const modelOptions = embeddingModels.map(model => ({
+        id: model.id,
+        name: model.name
+    }));
 
     const handleProviderChange = (providerId: string) => {
         setValue("provider_id", providerId);
-        const provider = providers.find(p => p.id === providerId);
+        const provider = providers.find(providerItem => providerItem.id === providerId);
         if (provider) {
             setValue("model_provider_name", provider.provider_name);
         }
@@ -66,10 +65,10 @@ export const EmbeddingIdentitySection = ({ onSyncDraft }: Props) => {
         onSyncDraft();
     };
 
-    const handleModelSelect = (modelData: any) => {
+    const handleModelSelect = (modelData: string | { id: string; context_window?: number; pricing_input?: number }) => {
         const modelId = typeof modelData === 'string' ? modelData : modelData.id;
         const actualModelData = typeof modelData === 'string' 
-            ? availableModels.find(m => m.id === modelId) 
+            ? availableModels.find(model => model.id === modelId) 
             : modelData;
 
         setValue("model_id", modelId);
@@ -111,13 +110,13 @@ export const EmbeddingIdentitySection = ({ onSyncDraft }: Props) => {
                                 value={field.value || ""}
                                 onChange={handleProviderChange}
                                 placeholder="Wybierz dostawcę..."
-                                renderTrigger={(selected) => (
+                                renderTrigger={(selectedProviderItems) => (
                                     <div className="flex items-center gap-3 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
                                         <span className={cn(
                                             "text-lg font-bold transition-colors flex-1 text-left",
-                                            selected.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+                                            selectedProviderItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
                                         )}>
-                                            {selected.length > 0 ? selected[0].name : "Wybierz dostawcę..."}
+                                            {selectedProviderItems.length > 0 ? selectedProviderItems[0].name : "Wybierz dostawcę..."}
                                         </span>
                                         <ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
                                     </div>
@@ -199,7 +198,7 @@ export const EmbeddingIdentitySection = ({ onSyncDraft }: Props) => {
                         <div className="space-y-1">
                             <h4 className="font-bold text-zinc-200">Brak modeli embeddingu</h4>
                             <p className="text-sm text-zinc-500 max-w-xs mx-auto">
-                                Anthropic obecnie nie udostępnia publicznie własnych modeli embeddingu przez API.
+                                Anthropic obecnie ne udostępnia publicznie własnych modeli embeddingu przez API.
                             </p>
                         </div>
                     </div>
@@ -219,15 +218,15 @@ export const EmbeddingIdentitySection = ({ onSyncDraft }: Props) => {
                                     <FormSelect
                                         options={modelOptions}
                                         value={field.value}
-                                        onChange={(val) => handleModelSelect(val)}
+                                        onChange={(selectedValue) => handleModelSelect(selectedValue as string)}
                                         placeholder={isLoadingModels ? "Ładowanie modeli..." : "Wybierz model embeddingu..."}
-                                        renderTrigger={(selected: any) => (
+                                        renderTrigger={(selectedModelItems) => (
                                             <div className="flex items-center gap-3 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
                                                 <span className={cn(
                                                     "text-lg font-mono transition-colors flex-1 text-left",
-                                                    selected.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+                                                    selectedModelItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
                                                 )}>
-                                                    {isLoadingModels ? "Ładowanie..." : (selected.length > 0 ? selected[0].name : "Wyszukaj lub wybierz model...")}
+                                                    {isLoadingModels ? "Ładowanie..." : (selectedModelItems.length > 0 ? selectedModelItems[0].name : "Wyszukaj lub wybierz model...")}
                                                 </span>
                                                 {isLoadingModels ? <Loader2 className="w-5 h-5 animate-spin text-zinc-600" /> : <ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />}
                                             </div>

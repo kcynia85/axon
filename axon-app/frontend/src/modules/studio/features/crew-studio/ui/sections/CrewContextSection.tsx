@@ -19,7 +19,8 @@ export const CrewContextSection = ({ onSyncDraft }: Props) => {
 	const { control } = useFormContext();
 
 	return (
-		<FormSection id="context" number={4} title="Context">
+		<FormSection id="context" number={4} title="Context" variant="island">
+
 			<div className="space-y-6">
 				<Controller
 					control={control}

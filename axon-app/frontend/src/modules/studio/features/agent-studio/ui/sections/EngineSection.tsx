@@ -10,67 +10,65 @@ import { useLLMModels } from "@/modules/settings/application/useSettings";
 import type { EngineSectionProps } from "../../types/sections/engine.types";
 import { useEngineSection } from "../../application/hooks/sections/useEngineSection";
 
-export const EngineSection = React.memo((props: EngineSectionProps) => {
-	const { control, syncDraft } = useEngineSection(props);
-	const { data: models, isLoading: isLoadingModels } = useLLMModels();
+export const EngineSection = (props: EngineSectionProps) => {
+        const { control, syncDraft } = useEngineSection(props);
+        const { data: models, isLoading: isLoadingModels } = useLLMModels();
 
-	const modelOptions = React.useMemo(() => {
-		if (!models) return [];
-		return models.map(m => ({
-			id: m.id,
-			name: m.model_display_name,
-			subtitle: `${m.model_tier} • ${m.model_context_window.toLocaleString()} ctx`
-		}));
-	}, [models]);
+        const modelOptions = (models || []).map(model => ({
+                id: model.id,
+                name: model.model_display_name,
+                subtitle: `${model.model_tier} • ${model.model_context_window.toLocaleString()} tokens`
+        }));
 
-	return (
-		<FormSection id="ENGINE" number={3} title="Engine" variant="island">
-			<div className="space-y-12 relative overflow-hidden">
-				<div className="space-y-8 relative z-10">
-					<div className="space-y-6">
-						<FormSubheading>Model LLM</FormSubheading>
-						<div className="w-full max-w-2xl">
-							<FormField
-								control={control}
-								name="llm_model_id"
-								render={({ field }) => (
-									<FormItemField>
-										<FormSelect
-											options={modelOptions}
-											value={field.value || ""}
-											onChange={(val) => {
-												field.onChange(val);
-												syncDraft();
-											}}
-											placeholder={isLoadingModels ? "Loading models..." : "Select model..."}
-											searchPlaceholder="Search model..."
-										/>
-									</FormItemField>
-								)}
-							/>
-						</div>
-					</div>
+        return (
+                <FormSection id="ENGINE" number={3} title="Engine" variant="island">
+                        <div className="space-y-12 relative overflow-hidden">
+                                <div className="space-y-8 relative z-10">
+                                        <div className="space-y-6">
+                                                <FormSubheading>Model LLM</FormSubheading>
+                                                <div className="w-full max-w-2xl">
+                                                        <FormField
+                                                                control={control}
+                                                                name="llm_model_id"
+                                                                render={({ field }) => (
+                                                                        <FormItemField>
+                                                                                <FormSelect
+                                                                                        options={modelOptions}
+                                                                                        value={field.value || ""}
+                                                                                        onChange={(selectedValue) => {
+                                                                                                field.onChange(selectedValue);
+                                                                                                syncDraft();
+                                                                                        }}
+                                                                                        placeholder={isLoadingModels ? "Loading models..." : "Select model..."}
+                                                                                        searchPlaceholder="Search model..."
+                                                                                />
+                                                                        </FormItemField>
+                                                                )}
+                                                        />
+                                                </div>
+                                        </div>
 
-					<div className="space-y-0 pt-4">
-						<FormField
-							control={control}
-							name="temperature"
-							render={({ field }) => (
-								<FormItemField label="Temperature">
-									<FormSlider
-										value={field.value ?? 0.7}
-										onChange={(v) => {
-											field.onChange(v);
-											syncDraft();
-										}}
-										labelLeft="Deterministic"
-										labelRight="Creative"
-									/>
-								</FormItemField>
-							)}
-						/>
-					</div>
-				</div>
+                                        <div className="space-y-0 pt-4">
+                                                <FormField
+                                                        control={control}
+                                                        name="temperature"
+                                                        render={({ field }) => (
+                                                                <FormItemField label="Temperature">
+                                                                        <FormSlider
+                                                                                value={field.value ?? 0.7}
+                                                                                onChange={(temperatureValue) => {
+                                                                                        field.onChange(temperatureValue);
+                                                                                        syncDraft();
+                                                                                }}
+                                                                                labelLeft="Deterministic"
+                                                                                labelRight="Creative"
+                                                                        />
+                                                                </FormItemField>
+                                                        )}
+                                                />
+                                        </div>
+                                </div>
+
 
 				<div className="space-y-8 relative z-10 pt-10">
 					<div className="space-y-4">
@@ -114,6 +112,5 @@ export const EngineSection = React.memo((props: EngineSectionProps) => {
 			</div>
 		</FormSection>
 	);
-});
+	};
 
-EngineSection.displayName = "EngineSection";

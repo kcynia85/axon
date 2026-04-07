@@ -22,11 +22,13 @@ export const AutomationArtefactsSection = () => {
 
 	return (
 		<FormSection
-			id="artefacts"
-			number={4}
-			title="Artefacts"
-			description="Define output artefacts and results"
+		        id="artefacts"
+		        number={4}
+		        title="Artefacts"
+		        description="Define output artefacts and results"
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<FormField
 					control={control}

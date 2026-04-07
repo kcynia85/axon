@@ -1,26 +1,26 @@
-"use client";
-
-import { useParams, useRouter } from "next/navigation";
-import { useAgents, useWorkspace } from "@/modules/workspaces/application/useWorkspaces";
+import React from "react";
+import Link from "next/link";
+import { workspacesApi } from "@/modules/workspaces/infrastructure/api";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
-import { AgentsBrowser } from "@/modules/workspaces/features/browse-agents/ui/AgentsBrowser";
+import { AgentsBrowser } from "@/modules/agents/features/browse-agents/ui/AgentsBrowser";
 import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from "@/modules/spaces/domain/constants";
 
-export default function AgentsListPage() {
-  const params = useParams();
-  const router = useRouter();
-  const workspaceId = params.workspace as string;
+type AgentsListPageProps = {
+  readonly params: Promise<{ workspace: string }>;
+};
+
+export default async function AgentsListPage({ params }: AgentsListPageProps) {
+  const { workspace: workspaceId } = await params;
   
-  const { data: workspace } = useWorkspace(workspaceId);
-  const { data: agents, isLoading } = useAgents(workspaceId);
+  // Fetch initial data on the server
+  const [workspace, agents] = await Promise.all([
+    workspacesApi.getWorkspace(workspaceId),
+    workspacesApi.getAgents(workspaceId)
+  ]);
 
   const colorKey = workspaceId.replace("ws-", "");
   const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
-
-  const goToAgentStudio = () => {
-    router.push(`/workspaces/${workspaceId}/agents/studio`);
-  };
 
   return (
     <PageLayout
@@ -32,20 +32,14 @@ export default function AgentsListPage() {
           { label: "Agents" }
       ]}
       actions={
-        <ActionButton label="Nowy Agent" onClick={goToAgentStudio} />
+        <ActionButton label="Nowy Agent" asChild>
+           <Link href={`/workspaces/${workspaceId}/agents/studio`} />
+        </ActionButton>
       }
       showPagination={agents ? agents.length > 12 : false}
       pagination={null}
     >
-      {isLoading ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((index) => (
-            <div key={index} className="h-48 w-full bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-xl" />
-          ))}
-        </div>
-      ) : (
-        <AgentsBrowser initialAgents={agents || []} colorName={colorName} />
-      )}
+      <AgentsBrowser initialAgents={agents || []} colorName={colorName} />
     </PageLayout>
   );
 }

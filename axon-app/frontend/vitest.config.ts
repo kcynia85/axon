@@ -8,6 +8,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './vitest.setup.ts',
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
     alias: {
         "@/components": path.resolve(__dirname, "./src/shared/ui"),
         "@/lib": path.resolve(__dirname, "./src/shared/lib"),

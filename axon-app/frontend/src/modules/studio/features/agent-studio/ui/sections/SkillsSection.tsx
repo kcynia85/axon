@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { FormField } from "@/shared/ui/ui/Form";
 import { useWatch, useFormContext } from "react-hook-form";
@@ -15,52 +15,57 @@ import { InternalSkillsModal } from "../components/InternalSkillsModal";
 import { useInternalTools } from "@/modules/resources/application/useInternalTools";
 import type { CreateAgentFormData } from "@/modules/agents/domain/agent.schema";
 
-export const SkillsSection = React.memo((props: SkillsSectionProps) => {
+/**
+ * SkillsSection: Native and custom functional capabilities.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
+export const SkillsSection = (props: SkillsSectionProps) => {
 	const { control, syncDraft } = useSkillsSection(props);
 	const { setValue, getValues } = useFormContext<CreateAgentFormData>();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const { data: internalTools = [] } = useInternalTools();
 
-	const availableSkills = React.useMemo(() => internalTools.map(tool => {
-		const cleanDesc = (tool.tool_description || "").split("Args:")[0].trim();
-		const truncatedDesc = cleanDesc.length > 50 ? `${cleanDesc.substring(0, 50)}...` : cleanDesc;
-		
+	const availableSkills = internalTools.map(tool => {
+		const cleanDescription = (tool.tool_description || "").split("Args:")[0].trim();
+		const truncatedDescription = cleanDescription.length > 50 ? `${cleanDescription.substring(0, 50)}...` : cleanDescription;
+
 		return {
 			id: tool.tool_function_name,
 			uuid: tool.id, // Keep UUID for hydration matching
 			name: tool.tool_display_name,
-			desc: truncatedDesc,
+			description: truncatedDescription,
 			category: tool.tool_category,
 			keywords: tool.tool_keywords || [],
 			raw_tool: tool
 		};
-	}), [internalTools]);
+	});
 
 	const currentCustomFunctions = useWatch({ control, name: "custom_functions" }) || [];
 
-	const syncDataInterface = useCallback((nextFunctions: string[]) => {
+	const syncDataInterface = (nextFunctions: string[]) => {
 		const currentContext = getValues("data_interface.context") || [];
 		const currentArtefacts = getValues("data_interface.artefacts") || [];
-		
+
 		// 1. Identify tools to add (nextFunctions can contain names OR UUIDs)
-		const addedTools = internalTools.filter(t => 
-			nextFunctions.includes(t.tool_function_name) || nextFunctions.includes(t.id)
+		const addedTools = internalTools.filter(tool => 
+			nextFunctions.includes(tool.tool_function_name) || nextFunctions.includes(tool.id)
 		);
-		
+
 		// 2. Map tool inputs to context
-		let newContext = [...currentContext];
-		let newInputSchema: Record<string, string> = {};
-		
+		const newContext = [...currentContext];
+		const newInputSchema: Record<string, string> = {};
+
 		addedTools.forEach(tool => {
 			const properties = tool.tool_input_schema?.properties || {};
 			const required = tool.tool_input_schema?.required || [];
-			
-			Object.entries(properties).forEach(([name, schema]: [string, any]) => {
-				const fieldType = schema.type || "string";
+
+			Object.entries(properties).forEach(([name, schema]) => {
+				const typedSchema = schema as { type?: string };
+				const fieldType = typedSchema.type || "string";
 				newInputSchema[name] = fieldType; // Sync to flat schema
-				
-				if (!newContext.find(c => c.name === name)) {
+
+				if (!newContext.find(contextItem => contextItem.name === name)) {
 					newContext.push({
 						name,
 						field_type: fieldType,
@@ -72,14 +77,14 @@ export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 		});
 
 		// 3. Map tool outputs to artefacts
-		let newArtefacts = [...currentArtefacts];
-		let newOutputSchema: Record<string, string> = {};
-		
+		const newArtefacts = [...currentArtefacts];
+		const newOutputSchema: Record<string, string> = {};
+
 		addedTools.forEach(tool => {
 			const name = `${tool.tool_function_name}_output`;
 			newOutputSchema[name] = "json"; // Sync to flat schema
-			
-			if (!newArtefacts.find(a => a.name === name)) {
+
+			if (!newArtefacts.find(artefactItem => artefactItem.name === name)) {
 				newArtefacts.push({
 					name,
 					field_type: "json",
@@ -92,7 +97,7 @@ export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 		// 4. Update both data sources only if changed
 		const hasContextChanged = JSON.stringify(newContext) !== JSON.stringify(currentContext);
 		const hasArtefactsChanged = JSON.stringify(newArtefacts) !== JSON.stringify(currentArtefacts);
-		
+
 		if (hasContextChanged) {
 			setValue("data_interface.context", newContext);
 			setValue("input_schema", newInputSchema);
@@ -101,12 +106,12 @@ export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 			setValue("data_interface.artefacts", newArtefacts);
 			setValue("output_schema", newOutputSchema);
 		}
-	}, [internalTools, getValues, setValue]);
+	};
 
 	// Filter functions (match by function_name OR uuid)
-	const addedFunctions = React.useMemo(() => availableSkills.filter((fn) => 
-		currentCustomFunctions.includes(fn.id) || currentCustomFunctions.includes(fn.uuid)
-	), [availableSkills, currentCustomFunctions]);
+	const addedFunctions = availableSkills.filter((skillFunction) => 
+		currentCustomFunctions.includes(skillFunction.id) || currentCustomFunctions.includes(skillFunction.uuid)
+	);
 
 	return (
 		<FormSection id="SKILLS" number={4} title="Skills" variant="island">
@@ -121,20 +126,20 @@ export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 								render={({ field }) => (
 									<FormItemField>
 										<div className="space-y-4">
-											{NATIVE_SKILLS.map((skill) => {
-												const current = field.value || [];
-												const isChecked = current.includes(skill.id);
+											{NATIVE_SKILLS.map((nativeSkill) => {
+												const currentSkills = field.value || [];
+												const isSkillChecked = currentSkills.includes(nativeSkill.id);
 												return (
 													<FormCheckbox
-														key={skill.id}
-														title={skill.name}
-														icon={skill.icon}
-														checked={isChecked}
+														key={nativeSkill.id}
+														title={nativeSkill.name}
+														icon={nativeSkill.icon}
+														checked={isSkillChecked}
 														onChange={() => {
-															const next = isChecked
-																? current.filter((s: string) => s !== skill.id)
-																: [...current, skill.id];
-															field.onChange(next);
+															const nextSkills = isSkillChecked
+																? currentSkills.filter((skillId: string) => skillId !== nativeSkill.id)
+																: [...currentSkills, nativeSkill.id];
+															field.onChange(nextSkills);
 															syncDraft();
 														}}
 													/>
@@ -162,24 +167,24 @@ export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 						<FormField
 							control={control}
 							name="custom_functions"
-							render={({ field }) => {
-								const current = field.value || [];
+							render={({ field: formField }) => {
+								const currentCustomFunctionIds = formField.value || [];
 
 								return (
 									<FormItemField>
 										<div className="space-y-3">
-											{addedFunctions.map((fn) => (
+											{addedFunctions.map((skillFunction) => (
 												<FormCheckbox
-													key={fn.id}
-													title={fn.name}
-													description={fn.desc}
-													tags={fn.keywords?.filter(tag => tag !== "python" && tag !== "synced")}
+													key={skillFunction.id}
+													title={skillFunction.name}
+													description={skillFunction.description}
+													tags={skillFunction.keywords?.filter(tag => tag !== "python" && tag !== "synced")}
 													checked={true}
 													hideCheckbox={true}
 													onChange={() => {
-														const next = current.filter((s: string) => s !== fn.id);
-														field.onChange(next);
-														syncDataInterface(next); // Sync when removed
+														const nextCustomFunctions = currentCustomFunctionIds.filter((skillId: string) => skillId !== skillFunction.id);
+														formField.onChange(nextCustomFunctions);
+														syncDataInterface(nextCustomFunctions); // Sync when removed
 														syncDraft();
 													}}
 												/>
@@ -200,18 +205,18 @@ export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 												isOpen={isModalOpen}
 												onOpenChange={setIsModalOpen}
 												addedFunctionIds={currentCustomFunctions}
-												onAddFunction={(functionId) => {
-													if (!current.includes(functionId)) {
-														const next = [...current, functionId];
-														field.onChange(next);
-														syncDataInterface(next); // Sync when added
+												onAddFunction={(functionIdentifier) => {
+													if (!currentCustomFunctionIds.includes(functionIdentifier)) {
+														const nextCustomFunctions = [...currentCustomFunctionIds, functionIdentifier];
+														formField.onChange(nextCustomFunctions);
+														syncDataInterface(nextCustomFunctions); // Sync when added
 														syncDraft();
 													}
 												}}
-												onRemoveFunction={(functionId) => {
-													const next = current.filter((s: string) => s !== functionId);
-													field.onChange(next);
-													syncDataInterface(next); // Sync when removed
+												onRemoveFunction={(functionIdentifier) => {
+													const nextCustomFunctions = currentCustomFunctionIds.filter((skillId: string) => skillId !== functionIdentifier);
+													formField.onChange(nextCustomFunctions);
+													syncDataInterface(nextCustomFunctions); // Sync when removed
 													syncDraft();
 												}}
 											/>
@@ -225,6 +230,4 @@ export const SkillsSection = React.memo((props: SkillsSectionProps) => {
 			</div>
 		</FormSection>
 	);
-});
-
-SkillsSection.displayName = "SkillsSection";
+};

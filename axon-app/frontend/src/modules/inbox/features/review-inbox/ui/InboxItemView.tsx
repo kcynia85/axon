@@ -35,14 +35,14 @@ export const InboxItemView = ({
     onApprove, 
     onReject 
 }: InboxItemViewProps): React.ReactNode => {
-    const Icon = getIcon(item.type);
+    const IconComponent = getIcon(item.type);
 
     return (
         <TableRow key={item.id} className="group hover:bg-zinc-50/80 dark:hover:bg-white/[0.02] border-zinc-100 dark:border-zinc-900 transition-colors">
             <TableCell className="py-5 px-6">
                 <div className="flex items-center gap-4">
                     <div className="p-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-zinc-500 group-hover:text-black dark:group-hover:text-white transition-colors">
-                        <Icon size={18} />
+                        <IconComponent size={18} />
                     </div>
                     <div className="flex flex-col gap-0.5">
                         <span className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{item.title}</span>

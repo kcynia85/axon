@@ -1,17 +1,23 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useMemo } from "react";
 import { KnowledgeResourceData, KnowledgeStudioSectionId } from "../types/knowledge-studio.types";
 import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";
+import { useForm } from "react-hook-form";
 
 const KNOWLEDGE_STUDIO_SECTIONS: readonly KnowledgeStudioSectionId[] = ["RESOURCE", "METADATA", "STRATEGY", "HUBS"];
 
 export const useKnowledgeStudio = () => {
-    const [data, setData] = useState<KnowledgeResourceData>({
-        fileName: null,
-        fileSize: null,
-        metadata: [],
-        chunkType: "General Text",
-        hubs: []
+    const form = useForm<KnowledgeResourceData>({
+        defaultValues: {
+            fileName: null,
+            fileSize: null,
+            metadata: [],
+            chunkType: "General Text",
+            hubs: []
+        }
     });
+
+    const { watch, setValue } = form;
+    const data = watch();
 
     const { 
         activeSectionIdentifier: activeSection, 
@@ -23,30 +29,23 @@ export const useKnowledgeStudio = () => {
     );
 
     const handleDataChange = (updates: Partial<KnowledgeResourceData>) => {
-        setData(previousData => ({ ...previousData, ...updates }));
+        for (const [key, value] of Object.entries(updates)) {
+            setValue(key as any, value);
+        }
     };
 
     const handleAutoTag = () => {
-        setData(previousData => ({
-            ...previousData,
-            metadata: [
-                ...previousData.metadata,
-                { id: Date.now().toString(), key: "auto-tag", value: "generated" }
-            ]
-        }));
+        const currentMetadata = form.getValues("metadata") || [];
+        setValue("metadata", [
+            ...currentMetadata,
+            { id: Date.now().toString(), key: "auto-tag", value: "generated" }
+        ]);
     };
 
     const handleSelectFile = (file: File) => {
-        console.log("useKnowledgeStudio: File received", file.name, file.size);
         const sizeInKb = Math.round(file.size / 1024);
-        setData(previousData => {
-            console.log("useKnowledgeStudio: Updating state with file", file.name);
-            return {
-                ...previousData,
-                fileName: file.name,
-                fileSize: `${sizeInKb}kb`
-            };
-        });
+        setValue("fileName", file.name);
+        setValue("fileSize", `${sizeInKb}kb`);
     };
 
     const handleSave = () => {
@@ -54,6 +53,7 @@ export const useKnowledgeStudio = () => {
     };
 
     return {
+        form,
         data,
         activeSection,
         handleDataChange,

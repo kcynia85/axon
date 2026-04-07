@@ -21,14 +21,18 @@ const COLOR_TO_RGB: Record<string, string> = {
     default: "113, 113, 122"
 };
 
+/**
+ * WorkspaceCard: Pure presentation component for workspace entry in the dashboard.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
 export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
-    const { id, name, description, updated_at } = workspace;
+    const { id, name, description, updated_at, created_at } = workspace;
 
     // Extract color identifier from ID (e.g., ws-product -> product)
     const colorKey = id.replace("ws-", "");
     const colorName = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[colorKey] || "default";
-    const styles = getVisualStylesForZoneColor(colorName);
-    const rgb = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
+    const visualStyles = getVisualStylesForZoneColor(colorName);
+    const rgbValue = COLOR_TO_RGB[colorName] || COLOR_TO_RGB.default;
 
     const hoverBorderClass = {
         blue: "group-hover:border-blue-500/50",
@@ -39,6 +43,8 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
         orange: "group-hover:border-orange-500/50",
         default: "group-hover:border-zinc-400"
     }[colorName] || "group-hover:border-zinc-400";
+
+    const displayDate = updated_at || created_at;
 
     return (
         <Link href={`/workspaces/${id}`} className="block h-full group outline-none">
@@ -53,7 +59,7 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
             >
                 {/* Background Grid Pattern (Static, kept for subtle texture) */}
                 <div className="absolute inset-0 opacity-[0.02] pointer-events-none z-0" 
-                    style={{ backgroundImage: `radial-gradient(rgb(${rgb}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
+                    style={{ backgroundImage: `radial-gradient(rgb(${rgbValue}) 0.5px, transparent 0.5px)`, backgroundSize: '12px 12px' }} 
                 />
 
                 <CardHeader className="relative z-10 space-y-4 pb-2 pt-5">
@@ -74,14 +80,14 @@ export const WorkspaceCard = ({ workspace }: WorkspaceCardProps) => {
                     <div className="flex items-center gap-2.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-600 transition-colors duration-200 group-hover:bg-zinc-600 dark:group-hover:bg-zinc-400" />
                         <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400 dark:text-zinc-500 transition-colors duration-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-400" suppressHydrationWarning>
-                            <span className="text-zinc-400 dark:text-zinc-600 font-medium">Last update:</span> {updated_at ? formatDistanceToNow(new Date(updated_at), { addSuffix: true }) : "—"}
+                            <span className="text-zinc-400 dark:text-zinc-600 font-medium">Last update:</span> {displayDate ? formatDistanceToNow(new Date(displayDate), { addSuffix: true }) : "—"}
                         </p>
                     </div>
                 </CardContent>
 
                 {/* Accent Bottom Bar */}
                 <div 
-                    className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", styles.hoverBackgroundClassName)} 
+                    className={cn("absolute bottom-0 left-0 right-0 h-1 opacity-40 transition-opacity duration-200 group-hover:opacity-100 z-10", visualStyles.hoverBackgroundClassName)} 
                 />
             </Card>
         </Link>

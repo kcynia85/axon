@@ -16,6 +16,11 @@ type LLMRouterSidePeekProps = {
   readonly getModelName: (id: string) => string;
 }
 
+type PriorityChainItem = {
+  readonly model_id: string;
+  readonly error_timeout: number;
+};
+
 export const LLMRouterSidePeek = ({
   router,
   isOpen,
@@ -30,10 +35,10 @@ export const LLMRouterSidePeek = ({
   const isFallback = strategy.includes("fallback");
   const strategyLabel = strategy.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 
-  const chain = router.priority_chain && router.priority_chain.length > 0
-    ? router.priority_chain
+  const chain: readonly PriorityChainItem[] = router.priority_chain && router.priority_chain.length > 0
+    ? (router.priority_chain as unknown as PriorityChainItem[])
     : [
-      { model_id: router.primary_model_id, error_timeout: 60 },
+      { model_id: router.primary_model_id || "", error_timeout: 60 },
       ...(router.fallback_model_id ? [{ model_id: router.fallback_model_id, error_timeout: 30 }] : [])
     ];
 
@@ -81,7 +86,7 @@ export const LLMRouterSidePeek = ({
           </h4>
 
           <div className="space-y-1.5">
-            {chain.map((item: any, index: number) => (
+            {chain.map((item, index) => (
               <div key={`${router.id}-step-${index}`} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
                 <div className="flex flex-col gap-0.5">
                   <div className="flex items-center gap-2 text-base font-mono font-semibold">

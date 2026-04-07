@@ -4,31 +4,26 @@ import React from "react";
 import { PromptArchetype } from "@/shared/domain/resources";
 import { Card } from "@/shared/ui/ui/Card";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
-import { Badge } from "@/shared/ui/ui/Badge";
-import { TagChip } from "@/shared/ui/ui/TagChip";
-import { Sparkles, Trash2, Plus as PlusIcon, User } from "lucide-react";
+import { Sparkles, User } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 import { cn } from "@/shared/lib/utils";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/shared/ui/ui/DropdownMenu";
 
 interface PromptsBrowserContentProps {
-  prompts: readonly (PromptArchetype & { isDraft?: boolean })[];
-  viewMode: "grid" | "list";
-  onViewDetails: (id: string) => void;
-  onDelete?: (id: string) => void;
-  isLoading: boolean;
-  isError: boolean;
+  readonly prompts: readonly (PromptArchetype & { isDraft?: boolean })[];
+  readonly viewMode: "grid" | "list";
+  readonly onViewDetails: (id: string) => void;
+  readonly onDelete?: (id: string) => void;
+  readonly isLoading: boolean;
+  readonly isError: boolean;
 }
 
+/**
+ * PromptsBrowserContent: Pure view component for the archetype gallery content.
+ * Standard: Pure View pattern, 0% logic, 0% useEffect.
+ */
 export const PromptsBrowserContent = ({
   prompts,
   viewMode,
@@ -38,6 +33,7 @@ export const PromptsBrowserContent = ({
   isError
 }: PromptsBrowserContentProps) => {
   const router = useRouter();
+  
   if (isLoading) {
     return (
       <div className={cn(
@@ -73,62 +69,56 @@ export const PromptsBrowserContent = ({
   if (viewMode === "list") {
     return (
       <div className="space-y-4">
-        {prompts.map((archetype) => (
-          <ResourceCard 
-            key={archetype.id}
-            title={archetype.archetype_name}
-            description={archetype.archetype_description}
-            href="#"
-            icon={User}
-            badgeLabel={archetype.isDraft ? null : String(archetype.workspace_domain || "")}
-            tags={Array.isArray(archetype.archetype_keywords) ? archetype.archetype_keywords : []}
-            isDraft={archetype.isDraft}
-            onClick={() => onViewDetails(archetype.id)}
-            onEdit={(e) => {
-              e.preventDefault();
-              router.push(`/resources/archetypes/studio/${archetype.id}`);
-            }}
-            onDelete={onDelete ? (e) => { e.preventDefault(); onDelete(archetype.id); } : undefined}
-          />
-        ))}
+        {prompts.map((archetype) => {
+          const tags = Array.isArray(archetype.archetype_keywords) ? archetype.archetype_keywords : [];
+          return (
+            <ResourceCard 
+              key={archetype.id}
+              title={archetype.archetype_name || "Unnamed Archetype"}
+              description={archetype.archetype_description}
+              href="#"
+              icon={User}
+              badgeLabel={archetype.isDraft ? "DRAFT" : String(archetype.workspace_domain || "")}
+              tags={tags}
+              isDraft={archetype.isDraft}
+              onClick={() => onViewDetails(archetype.id)}
+              onEdit={(mouseEvent) => {
+                mouseEvent.preventDefault();
+                router.push(`/resources/archetypes/studio/${archetype.id}`);
+              }}
+              onDelete={onDelete ? (mouseEvent) => { mouseEvent.preventDefault(); onDelete(archetype.id); } : undefined}
+            />
+          );
+        })}
       </div>
     );
   }
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {/* Create New Card */}
-      <Link href="/resources/archetypes/studio" className="group block h-full">
-        <Card className="h-full min-h-[160px] flex flex-col items-center justify-center gap-3 border-dashed border-2 border-zinc-200 dark:border-zinc-800 bg-card hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer rounded-xl">
-          <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-            <PlusIcon className="w-5 h-5 text-zinc-400 group-hover:text-primary transition-colors" />
-          </div>
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-primary transition-colors">
-            Create New Archetype
-          </span>
-        </Card>
-      </Link>
-
-      {prompts.map((archetype) => (
-        <WorkspaceCardHorizontal 
-          key={archetype.id}
-          title={archetype.archetype_name}
-          description={archetype.archetype_description}
-          href="#"
-          icon={User}
-          badgeLabel={archetype.isDraft ? null : String(archetype.workspace_domain || "")}
-          tags={Array.isArray(archetype.archetype_keywords) ? archetype.archetype_keywords : []}
-          resourceId={archetype.id}
-          isDraft={archetype.isDraft}
-          onClick={() => onViewDetails(archetype.id)}
-          onEdit={(e) => {
-            e.preventDefault();
-            router.push(`/resources/archetypes/studio/${archetype.id}`);
-          }}
-          onDelete={onDelete}
-          colorName="default"
-        />
-      ))}
+      {prompts.map((archetype) => {
+        const tags = Array.isArray(archetype.archetype_keywords) ? archetype.archetype_keywords : [];
+        return (
+          <WorkspaceCardHorizontal 
+            key={archetype.id}
+            title={archetype.archetype_name || "Unnamed Archetype"}
+            description={archetype.archetype_description}
+            href="#"
+            icon={User}
+            badgeLabel={archetype.isDraft ? "DRAFT" : String(archetype.workspace_domain || "")}
+            tags={tags}
+            resourceId={archetype.id}
+            isDraft={archetype.isDraft}
+            onClick={() => onViewDetails(archetype.id)}
+            onEdit={(mouseEvent) => {
+              mouseEvent.preventDefault();
+              router.push(`/resources/archetypes/studio/${archetype.id}`);
+            }}
+            onDelete={onDelete}
+            colorName="default"
+          />
+        );
+      })}
     </div>
   );
 };

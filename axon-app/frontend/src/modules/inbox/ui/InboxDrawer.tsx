@@ -30,13 +30,17 @@ const SORT_OPTIONS: readonly SortOption[] = [
     { id: "oldest", label: "Oldest first" },
 ];
 
+/**
+ * InboxDrawer: Container for the notification sidebar.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
 export const InboxDrawer = () => {
     const isInboxOpen = useUiStore(state => state.isInboxOpen);
     const setIsInboxOpen = useUiStore(state => state.setIsInboxOpen);
-    const { data: items, isLoading } = useInboxItems();
+    const { data: inboxItems = [], isLoading } = useInboxItems();
 
-    const filterItems = React.useCallback((items: readonly InboxItem[], query: string, filterIds: string[]) => {
-        return items.filter(item => {
+    const filterItemsFunction = (itemsToFilter: readonly InboxItem[], _searchQuery: string, filterIds: string[]) => {
+        return itemsToFilter.filter(item => {
             if (filterIds.length === 0) return true;
             
             const statusFilters = filterIds.filter(id => ["NEW", "RESOLVED", "ARCHIVED"].includes(id));
@@ -47,7 +51,7 @@ export const InboxDrawer = () => {
 
             return true;
         });
-    }, []);
+    };
 
     const {
         sortBy,
@@ -59,7 +63,7 @@ export const InboxDrawer = () => {
         getPreviewCount,
         setPendingFilterIds,
     } = useResourceFilters<InboxItem>({
-        filterItems,
+        filterItems: filterItemsFunction,
         initialSortBy: "newest",
         initialFilterGroups: [
             {
@@ -86,22 +90,15 @@ export const InboxDrawer = () => {
         ]
     });
 
-    const processedItems = React.useMemo(() => {
-        if (!items) return [];
-        const result = getFilteredItems(items);
+    // Zero manual optimization - React Compiler handles it
+    const filteredInboxItems = getFilteredItems(inboxItems);
+    const processedItems = [...filteredInboxItems].sort((itemA, itemB) => {
+        const dateA = new Date(itemA.created_at).getTime();
+        const dateB = new Date(itemB.created_at).getTime();
+        return sortBy === "newest" ? dateB - dateA : dateA - dateB;
+    });
 
-        result.sort((a, b) => {
-            const dateA = new Date(a.created_at).getTime();
-            const dateB = new Date(b.created_at).getTime();
-            return sortBy === "newest" ? dateB - dateA : dateA - dateB;
-        });
-
-        return result;
-    }, [items, getFilteredItems, sortBy]);
-
-    const unreadCount = React.useMemo(() => 
-        items?.filter(i => i.item_status === "NEW").length || 0
-    , [items]);
+    const unreadCount = inboxItems.filter(item => item.item_status === "NEW").length;
 
     return (
         <Sheet open={isInboxOpen} onOpenChange={setIsInboxOpen}>
@@ -132,13 +129,13 @@ export const InboxDrawer = () => {
                     </div>
                 </SheetHeader>
 
-                {/* Actions Row - Moved up and search removed */}
+                {/* Actions Row */}
                 <div className="px-6 pb-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-5">
                             <FilterBigMenu 
                                 groups={filterGroups}
-                                resultsCount={getPreviewCount(items || [])}
+                                resultsCount={getPreviewCount(inboxItems)}
                                 onApply={handleApplyFilters}
                                 onClearAll={handleClearAll}
                                 onSelectionChange={setPendingFilterIds}

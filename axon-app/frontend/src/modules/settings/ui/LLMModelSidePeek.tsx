@@ -107,8 +107,8 @@ export const LLMModelSidePeek = ({
                     {/* ── Capabilities ── */}
                     <SidePeekSection title="Możliwości Modelu">
                         <div className="flex flex-wrap gap-2">
-                            {model.model_capabilities_flags.map((cap, i) => (
-                                <CategoryChip key={i} label={cap} />
+                            {model.model_capabilities_flags.map((capability, index) => (
+                                <CategoryChip key={index} label={capability} />
                             ))}
                             {model.model_supports_thinking && (
                                 <CategoryChip label="THINKING" className="bg-purple-500/10 text-purple-500 border-purple-500/20" />
@@ -140,8 +140,8 @@ export const LLMModelSidePeek = ({
                             <div className="text-xs text-amber-700/80 space-y-1">
                                 Ten model jest obecnie wykorzystywany w następujących miejscach:
                                 <ul className="list-disc list-inside mt-2 font-semibold">
-                                    {usage.used_by.map((u: string, i: number) => (
-                                        <li key={i}>{u}</li>
+                                    {usage.used_by.map((usageLocation: string, index: number) => (
+                                        <li key={index}>{usageLocation}</li>
                                     ))}
                                 </ul>
                                 <p className="mt-3 opacity-90">

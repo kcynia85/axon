@@ -1,3 +1,4 @@
+import React from "react";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormDynamicList } from "@/shared/ui/form/FormDynamicList";
@@ -6,19 +7,23 @@ import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 import { FormField } from "@/shared/ui/ui/Form";
 import { useFormContext } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import { getAssets } from "@/modules/knowledge/features/browse-assets/infrastructure";
+import { resourcesApi } from "@/modules/resources/infrastructure/api";
 import type { ArchetypeFormValues } from "../../application/archetypeSchema";
 
 interface ArchetypeMemorySectionProps {
 	readonly syncDraft?: () => void;
 }
 
+/**
+ * ArchetypeMemorySection: Memory, Guardrails, and Knowledge Sources for Archetypes.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
 export const ArchetypeMemorySection = ({ syncDraft }: ArchetypeMemorySectionProps) => {
 	const { control } = useFormContext<ArchetypeFormValues>();
 
 	const { data: assets = [] } = useQuery({
 		queryKey: ["assets"],
-		queryFn: async () => getAssets(),
+		queryFn: resourcesApi.getAssets,
 	});
 
 	const knowledgeHubOptions = assets.map(asset => ({ id: asset.id, name: asset.title }));
@@ -28,6 +33,7 @@ export const ArchetypeMemorySection = ({ syncDraft }: ArchetypeMemorySectionProp
 			id="MEMORY"
 			number={2}
 			title="Cognition"
+			variant="island"
 		>
 			<div className="space-y-12">
 				<div className="space-y-6">
@@ -41,8 +47,8 @@ export const ArchetypeMemorySection = ({ syncDraft }: ArchetypeMemorySectionProp
 									<FormSelect
 										multiple
 										value={field.value || []}
-										onChange={(ids) => {
-											field.onChange(ids);
+										onChange={(selectedIds) => {
+											field.onChange(selectedIds);
 											syncDraft?.();
 										}}
 										options={knowledgeHubOptions}
@@ -66,8 +72,8 @@ export const ArchetypeMemorySection = ({ syncDraft }: ArchetypeMemorySectionProp
 								<FormItemField error={fieldState.error?.message}>
 									<FormDynamicList
 										items={(field.value as string[]) || []}
-										onChange={(items) => {
-											field.onChange(items);
+										onChange={(nextInstructions) => {
+											field.onChange(nextInstructions);
 											syncDraft?.();
 										}}
 										placeholder="Operational guideline..."
@@ -86,8 +92,8 @@ export const ArchetypeMemorySection = ({ syncDraft }: ArchetypeMemorySectionProp
 								<FormItemField error={fieldState.error?.message}>
 									<FormDynamicList
 										items={(field.value as string[]) || []}
-										onChange={(items) => {
-											field.onChange(items);
+										onChange={(nextConstraints) => {
+											field.onChange(nextConstraints);
 											syncDraft?.();
 										}}
 										placeholder="Hard limitation..."

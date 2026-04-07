@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/ui/Tabs";
@@ -41,21 +41,14 @@ export const SettingsNavIsland = () => {
     // Check if we are in "force main view" mode via URL param
     const isForcedMain = searchParams.get("view") === "main";
 
-    // Derived drill-down state
-    const isDrilledDown = useMemo(() => {
-        if (isForcedMain) return false;
-        return settingsNavGroups.some(group => 
-            group.items.some(item => pathname === item.href)
-        );
-    }, [pathname, isForcedMain]);
+    // Derived drill-down state - No useMemo, let React Compiler handle it
+    const isDrilledDown = !isForcedMain && settingsNavGroups.some(group => 
+        group.items.some(item => pathname === item.href)
+    );
 
-    const activeGroup = useMemo(() => {
-        if (!pathname) return settingsNavGroups[0];
-        const matchingGroup = settingsNavGroups.find(group => pathname.startsWith(group.href));
-        return matchingGroup ?? settingsNavGroups[0];
-    }, [pathname]);
+    const activeGroup = (pathname && settingsNavGroups.find(group => pathname.startsWith(group.href))) ?? settingsNavGroups[0];
 
-    const handlePrefetch = useCallback((item: typeof settingsNavGroups[0]["items"][0]) => {
+    const handlePrefetch = (item: typeof settingsNavGroups[0]["items"][0]) => {
         if (item.queryKey && item.queryFn) {
             queryClient.prefetchQuery({
                 queryKey: item.queryKey,
@@ -63,7 +56,7 @@ export const SettingsNavIsland = () => {
                 staleTime: 60 * 1000,
             });
         }
-    }, [queryClient]);
+    };
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();

@@ -6,7 +6,7 @@ from app.modules.knowledge.domain.models import Asset
 from app.modules.knowledge.infrastructure.tables import AssetTable
 from app.shared.infrastructure.vecs_client import get_vecs_client
 
-# Functional-First Repository Layer
+# --- Functional-First Repository Layer ---
 
 def map_to_domain(row: AssetTable) -> Asset:
     return Asset(
@@ -106,6 +106,33 @@ async def search_assets_by_vector(session: AsyncSession, embedding: List[float],
     )
     result = await session.execute(stmt)
     return [map_to_domain(row) for row in result.scalars().all()]
+
+# --- Class-Based Wrapper (for backward compatibility) ---
+
+class AssetRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def list(self, limit: int = 100, offset: int = 0, asset_type: Optional[str] = None) -> List[Asset]:
+        return await list_assets(self.session, limit, offset, asset_type)
+
+    async def get(self, id: UUID) -> Optional[Asset]:
+        return await get_asset(self.session, id)
+
+    async def get_by_slug(self, slug: str) -> Optional[Asset]:
+        return await get_asset_by_slug(self.session, slug)
+
+    async def create(self, asset: Asset, embedding: List[float] = None) -> Asset:
+        return await create_asset(self.session, asset, embedding)
+
+    async def update(self, id: UUID, data: dict) -> Optional[Asset]:
+        return await update_asset(self.session, id, data)
+
+    async def delete(self, id: UUID) -> bool:
+        return await delete_asset(self.session, id)
+
+    async def search_by_vector(self, embedding: List[float], limit: int = 5) -> List[Asset]:
+        return await search_assets_by_vector(self.session, embedding, limit)
 
 # --- Vector Store Functions ---
 

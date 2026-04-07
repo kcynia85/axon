@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef } from "react";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { EmptyState } from "@/shared/ui/ui/EmptyState";
 import { LucideIcon, SearchX, AlertCircle } from "lucide-react";
@@ -31,6 +31,11 @@ type ResourceListProps<T> = {
   readonly prependedItem?: React.ReactNode;
 }
 
+/**
+ * ResourceList: Universal component for displaying lists of resources.
+ * Supports grid/list modes, loading skeletons, error states, and virtualization.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
 export const ResourceList = <T,>({
   items = [],
   isLoading,
@@ -52,11 +57,11 @@ export const ResourceList = <T,>({
   containerHeight = "70vh",
   prependedItem,
 }: ResourceListProps<T>) => {
-  const parentRef = useRef<HTMLDivElement>(null);
+  const parentReference = useRef<HTMLDivElement>(null);
 
   const rowVirtualizer = useVirtualizer({
     count: items?.length ?? 0,
-    getScrollElement: () => parentRef.current,
+    getScrollElement: () => parentReference.current,
     estimateSize: () => itemHeight,
     overscan: 5,
   });
@@ -69,8 +74,8 @@ export const ResourceList = <T,>({
     const skeletonLayout = viewMode === "grid" ? gridClassName : listClassName;
     return (
       <div className={cn(skeletonLayout, containerClassName)}>
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className={cn("h-40 w-full rounded-xl", viewMode === "list" && "h-24")} />
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} className={cn("h-40 w-full rounded-xl", viewMode === "list" && "h-24")} />
         ))}
       </div>
     );
@@ -100,7 +105,7 @@ export const ResourceList = <T,>({
   if (virtualize && viewMode === "list") {
     return (
       <div
-        ref={parentRef}
+        ref={parentReference}
         className={cn("overflow-auto", containerClassName)}
         style={{ height: containerHeight }}
       >
@@ -116,20 +121,20 @@ export const ResourceList = <T,>({
               {prependedItem}
             </div>
           )}
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+          {rowVirtualizer.getVirtualItems().map((virtualRowItem) => (
             <div
-              key={virtualRow.index}
+              key={virtualRowItem.index}
               style={{
                 position: "absolute",
                 top: prependedItem ? itemHeight : 0, // Simplified offset
                 left: 0,
                 width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
+                height: `${virtualRowItem.size}px`,
+                transform: `translateY(${virtualRowItem.start}px)`,
               }}
               className="pb-3" // Gap emulation
             >
-              {renderItem(items[virtualRow.index])}
+              {renderItem(items[virtualRowItem.index])}
             </div>
           ))}
         </div>
@@ -143,9 +148,9 @@ export const ResourceList = <T,>({
   return (
     <div className={cn(layoutClassName, containerClassName)}>
       {prependedItem}
-      {safeItems.map((item, index) => (
+      {safeItems.map((resourceItem, index) => (
         <React.Fragment key={index}>
-          {renderItem(item)}
+          {renderItem(resourceItem)}
         </React.Fragment>
       ))}
     </div>

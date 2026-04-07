@@ -13,11 +13,13 @@ export const InstructionSection = ({ onSyncDraft }: Props) => {
 
 	return (
 		<FormSection 
-			id="actions" 
-			number={2} 
-			title="Actions & Instructions"
-			description="Define the workflow content using Markdown. Headers (#) and checklist items (- [ ]) will be automatically mapped to structured Actions and Subactions."
+		        id="actions" 
+		        number={2} 
+		        title="Actions & Instructions"
+		        description="Define the workflow content using Markdown. Headers (#) and checklist items (- [ ]) will be automatically mapped to structured Actions and Subactions."
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<div className="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800">
 					<FormField

@@ -9,9 +9,13 @@ import { FormTextField } from "@/shared/ui/form/FormTextField";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
 
 interface Props {
-    onSyncDraft: () => void;
+    readonly onSyncDraft: () => void;
 }
 
+/**
+ * StrategySeparatorsSection: Configuration for text splitting boundaries.
+ * Standard: Pure View pattern, Zero manual memoization.
+ */
 export const StrategySeparatorsSection = ({ onSyncDraft }: Props) => {
     const { control, setValue, formState: { errors } } = useFormContext();
     
@@ -19,18 +23,17 @@ export const StrategySeparatorsSection = ({ onSyncDraft }: Props) => {
     const rawMethod = useWatch({ control, name: "strategy_chunking_method" });
     const boundaries = useWatch({ control, name: "strategy_chunk_boundaries" });
     
-    const method = rawMethod?.toLowerCase().replace(/_/g, "");
+    const method = (rawMethod as string)?.toLowerCase().replace(/_/g, "");
 
-    const currentSeparators = React.useMemo(() => {
-        return boundaries?.separators || ["\\n\\n", "\\n", " "];
-    }, [boundaries]);
+    // Zero manual optimization - React Compiler handles it
+    const currentSeparators = (boundaries as any)?.separators || ["\\n\\n", "\\n", " "];
 
     // Case 1: Recursive Character (Level Selection)
     if (method === "recursivecharacter") {
         const currentLevel = currentSeparators.length;
 
         const handleLevelChange = (level: number) => {
-            let nextSeparators = ["\\n\\n"];
+            const nextSeparators = ["\\n\\n"];
             if (level >= 2) nextSeparators.push("\\n");
             if (level >= 3) nextSeparators.push(" ");
             
@@ -85,6 +88,9 @@ export const StrategySeparatorsSection = ({ onSyncDraft }: Props) => {
 
     // Case 2: Simple Character (Single Separator)
     if (method === "character") {
+        const boundariesError = errors.strategy_chunk_boundaries as any;
+        const separatorsError = boundariesError?.separators?.message;
+
         return (
             <FormSection 
                 id="separators"
@@ -96,7 +102,7 @@ export const StrategySeparatorsSection = ({ onSyncDraft }: Props) => {
                 <div className="max-w-4xl">
                     <FormItemField 
                         label="Znak separatora" 
-                        error={(errors.strategy_chunk_boundaries as any)?.separators?.message}
+                        error={separatorsError}
                         hint="Wpisz znak podziału (domyślnie pusta spacja)."
                     >
                         <Controller
@@ -105,8 +111,8 @@ export const StrategySeparatorsSection = ({ onSyncDraft }: Props) => {
                             render={({ field }) => (
                                 <FormTextField
                                     {...field}
-                                    onChange={(e) => {
-                                        field.onChange(e);
+                                    onChange={(changeEvent) => {
+                                        field.onChange(changeEvent);
                                         onSyncDraft();
                                     }}
                                     onBlur={() => {

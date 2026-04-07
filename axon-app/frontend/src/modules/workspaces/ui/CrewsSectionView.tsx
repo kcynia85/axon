@@ -8,12 +8,15 @@ import { CrewProfilePeek } from "./CrewProfilePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { getAgentAvatarUrl } from "@/shared/lib/utils";
 
+import { Crew } from "@/shared/domain/workspaces";
+import { Agent } from "@/modules/agents/domain/agent.schema";
+
 export type CrewsSectionViewProps = {
     readonly workspaceId: string;
-    readonly crews: any[] | undefined;
+    readonly crews: readonly Crew[] | undefined;
     readonly isCrewsLoading: boolean;
-    readonly agents: any[] | undefined;
-    readonly activeCrew: any | null;
+    readonly agents: readonly Agent[] | undefined;
+    readonly activeCrew: Crew | null;
     readonly crewToDeleteId: string | null;
     readonly colorName?: string;
     readonly onSelectCrew: (id: string) => void;
@@ -43,7 +46,7 @@ export const CrewsSectionView = ({
 }: CrewsSectionViewProps): React.ReactNode => {
     // Derived state - React Compiler handles optimization
     const displayCrews = (crews || []).slice(0, 4);
-    const crewToDelete = crews?.find(c => c.id === crewToDeleteId);
+    const crewToDelete = crews?.find(crew => crew.id === crewToDeleteId);
     const crewToDeleteName = crewToDelete?.crew_name || "Crew";
 
     // Map agent IDs to their info
@@ -57,8 +60,8 @@ export const CrewsSectionView = ({
 
     // Compatibility map for WorkspaceCardHorizontal
     const agentVisualsMap: Record<string, string> = {};
-    Object.entries(agentsMap).forEach(([id, info]) => {
-        agentVisualsMap[id] = getAgentAvatarUrl(id, info.visualUrl);
+    Object.entries(agentsMap).forEach(([agentId, agentInfo]) => {
+        agentVisualsMap[agentId] = getAgentAvatarUrl(agentId, agentInfo.visualUrl);
     });
 
     if (isCrewsLoading) {

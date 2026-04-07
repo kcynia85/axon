@@ -17,7 +17,8 @@ export const CrewBasicInfoSection = ({ onSyncDraft }: Props) => {
 	const { register, control, formState: { errors } } = useFormContext();
 
 	return (
-		<FormSection id="basic-info" number={1} title="Basic Information">
+		<FormSection id="basic-info" number={1} title="Basic Information" variant="island">
+
 			<div className="space-y-12">
 				<FormItemField 
 					label="Crew Name" 

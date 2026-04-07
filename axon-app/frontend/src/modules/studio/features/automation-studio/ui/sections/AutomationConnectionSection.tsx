@@ -30,11 +30,13 @@ export const AutomationConnectionSection = () => {
 
 	return (
 		<FormSection
-			id="connection"
-			number={2}
-			title="Connection Configuration"
-			description="Configure the technical bridge to the automation platform"
+		        id="connection"
+		        number={2}
+		        title="Connection Configuration"
+		        description="Configure the technical bridge to the automation platform"
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<FormField
 					control={control}

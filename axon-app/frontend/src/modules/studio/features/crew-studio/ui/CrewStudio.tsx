@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { useCrewForm } from "../application/useCrewForm";
 import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";
 import { CrewStudioView } from "./CrewStudioView";
@@ -44,27 +44,23 @@ export const CrewStudio = ({
         syncDraft 
     } = useCrewForm(initialData, onSyncDraft);
 
-    // Navigation items with dynamic titles based on type
-    const navigationItems = useMemo(() => {
-        return CREW_STUDIO_SECTIONS.map(section => {
-            let title = section.title;
+    // Navigation items with dynamic titles based on type - No useMemo
+    const navigationItems = CREW_STUDIO_SECTIONS.map(section => {
+        let title = section.title;
 
-            if (section.id === "execution") {
-                if (currentType === "Hierarchical") title = "Lead & Team";
-                if (currentType === "Parallel") title = "Team Members (Agents)";
-                if (currentType === "Sequential") title = "Sequence of Tasks";
-            }
+        if (section.id === "execution") {
+            if (currentType === "Hierarchical") title = "Lead & Team";
+            if (currentType === "Parallel") title = "Team Members (Agents)";
+            if (currentType === "Sequential") title = "Sequence of Tasks";
+        }
 
-            return {
-                ...section,
-                title,
-            };
-        });
-    }, [currentType]);
+        return {
+            ...section,
+            title,
+        };
+    });
 
-    const sectionIdentifiers = useMemo(() => 
-        navigationItems.map(item => item.id as CrewStudioSectionId), 
-    [navigationItems]);
+    const sectionIdentifiers = navigationItems.map(item => item.id as CrewStudioSectionId);
 
     const { 
         activeSectionIdentifier, 

@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useWorkspaces } from "../application/useWorkspaces";
-import { ResourceList, ViewMode } from "@/shared/ui/complex/ResourceList";
-import { WorkspaceCard } from "./WorkspaceCard";
+import { ViewMode } from "@/shared/ui/complex/ResourceList";
 import { Workspace } from "@/shared/domain/workspaces";
-import { Card, CardHeader } from "@/shared/ui/ui/Card";
-import { Skeleton } from "@/shared/ui/ui/Skeleton";
+import { WorkspacesListView } from "./WorkspacesListView";
 
 type WorkspacesListProps = {
   readonly workspaces?: Workspace[];
@@ -16,8 +14,8 @@ type WorkspacesListProps = {
 }
 
 /**
- * WorkspacesList: Orchestrates the display of available workspaces.
- * Standard: 0% useEffect, Pure View.
+ * WorkspacesList: Container component for the workspace list.
+ * Standard: Container pattern, 0% UI declaration.
  */
 export const WorkspacesList = ({ 
   workspaces: providedWorkspaces, 
@@ -29,38 +27,20 @@ export const WorkspacesList = ({
   
   const { 
     data: fetchedWorkspaces, 
-    isLoading, 
-    isError 
+    isLoading: isWorkspaceLoading, 
+    isError: hasWorkspaceError 
   } = useWorkspaces();
 
   const workspaces = providedWorkspaces || fetchedWorkspaces || [];
-  const actualIsLoading = providedIsLoading ?? isLoading;
-  const actualIsError = providedIsError ?? isError;
+  const actualIsLoading = providedIsLoading ?? isWorkspaceLoading;
+  const actualIsError = providedIsError ?? hasWorkspaceError;
 
   return (
-    <div className="space-y-6">
-      <ResourceList
-        items={workspaces}
-        isLoading={actualIsLoading}
-        isError={actualIsError}
-        viewMode={viewMode}
-        virtualize={viewMode === "list"}
-        emptyTitle="No workspaces found"
-        emptyDescription="Create one to get started."
-        renderItem={(workspace) => <WorkspaceCard workspace={workspace} key={workspace.id} />}
-        renderSkeleton={() => (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, index) => (
-              <Card key={index} className="h-40 border-zinc-200 dark:border-zinc-800 opacity-50">
-                <CardHeader>
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2" />
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
-        )}
-      />
-    </div>
+    <WorkspacesListView
+      workspaces={workspaces}
+      isLoading={actualIsLoading}
+      isError={actualIsError}
+      viewMode={viewMode}
+    />
   );
 };

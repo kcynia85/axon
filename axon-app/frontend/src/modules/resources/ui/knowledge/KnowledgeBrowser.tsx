@@ -1,19 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from "react";
-import { FilterBar } from "@/shared/ui/complex/FilterBar";
+import React, { useState } from "react";
 import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
-import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
-import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
-import { FileText, FileCode, File, ExternalLink, LucideIcon } from "lucide-react";
-import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
-import { ResourceList } from "@/shared/ui/complex/ResourceList";
-import { TagChip } from "@/shared/ui/ui/TagChip";
+import { QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
+import { KnowledgeBrowserView } from "./KnowledgeBrowserView";
+import { KnowledgeResource } from "./KnowledgeBrowserView.types";
 
 // Mock Data
-const MOCK_RESOURCES = [
+const MOCK_RESOURCES: KnowledgeResource[] = [
   { id: "1", title: "Roadmap_2025.md", tags: ["Discovery", "Design"], type: "markdown" },
   { id: "2", title: "Competitor Analysis", tags: ["Growth & Market"], type: "document" },
   { id: "3", title: "backend_api.py", tags: ["Delivery"], type: "code" },
@@ -58,25 +54,13 @@ const FILTER_GROUPS: readonly FilterGroup[] = [
     }
 ];
 
-// Mock Active Filters from Breadboard
-const INITIAL_ACTIVE_FILTERS: ActiveFilter[] = [];
-
-const getResourceIcon = (type: string): LucideIcon => {
-    switch (type) {
-        case "markdown": return FileText;
-        case "code": return FileCode;
-        case "pdf": return File;
-        default: return File;
-    }
-};
-
 export const KnowledgeBrowser = () => {
   const { deleteWithUndo } = useDeleteWithUndo();
   const { pendingIds } = usePendingDeletionsStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortBy, setSortBy] = useState("date-desc");
-  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>(INITIAL_ACTIVE_FILTERS);
+  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
   const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
 
   const handleRemoveFilter = (id: string) => {
@@ -118,26 +102,18 @@ export const KnowledgeBrowser = () => {
       }
   };
 
-  const previewCount = useMemo(() => {
-    let result = MOCK_RESOURCES.filter(r => !pendingIds.has(r.id));
-    
-    if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        result = result.filter(r => r.title.toLowerCase().includes(query));
-    }
+  const handleDelete = (resource: KnowledgeResource) => {
+    deleteWithUndo(resource.id, resource.title, () => {
+        console.log("Permanently delete resource", resource.id);
+    });
+  };
 
-    if (pendingFilterIds.length > 0) {
-        result = result.filter(r => {
-            const matchesType = pendingFilterIds.includes(r.type);
-            const matchesTag = r.tags.some(t => pendingFilterIds.includes(t.toLowerCase()));
-            return matchesType || matchesTag;
-        });
-    }
+  const handleEdit = (resource: KnowledgeResource) => {
+    console.log("Edit resource", resource.id);
+  };
 
-    return result.length;
-  }, [searchQuery, pendingFilterIds, pendingIds]);
-
-  const filteredResources = useMemo(() => {
+  // Logic previously in useMemo, now handled directly (React Compiler will optimize)
+  const getFilteredResources = () => {
     let result = MOCK_RESOURCES.filter(r => !pendingIds.has(r.id));
 
     if (searchQuery) {
@@ -154,66 +130,32 @@ export const KnowledgeBrowser = () => {
     }
 
     return result;
-  }, [pendingIds, searchQuery, activeFilters]);
+  };
+
+  const filteredResources = getFilteredResources();
+  const previewCount = filteredResources.length;
 
   return (
-    <BrowserLayout
+    <KnowledgeBrowserView
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
-      searchPlaceholder="Search knowledge base..."
-      activeFilters={activeFilters.length > 0 && (
-        <FilterBar 
-          activeFilters={activeFilters}
-          onRemove={handleRemoveFilter}
-          onClearAll={handleClearAll}
-        />
-      )}
-      actionBar={
-        <ActionBar 
-          filterGroups={FILTER_GROUPS}
-          activeFilters={activeFilters}
-          quickFilters={QUICK_FILTERS}
-          onToggleFilter={handleToggleFilter}
-          onApplyFilters={handleApplyFilters} 
-          onSelectionChange={handleSelectionChange}
-          onClearAllFilters={handleClearAll}
-          onPendingFilterIdsChange={handleSelectionChange}
-          resultsCount={previewCount}
-          sortOptions={SORT_OPTIONS}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-        />
-      }
-    >
-      <ResourceList
-        items={filteredResources}
-        isLoading={false}
-        viewMode={viewMode}
-        renderItem={(resource) => (
-            <ResourceCard
-                key={resource.id}
-                title={resource.title}
-                description={null}
-                href="#"
-                icon={getResourceIcon(resource.type)}
-                categories={resource.tags}
-                onEdit={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log("Edit resource", resource.id);
-                }}
-                onDelete={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    deleteWithUndo(resource.id, resource.title, () => {
-                        console.log("Permanently delete resource from Knowledge base", resource.id);
-                    });
-                }}
-            />
-        )}
-      />
-    </BrowserLayout>
+      viewMode={viewMode}
+      setViewMode={setViewMode}
+      sortBy={sortBy}
+      onSortChange={setSortBy}
+      activeFilters={activeFilters}
+      filterGroups={FILTER_GROUPS}
+      quickFilters={QUICK_FILTERS}
+      sortOptions={SORT_OPTIONS}
+      onToggleFilter={handleToggleFilter}
+      onRemoveFilter={handleRemoveFilter}
+      onClearAllFilters={handleClearAll}
+      onApplyFilters={handleApplyFilters}
+      onSelectionChange={handleSelectionChange}
+      filteredResources={filteredResources}
+      previewCount={previewCount}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
+    />
   );
 };

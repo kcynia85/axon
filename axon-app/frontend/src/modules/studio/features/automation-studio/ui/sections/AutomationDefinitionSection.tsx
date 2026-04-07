@@ -16,11 +16,13 @@ export const AutomationDefinitionSection = () => {
 
 	return (
 		<FormSection
-			id="definition"
-			number={1}
-			title="Definition"
-			description="Describe the purpose and semantics of this automation for AI discovery"
+		        id="definition"
+		        number={1}
+		        title="Definition"
+		        description="Describe the purpose and semantics of this automation for AI discovery"
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<FormField
 					control={control}

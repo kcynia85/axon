@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useAgents } from "@/modules/workspaces/application/useWorkspaces";
-import { AgentProfilePeek } from "@/modules/workspaces/ui/AgentProfilePeek";
+import { AgentProfilePeek } from "@/modules/agents/ui/AgentProfilePeek";
 
 export default function AgentSidePeekPage() {
   const params = useParams();

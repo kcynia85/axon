@@ -21,7 +21,8 @@ export const CrewTypeSelectionSection = ({ onTypeChange, onSyncDraft }: Props) =
 	});
 
 	return (
-		<FormSection id="type-selection" number={2} title="Collaboration Pattern">
+		<FormSection id="type-selection" number={2} title="Collaboration Pattern" variant="island">
+
 			<div className="grid grid-cols-1 gap-6">
 				{CREW_TYPE_OPTIONS.map((type) => (
 					<FormRadio 

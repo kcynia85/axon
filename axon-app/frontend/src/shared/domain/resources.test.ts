@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { 
     PromptArchetypeSchema, 
     ExternalServiceSchema, 
-    InternalToolSchema, 
-    AutomationSchema 
+    InternalToolSchema
 } from './resources';
+import { AutomationSchema } from './workspaces';
 
 describe('Resources Domain Schemas - Contract Tests', () => {
     describe('PromptArchetypeSchema', () => {

@@ -52,36 +52,41 @@ export const TemplateStudio = ({
 		<FormProvider {...form}>
 			<div className="h-full w-full outline-none" tabIndex={0}>
 				<StudioLayout
-					canvasRef={canvasRef}
-					exitButton={
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={onCancel}
-							className="hover:bg-zinc-900 gap-2 text-zinc-400 hover:text-white px-4 font-mono text-[10px] uppercase tracking-[0.2em] border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all"
-						>
-							<X className="w-4 h-4" /> Exit Studio
-						</Button>
-					}
-					navigator={
-						<StudioSectionNav
-							sections={navigationItems as any}
-							activeSection={activeSection}
-							onSectionClick={scrollToSection}
-							onExitToLibrary={onCancel}
-						/>
-					}
-					canvas={
-						<div className="px-24 pb-48">
-							<form className="space-y-0" onSubmit={(formEvent) => formEvent.preventDefault()}>
-								<DefinitionSection onSyncDraft={onSyncDraft} />
-								<InstructionSection onSyncDraft={onSyncDraft} />
-								<ContextSection onSyncDraft={onSyncDraft} />
-								<ArtefactsSection onSyncDraft={onSyncDraft} />
-								<AvailabilitySection onSyncDraft={onSyncDraft} />
-							</form>
-						</div>
-					}
+				        studioLabel="Template"
+				        canvasRef={canvasRef}
+				        exitButton={
+				                <Button
+				                        variant="ghost"
+				                        size="icon"
+				                        onClick={onCancel}
+				                        className="hover:bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 rounded-lg transition-all h-9 w-9"
+				                >
+				                        <X className="w-4 h-4" />
+				                </Button>
+				        }
+				        navigator={
+				                <StudioSectionNav
+				                        sections={navigationItems as any}
+				                        activeSection={activeSection}
+				                        onSectionClick={scrollToSection}
+				                        onExitToLibrary={onCancel}
+				                />
+				        }
+				        canvas={
+				                <div className="px-16 pb-48 pt-20 w-full">
+				                        <form
+				                                className="space-y-16 w-full"
+				                                onSubmit={(formEvent) => formEvent.preventDefault()}
+				                        >
+				                                <DefinitionSection onSyncDraft={onSyncDraft} />
+				                                <InstructionSection onSyncDraft={onSyncDraft} />
+				                                <ContextSection onSyncDraft={onSyncDraft} />
+				                                <ArtefactsSection onSyncDraft={onSyncDraft} />
+				                                <AvailabilitySection onSyncDraft={onSyncDraft} />
+				                        </form>
+				                </div>
+				        }
+
 					poster={<TemplateLivePoster />}
 					footer={
 						<div className="flex items-center gap-4">

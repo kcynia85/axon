@@ -15,11 +15,13 @@ export const AutomationAuthorizationSection = () => {
 
 	return (
 		<FormSection
-			id="authorization"
-			number={3}
-			title="Authorization"
-			description="Configure access credentials and security"
+		        id="authorization"
+		        number={3}
+		        title="Authorization"
+		        description="Configure access credentials and security"
+		        variant="island"
 		>
+
 			<div className="space-y-12">
 				<FormField
 					control={control}
