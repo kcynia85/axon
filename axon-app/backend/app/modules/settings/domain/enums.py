@@ -28,9 +28,15 @@ class ChunkingMethod(str, Enum):
     SEMANTIC = "Semantic"
 
 class VectorDBType(str, Enum):
-    POSTGRES_PGVECTOR = "Postgres_pgvector"
-    CHROMADB = "ChromaDB"
-    PINECONE = "Pinecone"
+    POSTGRES_PGVECTOR_LOCAL = "POSTGRES_PGVECTOR_LOCAL"
+    SUPABASE_PGVECTOR_CLOUD = "SUPABASE_PGVECTOR_CLOUD"
+    QDRANT_LOCAL = "QDRANT_LOCAL"
+    CHROMADB_CLOUD = "CHROMADB_CLOUD"
+    CHROMADB_LOCAL = "CHROMADB_LOCAL"
+    # Legacy for migration support
+    POSTGRES_PGVECTOR = "POSTGRES_PGVECTOR"
+    CHROMADB = "CHROMADB"
+    PINECONE = "PINECONE"
 
 class IndexMethod(str, Enum):
     HNSW = "HNSW"

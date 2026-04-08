@@ -30,6 +30,10 @@ export const KnowledgeStudioView = ({
 	activeSection,
 	strategies = [],
 	isLoadingStrategies,
+	vectorStores = [],
+	isLoadingVectorStores,
+	hubs = [],
+	isLoadingHubs,
 	onDataChange,
 	onSave,
 	onCancel,
@@ -85,7 +89,7 @@ export const KnowledgeStudioView = ({
 					}
 					poster={
 						<div className="space-y-8 w-full">
-							{data.id && <KnowledgeResourceStatusCard chunksCount={4} />}
+							{data.id && <KnowledgeResourceStatusCard chunksCount={4} model={data.vectorStoreId || "Brak bazy wektorowej"} />}
 							<RagDebugger fileName={data.fileName} strategy={data.chunkType} />
 						</div>
 					}
@@ -234,10 +238,39 @@ export const KnowledgeStudioView = ({
 									</div>
 								</FormSection>
 
-								{/* 4. Przypisanie do Hubów */}
+								{/* 4. Baza Wektorowa */}
+								<FormSection
+									id="VECTOR_STORE"
+									number={4}
+									title="Baza Wektorowa"
+									description="Wybierz bazę wektorową dla zasobu. Baza definiuje model embedujący."
+									variant="island"
+								>
+									<div className="space-y-6">
+										<FormItemField>
+											<FormSelect
+												options={(vectorStores || []).map((vs) => ({
+													id: vs.id,
+													name: vs.vector_database_name,
+												}))}
+												value={data.vectorStoreId}
+												onChange={(value) => {
+													onDataChange({ vectorStoreId: value as string });
+												}}
+												placeholder={
+													isLoadingVectorStores
+														? "Ładowanie baz wektorowych..."
+														: "Wybierz bazę wektorową..."
+												}
+											/>
+										</FormItemField>
+									</div>
+								</FormSection>
+
+								{/* 5. Przypisanie do Hubów */}
 								<FormSection
 									id="HUBS"
-									number={4}
+									number={5}
 									title="Przypisanie do Hubów"
 									description="Przypisz zasób do odpowiednich hubów dla lepszej kategoryzacji."
 									variant="island"
@@ -245,18 +278,16 @@ export const KnowledgeStudioView = ({
 									<div className="space-y-6">
 										<FormItemField>
 											<FormSelect
-												options={[
-													{ name: "Delivery", id: "delivery" },
-													{ name: "Research", id: "research" },
-													{ name: "Internal Wiki", id: "internal-wiki" },
-													{ name: "Onboarding", id: "onboarding" },
-												]}
+												options={(hubs || []).map((hub) => ({
+													name: hub.hub_name,
+													id: hub.id,
+												}))}
 												value={data.hubs}
 												onChange={(value) => {
 													onDataChange({ hubs: value as string[] });
 												}}
 												multiple
-												placeholder="Wybierz Huby..."
+												placeholder={isLoadingHubs ? "Ładowanie hubów..." : "Wybierz Huby..."}
 												searchPlaceholder="Szukaj hubów..."
 											/>
 										</FormItemField>

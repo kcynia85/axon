@@ -126,15 +126,33 @@ class VectorDatabaseTable(Base):
     id = Column(UUID(as_uuid=True), primary_key=True)
     vector_database_name = Column(String, nullable=False)
     vector_database_type = Column(SAEnum(VectorDBType), nullable=False)
+    
+    # Granular Connection Fields
+    vector_database_host = Column(String, nullable=True)
+    vector_database_port = Column(Integer, default=5432)
+    vector_database_user = Column(String, nullable=True)
+    vector_database_password = Column(String, nullable=True)
+    vector_database_db_name = Column(String, default="postgres")
+    vector_database_ssl_mode = Column(String, default="require")
+
+    # Universal Dynamic Config
+    vector_database_config = Column(JSONB, default={})
+    
     vector_database_connection_url = Column(String, nullable=True)
     vector_database_connection_string = Column(String, nullable=True)
     vector_database_index_method = Column(SAEnum(IndexMethod), default=IndexMethod.HNSW)
     vector_database_connection_status = Column(SAEnum(ConnectionStatus), default=ConnectionStatus.DISCONNECTED)
     vector_database_collection_name = Column(String, nullable=False)
-    vector_database_embedding_model_reference = Column(String, nullable=False) # ID or name
+    
+    # Relation to Embedding Model
+    vector_database_embedding_model_id = Column(UUID(as_uuid=True), ForeignKey("embedding_models.id"), nullable=True)
+    vector_database_embedding_model_reference = Column(String, nullable=False) # Keep legacy ref for compat
+    
     vector_database_total_vectors = Column(Integer, default=0)
     vector_database_size = Column(Integer, default=0) # bytes?
     vector_database_expected_dimensions = Column(Integer, nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
     deleted_at = Column(DateTime(timezone=True), nullable=True)
+
+    embedding_model = relationship("EmbeddingModelTable")

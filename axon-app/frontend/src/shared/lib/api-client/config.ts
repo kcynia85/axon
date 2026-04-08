@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export const endpoints = {
     projects: {
@@ -37,6 +37,23 @@ const createApiClient = (baseUrl: string) => {
                 ...options?.headers,
             },
             body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+            throw new Error(`API Error: ${res.statusText}`);
+        }
+
+        return res;
+    };
+
+    const postFormData = async (path: string, body: FormData, options?: RequestInit) => {
+        const res = await fetch(`${baseUrl}${path}`, {
+            ...options,
+            method: "POST",
+            headers: {
+                ...options?.headers,
+            },
+            body,
         });
 
         if (!res.ok) {
@@ -101,6 +118,7 @@ const createApiClient = (baseUrl: string) => {
     return {
         get,
         post,
+        postFormData,
         put,
         patch,
         delete: del,
@@ -108,3 +126,4 @@ const createApiClient = (baseUrl: string) => {
 };
 
 export const apiClient = createApiClient(API_BASE_URL);
+

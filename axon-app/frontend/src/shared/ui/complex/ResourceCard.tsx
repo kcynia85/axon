@@ -27,6 +27,7 @@ export type ResourceCardProps = {
     readonly onClick?: (e: React.MouseEvent) => void;
     readonly isDraft?: boolean;
     readonly useDirectHoverMenu?: boolean;
+    readonly status?: "connected" | "disconnected" | "error" | "none";
 };
 
 /**
@@ -46,7 +47,8 @@ export const ResourceCard = ({
     onDelete, 
     onClick,
     isDraft = false,
-    useDirectHoverMenu = true
+    useDirectHoverMenu = true,
+    status = "none"
 }: ResourceCardProps) => {
 
     // Helper for description truncation
@@ -139,8 +141,17 @@ export const ResourceCard = ({
                 }
             }}
         >
-            <Card className="flex flex-row items-start p-5 border-zinc-200 dark:border-zinc-800 bg-card hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative h-full">
+            <Card className={cn(
+                "flex flex-row items-start p-5 border-zinc-200 dark:border-zinc-800 bg-card hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-md transition-all rounded-xl overflow-hidden active:scale-[0.99] relative h-full"
+            )}>
                 
+                {status === "connected" && (
+                    <div className="absolute top-4 right-4 z-50 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </div>
+                )}
+
                 {renderActions()}
 
                 {/* Status/Type Badge - Positioned Absolutely in corner */}

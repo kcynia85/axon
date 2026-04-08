@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_KEY: str
     DATABASE_URL: str  # Async PG URL
+    VECTOR_DATABASE_URL: Optional[str] = None # Sync PG URL for pgvector (Legacy/Fallback)
     
     # Auth
     SUPABASE_JWT_SECRET: str

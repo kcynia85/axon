@@ -1,14 +1,12 @@
 import vecs
 from app.config import settings
 
-def get_vecs_client():
+def get_vecs_client(connection_url: str = None):
     """
     Creates and returns a client for the pgvector extension (vecs).
-    
-    This client is used to manage vector collections and perform semantic search operations.
-    It connects using the DATABASE_URL from settings.
-    
-    Returns:
-        vecs.Client: An active pgvector client instance.
+    If connection_url is provided, it uses it. Otherwise falls back to settings.
     """
-    return vecs.create_client(settings.DATABASE_URL)
+    url = connection_url or settings.VECTOR_DATABASE_URL
+    if not url:
+        raise ValueError("Missing Vector Database URL. Please configure a Vector Database in Vector Studio (SSoT).")
+    return vecs.create_client(url)

@@ -13,7 +13,9 @@ class LLMGateway(Protocol):
         prompt: str, 
         model_name: str | None = None, 
         tools: list[Any] | None = None,
-        use_cache: bool = True
+        use_cache: bool = True,
+        provider_name: str | None = None,
+        api_key: str | None = None
     ) -> str:
         """
         Generates a complete text response for the given prompt.
@@ -25,7 +27,9 @@ class LLMGateway(Protocol):
         self, 
         prompt: str, 
         model_name: str | None = None,
-        tools: list[Any] | None = None
+        tools: list[Any] | None = None,
+        provider_name: str | None = None,
+        api_key: str | None = None
     ) -> AsyncGenerator[str, None]:
         """
         Generates a streaming text response (yielding chunks).
@@ -36,7 +40,10 @@ class LLMGateway(Protocol):
     async def get_embeddings(
         self, 
         text: str, 
-        model_name: str | None = None
+        model_name: str | None = None,
+        provider_name: str | None = None,
+        dimensions: int | None = None,
+        api_key: str | None = None
     ) -> list[float]:
         """
         Generates vector embeddings for the given text.

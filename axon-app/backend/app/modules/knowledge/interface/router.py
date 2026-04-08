@@ -1,8 +1,13 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, UploadFile, File, Form, BackgroundTasks, HTTPException
 from typing import List, Optional
+import json
 
-from app.modules.knowledge.domain.models import Asset
+from app.modules.knowledge.domain.models import Asset, KnowledgeHub, KnowledgeSource
+from app.modules.knowledge.application.schemas import KnowledgeHubCreate, KnowledgeHubResponse, KnowledgeSourceCreate, KnowledgeSourceResponse
 from app.modules.knowledge.application import service
+from app.modules.knowledge.application.indexer import process_and_index_source
+from app.modules.knowledge.dependencies import get_db
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_current_user
 
 router = APIRouter(
@@ -10,6 +15,67 @@ router = APIRouter(
     tags=["knowledge"],
     dependencies=[Depends(get_current_user)]
 )
+
+@router.get("/hubs", response_model=List[KnowledgeHubResponse])
+async def list_knowledge_hubs(
+    hubs: List[KnowledgeHub] = Depends(service.list_knowledge_hubs_use_case)
+):
+    """
+    List all knowledge hubs.
+    """
+    return hubs
+
+@router.post("/hubs", response_model=KnowledgeHubResponse)
+async def create_knowledge_hub(
+    hub: KnowledgeHub = Depends(service.create_knowledge_hub_use_case)
+):
+    """
+    Create a new knowledge hub.
+    """
+    return hub
+
+@router.get("/sources", response_model=List[KnowledgeSourceResponse])
+async def list_knowledge_sources(
+    limit: int = Query(100),
+    offset: int = Query(0),
+    sources: List[KnowledgeSource] = Depends(service.list_knowledge_sources_use_case)
+):
+    """
+    List all knowledge sources.
+    """
+    return sources
+
+@router.post("/sources", response_model=KnowledgeSourceResponse)
+async def create_knowledge_source(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    metadata_json: str = Form(...),
+    session: AsyncSession = Depends(get_db)
+):
+    """
+    Create a new knowledge source and initiate indexing.
+    """
+    try:
+        data = json.loads(metadata_json)
+        source_create = KnowledgeSourceCreate(**data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON metadata: {e}")
+
+    # Create the source record first
+    source = await service.create_knowledge_source_use_case(source_create, session)
+    
+    # Read content
+    content_bytes = await file.read()
+    try:
+        content = content_bytes.decode('utf-8')
+    except UnicodeDecodeError:
+        # Fallback or error out for non-text formats if text parsing isn't implemented fully
+        content = content_bytes.decode('latin-1') # fallback just in case
+    
+    # Schedule background task
+    background_tasks.add_task(process_and_index_source, session, source, content)
+    
+    return source
 
 @router.get("/assets", response_model=List[Asset])
 async def list_assets(

@@ -7,6 +7,7 @@ export type DisplayVectorDatabase = VectorDatabase & {
     readonly description: string;
     readonly categories: readonly string[];
     readonly isMock?: boolean;
+    readonly status?: "connected" | "disconnected" | "error" | "none";
 };
 
 export type VectorDatabasesListViewProps = {
@@ -30,6 +31,7 @@ export type VectorDatabasesListViewProps = {
     readonly isLoading: boolean;
     readonly onDbClick: (db: DisplayVectorDatabase) => void;
     readonly onEditDb: (id: string) => void;
+    readonly onAdd: () => void;
     readonly onDeleteDb: (id: string, title: string) => void;
     readonly selectedDb: DisplayVectorDatabase | null;
     readonly deleteModalOpen: boolean;

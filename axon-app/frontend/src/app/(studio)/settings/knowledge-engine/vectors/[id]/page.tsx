@@ -2,8 +2,8 @@
 
 import React from "react";
 import { useRouter, useParams } from "next/navigation";
-import { VectorStudioView } from "@/modules/studio/features/vector-studio/ui/VectorStudioView";
-import { useVectorDatabases } from "@/modules/settings/application/useSettings";
+import { VectorStudio } from "@/modules/studio/features/vector-studio/ui/VectorStudio";
+import { useVectorDatabase, useUpdateVectorDatabase } from "@/modules/settings/application/useSettings";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 
 export default function EditVectorDatabasePage() {
@@ -11,12 +11,16 @@ export default function EditVectorDatabasePage() {
     const params = useParams();
     const id = params.id as string;
     
-    const { data: dbs, isLoading } = useVectorDatabases();
-    const db = dbs?.find(d => d.id === id);
+    const { data: db, isLoading } = useVectorDatabase(id);
+    const { mutateAsync: updateDb, isPending: isSaving } = useUpdateVectorDatabase();
 
     const handleSave = async (data: any) => {
-        console.log("Saving Vector DB:", id, data);
-        router.push("/settings/knowledge-engine/vectors");
+        try {
+            await updateDb({ id, data });
+            router.push("/settings/knowledge-engine/vectors");
+        } catch (error) {
+            console.error("Failed to save Vector DB:", error);
+        }
     };
 
     const handleExit = () => {
@@ -30,10 +34,11 @@ export default function EditVectorDatabasePage() {
     if (!displayDb) return <div>Database not found</div>;
 
     return (
-        <VectorStudioView 
+        <VectorStudio 
             initialData={displayDb}
             onSave={handleSave}
             onExit={handleExit}
+            isSaving={isSaving}
         />
     );
 }

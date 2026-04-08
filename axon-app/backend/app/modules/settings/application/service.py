@@ -12,7 +12,7 @@ from app.modules.settings.application.schemas import (
     CreateLLMRouterRequest, UpdateLLMRouterRequest,
     CreateEmbeddingModelRequest, UpdateEmbeddingModelRequest,
     CreateChunkingStrategyRequest, UpdateChunkingStrategyRequest,
-    CreateVectorDatabaseRequest,
+    CreateVectorDatabaseRequest, UpdateVectorDatabaseRequest,
     SimulateChunkingRequest, SimulateChunkingResponse,
     TestPromptRequest, SanityCheckResponse, ConnectionTestResponse,
     AvailableModelResponse
@@ -365,6 +365,15 @@ class SettingsService:
             id=uuid4(),
             vector_database_name=request.vector_database_name,
             vector_database_type=request.vector_database_type,
+            # Handle legacy fields if present in request, or use config
+            vector_database_host=request.vector_database_host,
+            vector_database_port=request.vector_database_port,
+            vector_database_user=request.vector_database_user,
+            vector_database_password=request.vector_database_password,
+            vector_database_db_name=request.vector_database_db_name,
+            vector_database_ssl_mode=request.vector_database_ssl_mode,
+            # New universal config
+            vector_database_config=request.vector_database_config,
             vector_database_connection_url=request.vector_database_connection_url,
             vector_database_connection_string=request.vector_database_connection_string,
             vector_database_index_method=request.vector_database_index_method,
@@ -382,15 +391,187 @@ class SettingsService:
     async def list_vector_databases(self) -> List[VectorDatabase]:
         return await self.repo.list_vector_databases()
 
+    async def get_vector_database(self, id: UUID) -> Optional[VectorDatabase]:
+        return await self.repo.get_vector_database(id)
+
+    async def update_vector_database(self, id: UUID, request: UpdateVectorDatabaseRequest) -> VectorDatabase:
+        data = request.model_dump(exclude_unset=True)
+        updated = await self.repo.update_vector_database(id, data)
+        if not updated:
+            raise ValueError(f"Vector Database with id {id} not found")
+        return updated
+
     async def delete_vector_database(self, id: UUID) -> bool:
         return await self.repo.delete_vector_database(id)
 
     async def test_vector_database(self, id: UUID) -> ConnectionTestResponse:
-        return ConnectionTestResponse(
-            success=True,
-            message="Mock connection successful",
-            latency_ms=20.0
-        )
+        import time
+        from app.shared.infrastructure.vecs_client import get_vecs_client
+        import httpx
+        from urllib.parse import quote_plus, urlparse, urlunparse
+        from app.modules.settings.domain.enums import ConnectionStatus, VectorDBType
+
+        db = await self.repo.get_vector_database(id)
+        if not db:
+            raise ValueError(f"Vector Database with id {id} not found")
+
+        db_type = db.vector_database_type
+        config = db.vector_database_config or {}
+        
+        # 1. Handle Qdrant
+        if db_type == VectorDBType.QDRANT_LOCAL:
+            url = config.get("qdrant_url")
+            api_key = config.get("qdrant_api_key")
+            if not url:
+                return ConnectionTestResponse(success=False, message="Brak adresu URL w konfiguracji Qdrant.", latency_ms=0)
+            
+            start_time = time.time()
+            try:
+                async with httpx.AsyncClient() as client:
+                    headers = {}
+                    if api_key:
+                        headers["api-key"] = api_key
+                    
+                    response = await client.get(f"{url.rstrip('/')}/", headers=headers, timeout=5.0)
+                    if response.status_code == 200:
+                        latency_ms = (time.time() - start_time) * 1000
+                        await self.repo.update_vector_database(id, {"vector_database_connection_status": ConnectionStatus.CONNECTED})
+                        return ConnectionTestResponse(
+                            success=True, 
+                            message="Połączono pomyślnie z Qdrant", 
+                            latency_ms=latency_ms,
+                            raw_json={"status": "ok", "version_info": response.json() if "application/json" in response.headers.get("content-type", "") else response.text}
+                        )
+                    else:
+                        raise Exception(f"Qdrant zwrócił status: {response.status_code}")
+            except Exception as e:
+                await self.repo.update_vector_database(id, {"vector_database_connection_status": ConnectionStatus.DISCONNECTED})
+                return ConnectionTestResponse(success=False, message=f"Błąd połączenia z Qdrant: {str(e)}", latency_ms=0)
+
+        # 2. Handle ChromaDB
+        if db_type in [VectorDBType.CHROMADB_LOCAL, VectorDBType.CHROMADB_CLOUD, VectorDBType.CHROMADB]:
+            host = config.get("chroma_host")
+            port = config.get("chroma_port")
+            url = config.get("chroma_url") or f"http://{host}:{port}"
+            api_key = config.get("chroma_api_key")
+            
+            if not url or url == "http://None:None":
+                return ConnectionTestResponse(success=False, message="Brak konfiguracji host/port dla ChromaDB.", latency_ms=0)
+
+            start_time = time.time()
+            try:
+                async with httpx.AsyncClient() as client:
+                    headers = {}
+                    if api_key:
+                        headers["Authorization"] = f"Bearer {api_key}"
+                        
+                    response = await client.get(f"{url.rstrip('/')}/api/v1/heartbeat", headers=headers, timeout=5.0)
+                    if response.status_code == 200:
+                        latency_ms = (time.time() - start_time) * 1000
+                        await self.repo.update_vector_database(id, {"vector_database_connection_status": ConnectionStatus.CONNECTED})
+                        return ConnectionTestResponse(
+                            success=True, 
+                            message="Połączono pomyślnie z ChromaDB", 
+                            latency_ms=latency_ms,
+                            raw_json=response.json()
+                        )
+                    else:
+                        raise Exception(f"ChromaDB zwrócił status: {response.status_code}")
+            except Exception as e:
+                await self.repo.update_vector_database(id, {"vector_database_connection_status": ConnectionStatus.DISCONNECTED})
+                return ConnectionTestResponse(success=False, message=f"Błąd połączenia z ChromaDB: {str(e)}", latency_ms=0)
+
+        # 3. Handle Postgres (pgvector / Supabase)
+        connection_url = db.vector_database_connection_url
+        if connection_url:
+            connection_url = connection_url.strip()
+        # Robust fallback: Try to recompose URL if missing but fields are present
+        if not connection_url and db.vector_database_host and db.vector_database_user:
+            from urllib.parse import quote_plus
+            import re
+            
+            # Remove ANY whitespace or control characters from host, and leading @
+            host = re.sub(r'^@', '', re.sub(r'\s+', '', db.vector_database_host))
+            user = re.sub(r'\s+', '', db.vector_database_user)
+            pwd = quote_plus(re.sub(r'\s+', '', db.vector_database_password or ""))
+            db_name = re.sub(r'\s+', '', db.vector_database_db_name or "postgres")
+            ssl = re.sub(r'\s+', '', db.vector_database_ssl_mode or "require")
+            
+            connection_url = f"postgresql://{user}:{pwd}@{host}:{db.vector_database_port}/{db_name}?sslmode={ssl}"
+
+        if not connection_url:
+            return ConnectionTestResponse(
+                success=False,
+                message="Brak adresu połączenia (Connection URL). Upewnij się, że host i użytkownik są wypełnieni.",
+                latency_ms=0
+            )
+
+        # Handle password encoding for special characters
+        try:
+            if "://" in connection_url and "@" in connection_url:
+                prefix, rest = connection_url.split("://", 1)
+                auth, host_part = rest.rsplit("@", 1)
+                
+                # Remove ANY whitespace or control characters from host_part
+                import re
+                host_part = re.sub(r'\s+', '', host_part)
+                
+                if ":" in auth:
+                    user, pwd = auth.split(":", 1)
+                    safe_pwd = quote_plus(pwd) if "%" not in pwd else pwd
+                    connection_url = f"{prefix}://{user}:{safe_pwd}@{host_part}"
+                else:
+                    connection_url = f"{prefix}://{auth}@{host_part}"
+        except Exception as parse_err:
+            print(f"URL Parsing warning: {parse_err}")
+            pass
+
+        start_time = time.time()
+        try:
+            # Connect using the specific URL from Vector Studio instead of global settings
+            client = get_vecs_client(connection_url)
+            # Test if we can list collections or just ping
+            client.list_collections()
+            
+            latency_ms = (time.time() - start_time) * 1000
+            
+            # Fetch extra metadata from Postgres
+            server_details = {}
+            try:
+                import psycopg2
+                with psycopg2.connect(connection_url) as conn:
+                    with conn.cursor() as cur:
+                        cur.execute("SELECT inet_server_addr(), inet_server_port(), version(), current_database()")
+                        addr, port, ver, db_name = cur.fetchone()
+                        server_details = {
+                            "server_addr": str(addr),
+                            "server_port": port,
+                            "server_version": ver,
+                            "database_name": db_name,
+                            "connection_verified_at": time.strftime("%Y-%m-%d %H:%M:%S")
+                        }
+            except Exception as meta_err:
+                server_details = {"info": "Connected successfully, but failed to fetch server metadata details."}
+
+            await self.repo.update_vector_database(id, {
+                "vector_database_connection_status": ConnectionStatus.CONNECTED
+            })
+
+            return ConnectionTestResponse(
+                success=True,
+                message="Połączono pomyślnie z bazą wektorową",
+                latency_ms=latency_ms,
+                raw_json=server_details
+            )
+        except Exception as e:
+            await self.repo.update_vector_database(id, {
+                "vector_database_connection_status": ConnectionStatus.DISCONNECTED
+            })
+            return ConnectionTestResponse(
+                success=False,
+                message=f"Błąd połączenia: {str(e)}",
+                latency_ms=0
+            )
 
     async def get_available_models(self, provider_id: UUID) -> List[AvailableModelResponse]:
         """

@@ -214,12 +214,48 @@ class SimulateChunkingResponse(BaseModel):
 class CreateVectorDatabaseRequest(BaseModel):
     vector_database_name: str
     vector_database_type: VectorDBType
+    
+    # Granular fields (Legacy)
+    vector_database_host: Optional[str] = None
+    vector_database_port: int = 5432
+    vector_database_user: Optional[str] = None
+    vector_database_password: Optional[str] = None
+    vector_database_db_name: str = "postgres"
+    vector_database_ssl_mode: str = "require"
+    
+    # Universal Dynamic Config
+    vector_database_config: Dict[str, Any] = Field(default_factory=dict)
+    
     vector_database_connection_url: Optional[str] = None
     vector_database_connection_string: Optional[str] = None
     vector_database_index_method: IndexMethod = IndexMethod.HNSW
     vector_database_collection_name: str
     vector_database_embedding_model_reference: str
+    vector_database_embedding_model_id: Optional[UUID] = None
     vector_database_expected_dimensions: int
+
+class UpdateVectorDatabaseRequest(BaseModel):
+    vector_database_name: Optional[str] = None
+    vector_database_type: Optional[VectorDBType] = None
+    
+    # Granular fields (Legacy)
+    vector_database_host: Optional[str] = None
+    vector_database_port: Optional[int] = None
+    vector_database_user: Optional[str] = None
+    vector_database_password: Optional[str] = None
+    vector_database_db_name: Optional[str] = None
+    vector_database_ssl_mode: Optional[str] = None
+    
+    # Universal Dynamic Config
+    vector_database_config: Optional[Dict[str, Any]] = None
+    
+    vector_database_connection_url: Optional[str] = None
+    vector_database_connection_string: Optional[str] = None
+    vector_database_index_method: Optional[IndexMethod] = None
+    vector_database_collection_name: Optional[str] = None
+    vector_database_embedding_model_reference: Optional[str] = None
+    vector_database_embedding_model_id: Optional[UUID] = None
+    vector_database_expected_dimensions: Optional[int] = None
 
 class VectorDatabaseResponse(CreateVectorDatabaseRequest):
     id: UUID

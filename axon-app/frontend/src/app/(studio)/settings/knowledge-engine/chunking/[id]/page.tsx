@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter, useParams } from "next/navigation";
-import { ChunkingStudioView } from "@/modules/studio/features/chunking-studio/ui/ChunkingStudioView";
+import { ChunkingStudio } from "@/modules/studio/features/chunking-studio/ui/ChunkingStudio";
 import { useChunkingStrategies, useUpdateChunkingStrategy, useCreateChunkingStrategy } from "@/modules/settings/application/useSettings";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { toast } from "sonner";
@@ -62,7 +62,7 @@ export default function EditChunkingStrategyPage() {
     if (!strategy) return <div>Strategy not found</div>;
 
     return (
-        <ChunkingStudioView 
+        <ChunkingStudio 
             initialData={strategy}
             onSave={handleSave}
             onExit={handleExit}

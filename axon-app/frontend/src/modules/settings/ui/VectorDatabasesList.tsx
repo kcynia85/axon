@@ -22,11 +22,6 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
     { label: "Status", groupId: "status" },
 ];
 
-const STATIC_HOSTING = [
-    { id: "cloud", label: "Cloud" },
-    { id: "self-hosted", label: "Self-Hosted" },
-];
-
 export const VectorDatabasesList = () => {
     const { data: databases, isLoading } = useVectorDatabases();
     const { mutateAsync: deleteDatabase } = useDeleteVectorDatabase();
@@ -37,7 +32,7 @@ export const VectorDatabasesList = () => {
     const [search, setSearch] = React.useState("");
     const [sortBy, setSortBy] = React.useState("name_asc");
     const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
-    const [selectedDatabase, setSelectedDatabase] = React.useState<DisplayVectorDatabase | null>(null);
+    const [selectedDatabaseId, setSelectedDatabaseId] = React.useState<string | null>(null);
     const [activeFilters, setActiveFilters] = React.useState<ActiveFilter[]>([]);
     const [pendingFilterIds, setPendingFilterIds] = React.useState<string[]>([]);
 
@@ -86,11 +81,18 @@ export const VectorDatabasesList = () => {
     const getHostingType = (database: VectorDatabase) => {
         const typeValue = database.vector_database_type.toUpperCase();
         const urlValue = (database.vector_database_connection_url || "").toLowerCase();
+        
+        // Supabase is Cloud
+        if (urlValue.includes("supabase.co")) return "cloud";
         if (typeValue === "PINECONE") return "cloud";
-        if (urlValue.includes("self-hosted") || urlValue.includes("localhost") || urlValue.includes("127.0.0.1")) return "self-hosted";
-        if (typeValue.includes("CHROMA")) return "self-hosted";
-        if (typeValue.includes("POSTGRES")) return "self-hosted";
-        return "cloud";
+        
+        // Local/Manual indicators
+        if (urlValue.includes("localhost") || urlValue.includes("127.0.0.1") || urlValue.includes("0.0.0.0")) return "local";
+        
+        if (typeValue.includes("CHROMA")) return "local";
+        if (typeValue.includes("POSTGRES")) return "local";
+        
+        return "external";
     };
 
     const getFilterGroups = (): FilterGroup[] => {
@@ -102,11 +104,11 @@ export const VectorDatabasesList = () => {
                 id: "hosting",
                 title: "Hosting",
                 type: "checkbox",
-                options: STATIC_HOSTING.map(hosting => ({
-                    id: hosting.id,
-                    label: hosting.label,
-                    isChecked: pendingFilterIds.includes(hosting.id)
-                }))
+                options: [
+                    { id: "cloud", label: "Cloud", isChecked: pendingFilterIds.includes("cloud") },
+                    { id: "local", label: "Local", isChecked: pendingFilterIds.includes("local") },
+                    { id: "external", label: "External", isChecked: pendingFilterIds.includes("external") },
+                ]
             },
             {
                 id: "types",
@@ -114,7 +116,7 @@ export const VectorDatabasesList = () => {
                 type: "checkbox",
                 options: uniqueTypes.map(type => ({
                     id: type,
-                    label: type,
+                    label: type.replace(/_/g, " "),
                     isChecked: pendingFilterIds.includes(type)
                 }))
             },
@@ -124,7 +126,7 @@ export const VectorDatabasesList = () => {
                 type: "checkbox",
                 options: uniqueStatuses.map(status => ({
                     id: status,
-                    label: status,
+                    label: status.charAt(0) + status.slice(1).toLowerCase(),
                     isChecked: pendingFilterIds.includes(status)
                 }))
             }
@@ -167,43 +169,33 @@ export const VectorDatabasesList = () => {
         }).map(database => {
             const isConnected = database.vector_database_connection_status.toUpperCase() === "CONNECTED";
             const hostingType = getHostingType(database);
+            
+            const hostingLabel = {
+                cloud: "Cloud",
+                local: "Local / Self-Hosted",
+                external: "External"
+            }[hostingType as "cloud" | "local" | "external"];
+
+            const formattedType = database.vector_database_type.replace(/_/g, " ").toLowerCase();
+            const displayType = formattedType.charAt(0).toUpperCase() + formattedType.slice(1);
+
             return {
                 ...database,
-                title: database.vector_database_name,
-                description: database.vector_database_type,
+                title: displayType,
+                description: database.vector_database_name,
+                status: isConnected ? "connected" : "disconnected",
                 categories: [
-                    hostingType === "cloud" ? "Cloud" : "Self-Hosted",
-                    isConnected ? "Connected" : "Disconnected"
+                    hostingLabel
                 ]
             };
         });
 
-        // Mock if empty
-        if (sortedDatabases.length === 0 && !search && activeFilters.length === 0) {
-            return [
-                {
-                    id: "postgres-mock",
-                    title: "Postgres (pgvector)",
-                    description: "Postgres_pgvector",
-                    categories: ["Self-Hosted", "Connected"],
-                    isMock: true,
-                    vector_database_name: "Postgres (pgvector)",
-                    vector_database_type: "Postgres_pgvector",
-                    vector_database_connection_status: "CONNECTED",
-                    vector_database_index_method: "HNSW",
-                    vector_database_collection_name: "default",
-                    vector_database_embedding_model_reference: "mock-model",
-                    vector_database_expected_dimensions: 1536,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                }
-            ];
-        }
         return sortedDatabases;
     };
 
 
     const displayItems = getDisplayItems();
+    const selectedDatabase = displayItems.find(db => db.id === selectedDatabaseId) || null;
 
     return (
         <VectorDatabasesListView
@@ -225,15 +217,16 @@ export const VectorDatabasesList = () => {
             displayItems={displayItems}
             previewCount={displayItems.length}
             isLoading={isLoading}
-            onDbClick={setSelectedDatabase}
+            onDbClick={(db) => setSelectedDatabaseId(db.id)}
             onEditDb={(id) => router.push(`/settings/knowledge-engine/vectors/${id}`)}
+            onAdd={() => router.push("/settings/knowledge-engine/vectors/new")}
             onDeleteDb={confirmDelete}
             selectedDb={selectedDatabase}
             deleteModalOpen={deleteModalOpen}
             onCancelDelete={() => setDeleteModalOpen(false)}
             onConfirmDelete={handleDeleteExecution}
             dbToDeleteName={databaseToDelete?.name}
-            onCloseSidePeek={() => setSelectedDatabase(null)}
+            onCloseSidePeek={() => setSelectedDatabaseId(null)}
         />
     );
 };

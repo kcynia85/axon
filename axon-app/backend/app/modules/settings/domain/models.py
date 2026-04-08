@@ -97,12 +97,28 @@ class ChunkingStrategy(SettingsBase):
 class VectorDatabase(SettingsBase):
     vector_database_name: str
     vector_database_type: VectorDBType
+    
+    # Granular Connection Fields (Legacy - for backward compat)
+    vector_database_host: Optional[str] = None
+    vector_database_port: int = 5432
+    vector_database_user: Optional[str] = None
+    vector_database_password: Optional[str] = None
+    vector_database_db_name: str = "postgres"
+    vector_database_ssl_mode: str = "require"
+    
+    # Universal Dynamic Config
+    vector_database_config: Dict[str, Any] = Field(default_factory=dict)
+    
     vector_database_connection_url: Optional[str] = None
     vector_database_connection_string: Optional[str] = None
     vector_database_index_method: IndexMethod = IndexMethod.HNSW
     vector_database_connection_status: ConnectionStatus = ConnectionStatus.DISCONNECTED
     vector_database_collection_name: str
-    vector_database_embedding_model_reference: str
+    
+    # Relation
+    vector_database_embedding_model_id: Optional[UUID] = None
+    vector_database_embedding_model_reference: str # ID or name for compat
+    
     vector_database_total_vectors: int = 0
     vector_database_size: int = 0
     vector_database_expected_dimensions: int

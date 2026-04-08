@@ -13,6 +13,11 @@ export const MigrationPlanPoster = () => {
         name: "vector_database_expected_dimensions",
     }) || "XXXX";
 
+    const collectionName = useWatch({
+        control,
+        name: "vector_database_collection_name",
+    }) || "axon_knowledge_vectors";
+
     return (
         <div className="w-full h-full p-6 space-y-8 flex flex-col overflow-y-auto">
             <div className="space-y-4">
@@ -27,14 +32,14 @@ export const MigrationPlanPoster = () => {
                             <li>
                                 Utworzenie nowej tabeli 
                                 <code className="bg-primary/10 text-zinc-400 px-1.5 py-0.5 rounded font-mono text-[12px] ml-1 border border-primary/20">
-                                    vectors_{dimensions}_v2
+                                    {collectionName}
                                 </code>
                             </li>
                             <li>
                                 Pobranie treści (raw content) wszystkich plików z 
                                 <span className="text-white ml-1 font-bold  text-zinc-400 underline decoration-primary/30">Resources</span>.
                             </li>
-                            <li>Ponowne przeliczenie wektorów przy użyciu nowego modelu.</li>
+                            <li>Ponowne przeliczenie wektorów przy użyciu nowego modelu ({dimensions} wymiary).</li>
                         </ol>
 
                         <div className="mt-8 p-5 bg-black/40 rounded-xl border border-zinc-800/50 flex justify-between items-center">

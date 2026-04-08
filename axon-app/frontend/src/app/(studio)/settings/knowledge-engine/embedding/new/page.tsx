@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { EmbeddingStudioView } from "@/modules/studio/features/embedding-studio/ui/EmbeddingStudioView";
+import { EmbeddingStudio } from "@/modules/studio/features/embedding-studio/ui/EmbeddingStudio";
 import { useCreateEmbeddingModel } from "@/modules/settings/application/useSettings";
 import { toast } from "sonner";
 
@@ -25,7 +25,7 @@ export default function NewEmbeddingModelPage() {
     };
 
     return (
-        <EmbeddingStudioView 
+        <EmbeddingStudio 
             onSave={handleSave}
             onExit={handleExit}
             isSaving={isPending}

@@ -226,5 +226,10 @@ export const settingsApi = {
     testVectorDB: async (id: string): Promise<unknown> => {
         const res = await apiClient.post(`/settings/vector-databases/${id}/test`, {});
         return await res.json() as unknown;
+    },
+
+    getSettingsEnums: async (): Promise<any> => {
+        const res = await apiClient.get("/settings/metadata/enums");
+        return await res.json();
     }
 };

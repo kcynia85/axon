@@ -33,6 +33,7 @@ class KnowledgeSourceTable(Base):
     source_chunking_strategy_ref = Column(String, nullable=True) # ID or name
     source_indexing_error = Column(String, nullable=True)
     knowledge_hub_id = Column(UUID(as_uuid=True), ForeignKey("knowledge_hubs.id"), nullable=True)
+    vector_database_id = Column(UUID(as_uuid=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 

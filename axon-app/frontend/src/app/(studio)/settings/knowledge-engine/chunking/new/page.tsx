@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { ChunkingStudioView } from "@/modules/studio/features/chunking-studio/ui/ChunkingStudioView";
+import { ChunkingStudio } from "@/modules/studio/features/chunking-studio/ui/ChunkingStudio";
 import { useCreateChunkingStrategy } from "@/modules/settings/application/useSettings";
 import { toast } from "sonner";
 
@@ -29,7 +29,7 @@ export default function NewChunkingStrategyPage() {
     };
 
     return (
-        <ChunkingStudioView 
+        <ChunkingStudio 
             onSave={handleSave}
             onExit={handleExit}
             isSaving={isPending}

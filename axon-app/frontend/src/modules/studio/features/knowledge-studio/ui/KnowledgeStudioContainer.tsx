@@ -1,8 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { KnowledgeStudioView } from "./KnowledgeStudioView";
 import { useKnowledgeStudio } from "../application/useKnowledgeStudio";
+import { resourcesApi } from "@/modules/resources/infrastructure/api";
+import { settingsApi } from "@/modules/settings/infrastructure/api";
 
 /**
  * KnowledgeStudioContainer: Intelligent client container for the knowledge design experience.
@@ -12,6 +15,21 @@ export const KnowledgeStudioContainer = () => {
     const router = useRouter();
     const studioState = useKnowledgeStudio();
 
+    const { data: hubs = [], isLoading: isLoadingHubs } = useQuery({
+        queryKey: ["knowledge-hubs"],
+        queryFn: () => resourcesApi.getKnowledgeHubs(),
+    });
+
+    const { data: vectorStores = [], isLoading: isLoadingVectorStores } = useQuery({
+        queryKey: ["vector-databases"],
+        queryFn: () => settingsApi.getVectorDatabases(),
+    });
+
+    const { data: strategies = [], isLoading: isLoadingStrategies } = useQuery({
+        queryKey: ["chunking-strategies"],
+        queryFn: () => settingsApi.getChunkingStrategies(),
+    });
+
     const handleCancel = () => {
         router.back();
     };
@@ -19,6 +37,12 @@ export const KnowledgeStudioContainer = () => {
     return (
         <KnowledgeStudioView
             {...studioState}
+            hubs={hubs}
+            isLoadingHubs={isLoadingHubs}
+            vectorStores={vectorStores}
+            isLoadingVectorStores={isLoadingVectorStores}
+            strategies={strategies}
+            isLoadingStrategies={isLoadingStrategies}
             onDataChange={studioState.handleDataChange}
             onSave={studioState.handleSave}
             onAutoTag={studioState.handleAutoTag}

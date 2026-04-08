@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter, useParams } from "next/navigation";
-import { EmbeddingStudioView } from "@/modules/studio/features/embedding-studio/ui/EmbeddingStudioView";
+import { EmbeddingStudio } from "@/modules/studio/features/embedding-studio/ui/EmbeddingStudio";
 import { useEmbeddingModels, useUpdateEmbeddingModel, useCreateEmbeddingModel } from "@/modules/settings/application/useSettings";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { toast } from "sonner";
@@ -63,7 +63,7 @@ export default function EditEmbeddingModelPage() {
     if (!model) return <div>Model not found</div>;
 
     return (
-        <EmbeddingStudioView 
+        <EmbeddingStudio 
             initialData={model}
             onSave={handleSave}
             onExit={handleExit}

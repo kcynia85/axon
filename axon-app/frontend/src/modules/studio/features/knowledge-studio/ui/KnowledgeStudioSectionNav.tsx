@@ -1,9 +1,7 @@
 import { FormNavItem } from "@/shared/ui/form/FormNavItem";
 import { FormNavList } from "@/shared/ui/form/FormNavList";
 import { FormNavContainer } from "@/shared/ui/form/FormNavContainer";
-import { KnowledgeResourceData } from "../types/knowledge-studio.types";
-
-export type KnowledgeStudioSectionId = "RESOURCE" | "METADATA" | "STRATEGY" | "HUBS";
+import { KnowledgeResourceData, KnowledgeStudioSectionId } from "../types/knowledge-studio.types";
 
 export type KnowledgeSectionConfig = {
     id: KnowledgeStudioSectionId;
@@ -15,7 +13,8 @@ const SECTIONS: KnowledgeSectionConfig[] = [
     { id: "RESOURCE", number: "01", title: "Wybierz Zasób" },
     { id: "METADATA", number: "02", title: "Metadane" },
     { id: "STRATEGY", number: "03", title: "Strategia Przetwarzania" },
-    { id: "HUBS", number: "04", title: "Przypisanie do Hubów" },
+    { id: "VECTOR_STORE", number: "04", title: "Vector Store" },
+    { id: "HUBS", number: "05", title: "Przypisanie do Hubów" },
 ];
 
 interface KnowledgeStudioSectionNavProps {
@@ -33,6 +32,8 @@ export const KnowledgeStudioSectionNav = ({ activeSection, onSectionClick, data 
                 return data.metadata.length > 0 ? 1 : 0;
             case "STRATEGY":
                 return data.chunkType ? 1 : 0;
+            case "VECTOR_STORE":
+                return data.vectorStoreId ? 1 : 0;
             case "HUBS":
                 return data.hubs.length > 0 ? 1 : 0;
             default:

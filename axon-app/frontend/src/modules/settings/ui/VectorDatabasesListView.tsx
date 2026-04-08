@@ -1,5 +1,5 @@
 import React from "react";
-import { Database } from "lucide-react";
+import { Database, Plus } from "lucide-react";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
@@ -7,6 +7,7 @@ import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
 import { ResourceList } from "@/shared/ui/complex/ResourceList";
 import { VectorDatabaseSidePeek } from "./VectorDatabaseSidePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
+import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { VectorDatabasesListViewProps } from "./VectorDatabasesListView.types";
 
 export const VectorDatabasesListView = ({
@@ -30,6 +31,7 @@ export const VectorDatabasesListView = ({
     isLoading,
     onDbClick,
     onEditDb,
+    onAdd,
     onDeleteDb,
     selectedDb,
     deleteModalOpen,
@@ -82,6 +84,7 @@ export const VectorDatabasesListView = ({
                             href="#"
                             icon={Database}
                             categories={db.categories}
+                            status={db.status}
                             onClick={() => onDbClick(db)}
                             onEdit={(e) => {
                                 e.preventDefault();

@@ -14,7 +14,7 @@ from app.modules.settings.application.schemas import (
     EmbeddingModelResponse, CreateEmbeddingModelRequest, UpdateEmbeddingModelRequest,
     ChunkingStrategyResponse, CreateChunkingStrategyRequest, UpdateChunkingStrategyRequest,
     SimulateChunkingRequest, SimulateChunkingResponse,
-    VectorDatabaseResponse, CreateVectorDatabaseRequest, ConnectionTestResponse
+    VectorDatabaseResponse, CreateVectorDatabaseRequest, UpdateVectorDatabaseRequest, ConnectionTestResponse
 )
 
 router = APIRouter(
@@ -323,12 +323,33 @@ async def list_vector_databases(
 ):
     return await service.list_vector_databases()
 
+@router.get("/vector-databases/{id}", response_model=VectorDatabaseResponse)
+async def get_vector_database(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    db = await service.get_vector_database(id)
+    if not db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vector database not found")
+    return db
+
 @router.post("/vector-databases", response_model=VectorDatabaseResponse, status_code=status.HTTP_201_CREATED)
 async def create_vector_database(
     request: CreateVectorDatabaseRequest,
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.create_vector_database(request)
+
+@router.patch("/vector-databases/{id}", response_model=VectorDatabaseResponse)
+async def patch_vector_database(
+    id: UUID,
+    request: UpdateVectorDatabaseRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    try:
+        return await service.update_vector_database(id, request)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 @router.delete("/vector-databases/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_vector_database(
@@ -343,3 +364,13 @@ async def test_vector_database(
     service: SettingsService = Depends(get_settings_service)
 ):
     return await service.test_vector_database(id)
+
+@router.get("/metadata/enums")
+async def get_settings_enums():
+    from app.modules.settings.domain.enums import VectorDBType, IndexMethod, ChunkingMethod, ProviderType
+    return {
+        "vector_db_types": [v.value for v in VectorDBType],
+        "index_methods": [v.value for v in IndexMethod],
+        "chunking_methods": [v.value for v in ChunkingMethod],
+        "provider_types": [v.value for v in ProviderType]
+    }

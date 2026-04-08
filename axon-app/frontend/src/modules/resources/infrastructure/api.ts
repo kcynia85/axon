@@ -48,7 +48,23 @@ export const resourcesApi = {
         return await res.json() as { added: number; updated: number; removed: number; errors: string[] };
     },
 
-    // --- Knowledge Assets (Hubs) ---
+    // --- Knowledge Hubs & Sources ---
+    getKnowledgeHubs: async (): Promise<any[]> => {
+        const res = await apiClient.get("/knowledge/hubs");
+        return await res.json() as any[];
+    },
+
+    getKnowledgeSources: async (): Promise<any[]> => {
+        const res = await apiClient.get("/knowledge/sources");
+        return await res.json() as any[];
+    },
+
+    uploadKnowledgeSource: async (formData: FormData): Promise<any> => {
+        const res = await apiClient.postFormData("/knowledge/sources", formData);
+        return await res.json() as any;
+    },
+
+    // --- Knowledge Assets (Legacy) ---
     getAssets: async (): Promise<{ id: string; title: string }[]> => {
         // Mock implementation for now as the original module was removed
         return [

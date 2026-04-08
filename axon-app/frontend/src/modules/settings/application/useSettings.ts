@@ -224,6 +224,42 @@ export const useVectorDatabases = () => {
     });
 }
 
+export const useVectorDatabase = (id?: string) => {
+    return useQuery({
+        queryKey: ["vector-databases", id],
+        queryFn: () => id ? settingsApi.getVectorDatabase(id) : Promise.reject("No ID provided"),
+        enabled: !!id,
+    });
+}
+
+export const useCreateVectorDatabase = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data: any) => settingsApi.createVectorDatabase(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["vector-databases"] });
+        },
+    });
+}
+
+export const useUpdateVectorDatabase = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string, data: any }) => settingsApi.updateVectorDatabase(id, data),
+        onSuccess: (_, { id }) => {
+            queryClient.invalidateQueries({ queryKey: ["vector-databases"] });
+            queryClient.invalidateQueries({ queryKey: ["vector-databases", id] });
+        },
+    });
+}
+
+export const useSettingsEnums = () => {
+    return useQuery({
+        queryKey: ["settings-enums"],
+        queryFn: () => settingsApi.getSettingsEnums(),
+    });
+}
+
 export const useDeleteVectorDatabase = () => {
     const queryClient = useQueryClient();
     return useMutation({

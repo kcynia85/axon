@@ -93,7 +93,7 @@ export const VectorDatabaseSidePeek = ({
                     <SidePeekGrid>
                         <SidePeekGridItem 
                             label="Host" 
-                            value={<span className="text-white font-mono">{db.vector_database_connection_url || "aws-eu-central-1"}</span>} 
+                            value={<span className="text-white font-mono break-all">{db.vector_database_connection_url || "N/A"}</span>} 
                         />
                         <SidePeekGridItem 
                             label="Typ" 
@@ -101,20 +101,23 @@ export const VectorDatabaseSidePeek = ({
                         />
                     </SidePeekGrid>
 
-                    {/* ── Table ── */}
-                    <SidePeekSection title="Tabela">
-                        <div className="p-3 rounded-lg bg-muted/30 border border-primary/5">
-                            <p className="text-base font-mono font-semibold text-white">
-                                {db.vector_database_collection_name || "axon_knowledge_vectors_1536"}
-                            </p>
-                        </div>
-                    </SidePeekSection>
+                    {/* ── Configuration ── */}
+                    <SidePeekGrid>
+                        <SidePeekGridItem 
+                            label="Kolekcja" 
+                            value={<span className="text-white font-mono">{db.vector_database_collection_name || "N/A"}</span>} 
+                        />
+                        <SidePeekGridItem 
+                            label="Wymiary" 
+                            value={<span className="text-white font-mono">{db.vector_database_expected_dimensions || "N/A"}</span>} 
+                        />
+                    </SidePeekGrid>
 
                     {/* ── Embedding Model ── */}
                     <SidePeekSection title="Embedding Model">
                         <div className="p-3 rounded-lg bg-muted/30 border border-primary/5">
                             <p className="text-base font-mono font-semibold text-white">
-                                {db.vector_database_embedding_model_reference || "text-embedding-3-small"}
+                                {db.vector_database_embedding_model_reference || "Nie przypisano"}
                             </p>
                         </div>
                     </SidePeekSection>
@@ -124,7 +127,7 @@ export const VectorDatabaseSidePeek = ({
                         <div className="space-y-1.5">
                             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
                                 <span className="text-base font-mono font-semibold text-white">
-                                    {(db.vector_database_total_vectors || 450200).toLocaleString()}
+                                    {(db.vector_database_total_vectors || 0).toLocaleString()}
                                 </span>
                                 <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
                                     vectors
@@ -132,18 +135,10 @@ export const VectorDatabaseSidePeek = ({
                             </div>
                             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
                                 <span className="text-base font-mono font-semibold text-white">
-                                    {db.vector_database_size || 45}
+                                    {db.vector_database_size || 0}
                                 </span>
                                 <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
                                     mb
-                                </Badge>
-                            </div>
-                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
-                                <span className="text-base font-mono font-semibold text-white">
-                                    24
-                                </span>
-                                <Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold">
-                                   ms (avg. latency)
                                 </Badge>
                             </div>
                         </div>

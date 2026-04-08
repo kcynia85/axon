@@ -458,6 +458,15 @@ class SettingsRepository:
             id=db.id,
             vector_database_name=db.vector_database_name,
             vector_database_type=db.vector_database_type,
+            # Legacy fields
+            vector_database_host=db.vector_database_host,
+            vector_database_port=db.vector_database_port,
+            vector_database_user=db.vector_database_user,
+            vector_database_password=db.vector_database_password,
+            vector_database_db_name=db.vector_database_db_name,
+            vector_database_ssl_mode=db.vector_database_ssl_mode,
+            # Universal config
+            vector_database_config=db.vector_database_config,
             vector_database_connection_url=db.vector_database_connection_url,
             vector_database_connection_string=db.vector_database_connection_string,
             vector_database_index_method=db.vector_database_index_method,
@@ -494,11 +503,32 @@ class SettingsRepository:
         row = result.scalar_one_or_none()
         return self._to_domain_vector_db(row) if row else None
 
+    async def update_vector_database(self, id: UUID, data: dict) -> Optional[VectorDatabase]:
+        if not data:
+            return await self.get_vector_database(id)
+            
+        await self.session.execute(
+            update(VectorDatabaseTable).where(VectorDatabaseTable.id == id).values(
+                **data, updated_at=now_utc()
+            )
+        )
+        await self.session.commit()
+        return await self.get_vector_database(id)
+
     def _to_domain_vector_db(self, row: VectorDatabaseTable) -> VectorDatabase:
         return VectorDatabase(
             id=row.id,
             vector_database_name=row.vector_database_name,
             vector_database_type=row.vector_database_type,
+            # Legacy fields
+            vector_database_host=row.vector_database_host,
+            vector_database_port=row.vector_database_port or 5432,
+            vector_database_user=row.vector_database_user,
+            vector_database_password=row.vector_database_password,
+            vector_database_db_name=row.vector_database_db_name or "postgres",
+            vector_database_ssl_mode=row.vector_database_ssl_mode or "require",
+            # Universal config
+            vector_database_config=row.vector_database_config or {},
             vector_database_connection_url=row.vector_database_connection_url,
             vector_database_connection_string=row.vector_database_connection_string,
             vector_database_index_method=row.vector_database_index_method,
