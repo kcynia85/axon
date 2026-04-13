@@ -19,6 +19,7 @@ gha-creds-*.json
 **/*.log
 temporary_plan.md
 .playwright-mcp/
+.vscode/
 !*.png
 !*.jpg
 !*.jpeg
