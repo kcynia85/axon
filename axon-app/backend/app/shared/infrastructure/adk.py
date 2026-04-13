@@ -61,6 +61,9 @@ class GoogleADK:
         Returns:
             List[float]: A list of floats representing the embedding vector.
         """
+        if model and not model.startswith("models/"):
+            model = f"models/{model}"
+            
         try:
             result = genai.embed_content(
                 model=model,

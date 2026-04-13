@@ -13,16 +13,17 @@ import { settingsApi } from "@/modules/settings/infrastructure/api";
  */
 export const KnowledgeStudioContainer = () => {
     const router = useRouter();
-    const studioState = useKnowledgeStudio();
+    
+    const { data: vectorStores = [], isLoading: isLoadingVectorStores } = useQuery({
+        queryKey: ["vector-databases"],
+        queryFn: () => settingsApi.getVectorDatabases(),
+    });
+
+    const studioState = useKnowledgeStudio(vectorStores);
 
     const { data: hubs = [], isLoading: isLoadingHubs } = useQuery({
         queryKey: ["knowledge-hubs"],
         queryFn: () => resourcesApi.getKnowledgeHubs(),
-    });
-
-    const { data: vectorStores = [], isLoading: isLoadingVectorStores } = useQuery({
-        queryKey: ["vector-databases"],
-        queryFn: () => settingsApi.getVectorDatabases(),
     });
 
     const { data: strategies = [], isLoading: isLoadingStrategies } = useQuery({

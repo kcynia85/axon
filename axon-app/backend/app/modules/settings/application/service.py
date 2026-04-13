@@ -465,7 +465,13 @@ class SettingsService:
                     if api_key:
                         headers["Authorization"] = f"Bearer {api_key}"
                         
-                    response = await client.get(f"{url.rstrip('/')}/api/v1/heartbeat", headers=headers, timeout=5.0)
+                    # Try API v2 first (modern ChromaDB 0.7.0+)
+                    response = await client.get(f"{url.rstrip('/')}/api/v2/heartbeat", headers=headers, timeout=5.0)
+                    
+                    # Fallback to API v1 if v2 returns 404/410/405 (backward compatibility)
+                    if response.status_code in [404, 405, 410]:
+                        response = await client.get(f"{url.rstrip('/')}/api/v1/heartbeat", headers=headers, timeout=5.0)
+
                     if response.status_code == 200:
                         latency_ms = (time.time() - start_time) * 1000
                         await self.repo.update_vector_database(id, {"vector_database_connection_status": ConnectionStatus.CONNECTED})

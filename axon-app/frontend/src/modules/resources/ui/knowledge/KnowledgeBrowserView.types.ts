@@ -6,6 +6,11 @@ export type KnowledgeResource = {
     title: string;
     tags: string[];
     type: string;
+    status: "Pending" | "Indexing" | "Ready" | "Error";
+    vectorDatabaseName?: string;
+    hubName?: string;
+    hubId?: string;
+    chunkCount?: number;
 };
 
 export type KnowledgeBrowserViewProps = {

@@ -1,6 +1,6 @@
 from enum import Enum
 
-class SourceFileFormat(str, Enum):
+class ResourceFileFormat(str, Enum):
     PDF = "pdf"
     MD = "md"
     TXT = "txt"
@@ -12,3 +12,4 @@ class RAGIndexingStatus(str, Enum):
     INDEXING = "Indexing"
     READY = "Ready"
     ERROR = "Error"
+

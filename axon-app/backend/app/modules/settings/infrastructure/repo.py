@@ -542,3 +542,32 @@ class SettingsRepository:
             updated_at=row.updated_at,
             deleted_at=row.deleted_at
         )
+
+# --- Functional-First Standalone Functions ---
+
+def map_model_to_domain(row: LLMModelTable) -> LLMModel:
+    return LLMModel(
+        id=row.id,
+        model_id=row.model_id,
+        model_display_name=row.model_display_name,
+        model_tier=row.model_tier,
+        model_capabilities_flags=row.model_capabilities_flags,
+        model_context_window=row.model_context_window,
+        model_supports_thinking=row.model_supports_thinking,
+        model_reasoning_effort=row.model_reasoning_effort,
+        model_system_prompt=row.model_system_prompt,
+        model_custom_params=row.model_custom_params or [],
+        model_pricing_config=row.model_pricing_config or {},
+        is_available=row.is_available,
+        llm_provider_id=row.llm_provider_id,
+        created_at=row.created_at,
+        updated_at=row.updated_at
+    )
+
+async def get_llm_model(session: AsyncSession, id: UUID) -> Optional[LLMModel]:
+    result = await session.execute(select(LLMModelTable).where(
+        LLMModelTable.id == id,
+        LLMModelTable.deleted_at == None
+    ))
+    row = result.scalar_one_or_none()
+    return map_model_to_domain(row) if row else None

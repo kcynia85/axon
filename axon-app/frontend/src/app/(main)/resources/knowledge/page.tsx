@@ -19,10 +19,10 @@ const KnowledgePage = () => {
             title="Baza Wiedzy"
             description={
                 <span className="flex items-center gap-1">
-                    Silnik RAG
+                    Engine
                     <ArrowRight className="w-3 h-3" />
                     <Link href="/settings/knowledge-engine" className="hover:underline text-primary">
-                        Settings/Knowledge Engine
+                        Settings
                     </Link>
                 </span>
             }

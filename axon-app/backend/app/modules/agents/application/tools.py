@@ -20,8 +20,8 @@ async def search_knowledge_base(query: str):
         for i, res in enumerate(results):
             # Adapt to vecs result structure (usually dict with 'metadata')
             meta = res.get('metadata', {}) if isinstance(res, dict) else getattr(res, 'metadata', {})
-            source = meta.get('source', 'Unknown File')
-            content = meta.get('content', '')
+            source = meta.get('file_name') or meta.get('source', 'Unknown File')
+            content = meta.get('text') or meta.get('content', '')
             formatted += f"SOURCE [{i+1}] (File: {source}):\n{content}\n---\n"
         
         return formatted

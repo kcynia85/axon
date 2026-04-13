@@ -24,6 +24,7 @@ from app.modules.workspaces.interface.router import router as workspaces_router
 from app.shared.infrastructure.inngest_client import inngest_client
 from app.modules.agents.application.workflows import writer_workflow, generic_agent_workflow
 from app.modules.settings.application.inngest_handlers import sync_all_pricing, sync_provider_pricing_event
+from app.modules.knowledge.application.inngest_handlers import knowledge_indexing_workflow
 
 app = FastAPI(title="RAGAS Axon API")
 
@@ -33,6 +34,11 @@ origins = [
     "http://127.0.0.1:3000",
     "http://localhost:8081",
     "http://localhost:8082",
+    "http://localhost:8288",
+    "http://localhost:8290",
+    "http://127.0.0.1:8288",
+    "http://127.0.0.1:8290",
+    "http://192.168.0.100:8290",
 ]
 
 app.add_middleware(
@@ -42,6 +48,29 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def log_inngest_calls(request: Request, call_next):
+    if "/api/inngest" in request.url.path:
+        body = await request.body()
+        with open("inngest_calls.log", "a") as f:
+            f.write(f"\n--- INNGEST CALL: {request.method} {request.url} ---\n")
+            f.write(f"Headers: {request.headers}\n")
+            f.write(f"Body: {body.decode('utf-8', errors='replace')}\n")
+        
+        # Reset body for the next handler
+        async def receive():
+            return {"type": "http.request", "body": body}
+        request._receive = receive
+
+    response = await call_next(request)
+
+    if "/api/inngest" in request.url.path:
+        # Capture response body if possible
+        with open("inngest_calls.log", "a") as f:
+            f.write(f"Response Status: {response.status_code}\n")
+            
+    return response
 
 # DEBUG: Catch exceptions
 @app.exception_handler(Exception)
@@ -72,7 +101,7 @@ app.include_router(workspaces_router)
 inngest_handler = serve(
     app,
     inngest_client,
-    [writer_workflow, generic_agent_workflow, sync_all_pricing, sync_provider_pricing_event],
+    [writer_workflow, generic_agent_workflow, sync_all_pricing, sync_provider_pricing_event, knowledge_indexing_workflow],
 )
 
 @app.get("/")

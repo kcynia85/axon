@@ -40,7 +40,7 @@ export const LLMRoutersBrowser = () => {
   const { pendingIds } = usePendingDeletionsStore();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("name-asc");
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
   const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);

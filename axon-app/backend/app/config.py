@@ -19,14 +19,14 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str
 
     # Feature Flags (Phase 11.T Transitional Bridge)
-    FEATURE_LANGCHAIN_ADAPTER: bool = False  # T3: LangChainAdapter - default OFF
+    FEATURE_LANGCHAIN_ADAPTER: bool = True  # T3: LangChainAdapter - default ON
     FEATURE_LANGFUSE_TELEMETRY: bool = False  # GATE 4: Telemetry
     FEATURE_LLM_GATEWAY: bool = False  # T3: LLM Gateway port
 
     # Inngest (Workflows)
     INNGEST_SIGNING_KEY: Optional[str] = None
     INNGEST_EVENT_KEY: Optional[str] = None
-    INNGEST_BASE_URL: str = "http://localhost:8288"
+    INNGEST_BASE_URL: str = "http://127.0.0.1:8290"
 
     # Storage (MinIO / S3)
     STORAGE_ENDPOINT: str = "http://localhost:9000"

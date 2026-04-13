@@ -8,9 +8,12 @@ export interface KnowledgeResourceData {
     fileName: string | null;
     fileSize: string | null;
     metadata: FormKeyValueItem[];
-    chunkType: string;
+    chunkTypeId: string;
+    chunkType: string; // The display name
     vectorStoreId: string;
     hubs: string[];
+    tags: string[];
+    simulatedChunks: any[];
 }
 
 export interface KnowledgeStudioViewProps {
@@ -23,6 +26,7 @@ export interface KnowledgeStudioViewProps {
     isLoadingVectorStores: boolean;
     hubs: any[];
     isLoadingHubs: boolean;
+    isSimulating: boolean;
     onDataChange: (data: Partial<KnowledgeResourceData>) => void;
     onSave: () => void;
     onCancel: () => void;

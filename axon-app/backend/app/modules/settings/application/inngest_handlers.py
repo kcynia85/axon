@@ -165,7 +165,7 @@ async def sync_provider(provider_id: str):
     fn_id="sync-all-pricing",
     trigger=inngest.TriggerCron(cron="0 2 * * *")
 )
-async def sync_all_pricing(ctx: inngest.Context):
+async def sync_all_pricing(ctx: inngest.Context, step: inngest.Step):
     """
     Zadanie Cron do codziennej synchronizacji cen wszystkich dostawców.
     """
@@ -176,7 +176,7 @@ async def sync_all_pricing(ctx: inngest.Context):
         results = []
         for provider in providers:
             if provider.pricing_page_url or provider.pricing_scraper_strategy == "litellm_fallback":
-                result = await ctx.step.run(
+                result = await step.run(
                     f"sync-provider-{provider.id}",
                     lambda: sync_provider(str(provider.id))
                 )
@@ -188,7 +188,7 @@ async def sync_all_pricing(ctx: inngest.Context):
     fn_id="sync-provider-pricing-manual",
     trigger=inngest.TriggerEvent(event="provider.pricing/sync.requested")
 )
-async def sync_provider_pricing_event(ctx: inngest.Context):
+async def sync_provider_pricing_event(ctx: inngest.Context, step: inngest.Step):
     """
     Synchronizacja wyzwalana zdarzeniem dla konkretnego dostawcy.
     """
@@ -196,7 +196,7 @@ async def sync_provider_pricing_event(ctx: inngest.Context):
     if not provider_id:
         return {"error": "Brak provider_id"}
         
-    result = await ctx.step.run(
+    result = await step.run(
         "sync-provider-manual",
         lambda: sync_provider(provider_id)
     )

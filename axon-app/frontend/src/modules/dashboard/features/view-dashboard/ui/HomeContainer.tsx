@@ -22,7 +22,6 @@ export const HomeContainer = ({ recentlyUsed }: HomeContainerProps) => {
         <HomeView 
             messages={messages}
             inputValue={inputValue}
-            recentlyUsed={recentlyUsed}
             onInputChange={setInputValue}
             onSubmission={handleSubmission}
             onKeyDown={handleKeyDown}

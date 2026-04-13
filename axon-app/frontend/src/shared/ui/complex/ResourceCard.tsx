@@ -154,18 +154,12 @@ export const ResourceCard = ({
 
                 {renderActions()}
 
-                {/* Status/Type Badge - Positioned Absolutely in corner */}
+                {/* Top-right corner badge for transient statuses (like Pending) */}
                 <div className="absolute top-3 right-3 z-30">
-                    {isDraft ? (
-                        <Badge variant="outline" className="text-[10px] font-black uppercase tracking-[0.2em] bg-zinc-500/10 border-zinc-500/20 px-2.5 py-0.5 rounded-lg text-zinc-500 shadow-none shrink-0">
-                            Draft
+                    {badgeLabel === "Pending" && (
+                        <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-900 border-zinc-800 px-2.5 py-0.5 rounded-lg text-zinc-400 whitespace-nowrap">
+                            Pending
                         </Badge>
-                    ) : (
-                        badgeLabel && (
-                            <Badge variant="outline" className="text-[10px] font-bold uppercase tracking-widest bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 px-2.5 py-0.5 rounded-lg text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
-                                {badgeLabel}
-                            </Badge>
-                        )
                     )}
                 </div>
 
@@ -203,6 +197,15 @@ export const ResourceCard = ({
                             <CategoryChip key={category} label={category} />
                         ))}
                     </div>
+                    
+                    {/* Badge Label (Database Name or Draft) - At the bottom */}
+                    {(badgeLabel || isDraft) && (
+                        <div className="mt-2">
+                            <Badge variant="outline" className="text-[12px] font-bold bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 px-2 py-0.5 rounded-md text-zinc-500 dark:text-zinc-500 whitespace-nowrap">
+                                {isDraft ? "Draft" : (badgeLabel?.charAt(0).toUpperCase() + badgeLabel?.slice(1).toLowerCase())}
+                            </Badge>
+                        </div>
+                    )}
                     
                     <div className="mt-auto">
                         {footerContent && (

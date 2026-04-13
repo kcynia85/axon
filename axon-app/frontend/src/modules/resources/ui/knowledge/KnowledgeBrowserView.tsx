@@ -5,6 +5,8 @@ import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { FileText, FileCode, File, LucideIcon } from "lucide-react";
 import { ResourceCard } from "@/shared/ui/complex/ResourceCard";
 import { ResourceList } from "@/shared/ui/complex/ResourceList";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { cn } from "@/shared/lib/utils";
 import { KnowledgeBrowserViewProps, KnowledgeResource } from "./KnowledgeBrowserView.types";
 
 const getResourceIcon = (type: string): LucideIcon => {
@@ -30,13 +32,16 @@ export const KnowledgeBrowserView = ({
     onToggleFilter,
     onRemoveFilter,
     onClearAllFilters,
+    onClearAllFilters: onClearAll,
     onApplyFilters,
     onSelectionChange,
     filteredResources,
     previewCount,
     onDelete,
     onEdit,
-}: KnowledgeBrowserViewProps) => {
+    onResourceClick,
+    isLoading = false,
+}: KnowledgeBrowserViewProps & { onResourceClick: (resource: KnowledgeResource) => void; isLoading?: boolean }) => {
     return (
         <BrowserLayout
             searchQuery={searchQuery}
@@ -70,26 +75,20 @@ export const KnowledgeBrowserView = ({
         >
             <ResourceList
                 items={filteredResources as any}
-                isLoading={false}
+                isLoading={isLoading}
                 viewMode={viewMode}
                 renderItem={(resource: KnowledgeResource) => (
                     <ResourceCard
                         key={resource.id}
                         title={resource.title}
-                        description={null}
+                        description={resource.hubName || "Brak przypisanego huba"}
+                        badgeLabel={resource.status === "Pending" ? "Pending" : resource.vectorDatabaseName}
                         href="#"
+                        status={
+                            resource.status === "Error" ? "error" : "none"
+                        }
                         icon={getResourceIcon(resource.type)}
-                        categories={resource.tags}
-                        onEdit={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onEdit(resource);
-                        }}
-                        onDelete={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onDelete(resource);
-                        }}
+                        onClick={() => onResourceClick(resource)}
                     />
                 )}
             />

@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { EmptyState } from "@/shared/ui/ui/EmptyState";
-import { LucideIcon, SearchX, AlertCircle } from "lucide-react";
+import { LucideIcon, SearchX, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useVirtualizer } from "@tanstack/react-virtual";
 

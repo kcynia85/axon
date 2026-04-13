@@ -2,7 +2,8 @@
 
 import React, { useRef } from "react";
 import { FormProvider } from "react-hook-form";
-import { X, Plus, Wand2, RefreshCw, ChevronDown, Loader2 } from "lucide-react";
+import { X, Plus, Wand2, RefreshCw, ChevronDown, Loader2, Upload } from "lucide-react";
+import { DndContext, closestCenter } from "@dnd-kit/core";
 import { StudioLayout } from "@/modules/studio/ui/layout/StudioLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { Button } from "@/shared/ui/ui/Button";
@@ -17,6 +18,7 @@ import { RagDebugger } from "./RagDebugger";
 import { KnowledgeResourceStatusCard } from "./KnowledgeResourceStatusCard";
 import { FormFileUpload } from "@/shared/ui/form/FormFileUpload";
 import { FormKeyValueTable } from "@/shared/ui/form/FormKeyValueTable";
+import { FormTagInput } from "@/shared/ui/form/FormTagInput";
 import { cn } from "@/shared/lib/utils";
 
 /**
@@ -34,6 +36,7 @@ export const KnowledgeStudioView = ({
 	isLoadingVectorStores,
 	hubs = [],
 	isLoadingHubs,
+	isSimulating,
 	onDataChange,
 	onSave,
 	onCancel,
@@ -44,6 +47,37 @@ export const KnowledgeStudioView = ({
 }: KnowledgeStudioViewProps) => {
 
 	const fileInputReference = useRef<HTMLInputElement>(null);
+    const [isOver, setIsOver] = React.useState(false);
+    const [isGlobalDragging, setIsGlobalDragging] = React.useState(false);
+
+    // Global drag listener
+    React.useEffect(() => {
+        const onDragOver = (e: DragEvent) => {
+            e.preventDefault();
+            setIsGlobalDragging(true);
+        };
+        const onDragLeave = (e: DragEvent) => {
+            e.preventDefault();
+            setIsGlobalDragging(false);
+        };
+        const onDrop = (e: DragEvent) => {
+            e.preventDefault();
+            setIsGlobalDragging(false);
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                onSelectFile(e.dataTransfer.files[0]);
+            }
+        };
+
+        window.addEventListener("dragover", onDragOver);
+        window.addEventListener("dragleave", onDragLeave);
+        window.addEventListener("drop", onDrop);
+
+        return () => {
+            window.removeEventListener("dragover", onDragOver);
+            window.removeEventListener("dragleave", onDragLeave);
+            window.removeEventListener("drop", onDrop);
+        };
+    }, [onSelectFile]);
 
 	const strategyOptions = strategies.map((strategy) => ({
 		id: strategy.id,
@@ -67,6 +101,15 @@ export const KnowledgeStudioView = ({
 	return (
 		<FormProvider {...form}>
 			<div className="h-full w-full outline-none" tabIndex={0}>
+                {isGlobalDragging && (
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm border-2 border-primary animate-in fade-in">
+                        <div className="text-center">
+                            <Upload className="w-16 h-16 text-primary mx-auto mb-4 animate-bounce" />
+                            <h2 className="text-2xl font-bold text-white uppercase tracking-widest font-mono">Upuść plik tutaj</h2>
+                            <p className="text-zinc-400 mt-2">Prześlij zasób do bazy wiedzy</p>
+                        </div>
+                    </div>
+                )}
 				<StudioLayout
 					canvasRef={setCanvasContainerReference}
 					studioLabel="Resource"
@@ -89,12 +132,23 @@ export const KnowledgeStudioView = ({
 					}
 					poster={
 						<div className="space-y-8 w-full">
-							{data.id && <KnowledgeResourceStatusCard chunksCount={4} model={data.vectorStoreId || "Brak bazy wektorowej"} />}
-							<RagDebugger fileName={data.fileName} strategy={data.chunkType} />
+							{data.id && <KnowledgeResourceStatusCard chunksCount={data.simulatedChunks.length} model={data.vectorStoreId || "Brak bazy wektorowej"} />}
+							<RagDebugger 
+								fileName={data.fileName} 
+								strategy={data.chunkType} 
+								chunks={data.simulatedChunks}
+							/>
 						</div>
 					}
 					canvas={
 						<div className="px-16 pb-48 pt-20 w-full">
+                            <DndContext collisionDetection={closestCenter}>
+							{isSimulating && (
+								<div className="fixed top-24 right-24 z-50 bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex items-center gap-3 shadow-2xl animate-in fade-in slide-in-from-top-4">
+									<Loader2 className="w-4 h-4 animate-spin text-primary" />
+									<span className="text-[10px] font-mono uppercase tracking-[0.2em] text-white">Symulacja Chunków...</span>
+								</div>
+							)}
 							<form
 								className="space-y-16 w-full"
 								onSubmit={(event) => event.preventDefault()}
@@ -112,13 +166,29 @@ export const KnowledgeStudioView = ({
 
 										{data.fileName ? (
 											<div className="space-y-6">
-												<FormSelectedFile
-													fileName={data.fileName}
-													fileSize={data.fileSize}
-													onRemove={() =>
-														onDataChange({ fileName: null, fileSize: null })
-													}
-												/>
+                                                <div 
+                                                    className={cn(
+                                                        "transition-all duration-300 rounded-xl border border-transparent",
+                                                        isOver ? "bg-primary/10 border-primary/50 shadow-[0_0_20px_rgba(var(--primary-rgb),0.15)] scale-[1.01]" : ""
+                                                    )}
+                                                    onDragOver={(e) => { e.preventDefault(); setIsOver(true); }}
+                                                    onDragLeave={() => setIsOver(false)}
+                                                    onDrop={(e) => {
+                                                        e.preventDefault();
+                                                        setIsOver(false);
+                                                        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                                                            onSelectFile(e.dataTransfer.files[0]);
+                                                        }
+                                                    }}
+                                                >
+                                                    <FormSelectedFile
+                                                        fileName={data.fileName}
+                                                        fileSize={data.fileSize}
+                                                        onRemove={() =>
+                                                            onDataChange({ fileName: null, fileSize: null })
+                                                        }
+                                                    />
+                                                </div>
 
 												<div className="flex gap-4">
 													<Button
@@ -142,7 +212,10 @@ export const KnowledgeStudioView = ({
 												</div>
 											</div>
 										) : (
-											<FormFileUpload onClick={triggerFileInput} />
+											<FormFileUpload 
+                                                onClick={triggerFileInput} 
+                                                onDrop={(files) => onSelectFile(files[0])}
+                                            />
 										)}
 									</div>
 								</FormSection>
@@ -187,61 +260,85 @@ export const KnowledgeStudioView = ({
 											<FormItemField>
 												<FormSelect
 													options={strategyOptions}
-													value={data.chunkType}
+													value={data.chunkTypeId}
 													onChange={(value) => {
-														const selected = strategyOptions.find(
-															(option) => option.id === value,
-														);
-														const newValue =
-															(selected?.name as string) || (value as string);
-														onDataChange({ chunkType: newValue });
+														const selected = strategyOptions.find(opt => opt.id === value);
+														onDataChange({ 
+															chunkTypeId: value as string,
+															chunkType: selected?.name || "Brak nazwy"
+														});
 													}}
 													placeholder={
 														isLoadingStrategies
 															? "Ładowanie strategii..."
 															: "Wybierz strategię chunkingu..."
 													}
-													renderTrigger={(selected) => (
-														<div className="flex items-center gap-3 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
-															<div className="flex-1 text-left">
-																<div
-																	className={cn(
-																		"text-lg font-mono transition-colors",
-																		selected.length > 0
-																		? "text-white"
-																		: "text-zinc-600 group-hover/trigger:text-zinc-400",
-																	)}
-																>
-																{isLoadingStrategies
-																	? "Ładowanie..."
-																	: selected.length > 0
-																	? selected[0].name
-																	: "Wybierz strategię..."}
+													renderTrigger={(selected) => {
+														const activeStrategy = strategyOptions.find(opt => opt.id === data.chunkTypeId);
+														return (
+															<div className="flex items-center gap-3 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
+																<div className="flex-1 text-left">
+																	<div
+																		className={cn(
+																			"text-lg font-mono transition-colors",
+																			activeStrategy
+																			? "text-white"
+																			: "text-zinc-600 group-hover/trigger:text-zinc-400",
+																		)}
+																	>
+																	{isLoadingStrategies
+																		? "Ładowanie..."
+																		: activeStrategy
+																		? activeStrategy.name
+																		: "Wybierz strategię..."}
+																	</div>
+																	{activeStrategy &&
+																		activeStrategy.subtitle && (
+																			<div className="text-[12px] text-zinc-500 font-mono capitalize mt-0.5">
+																			{activeStrategy.subtitle.toLowerCase()}
+																			</div>
+																		)}
 																</div>
-																{selected.length > 0 &&
-																	selected[0].subtitle && (
-																		<div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mt-0.5">
-																		{selected[0].subtitle}
-																		</div>
-																	)}
+																{isLoadingStrategies ? (
+																	<Loader2 className="w-5 h-5 animate-spin text-zinc-600" />
+																) : (
+																	<ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
+																)}
 															</div>
-															{isLoadingStrategies ? (
-																<Loader2 className="w-5 h-5 animate-spin text-zinc-600" />
-															) : (
-																<ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
-															)}
-														</div>
-													)}
+														);
+													}}
 												/>
 											</FormItemField>
 										</div>
 									</div>
 								</FormSection>
 
-								{/* 4. Baza Wektorowa */}
+								{/* 4. Tagi */}
+								<FormSection 
+									id="METADATA" 
+									number={4} 
+									title="Tagi" 
+									description="Dodaj tagi dla łatwiejszego wyszukiwania."
+									variant="island"
+								>
+									<div className="space-y-6">
+										<FormItemField>
+											<FormTagInput 
+												value={data.tags}
+												onChange={(newTags) => {
+													onDataChange({ tags: newTags });
+													form.setValue("tags", newTags);
+												}}
+												placeholder="Wpisz tag i naciśnij Enter..."
+											/>
+										</FormItemField>
+									</div>
+								</FormSection>
+
+								{/* 5. Baza Wektorowa */}
 								<FormSection
 									id="VECTOR_STORE"
-									number={4}
+									number={5}
 									title="Baza Wektorowa"
 									description="Wybierz bazę wektorową dla zasobu. Baza definiuje model embedujący."
 									variant="island"
@@ -267,10 +364,10 @@ export const KnowledgeStudioView = ({
 									</div>
 								</FormSection>
 
-								{/* 5. Przypisanie do Hubów */}
+								{/* 6. Przypisanie do Hubów */}
 								<FormSection
 									id="HUBS"
-									number={5}
+									number={6}
 									title="Przypisanie do Hubów"
 									description="Przypisz zasób do odpowiednich hubów dla lepszej kategoryzacji."
 									variant="island"
@@ -294,6 +391,7 @@ export const KnowledgeStudioView = ({
 									</div>
 								</FormSection>
 							</form>
+                            </DndContext>
 						</div>
 					}
 

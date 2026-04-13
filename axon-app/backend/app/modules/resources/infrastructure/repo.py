@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional, Dict
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,6 +21,8 @@ from app.modules.agents.infrastructure.tables import (
 )
 from app.shared.utils.time import now_utc
 
+logger = logging.getLogger(__name__)
+
 class ResourcesRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -38,6 +41,7 @@ class ResourcesRepository:
             archetype_knowledge_hubs=archetype.archetype_knowledge_hubs,
             archetype_keywords=archetype.archetype_keywords,
             workspace_domain=archetype.workspace_domain,
+            deleted_at=archetype.deleted_at,
             created_at=archetype.created_at,
             updated_at=archetype.updated_at
         )
@@ -47,23 +51,23 @@ class ResourcesRepository:
         return self._to_domain_archetype(db_obj)
 
     async def list_prompt_archetypes(self) -> List[PromptArchetype]:
-        result = await self.session.execute(select(PromptArchetypeTable))
+        result = await self.session.execute(select(PromptArchetypeTable).where(PromptArchetypeTable.deleted_at.is_(None)))
         return [self._to_domain_archetype(row) for row in result.scalars().all()]
 
     async def get_prompt_archetype(self, id: UUID) -> Optional[PromptArchetype]:
-        result = await self.session.execute(select(PromptArchetypeTable).where(PromptArchetypeTable.id == id))
+        result = await self.session.execute(select(PromptArchetypeTable).where(PromptArchetypeTable.id == id, PromptArchetypeTable.deleted_at.is_(None)))
         row = result.scalar_one_or_none()
         return self._to_domain_archetype(row) if row else None
     
     async def update_prompt_archetype(self, id: UUID, update_data: Dict) -> Optional[PromptArchetype]:
         update_data['updated_at'] = now_utc()
-        stmt = update(PromptArchetypeTable).where(PromptArchetypeTable.id == id).values(**update_data)
+        stmt = update(PromptArchetypeTable).where(PromptArchetypeTable.id == id, PromptArchetypeTable.deleted_at.is_(None)).values(**update_data)
         await self.session.execute(stmt)
         await self.session.commit()
         return await self.get_prompt_archetype(id)
     
     async def delete_prompt_archetype(self, id: UUID) -> bool:
-        stmt = delete(PromptArchetypeTable).where(PromptArchetypeTable.id == id)
+        stmt = update(PromptArchetypeTable).where(PromptArchetypeTable.id == id).values(deleted_at=now_utc(), updated_at=now_utc())
         result = await self.session.execute(stmt)
         await self.session.commit()
         return result.rowcount > 0
@@ -80,6 +84,7 @@ class ResourcesRepository:
             archetype_knowledge_hubs=row.archetype_knowledge_hubs,
             archetype_keywords=row.archetype_keywords,
             workspace_domain=row.workspace_domain,
+            deleted_at=row.deleted_at,
             created_at=row.created_at,
             updated_at=row.updated_at
         )
@@ -93,9 +98,6 @@ class ResourcesRepository:
         return [self._to_domain_tool(row) for row in result.scalars().all()]
     
     async def upsert_internal_tool(self, tool: InternalTool):
-        import logging
-        logger = logging.getLogger(__name__)
-        
         # Check existing
         try:
             existing = await self.session.execute(
@@ -170,14 +172,14 @@ class ResourcesRepository:
 
     # --- External Services ---
     async def list_external_services(self, workspace: Optional[str] = None) -> List[ExternalService]:
-        stmt = select(ExternalServiceTable).options(selectinload(ExternalServiceTable.capabilities))
+        stmt = select(ExternalServiceTable).where(ExternalServiceTable.deleted_at.is_(None)).options(selectinload(ExternalServiceTable.capabilities))
         if workspace:
             stmt = stmt.where(ExternalServiceTable.availability_workspace.contains([workspace]))
         result = await self.session.execute(stmt)
         return [self._service_to_domain(row) for row in result.scalars().all()]
 
     async def get_external_service(self, service_id: UUID) -> Optional[ExternalService]:
-        stmt = select(ExternalServiceTable).where(ExternalServiceTable.id == service_id).options(selectinload(ExternalServiceTable.capabilities))
+        stmt = select(ExternalServiceTable).where(ExternalServiceTable.id == service_id, ExternalServiceTable.deleted_at.is_(None)).options(selectinload(ExternalServiceTable.capabilities))
         result = await self.session.execute(stmt)
         row = result.scalar_one_or_none()
         return self._service_to_domain(row) if row else None
@@ -229,13 +231,13 @@ class ResourcesRepository:
         await self.session.commit()
 
     async def update_external_service(self, service_id: UUID, data: dict) -> Optional[ExternalService]:
-        stmt = update(ExternalServiceTable).where(ExternalServiceTable.id == service_id).values(**data)
+        stmt = update(ExternalServiceTable).where(ExternalServiceTable.id == service_id, ExternalServiceTable.deleted_at.is_(None)).values(**data)
         await self.session.execute(stmt)
         await self.session.commit()
         return await self.get_external_service(service_id)
 
     async def delete_external_service(self, service_id: UUID) -> bool:
-        stmt = delete(ExternalServiceTable).where(ExternalServiceTable.id == service_id)
+        stmt = update(ExternalServiceTable).where(ExternalServiceTable.id == service_id).values(deleted_at=now_utc())
         result = await self.session.execute(stmt)
         await self.session.commit()
         return result.rowcount > 0
@@ -259,37 +261,38 @@ class ResourcesRepository:
             service_category=row.service_category,
             service_url=row.service_url, service_keywords=row.service_keywords or [],
             availability_workspace=row.availability_workspace,
+            deleted_at=row.deleted_at,
             capabilities=[ServiceCapability(id=c.id, capability_name=c.capability_name, capability_description=c.capability_description, external_service_id=c.external_service_id) for c in row.capabilities],
             created_at=row.created_at, updated_at=row.updated_at
         )
 
     # --- Automations ---
     async def list_automations(self, workspace: Optional[str] = None) -> List[Automation]:
-        stmt = select(AutomationTable).options(selectinload(AutomationTable.executions))
+        stmt = select(AutomationTable).where(AutomationTable.deleted_at.is_(None)).options(selectinload(AutomationTable.executions))
         if workspace: stmt = stmt.where(AutomationTable.availability_workspace.contains([workspace]))
         result = await self.session.execute(stmt)
         return [self._automation_to_domain(row) for row in result.scalars().all()]
 
     async def get_automation(self, automation_id: UUID) -> Optional[Automation]:
-        stmt = select(AutomationTable).where(AutomationTable.id == automation_id).options(selectinload(AutomationTable.executions))
+        stmt = select(AutomationTable).where(AutomationTable.id == automation_id, AutomationTable.deleted_at.is_(None)).options(selectinload(AutomationTable.executions))
         result = await self.session.execute(stmt)
         row = result.scalar_one_or_none()
         return self._automation_to_domain(row) if row else None
 
     async def create_automation(self, automation: Automation) -> Automation:
-        new_row = AutomationTable(**automation.model_dump(exclude={"executions"}))
+        new_row = AutomationTable(**automation.model_dump(exclude={"executions", "deleted_at"}))
         self.session.add(new_row)
         await self.session.commit()
         return automation
 
     async def update_automation(self, automation_id: UUID, data: dict) -> Optional[Automation]:
-        stmt = update(AutomationTable).where(AutomationTable.id == automation_id).values(**data)
+        stmt = update(AutomationTable).where(AutomationTable.id == automation_id, AutomationTable.deleted_at.is_(None)).values(**data)
         await self.session.execute(stmt)
         await self.session.commit()
         return await self.get_automation(automation_id)
 
     async def delete_automation(self, automation_id: UUID) -> bool:
-        stmt = delete(AutomationTable).where(AutomationTable.id == automation_id)
+        stmt = update(AutomationTable).where(AutomationTable.id == automation_id).values(deleted_at=now_utc())
         result = await self.session.execute(stmt)
         await self.session.commit()
         return result.rowcount > 0
@@ -301,5 +304,6 @@ class ResourcesRepository:
             automation_http_method=row.automation_http_method, automation_auth_config=row.automation_auth_config,
             automation_input_schema=row.automation_input_schema, automation_output_schema=row.automation_output_schema,
             automation_keywords=row.automation_keywords or [], availability_workspace=row.availability_workspace,
+            deleted_at=row.deleted_at,
             created_at=row.created_at, updated_at=row.updated_at
         )

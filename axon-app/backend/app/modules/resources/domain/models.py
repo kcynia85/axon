@@ -11,6 +11,7 @@ from app.modules.resources.domain.enums import (
 # --- Base ---
 class ResourceBase(BaseModel):
     id: UUID = Field(default_factory=uuid4)
+    deleted_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
 

@@ -37,6 +37,78 @@ class LangChainAdapter(LLMGateway):
                 RuntimeWarning
             )
 
+    def get_chat_model(
+        self, 
+        model_name: str | None = "gpt-4o", 
+        provider_name: str | None = "openai",
+        api_key: str | None = None,
+        streaming: bool = False,
+        temperature: float = 0.7
+    ) -> Any:
+        """
+        Returns a LangChain BaseChatModel instance (ChatOpenAI or ChatGoogleGenerativeAI).
+        """
+        if not self._enabled:
+            raise RuntimeError("LangChainAdapter is not enabled.")
+
+        provider = (provider_name or "openai").lower()
+        if provider == "openai":
+            from langchain_openai import ChatOpenAI
+            return ChatOpenAI(
+                model=model_name or "gpt-4o",
+                api_key=api_key or os.getenv("OPENAI_API_KEY"),
+                temperature=temperature,
+                streaming=streaming
+            )
+        else:
+            # Default to Google
+            from langchain_google_genai import ChatGoogleGenerativeAI
+            return ChatGoogleGenerativeAI(
+                model=model_name or "gemini-2.0-flash",
+                google_api_key=api_key or settings.GOOGLE_API_KEY,
+                temperature=temperature,
+                streaming=streaming
+            )
+
+    def get_embeddings_model(
+        self, 
+        model_name: str | None = "text-embedding-3-small",
+        provider_name: str | None = "openai",
+        dimensions: int | None = None,
+        api_key: str | None = None
+    ) -> Any:
+        """
+        Returns a LangChain Embeddings instance.
+        """
+        if not self._enabled:
+            raise RuntimeError("LangChainAdapter is not enabled.")
+
+        provider = (provider_name or "openai").lower()
+        if provider == "openai":
+            from langchain_openai import OpenAIEmbeddings
+            params = {
+                "model": model_name or "text-embedding-3-small",
+                "api_key": api_key or os.getenv("OPENAI_API_KEY")
+            }
+            if dimensions:
+                params["dimensions"] = dimensions
+            return OpenAIEmbeddings(**params)
+        elif provider in ["ollama", "local"]:
+            from langchain_community.embeddings import OllamaEmbeddings
+            return OllamaEmbeddings(
+                model=model_name or "nomic-embed-text"
+            )
+        else:
+            # Default to Google
+            from langchain_google_genai import GoogleGenerativeAIEmbeddings
+            params = {
+                "model": model_name or "models/text-embedding-004",
+                "google_api_key": api_key or settings.GOOGLE_API_KEY
+            }
+            if dimensions:
+                params["output_dimensionality"] = dimensions
+            return GoogleGenerativeAIEmbeddings(**params)
+
     async def generate_content(
         self, 
         prompt: str, 
@@ -49,22 +121,9 @@ class LangChainAdapter(LLMGateway):
         if not self._enabled:
             return await self._fallback.generate_content(prompt, model_name, tools, use_cache, provider_name, api_key)
 
-        provider = (provider_name or "google").lower()
-        if provider == "openai":
-            from langchain_openai import ChatOpenAI
-            llm = ChatOpenAI(
-                model=model_name or "gpt-4o",
-                api_key=api_key or os.getenv("OPENAI_API_KEY"),
-                temperature=0.7
-            )
-        else:
-            # Default to Google
-            llm = ChatGoogleGenerativeAI(
-                model=model_name or "gemini-2.0-flash",
-                google_api_key=api_key or settings.GOOGLE_API_KEY,
-                temperature=0.7,
-            )
+        llm = self.get_chat_model(model_name, provider_name, api_key)
         
+        from langchain_core.messages import HumanMessage
         messages = [HumanMessage(content=prompt)]
         response = await llm.ainvoke(messages)
         return str(response.content)
@@ -82,24 +141,9 @@ class LangChainAdapter(LLMGateway):
                 yield chunk
             return
 
-        provider = (provider_name or "google").lower()
-        if provider == "openai":
-            from langchain_openai import ChatOpenAI
-            llm = ChatOpenAI(
-                model=model_name or "gpt-4o",
-                api_key=api_key or os.getenv("OPENAI_API_KEY"),
-                temperature=0.7,
-                streaming=True
-            )
-        else:
-            # Default to Google
-            llm = ChatGoogleGenerativeAI(
-                model=model_name or "gemini-2.0-flash",
-                google_api_key=api_key or settings.GOOGLE_API_KEY,
-                temperature=0.7,
-                streaming=True
-            )
+        llm = self.get_chat_model(model_name, provider_name, api_key, streaming=True)
         
+        from langchain_core.messages import HumanMessage
         messages = [HumanMessage(content=prompt)]
         async for chunk in llm.astream(messages):
             if chunk.content:
@@ -116,32 +160,7 @@ class LangChainAdapter(LLMGateway):
         if not self._enabled:
             return await self._fallback.get_embeddings(text, model_name, provider_name, dimensions, api_key)
 
-        provider = (provider_name or "google").lower()
-        if provider == "openai":
-            from langchain_openai import OpenAIEmbeddings
-            params = {
-                "model": model_name or "text-embedding-3-small",
-                "api_key": api_key or os.getenv("OPENAI_API_KEY")
-            }
-            if dimensions:
-                params["dimensions"] = dimensions
-            embeddings = OpenAIEmbeddings(**params)
-        elif provider in ["ollama", "local"]:
-            from langchain_community.embeddings import OllamaEmbeddings
-            embeddings = OllamaEmbeddings(
-                model=model_name or "nomic-embed-text"
-            )
-        else:
-            # Default to Google
-            from langchain_google_genai import GoogleGenerativeAIEmbeddings
-            params = {
-                "model": model_name or "models/text-embedding-004",
-                "google_api_key": api_key or settings.GOOGLE_API_KEY
-            }
-            if dimensions:
-                params["output_dimensionality"] = dimensions
-            embeddings = GoogleGenerativeAIEmbeddings(**params)
-        
+        embeddings = self.get_embeddings_model(model_name, provider_name, dimensions, api_key)
         return await embeddings.aembed_query(text)
 
 

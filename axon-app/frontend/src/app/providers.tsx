@@ -6,9 +6,12 @@ import { HeroUIProvider } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { TooltipProvider } from "@/shared/ui/ui/Tooltip";
 import { ThemeProvider } from "@/shared/infrastructure/ThemeProvider";
+import { useGlobalNotifications } from "@/shared/lib/hooks/useGlobalNotifications";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
+    useGlobalNotifications();
+    
     const [queryClient] = useState(() => new QueryClient({
         defaultOptions: {
             queries: {

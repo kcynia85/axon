@@ -21,6 +21,7 @@ class PromptArchetypeTable(Base):
     archetype_knowledge_hubs = Column(JSONB, nullable=True) # List of hub IDs? Or just names?
     archetype_keywords = Column(ARRAY(String), nullable=True)
     workspace_domain = Column(String, nullable=False) # Using String for now to avoid enum conflicts
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 

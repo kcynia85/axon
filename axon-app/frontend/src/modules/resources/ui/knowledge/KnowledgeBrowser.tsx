@@ -3,18 +3,15 @@
 import React, { useState } from "react";
 import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
 import { QuickFilter } from "@/shared/ui/complex/ActionBar";
-import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
-import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
 import { KnowledgeBrowserView } from "./KnowledgeBrowserView";
 import { KnowledgeResource } from "./KnowledgeBrowserView.types";
-
-// Mock Data
-const MOCK_RESOURCES: KnowledgeResource[] = [
-  { id: "1", title: "Roadmap_2025.md", tags: ["Discovery", "Design"], type: "markdown" },
-  { id: "2", title: "Competitor Analysis", tags: ["Growth & Market"], type: "document" },
-  { id: "3", title: "backend_api.py", tags: ["Delivery"], type: "code" },
-  { id: "4", title: "Legacy_Specs.pdf", tags: ["Delivery", "#general"], type: "pdf" },
-];
+import { KnowledgeResourceSidePeek } from "./KnowledgeResourceSidePeek";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { resourcesApi } from "@/modules/resources/infrastructure/api";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/shared/ui/ui/Dialog";
+import { Button } from "@/shared/ui/ui/Button";
+import { AlertTriangle } from "lucide-react";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -25,65 +22,151 @@ const SORT_OPTIONS: readonly SortOption[] = [
 
 const QUICK_FILTERS: readonly QuickFilter[] = [
   { label: "By Type", groupId: "type" },
-  { label: "By Tag", groupId: "tag" },
+  { label: "By Hub", groupId: "hub" },
 ];
 
-const FILTER_GROUPS: readonly FilterGroup[] = [
+export const KnowledgeBrowser = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState("date-desc");
+  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
+  const [pendingFilterIds, setPendingFilterIds] = useState<string[] | null>(null);
+
+  // SidePeek State
+  const [selectedResourceId, setSelectedResourceId] = useState<string | null>(null);
+  const [isSidePeekOpen, setIsSidePeekOpen] = useState(false);
+
+  // Delete Modal State
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [resourceToDeleteId, setResourceToDeleteId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  // Fetch Hubs for filtering
+  const { data: hubs = [] } = useQuery({
+    queryKey: ["knowledge-hubs"],
+    queryFn: () => resourcesApi.getKnowledgeHubs()
+  });
+
+  // Fetch real data from API with polling for indexing status
+  const { data: sourceData = [], isLoading } = useQuery({
+    queryKey: ["knowledge-resources"],
+    queryFn: () => resourcesApi.getKnowledgeResources(),
+    refetchInterval: (query) => {
+        const data = query.state.data as any[];
+        const hasIndexing = data?.some(resource => resource.resource_rag_indexing_status === "Indexing" || resource.resource_rag_indexing_status === "Pending");
+        return hasIndexing ? 5000 : false;
+    }
+  });
+
+  // Map API data to view model
+  const seenIds = new Set();
+  const uniqueSources = sourceData.filter(source => {
+      if (seenIds.has(source.id)) return false;
+      seenIds.add(source.id);
+      return true;
+  });
+
+  const resources = uniqueSources.map((source: any): KnowledgeResource => ({
+    id: source.id,
+    title: source.resource_file_name || "Unnamed Resource",
+    type: source.resource_file_format || "document",
+    tags: source.resource_metadata?.auto_tags || source.resource_metadata?.tags || [],
+    status: source.resource_rag_indexing_status || "Ready",
+    vectorDatabaseName: source.vector_database_name,
+    hubName: source.knowledge_hub_name,
+    hubId: source.knowledge_hub_id,
+    chunkCount: source.resource_chunk_count
+  }));
+
+  const currentPendingIds = pendingFilterIds ?? activeFilters.map(filter => filter.id);
+
+  const filterGroups: FilterGroup[] = [
     {
         id: "type",
         title: "Type",
         type: "checkbox",
-        options: [
-            { id: "markdown", label: "Markdown", isChecked: false },
-            { id: "document", label: "Document", isChecked: false },
-            { id: "code", label: "Code", isChecked: false },
-            { id: "pdf", label: "PDF", isChecked: false },
-        ]
+        options: Array.from(new Set(resources.map(resource => resource.type))).map(type => ({
+            id: type,
+            label: type.toUpperCase(),
+            isChecked: currentPendingIds.includes(type)
+        }))
+    },
+    {
+        id: "hub",
+        title: "Hub",
+        type: "checkbox",
+        options: hubs.map((hub: any) => ({
+            id: hub.id,
+            label: hub.hub_name,
+            isChecked: currentPendingIds.includes(hub.id)
+        }))
     },
     {
         id: "tag",
         title: "Tag",
         type: "checkbox",
-        options: [
-            { id: "discovery", label: "Discovery", isChecked: false },
-            { id: "design", label: "Design", isChecked: false },
-            { id: "growth", label: "Growth & Market", isChecked: false },
-            { id: "delivery", label: "Delivery", isChecked: false },
-            { id: "general", label: "#general", isChecked: false },
-        ]
+        options: Array.from(new Set(resources.flatMap(resource => resource.tags))).slice(0, 15).map(tag => ({
+            id: tag.toLowerCase(),
+            label: `#${tag.toLowerCase()}`,
+            isChecked: currentPendingIds.includes(tag.toLowerCase())
+        }))
     }
-];
+  ];
 
-export const KnowledgeBrowser = () => {
-  const { deleteWithUndo } = useDeleteWithUndo();
-  const { pendingIds } = usePendingDeletionsStore();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
-  const [sortBy, setSortBy] = useState("date-desc");
-  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
-  const [pendingFilterIds, setPendingFilterIds] = useState<string[]>([]);
+  const getFilteredResults = (filterIds: string[]) => {
+      const filtersByCategory: Record<string, string[]> = {};
+      filterIds.forEach(id => {
+          const group = filterGroups.find(group => group.options.some(option => option.id === id));
+          if (group) {
+              if (!filtersByCategory[group.id]) filtersByCategory[group.id] = [];
+              filtersByCategory[group.id].push(id);
+          }
+      });
+      
+      let results = [...resources];
+      if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          results = results.filter(resource => resource.title.toLowerCase().includes(query));
+      }
+      
+      if (filterIds.length === 0) return results;
+
+      return results.filter(resource => {
+          return Object.entries(filtersByCategory).every(([category, selectedIds]) => {
+              if (category === 'type') return selectedIds.includes(resource.type);
+              if (category === 'hub') return resource.hubId && selectedIds.includes(resource.hubId);
+              if (category === 'tag') return resource.tags.some(tag => selectedIds.includes(tag.toLowerCase()));
+              return true;
+          });
+      });
+  };
+
+  const filteredResources = getFilteredResults(activeFilters.map(filter => filter.id));
+  const pendingResources = getFilteredResults(currentPendingIds);
+  const previewCount = pendingResources.length;
 
   const handleRemoveFilter = (id: string) => {
-    setActiveFilters(prev => prev.filter(f => f.id !== id));
-    setPendingFilterIds(prev => prev.filter(pId => pId !== id));
+    const nextFilters = activeFilters.filter(activeFilter => activeFilter.id !== id);
+    setActiveFilters(nextFilters);
+    setPendingFilterIds(null);
   };
 
   const handleClearAll = () => {
     setActiveFilters([]);
-    setPendingFilterIds([]);
+    setPendingFilterIds(null);
   };
 
   const handleApplyFilters = (selectedIds: string[]) => {
       const nextFilters: ActiveFilter[] = [];
-      FILTER_GROUPS.forEach(group => {
-          group.options.forEach(opt => {
-              if (selectedIds.includes(opt.id)) {
-                  nextFilters.push({ id: opt.id, label: opt.label, category: group.id });
+      filterGroups.forEach(group => {
+          group.options.forEach(option => {
+              if (selectedIds.includes(option.id)) {
+                  nextFilters.push({ id: option.id, label: option.label, category: group.id });
               }
           });
       });
       setActiveFilters(nextFilters);
-      setPendingFilterIds(selectedIds);
+      setPendingFilterIds(null);
   };
 
   const handleSelectionChange = (selectedIds: string[]) => {
@@ -91,71 +174,107 @@ export const KnowledgeBrowser = () => {
   };
 
   const handleToggleFilter = (id: string) => {
-      const option = FILTER_GROUPS.flatMap(g => g.options.map(o => ({...o, groupId: g.id}))).find(o => o.id === id);
+      const option = filterGroups.flatMap(group => group.options.map(opt => ({...opt, groupId: group.id}))).find(opt => opt.id === id);
       if (option) {
-          if (activeFilters.some(f => f.id === id)) {
+          if (activeFilters.some(activeFilter => activeFilter.id === id)) {
               handleRemoveFilter(id);
           } else {
-              setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
-              setPendingFilterIds([...pendingFilterIds, id]);
+              const nextFilters = [...activeFilters, { id: option.id, label: option.label, category: option.groupId }];
+              setActiveFilters(nextFilters);
+              setPendingFilterIds(null);
           }
       }
   };
 
-  const handleDelete = (resource: KnowledgeResource) => {
-    deleteWithUndo(resource.id, resource.title, () => {
-        console.log("Permanently delete resource", resource.id);
-    });
+  const handleResourceClick = (resource: KnowledgeResource) => {
+    setSelectedResourceId(resource.id);
+    setIsSidePeekOpen(true);
   };
 
-  const handleEdit = (resource: KnowledgeResource) => {
-    console.log("Edit resource", resource.id);
+  const handleDelete = (id: string) => {
+    setResourceToDeleteId(id);
+    setIsDeleteDialogOpen(true);
   };
 
-  // Logic previously in useMemo, now handled directly (React Compiler will optimize)
-  const getFilteredResources = () => {
-    let result = MOCK_RESOURCES.filter(r => !pendingIds.has(r.id));
-
-    if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        result = result.filter(r => r.title.toLowerCase().includes(query));
+  const confirmDelete = async () => {
+    if (!resourceToDeleteId) return;
+    
+    try {
+        await resourcesApi.deleteKnowledgeResource(resourceToDeleteId);
+        queryClient.invalidateQueries({ queryKey: ["knowledge-resources"] });
+        toast.success(`Zasób został usunięty.`);
+        setIsSidePeekOpen(false);
+    } catch (error) {
+        console.error("Failed to delete resource", error);
+        toast.error("Wystąpił błąd podczas usuwania zasobu.");
+    } finally {
+        setIsDeleteDialogOpen(false);
+        setResourceToDeleteId(null);
     }
-
-    if (activeFilters.length > 0) {
-        result = result.filter(r => {
-            const matchesType = activeFilters.some(f => f.id === r.type);
-            const matchesTag = r.tags.some(t => activeFilters.some(f => f.id === t.toLowerCase()));
-            return matchesType || matchesTag;
-        });
-    }
-
-    return result;
   };
 
-  const filteredResources = getFilteredResources();
-  const previewCount = filteredResources.length;
+  // Basic sorting
+  if (sortBy === "name-asc") filteredResources.sort((a, b) => a.title.localeCompare(b.title));
+  if (sortBy === "name-desc") filteredResources.sort((a, b) => b.title.localeCompare(a.title));
 
   return (
-    <KnowledgeBrowserView
-      searchQuery={searchQuery}
-      onSearchChange={setSearchQuery}
-      viewMode={viewMode}
-      setViewMode={setViewMode}
-      sortBy={sortBy}
-      onSortChange={setSortBy}
-      activeFilters={activeFilters}
-      filterGroups={FILTER_GROUPS}
-      quickFilters={QUICK_FILTERS}
-      sortOptions={SORT_OPTIONS}
-      onToggleFilter={handleToggleFilter}
-      onRemoveFilter={handleRemoveFilter}
-      onClearAllFilters={handleClearAll}
-      onApplyFilters={handleApplyFilters}
-      onSelectionChange={handleSelectionChange}
-      filteredResources={filteredResources}
-      previewCount={previewCount}
-      onDelete={handleDelete}
-      onEdit={handleEdit}
-    />
+    <>
+        <KnowledgeBrowserView
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            activeFilters={activeFilters}
+            filterGroups={filterGroups}
+            quickFilters={QUICK_FILTERS}
+            sortOptions={SORT_OPTIONS}
+            onToggleFilter={handleToggleFilter}
+            onRemoveFilter={handleRemoveFilter}
+            onClearAllFilters={handleClearAll}
+            onApplyFilters={handleApplyFilters}
+            onSelectionChange={handleSelectionChange}
+            filteredResources={filteredResources}
+            previewCount={previewCount}
+            onDelete={() => {}}
+            onEdit={() => {}}
+            onResourceClick={handleResourceClick}
+            isLoading={isLoading}
+        />
+        <KnowledgeResourceSidePeek 
+            resourceId={selectedResourceId}
+            isOpen={isSidePeekOpen}
+            onClose={() => setIsSidePeekOpen(false)}
+            onDelete={handleDelete}
+        />
+
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <DialogContent className="max-w-md border-zinc-800 bg-zinc-950">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-red-500 font-mono uppercase tracking-widest text-base">
+                        <AlertTriangle className="w-5 h-5" />
+                        Usuwanie Zasobu
+                    </DialogTitle>
+                    <DialogDescription className="py-4 text-zinc-400">
+                        Czy na pewno chcesz trwale usunąć ten zasób z bazy wiedzy? Tej operacji nie można cofnąć.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <DialogFooter className="gap-2 border-t border-zinc-900 pt-4">
+                    <Button variant="ghost" onClick={() => setIsDeleteDialogOpen(false)} className="text-zinc-500 hover:text-white">
+                        Anuluj
+                    </Button>
+                    <Button 
+                        variant="destructive" 
+                        onClick={confirmDelete}
+                        className="bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all font-bold"
+                    >
+                        Tak, usuń
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    </>
   );
 };

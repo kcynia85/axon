@@ -309,6 +309,9 @@ class WorkspaceRepository:
 
     async def get_trash(self) -> List[TrashItem]:
         from app.modules.agents.infrastructure.tables import AgentConfigTable
+        from app.modules.knowledge.infrastructure.tables import AssetTable, KnowledgeResourceTable
+
+        from app.modules.resources.infrastructure.tables import PromptArchetypeTable
         from app.modules.settings.infrastructure.tables import (
             LLMProviderTable, LLMModelTable, LLMRouterTable, 
             EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable
@@ -324,6 +327,11 @@ class WorkspaceRepository:
             select(CrewTable.id, CrewTable.crew_name.label("name"), func.cast("crew", String).label("type"), CrewTable.deleted_at).where(CrewTable.deleted_at != None),
             select(ExternalServiceTable.id, ExternalServiceTable.service_name.label("name"), func.cast("service", String).label("type"), ExternalServiceTable.deleted_at).where(ExternalServiceTable.deleted_at != None),
             select(AutomationTable.id, AutomationTable.automation_name.label("name"), func.cast("automation", String).label("type"), AutomationTable.deleted_at).where(AutomationTable.deleted_at != None),
+            # Knowledge module
+            select(AssetTable.id, AssetTable.title.label("name"), func.cast("asset", String).label("type"), AssetTable.deleted_at).where(AssetTable.deleted_at != None),
+            select(KnowledgeResourceTable.id, KnowledgeResourceTable.resource_file_name.label("name"), func.cast("knowledge_resource", String).label("type"), KnowledgeResourceTable.deleted_at).where(KnowledgeResourceTable.deleted_at != None),
+            # Resources module
+            select(PromptArchetypeTable.id, PromptArchetypeTable.archetype_name.label("name"), func.cast("prompt_archetype", String).label("type"), PromptArchetypeTable.deleted_at).where(PromptArchetypeTable.deleted_at != None),
             # Agents module
             select(AgentConfigTable.id, func.coalesce(AgentConfigTable.agent_name, AgentConfigTable.agent_role_text).label("name"), func.cast("agent", String).label("type"), AgentConfigTable.deleted_at).where(AgentConfigTable.deleted_at != None),
             # Settings module
@@ -352,6 +360,9 @@ class WorkspaceRepository:
 
     async def restore_item(self, item_id: UUID, item_type: str) -> bool:
         from app.modules.agents.infrastructure.tables import AgentConfigTable
+        from app.modules.knowledge.infrastructure.tables import AssetTable, KnowledgeResourceTable
+
+        from app.modules.resources.infrastructure.tables import PromptArchetypeTable
         from app.modules.settings.infrastructure.tables import (
             LLMProviderTable, LLMModelTable, LLMRouterTable, 
             EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable
@@ -363,6 +374,9 @@ class WorkspaceRepository:
             "crew": CrewTable,
             "service": ExternalServiceTable,
             "automation": AutomationTable,
+            "asset": AssetTable,
+            "knowledge_resource": KnowledgeResourceTable,
+            "prompt_archetype": PromptArchetypeTable,
             "agent": AgentConfigTable,
             "llm_provider": LLMProviderTable,
             "llm_model": LLMModelTable,
@@ -383,6 +397,9 @@ class WorkspaceRepository:
 
     async def purge_item(self, item_id: UUID, item_type: str) -> bool:
         from app.modules.agents.infrastructure.tables import AgentConfigTable
+        from app.modules.knowledge.infrastructure.tables import AssetTable, KnowledgeResourceTable
+
+        from app.modules.resources.infrastructure.tables import PromptArchetypeTable
         from app.modules.settings.infrastructure.tables import (
             LLMProviderTable, LLMModelTable, LLMRouterTable, 
             EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable
@@ -394,6 +411,9 @@ class WorkspaceRepository:
             "crew": CrewTable,
             "service": ExternalServiceTable,
             "automation": AutomationTable,
+            "asset": AssetTable,
+            "knowledge_resource": KnowledgeResourceTable,
+            "prompt_archetype": PromptArchetypeTable,
             "agent": AgentConfigTable,
             "llm_provider": LLMProviderTable,
             "llm_model": LLMModelTable,

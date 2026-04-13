@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID, uuid4
 from typing import List, Optional, Dict, Any
 from app.modules.resources.infrastructure.repo import ResourcesRepository
@@ -12,6 +13,8 @@ from app.modules.resources.application.schemas import (
 from app.modules.resources.application.tools_scanner import ToolsScannerService
 from app.modules.resources.domain.enums import ValidationStatus, ToolCategory
 from app.shared.utils.time import now_utc
+
+logger = logging.getLogger(__name__)
 
 class ResourcesService:
     def __init__(self, repo: ResourcesRepository):
