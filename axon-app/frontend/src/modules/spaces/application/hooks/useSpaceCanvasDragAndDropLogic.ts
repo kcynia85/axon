@@ -3,7 +3,13 @@
 import type { Node } from '@xyflow/react';
 import { useReactFlow } from '@xyflow/react';
 import { toast } from "sonner";
-import { mapTemplateWorkspaceConfigToNodeData } from '../../domain/defaults';
+import { 
+  mapTemplateWorkspaceConfigToNodeData,
+  mapAgentWorkspaceConfigToNodeData,
+  mapCrewWorkspaceConfigToNodeData,
+  mapServiceWorkspaceConfigToNodeData,
+  mapAutomationWorkspaceConfigToNodeData
+} from '../../domain/defaults';
 
 export const useSpaceCanvasDragAndDropLogic = (
   updateCanvasNodes: React.Dispatch<React.SetStateAction<Node[]>>
@@ -67,8 +73,22 @@ export const useSpaceCanvasDragAndDropLogic = (
 
     if (assignedZoneColor && !parentZone) return;
 
-    const isTemplate = nodeTypeForNewNode === 'template';
-    const templateCanvasData = isTemplate ? mapTemplateWorkspaceConfigToNodeData(deserializedTransferData) : {};
+    let entityCanvasData = {};
+    if (nodeTypeForNewNode === 'template') {
+        entityCanvasData = {
+            ...mapTemplateWorkspaceConfigToNodeData(deserializedTransferData),
+            actions: [],
+            status: 'working'
+        };
+    } else if (nodeTypeForNewNode === 'agent') {
+        entityCanvasData = mapAgentWorkspaceConfigToNodeData(deserializedTransferData);
+    } else if (nodeTypeForNewNode === 'crew') {
+        entityCanvasData = mapCrewWorkspaceConfigToNodeData(deserializedTransferData);
+    } else if (nodeTypeForNewNode === 'service') {
+        entityCanvasData = mapServiceWorkspaceConfigToNodeData(deserializedTransferData);
+    } else if (nodeTypeForNewNode === 'automation') {
+        entityCanvasData = mapAutomationWorkspaceConfigToNodeData(deserializedTransferData);
+    }
 
     let finalPosition = flowPos;
     if (parentZone && nodeTypeForNewNode !== 'zone') {
@@ -94,8 +114,7 @@ export const useSpaceCanvasDragAndDropLogic = (
       extent: (parentZone && nodeTypeForNewNode !== 'zone') ? 'parent' : undefined,
       data: {
         ...deserializedTransferData,
-        ...templateCanvasData,
-        ...(isTemplate && { actions: [], status: 'working' }),
+        ...entityCanvasData,
         state: 'missing_context',
         zoneColor: assignedZoneColor || (parentZone ? (parentZone.data.color || parentZone.data.zoneColor) : 'purple'),
       },
