@@ -7,6 +7,9 @@ export interface KnowledgeResourceData {
     id?: string;
     fileName: string | null;
     fileSize: string | null;
+    fileType?: string;
+    tokenCount?: number;
+    estimatedCost?: number;
     metadata: FormKeyValueItem[];
     chunkTypeId: string;
     chunkType: string; // The display name

@@ -14,6 +14,14 @@ import {
     VectorDatabaseSchema
 } from "@/shared/domain/settings";
 
+export type AvailableModelResponse = {
+    id: string;
+    name: string;
+    context_window: number;
+    pricing_input: number;
+    pricing_output: number;
+};
+
 export const settingsApi = {
     // --- LLM Providers ---
     getLLMProviders: async (): Promise<LLMProvider[]> => {
@@ -44,18 +52,18 @@ export const settingsApi = {
         await apiClient.delete(`/settings/llm-providers/${id}`);
     },
 
-    testLLMProvider: async (id: string): Promise<any> => {
+    testLLMProvider: async (id: string): Promise<{ success: boolean; message: string; latency_ms?: number }> => {
         const res = await apiClient.post(`/settings/llm-providers/${id}/test`, {});
-        return await res.json();
+        return await res.json() as { success: boolean; message: string; latency_ms?: number };
     },
 
     syncLLMProviderPricing: async (id: string): Promise<void> => {
         await apiClient.post(`/settings/llm-providers/${id}/sync-pricing`, {});
     },
 
-    getAvailableModels: async (provider_id: string): Promise<any[]> => {
+    getAvailableModels: async (provider_id: string): Promise<AvailableModelResponse[]> => {
         const res = await apiClient.get(`/settings/llm-providers/${provider_id}/available-models`);
-        return await res.json() as any[];
+        return await res.json() as AvailableModelResponse[];
     },
 
     // --- LLM Models ---
@@ -87,9 +95,9 @@ export const settingsApi = {
         await apiClient.delete(`/settings/llm-models/${id}`);
     },
 
-    getLLMModelUsage: async (id: string): Promise<{ is_used: bool, used_by: string[] }> => {
+    getLLMModelUsage: async (id: string): Promise<{ is_used: boolean, used_by: string[] }> => {
         const res = await apiClient.get(`/settings/llm-models/${id}/usage`);
-        return await res.json();
+        return await res.json() as { is_used: boolean, used_by: string[] };
     },
 
     testLLMModel: async (id: string, prompt: string): Promise<unknown> => {
@@ -146,13 +154,13 @@ export const settingsApi = {
 
     createEmbeddingModel: async (data: Omit<EmbeddingModel, "id" | "created_at" | "updated_at">): Promise<EmbeddingModel> => {
         const res = await apiClient.post("/settings/embedding-models", data);
-        const raw = await res.json();
+        const raw = await res.json() as unknown;
         return EmbeddingModelSchema.parse(raw);
     },
 
     updateEmbeddingModel: async (id: string, data: Partial<EmbeddingModel>): Promise<EmbeddingModel> => {
         const res = await apiClient.patch(`/settings/embedding-models/${id}`, data);
-        const raw = await res.json();
+        const raw = await res.json() as unknown;
         return EmbeddingModelSchema.parse(raw);
     },
 
@@ -175,13 +183,13 @@ export const settingsApi = {
 
     createChunkingStrategy: async (data: Omit<ChunkingStrategy, "id" | "created_at" | "updated_at">): Promise<ChunkingStrategy> => {
         const res = await apiClient.post("/settings/chunking-strategies", data);
-        const raw = await res.json();
+        const raw = await res.json() as unknown;
         return ChunkingStrategySchema.parse(raw);
     },
 
     updateChunkingStrategy: async (id: string, data: Partial<ChunkingStrategy>): Promise<ChunkingStrategy> => {
         const res = await apiClient.patch(`/settings/chunking-strategies/${id}`, data);
-        const raw = await res.json();
+        const raw = await res.json() as unknown;
         return ChunkingStrategySchema.parse(raw);
     },
 
@@ -209,13 +217,13 @@ export const settingsApi = {
 
     createVectorDatabase: async (data: Omit<VectorDatabase, "id" | "created_at" | "updated_at">): Promise<VectorDatabase> => {
         const res = await apiClient.post("/settings/vector-databases", data);
-        const raw = await res.json();
+        const raw = await res.json() as unknown;
         return VectorDatabaseSchema.parse(raw);
     },
 
     updateVectorDatabase: async (id: string, data: Partial<VectorDatabase>): Promise<VectorDatabase> => {
         const res = await apiClient.patch(`/settings/vector-databases/${id}`, data);
-        const raw = await res.json();
+        const raw = await res.json() as unknown;
         return VectorDatabaseSchema.parse(raw);
     },
 
@@ -223,13 +231,13 @@ export const settingsApi = {
         await apiClient.delete(`/settings/vector-databases/${id}`);
     },
 
-    testVectorDB: async (id: string): Promise<unknown> => {
+    testVectorDB: async (id: string): Promise<{ success: boolean; message: string; latency_ms?: number }> => {
         const res = await apiClient.post(`/settings/vector-databases/${id}/test`, {});
-        return await res.json() as unknown;
+        return await res.json() as { success: boolean; message: string; latency_ms?: number };
     },
 
-    getSettingsEnums: async (): Promise<any> => {
+    getSettingsEnums: async (): Promise<Record<string, string[]>> => {
         const res = await apiClient.get("/settings/metadata/enums");
-        return await res.json();
+        return await res.json() as Record<string, string[]>;
     }
 };

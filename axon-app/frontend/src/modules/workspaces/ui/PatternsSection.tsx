@@ -6,7 +6,7 @@ import { usePatterns, useDeletePattern } from "../application/usePatterns";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
-import { PatternProfilePeek } from "./PatternProfilePeek";
+import { PatternProfilePeek } from "./PatternSidePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { Button } from "@/shared/ui/ui/Button";

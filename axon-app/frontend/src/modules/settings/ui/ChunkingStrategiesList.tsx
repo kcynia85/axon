@@ -12,8 +12,8 @@ import { useRouter } from "next/navigation";
 import { ChunkingStrategiesListView } from "./ChunkingStrategiesListView";
 import { QuickFilter } from "@/shared/ui/complex/ActionBar";
 
-const formatMethodName = (method: string) => {
-    return method?.replace(/_/g, " ") || "Unknown";
+const formatMethodName = (methodName: string) => {
+    return methodName?.replace(/_/g, " ") || "Unknown";
 };
 
 const SORT_OPTIONS: readonly SortOption[] = [
@@ -27,16 +27,20 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
     { label: "Methods", groupId: "methods" },
 ];
 
+/**
+ * ChunkingStrategiesList: Main container for managing chunking strategies.
+ * Standard: Container pattern, Readable naming, No abbreviations.
+ */
 export const ChunkingStrategiesList = () => {
-    const { data: strategies, isLoading } = useChunkingStrategies();
-    const { mutateAsync: deleteStrategy } = useDeleteChunkingStrategy();
+    const { data: chunkingStrategies, isLoading } = useChunkingStrategies();
+    const { mutateAsync: deleteChunkingStrategy } = useDeleteChunkingStrategy();
     const { deleteWithUndo } = useDeleteWithUndo();
     const { pendingIds } = usePendingDeletionsStore();
     const router = useRouter();
 
     const { draft: newDraft, clearDraft: clearNewDraft } = useChunkingStrategyDraft("new");
 
-    const [search, setSearch] = React.useState("");
+    const [searchQuery, setSearchQuery] = React.useState("");
     const [sortBy, setSortBy] = React.useState("name_asc");
     const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
     const [selectedStrategy, setSelectedStrategy] = React.useState<ChunkingStrategy | null>(null);
@@ -46,12 +50,29 @@ export const ChunkingStrategiesList = () => {
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
     const [strategyToDelete, setStrategyToDelete] = React.useState<{ id: string; name: string } | null>(null);
 
+    const getFilterGroups = (): FilterGroup[] => {
+        if (!chunkingStrategies) return [];
+        const uniqueMethods = Array.from(new Set(chunkingStrategies.map(strategy => strategy.strategy_chunking_method))).sort();
+        return [
+            {
+                id: "methods",
+                title: "Methods",
+                type: "checkbox",
+                options: uniqueMethods.map(methodName => ({
+                    id: methodName,
+                    label: formatMethodName(methodName),
+                    isChecked: pendingFilterIds.includes(methodName)
+                }))
+            }
+        ];
+    };
+
     const handleApplyFilters = (selectedIds: string[]) => {
         const nextFilters: ActiveFilter[] = [];
         getFilterGroups().forEach(group => {
-            group.options.forEach(opt => {
-                if (selectedIds.includes(opt.id)) {
-                    nextFilters.push({ id: opt.id, label: opt.label, category: group.id });
+            group.options.forEach(option => {
+                if (selectedIds.includes(option.id)) {
+                    nextFilters.push({ id: option.id, label: option.label, category: group.id });
                 }
             });
         });
@@ -59,15 +80,18 @@ export const ChunkingStrategiesList = () => {
         setPendingFilterIds(selectedIds);
     };
 
-    const handleToggleFilter = (id: string) => {
-        const option = getFilterGroups().flatMap(g => g.options.map(o => ({...o, groupId: g.id}))).find(o => o.id === id);
-        if (option) {
-            if (activeFilters.some(f => f.id === id)) {
-                setActiveFilters(prev => prev.filter(f => f.id !== id));
-                setPendingFilterIds(prev => prev.filter(pId => pId !== id));
+    const handleToggleFilter = (filterId: string) => {
+        const selectedOption = getFilterGroups()
+            .flatMap(group => group.options.map(option => ({...option, groupId: group.id})))
+            .find(option => option.id === filterId);
+
+        if (selectedOption) {
+            if (activeFilters.some(filter => filter.id === filterId)) {
+                setActiveFilters(previousFilters => previousFilters.filter(filter => filter.id !== filterId));
+                setPendingFilterIds(previousPendingIds => previousPendingIds.filter(pendingId => pendingId !== filterId));
             } else {
-                setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
-                setPendingFilterIds([...pendingFilterIds, id]);
+                setActiveFilters([...activeFilters, { id: selectedOption.id, label: selectedOption.label, category: selectedOption.groupId }]);
+                setPendingFilterIds([...pendingFilterIds, filterId]);
             }
         }
     };
@@ -79,44 +103,27 @@ export const ChunkingStrategiesList = () => {
 
     const handleDeleteExecution = () => {
         if (strategyToDelete) {
-            deleteWithUndo(strategyToDelete.id, strategyToDelete.name, () => deleteStrategy(strategyToDelete.id));
+            deleteWithUndo(strategyToDelete.id, strategyToDelete.name, () => deleteChunkingStrategy(strategyToDelete.id));
             setDeleteModalOpen(false);
             setStrategyToDelete(null);
         }
     };
 
-    const handleDiscardDraft = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleDiscardDraft = (event: React.MouseEvent) => {
+        event.stopPropagation();
         clearNewDraft();
         toast.success("Szkic odrzucony");
     };
 
-    const getFilterGroups = (): FilterGroup[] => {
-        if (!strategies) return [];
-        const methods = Array.from(new Set(strategies.map(s => s.strategy_chunking_method))).sort();
-        return [
-            {
-                id: "methods",
-                title: "Methods",
-                type: "checkbox",
-                options: methods.map(m => ({
-                    id: m,
-                    label: formatMethodName(m),
-                    isChecked: pendingFilterIds.includes(m)
-                }))
-            }
-        ];
-    };
-
     const getDisplayStrategies = () => {
-        const baseStrategies = strategies || [];
+        const baseStrategies = chunkingStrategies || [];
         const filtered = baseStrategies
             .filter(strategy => !pendingIds.has(strategy.id))
             .filter(strategy => {
-                const matchesSearch = strategy.strategy_name.toLowerCase().includes(search.toLowerCase()) ||
-                    strategy.strategy_chunking_method.toLowerCase().includes(search.toLowerCase());
+                const matchesSearch = strategy.strategy_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    strategy.strategy_chunking_method.toLowerCase().includes(searchQuery.toLowerCase());
                 if (!matchesSearch) return false;
-                const selectedMethodIds = activeFilters.filter(f => f.category === "methods").map(f => f.id);
+                const selectedMethodIds = activeFilters.filter(filter => filter.category === "methods").map(filter => filter.id);
                 if (selectedMethodIds.length > 0) {
                     if (!selectedMethodIds.includes(strategy.strategy_chunking_method)) return false;
                 }
@@ -138,15 +145,15 @@ export const ChunkingStrategiesList = () => {
                 title: strategy.strategy_name,
                 description: formatMethodName(strategy.strategy_chunking_method),
                 categories: [`Size: ${strategy.strategy_chunk_size}`, !isSemantic ? `Overlap: ${strategy.strategy_chunk_overlap}` : "Semantic"],
-                isModified: false // In a real scenario, check for individual draft
+                isModified: false 
             };
         });
     };
 
     return (
         <ChunkingStrategiesListView
-            search={search}
-            onSearchChange={setSearch}
+            search={searchQuery}
+            onSearchChange={setSearchQuery}
             viewMode={viewMode}
             setViewMode={setViewMode}
             sortBy={sortBy}
@@ -156,7 +163,7 @@ export const ChunkingStrategiesList = () => {
             quickFilters={QUICK_FILTERS}
             sortOptions={SORT_OPTIONS}
             onToggleFilter={handleToggleFilter}
-            onRemoveFilter={(id) => setActiveFilters(prev => prev.filter(f => f.id !== id))}
+            onRemoveFilter={(id) => setActiveFilters(previousFilters => previousFilters.filter(filter => filter.id !== id))}
             onClearAllFilters={() => { setActiveFilters([]); setPendingFilterIds([]); }}
             onApplyFilters={handleApplyFilters}
             onSelectionChange={setPendingFilterIds}
@@ -172,8 +179,8 @@ export const ChunkingStrategiesList = () => {
             selectedStrategy={selectedStrategy}
             setSelectedStrategy={setSelectedStrategy}
             deleteModalOpen={deleteModalOpen}
-            setDeleteModalOpen={setDeleteModalOpen}
-            strategyToDelete={strategyToDelete}
+            onDeleteModalOpenChange={setDeleteModalOpen}
+            strategyToDeleteName={strategyToDelete?.name}
             onDeleteExecution={handleDeleteExecution}
         />
     );

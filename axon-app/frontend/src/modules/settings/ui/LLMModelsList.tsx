@@ -209,7 +209,7 @@ export const LLMModelsList = () => {
 
     const uniqueProviderIds = Array.from(new Set(filteredModels.map(model => model.llm_provider_id)));
     let newestSync: Date | null = null;
-    let syncErrors: string[] = [];
+    const syncErrors: string[] = [];
 
     uniqueProviderIds.forEach(providerId => {
         const provider = providers.find(provider => provider.id === providerId);

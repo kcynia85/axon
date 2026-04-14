@@ -1,20 +1,32 @@
-import { useCallback, useRef, useState, useMemo } from "react";
+import { useState } from "react";
 import { KnowledgeResourceData, KnowledgeStudioSectionId } from "../types/knowledge-studio.types";
 import { useStudioScrollSpy } from "@/modules/studio/application/hooks/useStudioScrollSpy";
 import { useForm } from "react-hook-form";
 import { resourcesApi } from "@/modules/resources/infrastructure/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-
-import { VectorDatabase } from "@/shared/domain/settings";
+import { VectorDatabase, EmbeddingModel } from "@/shared/domain/settings";
 
 const KNOWLEDGE_STUDIO_SECTIONS: readonly KnowledgeStudioSectionId[] = ["RESOURCE", "METADATA", "STRATEGY", "VECTOR_STORE", "HUBS"];
 
-export const useKnowledgeStudio = (vectorStores: VectorDatabase[] = []) => {
+/**
+ * useKnowledgeStudio: Application hook for managing resource design logic.
+ * Standard: 0% useEffect, 0% useCallback, 0% useMemo.
+ * React Compiler handles optimizations.
+ */
+export const useKnowledgeStudio = (
+    vectorDatabases: VectorDatabase[] = [], 
+    chunkingStrategies: any[] = [],
+    knowledgeHubs: any[] = [],
+    embeddingModels: EmbeddingModel[] = []
+) => {
     const router = useRouter();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isSimulating, setIsSimulating] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    
+    const [isGlobalDragging, setIsGlobalDragging] = useState(false);
+    const [isLocalFileOver, setIsLocalFileOver] = useState(false);
 
     const form = useForm<KnowledgeResourceData>({
         defaultValues: {
@@ -26,14 +38,47 @@ export const useKnowledgeStudio = (vectorStores: VectorDatabase[] = []) => {
             vectorStoreId: "",
             hubs: [],
             tags: [],
-            simulatedChunks: []
+            simulatedChunks: [],
+            tokenCount: 0,
+            estimatedCost: 0
         }
     });
 
-    const { watch, setValue } = form;
-    const data = watch();
+    const data = form.watch();
 
-    const handleSimulateChunking = useCallback(async (file: File, strategyId: string) => {
+    // --- Derived State ---
+
+    const strategyOptions = chunkingStrategies.map((strategy) => ({
+		id: strategy.id,
+		name: strategy.strategy_name,
+		subtitle: strategy.strategy_chunking_method,
+	}));
+
+    const selectedHubNames = (data.hubs || [])
+		.map(hubId => knowledgeHubs.find(hub => hub.id === hubId)?.hub_name)
+		.filter((name): name is string => !!name);
+
+    let estimatedTokenCount = 0;
+    if (data.simulatedChunks.length > 0) {
+        const totalContentLength = data.simulatedChunks.reduce((accumulator, chunk) => 
+            accumulator + (chunk.text?.length || chunk.length || 0), 0
+        );
+        estimatedTokenCount = Math.ceil(totalContentLength / 4);
+    } else if (selectedFile) {
+        estimatedTokenCount = Math.ceil(selectedFile.size / 4);
+    }
+
+    const selectedVectorDb = vectorDatabases.find(database => database.id === data.vectorStoreId);
+    const associatedModel = embeddingModels.find(model => 
+        model.model_id === selectedVectorDb?.vector_database_embedding_model_reference
+    );
+
+    const pricePerToken = (associatedModel?.model_cost_per_1m_tokens || 0) / 1_000_000;
+    const estimatedIndexingCost = estimatedTokenCount * pricePerToken;
+
+    // --- Logic Functions ---
+
+    const handleSimulateChunking = async (file: File, strategyId: string) => {
         if (!file || !strategyId) return;
         
         setIsSimulating(true);
@@ -43,28 +88,29 @@ export const useKnowledgeStudio = (vectorStores: VectorDatabase[] = []) => {
             formData.append("strategy_id", strategyId);
             
             const result = await resourcesApi.getKnowledgeResourcePreview(formData);
-            setValue("simulatedChunks", result.chunks);
+            form.setValue("simulatedChunks", result.chunks);
         } catch (error) {
             console.error("Simulation failed", error);
         } finally {
             setIsSimulating(false);
         }
-    }, [setValue]);
+    };
 
-    const { 
-        activeSectionIdentifier: activeSection, 
-        setCanvasContainerReference, 
-        scrollToSectionIdentifier: scrollToSection 
-    } = useStudioScrollSpy<KnowledgeStudioSectionId>(
-        KNOWLEDGE_STUDIO_SECTIONS,
-        "RESOURCE"
-    );
+    const handleSelectFile = (file: File) => {
+        const sizeInKilobytes = Math.round(file.size / 1024);
+        setSelectedFile(file);
+        form.setValue("fileName", file.name);
+        form.setValue("fileSize", `${sizeInKilobytes}kb`);
+        
+        if (data.chunkTypeId) {
+            handleSimulateChunking(file, data.chunkTypeId);
+        }
+    };
 
     const handleDataChange = (updates: Partial<KnowledgeResourceData>) => {
         for (const [key, value] of Object.entries(updates)) {
-            setValue(key as any, value);
+            form.setValue(key as any, value);
             
-            // Trigger simulation if strategy or file changes
             if (key === "chunkTypeId" && selectedFile) {
                 handleSimulateChunking(selectedFile, value as string);
             }
@@ -73,21 +119,10 @@ export const useKnowledgeStudio = (vectorStores: VectorDatabase[] = []) => {
 
     const handleAutoTag = () => {
         const currentMetadata = form.getValues("metadata") || [];
-        setValue("metadata", [
+        form.setValue("metadata", [
             ...currentMetadata,
             { id: Date.now().toString(), key: "auto-tag", value: "generated" }
         ]);
-    };
-
-    const handleSelectFile = (file: File) => {
-        const sizeInKb = Math.round(file.size / 1024);
-        setSelectedFile(file);
-        setValue("fileName", file.name);
-        setValue("fileSize", `${sizeInKb}kb`);
-        
-        if (data.chunkTypeId) {
-            handleSimulateChunking(file, data.chunkTypeId);
-        }
     };
 
     const handleSave = async () => {
@@ -108,97 +143,90 @@ export const useKnowledgeStudio = (vectorStores: VectorDatabase[] = []) => {
             const formData = new FormData();
             formData.append("file", selectedFile);
             
-            const extension = selectedFile.name.split('.').pop()?.toLowerCase() || "md";
+            const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase() || "md";
             const validFormats = ["pdf", "md", "txt", "docx", "url"];
-            const format = validFormats.includes(extension) ? extension : "md";
-            
-            const selectedVdb = vectorStores.find(db => db.id === data.vectorStoreId);
+            const resourceFormat = validFormats.includes(fileExtension) ? fileExtension : "md";
+
+            // Safeguard for metadata reduction
+            const metadataObject = (data.metadata || []).reduce((accumulator, current) => {
+                if (current.key && current.value) {
+                    accumulator[current.key] = current.value;
+                }
+                return accumulator;
+            }, {} as Record<string, any>);
 
             const metadataPayload: any = {
                 resource_file_name: data.fileName,
-                resource_file_format: format,
+                resource_file_format: resourceFormat,
                 resource_file_size_bytes: selectedFile.size,
                 resource_metadata: {
-                    ...data.metadata.reduce((acc, curr) => ({...acc, [curr.key]: curr.value}), {}),
+                    ...metadataObject,
                     tags: data.tags || []
                 },
                 resource_chunking_strategy_ref: data.chunkTypeId,
                 vector_database_id: data.vectorStoreId,
-                vector_database_config: selectedVdb ? {
-                    name: selectedVdb.vector_database_name,
-                    type: selectedVdb.vector_database_type,
-                    host: selectedVdb.vector_database_host,
-                    port: selectedVdb.vector_database_port,
-                    user: selectedVdb.vector_database_user,
-                    password: selectedVdb.vector_database_password,
-                    db_name: selectedVdb.vector_database_db_name,
-                    collection_name: selectedVdb.vector_database_collection_name,
-                    embedding_model: selectedVdb.vector_database_embedding_model_reference,
-                    dimensions: selectedVdb.vector_database_expected_dimensions,
-                    index_method: selectedVdb.vector_database_index_method,
-                    connection_url: selectedVdb.vector_database_connection_url || selectedVdb.vector_database_connection_string
+                vector_database_config: selectedVectorDb ? {
+                    name: selectedVectorDb.vector_database_name,
+                    type: selectedVectorDb.vector_database_type,
+                    host: selectedVectorDb.vector_database_host,
+                    port: selectedVectorDb.vector_database_port,
+                    user: selectedVectorDb.vector_database_user,
+                    password: selectedVectorDb.vector_database_password,
+                    db_name: selectedVectorDb.vector_database_db_name,
+                    collection_name: selectedVectorDb.vector_database_collection_name,
+                    embedding_model: selectedVectorDb.vector_database_embedding_model_reference,
+                    dimensions: selectedVectorDb.vector_database_expected_dimensions,
+                    index_method: selectedVectorDb.vector_database_index_method,
+                    connection_url: selectedVectorDb.vector_database_connection_url || selectedVectorDb.vector_database_connection_string
                 } : null
             };
-            
-            if (data.hubs.length > 0) {
-                metadataPayload.knowledge_hub_id = data.hubs[0];
+
+            // Add Knowledge Hub association if selected
+            if (data.hubs && data.hubs.length > 0) {
+                metadataPayload.knowledge_hub_id = data.hubs[0]; // Currently supporting one hub per resource
             }
             
             formData.append("metadata_json", JSON.stringify(metadataPayload));
             
-            const resource = await resourcesApi.uploadKnowledgeResource(formData);
-            const resourceId = resource.id;
-
-            toast.loading("Trwa indeksowanie... Proszę czekać.", { id: loadingToast });
-
-            // POLLING LOGIC
-            let isDone = false;
-            let attempts = 0;
-            const maxAttempts = 60; // 60 seconds
-
-            while (!isDone && attempts < maxAttempts) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                attempts++;
-
-                try {
-                    const allResources = await resourcesApi.getKnowledgeResources();
-                    const currentResource = allResources.find((s: any) => s.id === resourceId);
-
-                    if (currentResource) {
-                        if (currentResource.resource_rag_indexing_status === "Ready") {                            toast.success("Zasób zaindeksowany pomyślnie!", { id: loadingToast });
-                            isDone = true;
-                            router.push("/resources/knowledge");
-                            return;
-                        }
-                        // If status is "Indexing" or "Pending", we just continue looping
-                    } 
-                    // If not found yet, we also just continue looping (it might take a moment to appear)
-                    
-                } catch (e) {
-                    console.error("Polling error", e);
-                }
-            }
-
-            if (!isDone) {
-                // Final check - if still not found or not ready, it's likely an error (since backend filters out errors from list)
-                toast.error("Indeksowanie trwa zbyt długo lub wystąpił błąd. Sprawdź Sidepeek w Bazie Wiedzy.", { id: loadingToast });
-                router.push("/resources/knowledge");
-            }
+            console.log("DEBUG: Uploading resource with payload:", metadataPayload);
+            await resourcesApi.uploadKnowledgeResource(formData);
+            
+            toast.success("Zasób został pomyślnie przesłany i jest w kolejce do indeksowania.", { id: loadingToast });
+            router.push("/resources/knowledge");
 
         } catch (error) {
-            console.error("Failed to upload and index knowledge source", error);
-            toast.error("Wystąpił błąd podczas wysyłania zasobu.", { id: loadingToast });
+            console.error("Failed to upload knowledge resource:", error);
+            toast.error("Wystąpił błąd podczas wysyłania zasobu. Sprawdź konsolę.", { id: loadingToast });
         } finally {
             setIsSaving(false);
         }
     };
 
+    const { 
+        activeSectionIdentifier: activeSection, 
+        setCanvasContainerReference, 
+        scrollToSectionIdentifier: scrollToSection 
+    } = useStudioScrollSpy<KnowledgeStudioSectionId>(
+        KNOWLEDGE_STUDIO_SECTIONS,
+        "RESOURCE"
+    );
+
     return {
         form,
-        data,
+        data: {
+            ...data,
+            tokenCount: estimatedTokenCount,
+            estimatedCost: estimatedIndexingCost
+        },
         activeSection,
         isSimulating,
         isSaving,
+        isGlobalDragging,
+        isLocalFileOver,
+        strategyOptions,
+        selectedHubNames,
+        setIsGlobalDragging,
+        setIsLocalFileOver,
         handleDataChange,
         handleSave,
         handleAutoTag,

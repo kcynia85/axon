@@ -8,7 +8,7 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
 import { Button } from "@/shared/ui/ui/Button";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
-import { TemplateProfilePeek } from "./TemplateProfilePeek";
+import { TemplateProfilePeek } from "./TemplateSidePeek";
 import { toast } from "sonner";
 import { FileText, Plus } from "lucide-react";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";

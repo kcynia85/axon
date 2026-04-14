@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { SortOption, ActiveFilter, FilterGroup } from "@/shared/domain/filters";
 import { QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { KnowledgeBrowserView } from "./KnowledgeBrowserView";
-import { KnowledgeResource } from "./KnowledgeBrowserView.types";
+import { KnowledgeResource } from "@/shared/domain/resources";
 import { KnowledgeResourceSidePeek } from "./KnowledgeResourceSidePeek";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { resourcesApi } from "@/modules/resources/infrastructure/api";
@@ -25,6 +25,10 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
   { label: "By Hub", groupId: "hub" },
 ];
 
+/**
+ * KnowledgeBrowser: Main container for orchestrating knowledge resource browsing.
+ * Standard: Container pattern, DDD mindset, 0% manual optimization.
+ */
 export const KnowledgeBrowser = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -42,7 +46,7 @@ export const KnowledgeBrowser = () => {
   const queryClient = useQueryClient();
 
   // Fetch Hubs for filtering
-  const { data: hubs = [] } = useQuery({
+  const { data: knowledgeHubs = [] } = useQuery({
     queryKey: ["knowledge-hubs"],
     queryFn: () => resourcesApi.getKnowledgeHubs()
   });
@@ -52,40 +56,31 @@ export const KnowledgeBrowser = () => {
     queryKey: ["knowledge-resources"],
     queryFn: () => resourcesApi.getKnowledgeResources(),
     refetchInterval: (query) => {
-        const data = query.state.data as any[];
-        const hasIndexing = data?.some(resource => resource.resource_rag_indexing_status === "Indexing" || resource.resource_rag_indexing_status === "Pending");
+        const resources = query.state.data as KnowledgeResource[];
+        const hasIndexing = resources?.some(resource => 
+            resource.resource_rag_indexing_status === "Indexing" || 
+            resource.resource_rag_indexing_status === "Pending"
+        );
         return hasIndexing ? 5000 : false;
     }
   });
 
-  // Map API data to view model
-  const seenIds = new Set();
-  const uniqueSources = sourceData.filter(source => {
-      if (seenIds.has(source.id)) return false;
-      seenIds.add(source.id);
+  // Map API data to view model - ensuring unique IDs
+  const seenResourceIds = new Set();
+  const uniqueResources = sourceData.filter(resource => {
+      if (seenResourceIds.has(resource.id)) return false;
+      seenResourceIds.add(resource.id);
       return true;
   });
 
-  const resources = uniqueSources.map((source: any): KnowledgeResource => ({
-    id: source.id,
-    title: source.resource_file_name || "Unnamed Resource",
-    type: source.resource_file_format || "document",
-    tags: source.resource_metadata?.auto_tags || source.resource_metadata?.tags || [],
-    status: source.resource_rag_indexing_status || "Ready",
-    vectorDatabaseName: source.vector_database_name,
-    hubName: source.knowledge_hub_name,
-    hubId: source.knowledge_hub_id,
-    chunkCount: source.resource_chunk_count
-  }));
-
-  const currentPendingIds = pendingFilterIds ?? activeFilters.map(filter => filter.id);
+  const currentPendingIds = pendingFilterIds ?? activeFilters.map(activeFilter => activeFilter.id);
 
   const filterGroups: FilterGroup[] = [
     {
         id: "type",
         title: "Type",
         type: "checkbox",
-        options: Array.from(new Set(resources.map(resource => resource.type))).map(type => ({
+        options: Array.from(new Set(uniqueResources.map(resource => resource.resource_file_format))).map(type => ({
             id: type,
             label: type.toUpperCase(),
             isChecked: currentPendingIds.includes(type)
@@ -95,7 +90,7 @@ export const KnowledgeBrowser = () => {
         id: "hub",
         title: "Hub",
         type: "checkbox",
-        options: hubs.map((hub: any) => ({
+        options: knowledgeHubs.map(hub => ({
             id: hub.id,
             label: hub.hub_name,
             isChecked: currentPendingIds.includes(hub.id)
@@ -105,7 +100,7 @@ export const KnowledgeBrowser = () => {
         id: "tag",
         title: "Tag",
         type: "checkbox",
-        options: Array.from(new Set(resources.flatMap(resource => resource.tags))).slice(0, 15).map(tag => ({
+        options: Array.from(new Set(uniqueResources.flatMap(resource => resource.resource_metadata?.tags || []))).slice(0, 15).map(tag => ({
             id: tag.toLowerCase(),
             label: `#${tag.toLowerCase()}`,
             isChecked: currentPendingIds.includes(tag.toLowerCase())
@@ -115,27 +110,27 @@ export const KnowledgeBrowser = () => {
 
   const getFilteredResults = (filterIds: string[]) => {
       const filtersByCategory: Record<string, string[]> = {};
-      filterIds.forEach(id => {
-          const group = filterGroups.find(group => group.options.some(option => option.id === id));
-          if (group) {
-              if (!filtersByCategory[group.id]) filtersByCategory[group.id] = [];
-              filtersByCategory[group.id].push(id);
+      filterIds.forEach(filterId => {
+          const matchingGroup = filterGroups.find(group => group.options.some(option => option.id === filterId));
+          if (matchingGroup) {
+              if (!filtersByCategory[matchingGroup.id]) filtersByCategory[matchingGroup.id] = [];
+              filtersByCategory[matchingGroup.id].push(filterId);
           }
       });
       
-      let results = [...resources];
+      let results = [...uniqueResources];
       if (searchQuery) {
-          const query = searchQuery.toLowerCase();
-          results = results.filter(resource => resource.title.toLowerCase().includes(query));
+          const lowerCaseQuery = searchQuery.toLowerCase();
+          results = results.filter(resource => resource.resource_file_name.toLowerCase().includes(lowerCaseQuery));
       }
       
       if (filterIds.length === 0) return results;
 
       return results.filter(resource => {
           return Object.entries(filtersByCategory).every(([category, selectedIds]) => {
-              if (category === 'type') return selectedIds.includes(resource.type);
-              if (category === 'hub') return resource.hubId && selectedIds.includes(resource.hubId);
-              if (category === 'tag') return resource.tags.some(tag => selectedIds.includes(tag.toLowerCase()));
+              if (category === 'type') return selectedIds.includes(resource.resource_file_format);
+              if (category === 'hub') return resource.knowledge_hub_id && selectedIds.includes(resource.knowledge_hub_id);
+              if (category === 'tag') return (resource.resource_metadata?.tags || []).some(tag => selectedIds.includes(tag.toLowerCase()));
               return true;
           });
       });
@@ -173,25 +168,28 @@ export const KnowledgeBrowser = () => {
       setPendingFilterIds(selectedIds);
   };
 
-  const handleToggleFilter = (id: string) => {
-      const option = filterGroups.flatMap(group => group.options.map(opt => ({...opt, groupId: group.id}))).find(opt => opt.id === id);
-      if (option) {
-          if (activeFilters.some(activeFilter => activeFilter.id === id)) {
-              handleRemoveFilter(id);
+  const handleToggleFilter = (filterId: string) => {
+      const selectedOption = filterGroups
+        .flatMap(group => group.options.map(option => ({...option, groupId: group.id})))
+        .find(option => option.id === filterId);
+
+      if (selectedOption) {
+          if (activeFilters.some(activeFilter => activeFilter.id === filterId)) {
+              handleRemoveFilter(filterId);
           } else {
-              const nextFilters = [...activeFilters, { id: option.id, label: option.label, category: option.groupId }];
+              const nextFilters = [...activeFilters, { id: selectedOption.id, label: selectedOption.label, category: selectedOption.groupId }];
               setActiveFilters(nextFilters);
               setPendingFilterIds(null);
           }
       }
   };
 
-  const handleResourceClick = (resource: KnowledgeResource) => {
-    setSelectedResourceId(resource.id);
+  const handleResourceClick = (resourceId: string) => {
+    setSelectedResourceId(resourceId);
     setIsSidePeekOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDeleteTrigger = (id: string) => {
     setResourceToDeleteId(id);
     setIsDeleteDialogOpen(true);
   };
@@ -213,9 +211,9 @@ export const KnowledgeBrowser = () => {
     }
   };
 
-  // Basic sorting
-  if (sortBy === "name-asc") filteredResources.sort((a, b) => a.title.localeCompare(b.title));
-  if (sortBy === "name-desc") filteredResources.sort((a, b) => b.title.localeCompare(a.title));
+  // Sort logic
+  if (sortBy === "name-asc") filteredResources.sort((a, b) => a.resource_file_name.localeCompare(b.resource_file_name));
+  if (sortBy === "name-desc") filteredResources.sort((a, b) => b.resource_file_name.localeCompare(a.resource_file_name));
 
   return (
     <>
@@ -235,18 +233,28 @@ export const KnowledgeBrowser = () => {
             onClearAllFilters={handleClearAll}
             onApplyFilters={handleApplyFilters}
             onSelectionChange={handleSelectionChange}
-            filteredResources={filteredResources}
+            filteredResources={filteredResources.map(resource => ({
+                id: resource.id,
+                title: resource.resource_file_name,
+                type: resource.resource_file_format,
+                tags: resource.resource_metadata?.tags || [],
+                status: resource.resource_rag_indexing_status as any,
+                vectorDatabaseName: resource.vector_database_name,
+                hubName: resource.hub_name,
+                hubId: resource.knowledge_hub_id || undefined,
+                chunkCount: resource.resource_chunk_count
+            }))}
             previewCount={previewCount}
             onDelete={() => {}}
             onEdit={() => {}}
-            onResourceClick={handleResourceClick}
+            onResourceClick={(resource) => handleResourceClick(resource.id)}
             isLoading={isLoading}
         />
         <KnowledgeResourceSidePeek 
             resourceId={selectedResourceId}
             isOpen={isSidePeekOpen}
             onClose={() => setIsSidePeekOpen(false)}
-            onDelete={handleDelete}
+            onDelete={handleDeleteTrigger}
         />
 
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

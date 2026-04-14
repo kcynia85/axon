@@ -4,7 +4,7 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { Card } from "@/shared/ui/ui/Card";
 import { Button } from "@/shared/ui/ui/Button";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
-import { CrewProfilePeek } from "./CrewProfilePeek";
+import { CrewProfilePeek } from "./CrewSidePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { getAgentAvatarUrl } from "@/shared/lib/utils";
 

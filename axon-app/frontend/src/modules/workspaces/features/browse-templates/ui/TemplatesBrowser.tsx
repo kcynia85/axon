@@ -12,7 +12,7 @@ import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { useDeleteTemplate } from "@/modules/workspaces/application/useTemplates";
 import { useTemplateDraft } from "@/modules/studio/features/template-studio/application/hooks/useTemplateDraft";
-import { TemplateProfilePeek } from "@/modules/workspaces/ui/TemplateProfilePeek";
+import { TemplateProfilePeek } from "@/modules/workspaces/ui/TemplateSidePeek";
 import { toast } from "sonner";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";

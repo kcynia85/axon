@@ -11,7 +11,7 @@ import { SortOption } from "@/shared/domain/filters";
 import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { useDeletePattern } from "../../../application/usePatterns";
-import { PatternProfilePeek } from "@/modules/workspaces/ui/PatternProfilePeek";
+import { PatternProfilePeek } from "@/modules/workspaces/ui/PatternSidePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { toast } from "sonner";

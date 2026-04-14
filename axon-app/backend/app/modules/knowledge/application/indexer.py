@@ -388,6 +388,7 @@ async def process_and_index_resource(
                     point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{resource.id}_{i}"))
                     
                     points.append(PointStruct(id=point_id, vector=embedding, payload=temp_meta))
+                    records.append((f"{resource.id}_{i}", embedding, temp_meta))
 
                 if points:
                     qdrant_client.upsert(

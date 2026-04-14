@@ -12,7 +12,7 @@ import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { useDeleteCrew } from "@/modules/workspaces/application/useCrews";
 import { useCrewDraft } from "@/modules/studio/features/crew-studio/application/useCrewDraft";
-import { CrewProfilePeek } from "@/modules/workspaces/ui/CrewProfilePeek";
+import { CrewProfilePeek } from "@/modules/workspaces/ui/CrewSidePeek";
 import { useAllAgents } from "@/modules/agents/infrastructure/useAgents";
 import { getAgentAvatarUrl, getDeterministicImgId } from "@/shared/lib/utils";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";

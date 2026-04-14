@@ -15,7 +15,7 @@ import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizo
 import { toast } from "sonner";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
-import { AutomationSidePeekContent } from "./AutomationSidePeekContent";
+import { AutomationSidePeekContent } from "./AutomationSidePeek";
 
 type AutomationsSectionProps = {
   readonly workspaceId: string;

@@ -12,7 +12,7 @@ import { ActionBar } from "@/shared/ui/complex/ActionBar";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { useDeleteService } from "@/modules/workspaces/application/useServices";
 import { useServiceDraft } from "@/modules/studio/features/service-studio/application/hooks/useServiceDraft";
-import { ServiceProfilePeek } from "@/modules/workspaces/ui/ServiceProfilePeek";
+import { ServiceProfilePeek } from "@/modules/workspaces/ui/ServiceSidePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { toast } from "sonner";

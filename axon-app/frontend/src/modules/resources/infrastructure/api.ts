@@ -2,34 +2,31 @@ import { apiClient } from "@/shared/lib/api-client/config";
 import {
     PromptArchetype,
     InternalTool,
-    PromptArchetypeSchema,
-    InternalToolSchema
+    KnowledgeHub,
+    KnowledgeResource,
+    TextChunk,
 } from "@/shared/domain/resources";
 
 export const resourcesApi = {
     // --- Prompt Archetypes ---
     getPromptArchetypes: async (): Promise<PromptArchetype[]> => {
         const response = await apiClient.get("/resources/archetypes");
-        const data = await response.json() as unknown[];
-        return data.map((archetype: unknown) => PromptArchetypeSchema.parse(archetype));
+        return await response.json() as PromptArchetype[];
     },
 
     getPromptArchetype: async (id: string): Promise<PromptArchetype> => {
         const response = await apiClient.get(`/resources/archetypes/${id}`);
-        const data = await response.json() as unknown;
-        return PromptArchetypeSchema.parse(data);
+        return await response.json() as PromptArchetype;
     },
 
     createPromptArchetype: async (archetype: unknown): Promise<PromptArchetype> => {
         const response = await apiClient.post("/resources/archetypes", archetype);
-        const data = await response.json() as unknown;
-        return PromptArchetypeSchema.parse(data);
+        return await response.json() as PromptArchetype;
     },
 
     updatePromptArchetype: async (id: string, archetype: unknown): Promise<PromptArchetype> => {
         const response = await apiClient.put(`/resources/archetypes/${id}`, archetype);
-        const data = await response.json() as unknown;
-        return PromptArchetypeSchema.parse(data);
+        return await response.json() as PromptArchetype;
     },
 
     deletePromptArchetype: async (id: string): Promise<void> => {
@@ -39,8 +36,7 @@ export const resourcesApi = {
     // --- Internal Tools ---
     getInternalTools: async (): Promise<InternalTool[]> => {
         const response = await apiClient.get("/resources/internal-tools");
-        const data = await response.json() as unknown[];
-        return data.map((tool: unknown) => InternalToolSchema.parse(tool));
+        return await response.json() as InternalTool[];
     },
 
     syncInternalTools: async (): Promise<{ added: number; updated: number; removed: number; errors: string[] }> => {
@@ -49,43 +45,43 @@ export const resourcesApi = {
     },
 
     // --- Knowledge Hubs & Resources ---
-    getKnowledgeHubs: async (): Promise<any[]> => {
+    getKnowledgeHubs: async (): Promise<KnowledgeHub[]> => {
         const response = await apiClient.get("/knowledge/hubs");
-        return await response.json() as any[];
+        return await response.json() as KnowledgeHub[];
     },
 
-    getKnowledgeResources: async (): Promise<any[]> => {
+    getKnowledgeResources: async (): Promise<KnowledgeResource[]> => {
         const response = await apiClient.get("/knowledge/resources");
-        return await response.json() as any[];
+        return await response.json() as KnowledgeResource[];
     },
 
-    getKnowledgeResource: async (id: string): Promise<any> => {
+    getKnowledgeResource: async (id: string): Promise<KnowledgeResource> => {
         const response = await apiClient.get(`/knowledge/resources/${id}`);
-        return await response.json() as any;
+        return await response.json() as KnowledgeResource;
     },
 
-    getKnowledgeResourceChunks: async (id: string): Promise<any[]> => {
+    getKnowledgeResourceChunks: async (id: string): Promise<TextChunk[]> => {
         const response = await apiClient.get(`/knowledge/resources/${id}/chunks`);
-        return await response.json() as any[];
+        return await response.json() as TextChunk[];
     },
 
-    updateKnowledgeResource: async (id: string, data: any): Promise<any> => {
+    updateKnowledgeResource: async (id: string, data: Partial<KnowledgeResource>): Promise<KnowledgeResource> => {
         const response = await apiClient.put(`/knowledge/resources/${id}`, data);
-        return await response.json() as any;
+        return await response.json() as KnowledgeResource;
     },
 
     deleteKnowledgeResource: async (id: string): Promise<void> => {
         await apiClient.delete(`/knowledge/resources/${id}`);
     },
 
-    uploadKnowledgeResource: async (formData: FormData): Promise<any> => {
+    uploadKnowledgeResource: async (formData: FormData): Promise<KnowledgeResource> => {
         const response = await apiClient.postFormData("/knowledge/resources", formData);
-        return await response.json() as any;
+        return await response.json() as KnowledgeResource;
     },
 
-    getKnowledgeResourcePreview: async (formData: FormData): Promise<{ chunks: any[], chunk_count: number }> => {
+    getKnowledgeResourcePreview: async (formData: FormData): Promise<{ chunks: string[], chunk_count: number }> => {
         const response = await apiClient.postFormData("/knowledge/resources/preview", formData);
-        return await response.json() as any;
+        return await response.json() as { chunks: string[], chunk_count: number };
     },
 
 
@@ -93,7 +89,7 @@ export const resourcesApi = {
     getAssets: async (): Promise<{ id: string; title: string }[]> => {
         try {
             const response = await apiClient.get("/knowledge/hubs");
-            const hubs = await response.json() as any[];
+            const hubs = await response.json() as KnowledgeHub[];
             return hubs.map(hub => ({
                 id: hub.id,
                 title: hub.hub_name

@@ -14,22 +14,28 @@ import { settingsApi } from "@/modules/settings/infrastructure/api";
 export const KnowledgeStudioContainer = () => {
     const router = useRouter();
     
-    const { data: vectorStores = [], isLoading: isLoadingVectorStores } = useQuery({
+    const { data: vectorDatabases = [], isLoading: isLoadingVectorStores } = useQuery({
         queryKey: ["vector-databases"],
         queryFn: () => settingsApi.getVectorDatabases(),
     });
 
-    const studioState = useKnowledgeStudio(vectorStores);
+    const { data: embeddingModels = [] } = useQuery({
+        queryKey: ["embedding-models"],
+        queryFn: () => settingsApi.getEmbeddingModels(),
+    });
 
-    const { data: hubs = [], isLoading: isLoadingHubs } = useQuery({
+    const { data: knowledgeHubs = [], isLoading: isLoadingHubs } = useQuery({
         queryKey: ["knowledge-hubs"],
         queryFn: () => resourcesApi.getKnowledgeHubs(),
     });
 
-    const { data: strategies = [], isLoading: isLoadingStrategies } = useQuery({
+    const { data: chunkingStrategies = [], isLoading: isLoadingStrategies } = useQuery({
         queryKey: ["chunking-strategies"],
         queryFn: () => settingsApi.getChunkingStrategies(),
     });
+
+    // Pass all dependencies to the hook for derived state calculation
+    const studioState = useKnowledgeStudio(vectorDatabases, chunkingStrategies, knowledgeHubs, embeddingModels);
 
     const handleCancel = () => {
         router.back();
@@ -38,11 +44,11 @@ export const KnowledgeStudioContainer = () => {
     return (
         <KnowledgeStudioView
             {...studioState}
-            hubs={hubs}
+            hubs={knowledgeHubs}
             isLoadingHubs={isLoadingHubs}
-            vectorStores={vectorStores}
+            vectorStores={vectorDatabases}
             isLoadingVectorStores={isLoadingVectorStores}
-            strategies={strategies}
+            strategies={chunkingStrategies}
             isLoadingStrategies={isLoadingStrategies}
             onDataChange={studioState.handleDataChange}
             onSave={studioState.handleSave}

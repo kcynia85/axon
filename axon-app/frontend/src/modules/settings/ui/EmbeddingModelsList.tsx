@@ -27,16 +27,20 @@ const STATIC_CAPABILITIES = [
     { id: "multimodal", label: "Multimodal" },
 ];
 
+/**
+ * EmbeddingModelsList: Main container for managing and listing embedding models.
+ * Standard: Container pattern, Readable naming, No abbreviations.
+ */
 export const EmbeddingModelsList = () => {
-    const { data: models, isLoading } = useEmbeddingModels();
-    const { mutateAsync: deleteModel } = useDeleteEmbeddingModel();
+    const { data: embeddingModels, isLoading } = useEmbeddingModels();
+    const { mutateAsync: deleteEmbeddingModel } = useDeleteEmbeddingModel();
     const { deleteWithUndo } = useDeleteWithUndo();
     const { pendingIds } = usePendingDeletionsStore();
     const router = useRouter();
     
     const { draft: newDraft, clearDraft: clearNewDraft } = useEmbeddingModelDraft("new");
 
-    const [search, setSearch] = React.useState("");
+    const [searchQuery, setSearchQuery] = React.useState("");
     const [sortBy, setSortBy] = React.useState("name_asc");
     const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
     const [selectedModel, setSelectedModel] = React.useState<DisplayEmbeddingModel | null>(null);
@@ -46,12 +50,39 @@ export const EmbeddingModelsList = () => {
     const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
     const [modelToDelete, setModelToDelete] = React.useState<{ id: string; name: string } | null>(null);
 
+    const getFilterGroups = (): FilterGroup[] => {
+        if (!embeddingModels) return [];
+        const providers = Array.from(new Set(embeddingModels.map(model => model.model_provider_name))).sort();
+        return [
+            {
+                id: "capabilities",
+                title: "Capabilities",
+                type: "checkbox",
+                options: STATIC_CAPABILITIES.map(capability => ({
+                    id: capability.id,
+                    label: capability.label,
+                    isChecked: pendingFilterIds.includes(capability.id)
+                }))
+            },
+            {
+                id: "providers",
+                title: "Providers",
+                type: "checkbox",
+                options: providers.map(provider => ({
+                    id: provider,
+                    label: provider,
+                    isChecked: pendingFilterIds.includes(provider)
+                }))
+            }
+        ];
+    };
+
     const handleApplyFilters = (selectedIds: string[]) => {
         const nextFilters: ActiveFilter[] = [];
         getFilterGroups().forEach(group => {
-            group.options.forEach(opt => {
-                if (selectedIds.includes(opt.id)) {
-                    nextFilters.push({ id: opt.id, label: opt.label, category: group.id });
+            group.options.forEach(option => {
+                if (selectedIds.includes(option.id)) {
+                    nextFilters.push({ id: option.id, label: option.label, category: group.id });
                 }
             });
         });
@@ -60,13 +91,16 @@ export const EmbeddingModelsList = () => {
     };
 
     const handleToggleFilter = (id: string) => {
-        const option = getFilterGroups().flatMap(g => g.options.map(o => ({...o, groupId: g.id}))).find(o => o.id === id);
-        if (option) {
-            if (activeFilters.some(f => f.id === id)) {
-                setActiveFilters(prev => prev.filter(f => f.id !== id));
-                setPendingFilterIds(prev => prev.filter(pId => pId !== id));
+        const selectedOption = getFilterGroups()
+            .flatMap(group => group.options.map(option => ({...option, groupId: group.id})))
+            .find(option => option.id === id);
+
+        if (selectedOption) {
+            if (activeFilters.some(filter => filter.id === id)) {
+                setActiveFilters(previousFilters => previousFilters.filter(filter => filter.id !== id));
+                setPendingFilterIds(previousPendingIds => previousPendingIds.filter(pendingId => pendingId !== id));
             } else {
-                setActiveFilters([...activeFilters, { id: option.id, label: option.label, category: option.groupId }]);
+                setActiveFilters([...activeFilters, { id: selectedOption.id, label: selectedOption.label, category: selectedOption.groupId }]);
                 setPendingFilterIds([...pendingFilterIds, id]);
             }
         }
@@ -79,61 +113,34 @@ export const EmbeddingModelsList = () => {
 
     const handleDeleteExecution = () => {
         if (modelToDelete) {
-            deleteWithUndo(modelToDelete.id, modelToDelete.name, () => deleteModel(modelToDelete.id));
+            deleteWithUndo(modelToDelete.id, modelToDelete.name, () => deleteEmbeddingModel(modelToDelete.id));
             setDeleteModalOpen(false);
             setModelToDelete(null);
         }
     };
 
-    const handleDiscardDraft = (e: React.MouseEvent) => {
-        e.stopPropagation();
+    const handleDiscardDraft = (event: React.MouseEvent) => {
+        event.stopPropagation();
         clearNewDraft();
         toast.success("Szkic odrzucony");
     };
 
-    const getFilterGroups = (): FilterGroup[] => {
-        if (!models) return [];
-        const providers = Array.from(new Set(models.map(m => m.model_provider_name))).sort();
-        return [
-            {
-                id: "capabilities",
-                title: "Capabilities",
-                type: "checkbox",
-                options: STATIC_CAPABILITIES.map(c => ({
-                    id: c.id,
-                    label: c.label,
-                    isChecked: pendingFilterIds.includes(c.id)
-                }))
-            },
-            {
-                id: "providers",
-                title: "Providers",
-                type: "checkbox",
-                options: providers.map(p => ({
-                    id: p,
-                    label: p,
-                    isChecked: pendingFilterIds.includes(p)
-                }))
-            }
-        ];
-    };
-
     const getDisplayModels = () => {
-        const baseModels = models || [];
+        const baseModels = embeddingModels || [];
         const filtered = baseModels
             .filter(model => !pendingIds.has(model.id))
             .filter(model => {
-                const matchesSearch = model.model_id.toLowerCase().includes(search.toLowerCase()) ||
-                    model.model_provider_name.toLowerCase().includes(search.toLowerCase());
+                const matchesSearch = model.model_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    model.model_provider_name.toLowerCase().includes(searchQuery.toLowerCase());
                 if (!matchesSearch) return false;
 
-                const selectedCapabilityIds = activeFilters.filter(f => f.category === "capabilities").map(f => f.id);
-                const selectedProviderIds = activeFilters.filter(f => f.category === "providers").map(f => f.id);
+                const selectedCapabilityIds = activeFilters.filter(filter => filter.category === "capabilities").map(filter => filter.id);
+                const selectedProviderIds = activeFilters.filter(filter => filter.category === "providers").map(filter => filter.id);
 
                 if (selectedCapabilityIds.length > 0) {
                     const isMultimodal = model.model_id.toLowerCase().includes("multimodal") || model.model_id.toLowerCase().includes("vision");
-                    const modelCap = isMultimodal ? "multimodal" : "text";
-                    if (!selectedCapabilityIds.includes(modelCap)) return false;
+                    const modelCapability = isMultimodal ? "multimodal" : "text";
+                    if (!selectedCapabilityIds.includes(modelCapability)) return false;
                 }
 
                 if (selectedProviderIds.length > 0) {
@@ -166,8 +173,8 @@ export const EmbeddingModelsList = () => {
 
     return (
         <EmbeddingModelsListView
-            search={search}
-            onSearchChange={setSearch}
+            search={searchQuery}
+            onSearchChange={setSearchQuery}
             viewMode={viewMode}
             setViewMode={setViewMode}
             sortBy={sortBy}
@@ -177,7 +184,7 @@ export const EmbeddingModelsList = () => {
             quickFilters={QUICK_FILTERS}
             sortOptions={SORT_OPTIONS}
             onToggleFilter={handleToggleFilter}
-            onRemoveFilter={(id) => setActiveFilters(prev => prev.filter(f => f.id !== id))}
+            onRemoveFilter={(id) => setActiveFilters(previous => previous.filter(filter => filter.id !== id))}
             onClearAllFilters={() => { setActiveFilters([]); setPendingFilterIds([]); }}
             onApplyFilters={handleApplyFilters}
             onSelectionChange={setPendingFilterIds}

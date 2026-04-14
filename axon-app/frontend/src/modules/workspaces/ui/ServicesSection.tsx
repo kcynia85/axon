@@ -10,7 +10,7 @@ import { Button } from "@/shared/ui/ui/Button";
 import { Cloud, Plus } from "lucide-react";
 import { WorkspaceCardHorizontal } from "@/shared/ui/complex/WorkspaceCardHorizontal";
 import { toast } from "sonner";
-import { ServiceProfilePeek } from "./ServiceProfilePeek";
+import { ServiceProfilePeek } from "./ServiceSidePeek";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 
