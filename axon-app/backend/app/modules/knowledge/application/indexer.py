@@ -1,6 +1,6 @@
 import os
 from uuid import UUID
-from typing import Optional, List
+from typing import Optional
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from app.modules.knowledge.domain.models import KnowledgeResource
@@ -154,7 +154,6 @@ async def process_and_index_resource(
             texts = text_splitter.split_text(cleaned_content)
             
             # 5. Connect to Vector Store and Store Vectors
-            from app.modules.settings.domain.enums import VectorDBType
             
             # Detect DB Type from vector_db metadata or object
             db_type_val = getattr(vector_db, 'vector_database_type', None)

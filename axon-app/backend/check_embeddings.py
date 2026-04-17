@@ -4,7 +4,7 @@ import sys
 # Path setup BEFORE imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sqlalchemy import select, func, text
+from sqlalchemy import select, func
 from app.shared.infrastructure.database import AsyncSessionLocal
 from app.modules.knowledge.infrastructure.tables import AssetTable
 

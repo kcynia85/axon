@@ -73,11 +73,8 @@ export const MainCardContent = ({ children, className }: MainCardContentProps) =
  * MainCardFooter - Standardized footer with centered label and right chevron.
  */
 export const MainCardFooter = ({ label, className }: MainCardFooterProps) => (
-  <CardFooter className={cn("py-4 flex items-center justify-between border-t border-zinc-50 dark:border-zinc-900 mt-auto px-4 relative", className)}>
-    {/* Spacer to keep text centered when chevron is on the right */}
-    <div className="w-4 h-4" /> 
-    
-    <BaseSpan className="text-[16px] font-blackpod tracking-widest text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+  <CardFooter className={cn("py-4 flex items-center justify-center border-t border-zinc-50 dark:border-zinc-900 mt-auto px-4 relative", className)}>
+    <BaseSpan className="text-[16px] font-black tracking-widest text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">
       {label}
     </BaseSpan>
   </CardFooter>

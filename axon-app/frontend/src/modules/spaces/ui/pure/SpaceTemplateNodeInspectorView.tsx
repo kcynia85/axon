@@ -47,6 +47,7 @@ export type SpaceTemplateNodeInspectorViewProps = {
     readonly onArtefactLinkChange: (artefactId: string, link: string) => void;
     readonly onArtefactStatusChange: (artefactId: string, status: TemplateArtefact['status']) => void;
     readonly onArtefactOutputToggle: (artefactId: string) => void;
+    readonly canvasNodes: any[];
 };
 
 const ARTEFACT_STATUS_VISUAL_CONFIG = {
@@ -66,6 +67,7 @@ export const SpaceTemplateNodeInspectorView = ({
     onArtefactLinkChange,
     onArtefactStatusChange,
     onArtefactOutputToggle,
+    canvasNodes,
 }: SpaceTemplateNodeInspectorViewProps) => {
     return (
         <SpaceInspectorPanel>

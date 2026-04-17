@@ -1,4 +1,4 @@
-from typing import Protocol, AsyncGenerator, Any, Optional
+from typing import Protocol, AsyncGenerator, Any
 from abc import abstractmethod
 
 class LLMGateway(Protocol):

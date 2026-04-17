@@ -63,6 +63,7 @@ export const SpaceCanvasRightSidebarView = ({
                         nodeId={currentlySelectedNodeInformation.id}
                         onStatusChange={handleStatusChange}
                         onPropertyChange={handlePropertyChange}
+                        canvasNodes={canvasNodes}
                     />
                 ) : effectiveNodeType === 'crew' ? (
                     <SpaceCrewNodeInspector
@@ -70,6 +71,7 @@ export const SpaceCanvasRightSidebarView = ({
                         nodeId={currentlySelectedNodeInformation.id}
                         onStatusChange={handleStatusChange}
                         onPropertyChange={handlePropertyChange}
+                        canvasNodes={canvasNodes}
                     />
                 ) : effectiveNodeType === 'pattern' ? (
                     <SpacePatternNodeInspector
@@ -81,6 +83,7 @@ export const SpaceCanvasRightSidebarView = ({
                         automationData={currentlySelectedNodeInformation.data as SpaceAutomationDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={handlePropertyChange}
+                        canvasNodes={canvasNodes}
                     />
                 ) : effectiveNodeType === 'service' ? (
                     <SpaceServiceNodeInspector
@@ -88,12 +91,14 @@ export const SpaceCanvasRightSidebarView = ({
                         nodeId={currentlySelectedNodeInformation.id}
                         onArtifactStatusChange={handleArtifactStatusChange}
                         onPropertyChange={handlePropertyChange}
+                        canvasNodes={canvasNodes}
                     />
                 ) : effectiveNodeType === 'template' ? (
                     <SpaceTemplateNodeInspector
                         templateData={currentlySelectedNodeInformation.data as SpaceTemplateDomainData}
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={handlePropertyChange}
+                        canvasNodes={canvasNodes}
                     />
                 ) : (
                     <GenericNodeInspector nodeInformation={currentlySelectedNodeInformation} />

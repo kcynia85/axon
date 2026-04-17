@@ -3,13 +3,6 @@
 import { useState } from "react";
 import { SpaceCrewDomainData, TemplateArtefact, TemplateContext } from "../../domain/types";
 
-const DEFAULT_CREW_CONTEXT: TemplateContext[] = [
-    { id: 'creq_1', label: 'market_research_data', expectedType: 'json' },
-    { id: 'creq_2', label: 'strategic_goals', expectedType: 'any' }
-];
-
-const DEFAULT_CREW_ROLES = ['Web Researcher', 'Content Writer'];
-
 export const useCrewInspectorBaseLogic = (
     data: SpaceCrewDomainData,
     onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void
@@ -29,12 +22,12 @@ export const useCrewInspectorBaseLogic = (
     const isDone = data.state === 'done';
     const isAborted = data.state === 'aborted';
 
-    const roles = data.roles || DEFAULT_CREW_ROLES;
+    const roles = data.roles || [];
 
-    // Derived state - React Compiler handles optimization
-    const tasks = (data.tasks && data.tasks.length > 0) ? data.tasks : roles.map((role, i) => ({
+    // Priorytetyzujemy zadania wstrzyknięte do Node'a
+    const tasks = data.tasks || roles.map((role, i) => ({
         id: `task_${i}`,
-        label: `Perform analysis for ${role}`,
+        label: `Zadanie dla: ${role}`,
         status: 'pending' as const,
         assignedAgentTitle: role
     }));
@@ -46,9 +39,7 @@ export const useCrewInspectorBaseLogic = (
     const totalTasks = tasks.length;
     const progressValue = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-    const contextRequirements = (data.context_requirements && data.context_requirements.length > 0) 
-        ? data.context_requirements 
-        : DEFAULT_CREW_CONTEXT;
+    const contextRequirements = data.context_requirements || [];
 
     const handleTaskLabelChange = (taskId: string, newLabel: string) => {
         const nextTasks = tasks.map(t => t.id === taskId ? { ...t, label: newLabel } : t);
@@ -116,8 +107,9 @@ export const useCrewInspectorBaseLogic = (
     const isContextComplete = missingFields.length === 0;
 
     const consultationQuestions = data.consultation_questions || [];
-    const allQuestionsAnswered = consultationQuestions.length > 0 && 
-        consultationQuestions.every(q => !!consultationAnswers[q.id] || !!q.answer);
+    const allQuestionsAnswered = consultationQuestions.length > 0 ? 
+        consultationQuestions.every(q => !!consultationAnswers[q.id] || !!q.answer)
+        : true;
 
     return {
         consultationAnswers,

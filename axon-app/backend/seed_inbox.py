@@ -3,14 +3,13 @@ import sys
 import os
 from uuid import uuid4, UUID
 from datetime import timedelta
-from sqlalchemy import select, delete
+from sqlalchemy import select
 
 # Add backend to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.shared.infrastructure.database import AsyncSessionLocal
-from app.modules.projects.infrastructure.tables import ProjectTable, ArtifactTable, KeyResourceTable
-from app.modules.spaces.infrastructure.tables import SpaceTable
+from app.modules.projects.infrastructure.tables import ProjectTable, ArtifactTable
 from app.modules.inbox.infrastructure.tables import InboxItemTable
 from app.modules.inbox.domain.enums import InboxItemStatus, InboxItemType, InboxItemPriority
 from app.shared.utils.time import now_utc

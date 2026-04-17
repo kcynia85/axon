@@ -2,7 +2,6 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 from app.modules.system.infrastructure.repo import SystemRepository
-from app.modules.system.domain.models import MetaAgent
 from app.modules.system.infrastructure.tables import MetaAgentTable
 
 @pytest.fixture

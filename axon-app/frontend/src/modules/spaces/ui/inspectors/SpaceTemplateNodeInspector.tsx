@@ -12,7 +12,8 @@ import type { SpaceTemplateInspectorProperties } from "../types";
 export const SpaceTemplateNodeInspector = ({ 
     templateData, 
     nodeId,
-    onPropertyChange 
+    onPropertyChange,
+    canvasNodes
 }: SpaceTemplateInspectorProperties) => {
     const logic = useSpaceTemplateInspectorLogic(templateData, onPropertyChange as any);
 
@@ -29,6 +30,7 @@ export const SpaceTemplateNodeInspector = ({
             onArtefactLinkChange={logic.handleArtefactLinkChange}
             onArtefactStatusChange={logic.handleArtefactStatusChange}
             onArtefactOutputToggle={logic.handleArtefactOutputToggle}
+            canvasNodes={canvasNodes}
         />
     );
 };

@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
-from datetime import datetime
 from app.modules.settings.infrastructure.repo import SettingsRepository
 from app.modules.settings.domain.models import LLMProvider
 from app.modules.settings.infrastructure.tables import LLMProviderTable

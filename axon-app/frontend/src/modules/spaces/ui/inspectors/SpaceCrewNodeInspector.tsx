@@ -14,37 +14,43 @@ export const SpaceCrewNodeInspector = ({
     crewData, 
     nodeId,
     onStatusChange,
-    onPropertyChange
+    onPropertyChange,
+    canvasNodes
 }: SpaceCrewInspectorProperties) => {
-    const processType = crewData.process_type || 'sequential';
+    // We check multiple sources for the process type to be as robust as possible
+    const rawProcessType = (crewData.process_type || (crewData as any).crew_process_type || 'sequential') as string;
+    const processType = rawProcessType.toLowerCase();
 
     switch (processType) {
         case 'hierarchical':
             return (
                 <SpaceCrewHierarchicalNodeInspector 
-                    data={crewData} 
+                    crewData={crewData} 
                     nodeId={nodeId} 
                     onStatusChange={onStatusChange} 
                     onPropertyChange={onPropertyChange} 
+                    canvasNodes={canvasNodes}
                 />
             );
         case 'parallel':
             return (
                 <SpaceCrewParallelNodeInspector 
-                    data={crewData} 
+                    crewData={crewData} 
                     nodeId={nodeId} 
                     onStatusChange={onStatusChange} 
                     onPropertyChange={onPropertyChange} 
+                    canvasNodes={canvasNodes}
                 />
             );
         case 'sequential':
         default:
             return (
                 <SpaceCrewSequentialNodeInspector 
-                    data={crewData} 
+                    crewData={crewData} 
                     nodeId={nodeId} 
                     onStatusChange={onStatusChange} 
                     onPropertyChange={onPropertyChange} 
+                    canvasNodes={canvasNodes}
                 />
             );
     }

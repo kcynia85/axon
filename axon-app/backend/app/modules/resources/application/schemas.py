@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 from app.modules.resources.domain.enums import (
     AutomationPlatform, AutomationHttpMethod, ValidationStatus,
-    ServiceCategory, ToolCategory, AvailabilityWorkspace
+    ServiceCategory, ToolCategory
 )
 
 # --- Prompt Archetype ---

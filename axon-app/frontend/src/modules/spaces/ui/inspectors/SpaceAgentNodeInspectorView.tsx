@@ -1,11 +1,13 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Tabs, Tab, Input, ScrollShadow, Button } from "@heroui/react";
 import { 
   Bot, Layers, FileText, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, ShieldCheck, Zap, CircleStop,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { type Node } from "@xyflow/react";
 import { cn } from "@/shared/lib/utils";
 import { SpaceCrewContextTab } from "./crews/shared/SpaceCrewContextTab";
 import { SpaceCrewArtefactsTab } from "./crews/shared/SpaceCrewArtefactsTab";
@@ -17,12 +19,13 @@ export type SpaceAgentNodeInspectorViewProperties = {
     readonly actions: any;
     readonly agentData: any;
     readonly nodeId: string;
+    readonly canvasNodes: Node[];
 };
 
 /**
  * SpaceAgentNodeInspectorView - Pure view component for agent node details.
  */
-export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId }: SpaceAgentNodeInspectorViewProperties) => {
+export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId, canvasNodes }: SpaceAgentNodeInspectorViewProperties) => {
     return (
         <SpaceInspectorPanel>
             <Tabs 
@@ -42,6 +45,35 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId 
                 <Tab key="agent" title={<div className="flex items-center gap-2"><Bot size={12}/> Agent {state.isDone && <CheckCircle2 size={10} className="text-white"/>}</div>}>
                     <div className="h-[calc(100vh-192px)]">
                         <ScrollShadow className="p-8 h-full pb-48">
+                            {/* HEADER / VISUAL SECTION */}
+                            <div className="mb-10 flex flex-col items-center text-center space-y-4">
+                                <div className="relative">
+                                    <div className="w-16 h-16 rounded-full border-4 border-zinc-700 bg-black flex items-center justify-center overflow-hidden shadow-2xl relative shrink-0">
+                                        {agentData.agent_visual_url ? (
+                                            <Image 
+                                                src={agentData.agent_visual_url} 
+                                                alt={agentData.label}
+                                                fill
+                                                sizes="64px"
+                                                className="object-cover object-top scale-110 transition-all duration-500 bg-black"
+                                            />
+                                        ) : (
+                                            <Bot size={24} className="text-zinc-500" />
+                                        )}
+                                    </div>
+                                    <div className={cn(
+                                        "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-black flex items-center justify-center",
+                                        state.isWorking ? "bg-blue-500 animate-pulse" : state.isDone ? "bg-green-500" : "bg-zinc-700"
+                                    )}>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <h2 className="text-lg font-black text-white tracking-tighter">{agentData.label}</h2>
+                                    <p className="text-[16px] font-black text-zinc-500">{agentData.agent_name || "Autonomous Agent"}</p>
+                                </div>
+                            </div>
+
                             {(state.isMissingContext || state.isBriefing) && (
                                 <div className="space-y-6">
                                     <div className="p-4 bg-zinc-900/30 border border-zinc-800 rounded-xl space-y-2">
@@ -49,7 +81,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId 
                                             <AlertCircle size={12} />
                                             <h3 className="text-[9px] font-black uppercase tracking-widest">Agent Goal</h3>
                                         </div>
-                                        <p className="text-[10px] text-zinc-400 font-medium italic leading-relaxed">
+                                        <p className="text-[12px] text-zinc-400 font-medium leading-relaxed">
                                             {state.isContextComplete 
                                                 ? "Wszystkie dane są gotowe. Możemy przygotować briefing i rozpocząć generowanie treści." 
                                                 : `Aby Agent mógł pracować, uzupełnij wymagane parametry w zakładce Context.`}
@@ -305,10 +337,11 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId 
                         <SpaceCrewContextTab 
                             isContextComplete={state.isContextComplete}
                             contextRequirements={state.contextRequirements}
-                            nodeSearch={state.nodeSearch}
-                            setNodeSearch={actions.setNodeSearch}
-                            handleContextLinkChange={actions.handleContextLinkChange}
-                            handleLinkContextFromNode={actions.handleLinkContextFromNode}
+                            nodeSearchQuery={state.nodeSearch}
+                            onSearchQueryChange={actions.setNodeSearch}
+                            onContextLinkChange={actions.handleContextLinkChange}
+                            onLinkContextFromNode={actions.handleLinkContextFromNode}
+                            canvasNodes={canvasNodes}
                         />
                     </div>
                 </Tab>

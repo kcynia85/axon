@@ -10,6 +10,7 @@ import {
   mapServiceWorkspaceConfigToNodeData,
   mapAutomationWorkspaceConfigToNodeData
 } from '../../domain/defaults';
+import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from '../../domain/constants';
 
 export const useSpaceCanvasDragAndDropLogic = (
   updateCanvasNodes: React.Dispatch<React.SetStateAction<Node[]>>
@@ -40,7 +41,7 @@ export const useSpaceCanvasDragAndDropLogic = (
     const flowPos = screenToFlowPosition({ x: event.clientX, y: event.clientY });
     const allNodes = getNodes();
     
-    const parentZone = [...allNodes].reverse().find(node => {
+    let parentZone = [...allNodes].reverse().find(node => {
       if (node.type !== 'zone') return false;
       
       let absX = node.position.x;
@@ -70,6 +71,27 @@ export const useSpaceCanvasDragAndDropLogic = (
       }
       return true;
     });
+
+    let extraNodes: Node[] = [];
+    if (assignedZoneColor && !parentZone) {
+        // Automatically create a zone if it doesn't exist for the assigned color
+        const zoneId = `zone_${assignedZoneColor}_${Math.random().toString(36).substring(2, 11)}`;
+        const workspaceUnit = Object.entries(MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS).find(([_, color]) => color === assignedZoneColor);
+        const workspaceLabel = workspaceUnit ? workspaceUnit[0].replace('ws-', '').toUpperCase() : assignedZoneColor.toUpperCase();
+
+        parentZone = {
+            id: zoneId,
+            type: 'zone',
+            position: { x: flowPos.x - 250, y: flowPos.y - 200 },
+            data: {
+                label: workspaceLabel,
+                color: assignedZoneColor,
+                zoneColor: assignedZoneColor,
+            },
+            style: { width: 500, height: 400 },
+        };
+        extraNodes.push(parentZone);
+    }
 
     if (assignedZoneColor && !parentZone) return;
 
@@ -114,14 +136,14 @@ export const useSpaceCanvasDragAndDropLogic = (
       extent: (parentZone && nodeTypeForNewNode !== 'zone') ? 'parent' : undefined,
       data: {
         ...deserializedTransferData,
-        ...entityCanvasData,
         state: 'missing_context',
         zoneColor: assignedZoneColor || (parentZone ? (parentZone.data.color || parentZone.data.zoneColor) : 'purple'),
+        ...entityCanvasData, // Merging entity-specific data (tasks, roles, mapped types) last
       },
       style: nodeTypeForNewNode === 'zone' ? { width: 500, height: 400 } : undefined,
     };
 
-    updateCanvasNodes((previousCanvasNodes) => previousCanvasNodes.concat(newlyCreatedNode));
+    updateCanvasNodes((previousCanvasNodes) => [...extraNodes, ...previousCanvasNodes, newlyCreatedNode]);
   };
 
   return { handleDragOverEvent, handleDropEvent };

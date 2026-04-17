@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from uuid import UUID
 from typing import Any, List, Optional
-from app.modules.spaces.domain.models import Space, SpaceNode, NodeEdge, SpaceZone
+from app.modules.spaces.domain.models import Space
 
 # --- React Flow Specific Schemas ---
 
@@ -10,6 +10,8 @@ class ReactFlowNodePosition(BaseModel):
     y: float
 
 class ReactFlowNodeData(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    
     label: Optional[str] = None
     status: str # NodeExecutionStatus
     # Allows generic key-value pairs for component specific data (Agent config, Crew state)
@@ -17,21 +19,27 @@ class ReactFlowNodeData(BaseModel):
     runtime: dict[str, Any] = Field(default_factory=dict) 
 
 class ReactFlowNode(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    
     id: str # UUID as string for JS
     type: str # component_type
     position: ReactFlowNodePosition
     data: ReactFlowNodeData
-    # Optional: parentNode, extent, etc. can be added if we use nested nodes (Zones)
+    width: Optional[float] = None
+    height: Optional[float] = None
 
 class ReactFlowEdge(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    
     id: str # UUID as string
     source: str # UUID
     target: str # UUID
     sourceHandle: Optional[str] = None
     targetHandle: Optional[str] = None
-    # animated: bool = False (could be derived from status)
 
 class ReactFlowViewport(BaseModel):
+    model_config = ConfigDict(extra="allow")
+    
     x: float
     y: float
     zoom: float
@@ -93,6 +101,12 @@ class SpaceDetailDTO(BaseModel):
         )
 
 # --- Incoming API Requests (Canvas Save) ---
+
+class SpaceUpdateDTO(BaseModel):
+    space_name: Optional[str] = None
+    space_description: Optional[str] = None
+    space_status: Optional[str] = None
+    project_id: Optional[UUID] = None
 
 class CanvasGraphUpdate(BaseModel):
     """

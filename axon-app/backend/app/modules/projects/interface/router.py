@@ -1,17 +1,10 @@
 from fastapi import APIRouter, Depends, status
 from typing import List
-from uuid import UUID
 
 from app.modules.projects.domain.models import Project, KeyResource, Artifact
 from app.modules.projects.infrastructure.repo import ProjectRepository
 from app.modules.projects.dependencies import get_project_repo
 from app.modules.projects.application import service
-from app.modules.projects.application.schemas import (
-    ProjectCreateDTO, 
-    ProjectUpdateDTO,
-    ResourceCreateDTO,
-    ArtifactCreateDTO
-)
 from app.api.deps import get_current_user
 from app.shared.security.schemas import UserPayload
 

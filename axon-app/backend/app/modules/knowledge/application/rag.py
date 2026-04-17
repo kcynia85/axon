@@ -1,12 +1,9 @@
 import asyncio
 from typing import List, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text
 from app.modules.knowledge.infrastructure.repo import AssetRepository, search_knowledge_hybrid
-from app.shared.infrastructure.adk import GoogleADK
 from app.modules.knowledge.domain.models import Asset
 from flashrank import Ranker, RerankRequest
-import json
 import logging
 
 try:

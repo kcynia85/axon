@@ -1,7 +1,6 @@
 from typing import Any, AsyncGenerator
 from app.shared.domain.ports.llm_gateway import LLMGateway
 from app.shared.infrastructure.adk import GoogleADK
-from app.config import settings
 import os
 
 class CurrentAdapter(LLMGateway):

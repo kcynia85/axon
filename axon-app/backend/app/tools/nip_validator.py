@@ -1,7 +1,7 @@
 from . import tool
 import httpx
 from datetime import date
-from typing import Dict, Any, Union
+from typing import Dict, Any
 
 @tool("Polish Company Lookup (NIP)", keywords=["finance", "poland", "verification"])
 def lookup_company_by_nip(nip: str) -> Dict[str, Any]:

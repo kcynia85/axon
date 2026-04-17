@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends
 from app.api.deps import get_current_user
 from app.modules.system.application.service import SystemService
 from app.modules.system.dependencies import get_system_service

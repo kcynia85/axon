@@ -2,10 +2,8 @@ import inngest
 import httpx
 from bs4 import BeautifulSoup
 import traceback
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 from app.shared.infrastructure.inngest_client import inngest_client
-from app.modules.settings.dependencies import get_settings_service
-from app.modules.settings.application.service import SettingsService
 from app.modules.settings.infrastructure.repo import SettingsRepository
 from app.shared.infrastructure.database import get_db
 

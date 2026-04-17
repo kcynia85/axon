@@ -1,7 +1,6 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
-from datetime import datetime
 from app.modules.resources.infrastructure.repo import ResourcesRepository
 from app.modules.resources.domain.models import PromptArchetype, ExternalService
 from app.modules.resources.infrastructure.tables import PromptArchetypeTable

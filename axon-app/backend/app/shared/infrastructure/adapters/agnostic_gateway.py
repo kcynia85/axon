@@ -1,6 +1,5 @@
 import httpx
 import json
-import re
 from typing import Any, AsyncGenerator, Optional
 from app.shared.domain.ports.llm_gateway import LLMGateway
 from app.modules.settings.domain.models import LLMProvider, LLMModel

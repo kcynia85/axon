@@ -20,14 +20,6 @@ import {
 import { TemplateContext } from "@/modules/spaces/domain/types";
 import { cn } from "@/shared/lib/utils";
 
-const DETECTED_WORKSPACE_OUTPUTS = [
-    { node: "User Researcher", artifact: "user_persona.json", type: "json" },
-    { node: "Interview Synthesis", artifact: "competitors_list.csv", type: "csv" },
-    { node: "Figma Sync", artifact: "design_assets.zip", type: "zip" },
-    { node: "Brand Engine", artifact: "logo_primary.png", type: "image" },
-    { node: "Copywriter Agent", artifact: "draft_v1.json", type: "json" },
-];
-
 export type SpaceCrewContextTabProperties = {
     readonly isContextComplete: boolean;
     readonly contextRequirements: readonly TemplateContext[];
@@ -35,6 +27,7 @@ export type SpaceCrewContextTabProperties = {
     readonly onSearchQueryChange: (query: string) => void;
     readonly onContextLinkChange: (contextId: string, link: string) => void;
     readonly onLinkContextFromNode: (contextId: string, nodeLabel: string, artifactLabel: string) => void;
+    readonly canvasNodes?: any[];
 };
 
 export const SpaceCrewContextTab = ({
@@ -42,16 +35,30 @@ export const SpaceCrewContextTab = ({
     nodeSearchQuery,
     onSearchQueryChange,
     onContextLinkChange,
-    onLinkContextFromNode
+    onLinkContextFromNode,
+    canvasNodes = []
 }: SpaceCrewContextTabProperties) => {
+    const workflowOutputs = React.useMemo(() => {
+        if (!canvasNodes) return [];
+        
+        return canvasNodes.flatMap(node => {
+            const artefacts = (node.data as any)?.artefacts || [];
+            return artefacts
+                .filter((art: any) => art.isOutput)
+                .map((art: any) => ({
+                    node: (node.data as any)?.label || "Unknown Node",
+                    artifact: art.label || "Unnamed Artefact",
+                    type: "output", // Defaulting to output type
+                    id: art.id
+                }));
+        });
+    }, [canvasNodes]);
+
     return (
         <ScrollShadow className="h-full px-8 pt-10 pb-48">
             <div className="space-y-12">
                 {contextRequirements.map((contextItem) => {
-                    const compatibleOutputs = DETECTED_WORKSPACE_OUTPUTS.filter(outputItem =>
-                        (!contextItem.expectedType ||
-                        contextItem.expectedType === 'any' ||
-                        outputItem.type === contextItem.expectedType) &&
+                    const compatibleOutputs = workflowOutputs.filter(outputItem =>
                         (outputItem.node.toLowerCase().includes(nodeSearchQuery.toLowerCase()) || 
                          outputItem.artifact.toLowerCase().includes(nodeSearchQuery.toLowerCase()))
                     );
@@ -102,7 +109,7 @@ export const SpaceCrewContextTab = ({
                                         variant="bordered"
                                         placeholder="Paste link or link from node..."
                                         value={contextItem.link || ""}
-                                        onValueChange={(value) => onContextLinkChange(contextItem.id, value)}
+                                        onChange={(e) => onContextLinkChange(contextItem.id, e.target.value)}
                                         startContent={<LinkIcon size={14} className={cn(isMissing ? "text-red-500/40" : "text-white")} />}
                                         endContent={!isMissing && <CheckCircle2 size={16} className="text-white" />}
                                         classNames={{

@@ -9,6 +9,7 @@ import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { SpaceList } from "./SpaceList";
 import { RecentlyUsed } from "./RecentlyUsed";
 import type { SpacesBrowserProperties } from "./types";
+import { SpacesSkeleton } from "./SpacesSkeleton";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
@@ -22,7 +23,7 @@ const QUICK_FILTERS: readonly QuickFilter[] = [
   { label: "By Type", groupId: "type" },
 ];
 
-export const SpacesBrowser = ({ initialSpaces = [] }: SpacesBrowserProperties) => {
+export const SpacesBrowser = ({ initialSpaces = [], isLoading }: SpacesBrowserProperties) => {
   const {
     searchQuery,
     setSearchQuery,
@@ -40,6 +41,10 @@ export const SpacesBrowser = ({ initialSpaces = [] }: SpacesBrowserProperties) =
     handleApplyFilters,
     setPendingFilterIds
   } = useSpacesBrowser(initialSpaces);
+
+  if (isLoading) {
+    return <SpacesSkeleton />;
+  }
 
   return (
     <BrowserLayout

@@ -21,16 +21,12 @@ export const useSpaceAgentInspector = (data: any, nodeId: string, onPropertyChan
     const isAlignment = data.state === 'alignment';
     const isCritique = data.state === 'critique';
 
-    const consultationQuestions = data.consultation_questions || (data.requires_consultation ? [
-        { id: 'q1', question: 'Do kogo kierujemy ten komunikat? (B2B/B2C)' },
-        { id: 'q2', question: 'Jaki jest główny cel tego zadania?' },
-        { id: 'q3', question: 'Czy są jakieś specyficzne wytyczne co do stylu?' },
-    ] : []);
+    const consultationQuestions = data.consultation_questions || [];
 
-    const allQuestionsAnswered = consultationQuestions.every((q: any) => 
+    const allQuestionsAnswered = consultationQuestions.length > 0 ? consultationQuestions.every((q: any) => 
         (q.answer && q.answer.trim().length > 0) || 
         (consultationAnswers[q.id] && consultationAnswers[q.id].trim().length > 0)
-    );
+    ) : true;
 
     useQuery({
         queryKey: ["agent-worker", nodeId, data.state],
@@ -44,7 +40,11 @@ export const useSpaceAgentInspector = (data: any, nodeId: string, onPropertyChan
                 } else if (nextProgress === 100) {
                     nextState = 'done';
                 }
-                onPropertyChange({ progress: nextProgress, metrics: { ...data.metrics, tokens: nextTokens }, state: nextState });
+                onPropertyChange({ 
+                    progress: nextProgress, 
+                    metrics: { ...data.metrics, tokens: nextTokens }, 
+                    state: nextState 
+                });
                 return nextProgress;
             }
             return data.progress;
@@ -53,20 +53,15 @@ export const useSpaceAgentInspector = (data: any, nodeId: string, onPropertyChan
         enabled: isWorking && data.progress < 100,
     });
 
-    const contextRequirements: readonly TemplateContext[] = data.context_requirements || [
-        { id: '1', label: 'github_repo_url', expectedType: 'any' },
-        { id: '2', label: 'deployment_target', expectedType: 'json' },
-    ];
-    const missingFields = contextRequirements.filter(r => !r.link);
+    const contextRequirements: readonly TemplateContext[] = data.context_requirements || [];
+    const missingFields = contextRequirements.filter(r => !r.link && !r.sourceNodeLabel);
     const isContextComplete = missingFields.length === 0;
 
-    const workingLogs = [
-        { threshold: 0, label: 'Przygotowanie struktury' },
-        { threshold: 20, label: 'Analiza dostarczonych danych' },
-        { threshold: 45, label: 'Generowanie treści merytorycznej' },
-        { threshold: 70, label: 'Syntetyzowanie wniosków' },
-        { threshold: 90, label: 'Finalizacja dokumentu' },
-    ];
+    // Use plan_steps from entity, evenly distributed across 0-100 progress thresholds
+    const workingLogs = (data.plan_steps || []).map((step: any, idx: number, arr: any[]) => ({
+        threshold: Math.floor((idx / Math.max(arr.length, 1)) * 100),
+        label: step.label
+    }));
     
     const simulatedTokens = data.metrics?.tokens || Math.floor((data.progress / 100) * 7000);
     const elapsedSeconds = Math.floor((data.progress / 100) * 120);
@@ -91,7 +86,7 @@ export const useSpaceAgentInspector = (data: any, nodeId: string, onPropertyChan
         const nextState = data.requires_alignment ? 'alignment' : 'briefing';
         transitionTo(nextState, { 
             consultation_questions: updatedQuestions,
-            alignment_summary: data.requires_alignment ? "Zanalizowałem dostarczone dane. Moim celem jest przygotowanie raportu zorientowanego na wyniki, biorąc pod uwagę ograniczenia budżetowe oraz specyficę branży kreatywnej." : undefined,
+            alignment_summary: data.alignment_summary || "Gotowy.",
         });
     };
 
@@ -112,10 +107,7 @@ export const useSpaceAgentInspector = (data: any, nodeId: string, onPropertyChan
     };
 
     const getCurrentArtefacts = () => {
-        if (data.artefacts && data.artefacts.length > 0) return data.artefacts;
-        return [
-            { id: 'art_1', label: 'initial_draft.md', status: 'in_review', link: 'https://axon.ai/docs/draft_v1.md' }
-        ];
+        return data.artefacts || [];
     };
 
     const handleArtefactStatusChange = (id: string, status: TemplateArtefact['status']) => {
@@ -149,7 +141,7 @@ export const useSpaceAgentInspector = (data: any, nodeId: string, onPropertyChan
         toggleVersionHistory(artefactId);
     };
 
-    const currentTaskLabel = workingLogs.find((log, i) => 
+    const currentTaskLabel = workingLogs.find((log: any, i: number) => 
         data.progress >= log.threshold && (i === workingLogs.length - 1 || data.progress < workingLogs[i+1].threshold)
     )?.label;
 

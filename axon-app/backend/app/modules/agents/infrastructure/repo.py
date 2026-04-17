@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete, or_
+from sqlalchemy import select, update, or_
 from typing import Optional, List
 from uuid import UUID
 from app.modules.agents.domain.models import AgentConfig, ChatSession

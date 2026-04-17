@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { AutomationSidePeekContent } from "@/modules/workspaces/ui/AutomationSidePeekContent";
+import { AutomationSidePeekContent } from "@/modules/workspaces/ui/AutomationSidePeek";
 
 export default function AutomationSidePeekPage() {
   const params = useParams();

@@ -3,7 +3,6 @@ from app.shared.infrastructure.inngest_client import inngest_client
 # from app.shared.infrastructure.adk import GoogleADK
 # from app.modules.agents.application.context_composer import ContextComposer
 # from app.modules.agents.application.definitions import get_agent_definition, CRITIC_INSTRUCTION, REFINER_INSTRUCTION
-from app.modules.agents.domain.enums import AgentRole
 
 # New Imports for Persistence
 # from app.shared.infrastructure.database import AsyncSessionLocal
@@ -31,7 +30,6 @@ async def generic_agent_workflow(ctx: inngest.Context, step: inngest.Step):
     """
     Generic Durable Workflow for Standard Agents (Researcher, Builder, Manager).
     """
-    import os
     import traceback
     
     print(f"WORKFLOW STARTED: agent-generic-turn | Event: {ctx.event.id}")

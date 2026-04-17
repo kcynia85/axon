@@ -1,0 +1,150 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - main [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - link "Spaces" [ref=e8] [cursor=pointer]:
+              - /url: /spaces
+            - generic [ref=e9]: /
+            - generic [ref=e10]: Project Phoenix
+          - generic [ref=e13]:
+            - heading "Project Phoenix" [level=1] [ref=e14]
+            - generic [ref=e15]:
+              - text: "Linked:"
+              - link "Axon Redesign" [ref=e16] [cursor=pointer]:
+                - /url: /projects/axon-redesign
+        - application [ref=e17]:
+          - img
+          - generic "Control Panel" [ref=e20]:
+            - button "Zoom In" [active] [ref=e21] [cursor=pointer]:
+              - img [ref=e22]
+            - button "Zoom Out" [ref=e24] [cursor=pointer]:
+              - img [ref=e25]
+            - button "Fit View" [ref=e27] [cursor=pointer]:
+              - img [ref=e28]
+            - button "Toggle Interactivity" [ref=e30] [cursor=pointer]:
+              - img [ref=e31]
+          - generic [ref=e36]:
+            - generic [ref=e37]:
+              - generic [ref=e38]:
+                - button [ref=e39] [cursor=pointer]:
+                  - img [ref=e40]
+                - generic [ref=e42]: Back to Units
+              - heading "Discovery" [level=3] [ref=e43]
+            - generic [ref=e48]:
+              - img [ref=e49]
+              - textbox "Search components..." [ref=e52]
+              - button "clear input":
+                - img
+            - generic [ref=e54]:
+              - generic [ref=e55]:
+                - heading "Patterns 0" [level=2] [ref=e56]:
+                  - button "Patterns 0" [expanded] [ref=e57]:
+                    - generic [ref=e60]:
+                      - generic [ref=e61]: Patterns
+                      - generic [ref=e62]: "0"
+                    - img [ref=e64]
+                - region "Patterns 0" [ref=e67]:
+                  - paragraph [ref=e69]: No results found
+              - separator [ref=e70]
+              - generic [ref=e71]:
+                - heading "Crews 3" [level=2] [ref=e72]:
+                  - button "Crews 3" [expanded] [ref=e73]:
+                    - generic [ref=e76]:
+                      - generic [ref=e77]: Crews
+                      - generic [ref=e78]: "3"
+                    - img [ref=e80]
+                - region "Crews 3" [ref=e83]:
+                  - generic [ref=e84]:
+                    - generic [ref=e85]:
+                      - img [ref=e86]
+                      - img [ref=e94]
+                      - generic [ref=e99]: Test 5 Sequential
+                      - button [ref=e100] [cursor=pointer]:
+                        - img [ref=e101]
+                    - generic [ref=e102]:
+                      - img [ref=e103]
+                      - img [ref=e111]
+                      - generic [ref=e116]: Test 4
+                      - button [ref=e117] [cursor=pointer]:
+                        - img [ref=e118]
+                    - generic [ref=e119]:
+                      - img [ref=e120]
+                      - img [ref=e128]
+                      - generic [ref=e133]: Test3
+                      - button [ref=e134] [cursor=pointer]:
+                        - img [ref=e135]
+              - separator [ref=e136]
+              - generic [ref=e137]:
+                - heading "Agents 2" [level=2] [ref=e138]:
+                  - button "Agents 2" [expanded] [ref=e139]:
+                    - generic [ref=e142]:
+                      - generic [ref=e143]: Agents
+                      - generic [ref=e144]: "2"
+                    - img [ref=e146]
+                - region "Agents 2" [ref=e149]:
+                  - generic [ref=e150]:
+                    - generic [ref=e151]:
+                      - img [ref=e152]
+                      - img [ref=e160]
+                      - generic [ref=e163]: Quality Assurance Specialist
+                      - button [ref=e164] [cursor=pointer]:
+                        - img [ref=e165]
+                    - generic [ref=e166]:
+                      - img [ref=e167]
+                      - img [ref=e175]
+                      - generic [ref=e178]: Researcher Specialist
+                      - button [ref=e179] [cursor=pointer]:
+                        - img [ref=e180]
+              - separator [ref=e181]
+              - heading "Templates 1" [level=2] [ref=e183]:
+                - button "Templates 1" [ref=e184]:
+                  - generic [ref=e187]:
+                    - generic [ref=e188]: Templates
+                    - generic [ref=e189]: "1"
+                  - img [ref=e191]
+              - separator [ref=e193]
+              - heading "Services 0" [level=2] [ref=e195]:
+                - button "Services 0" [ref=e196]:
+                  - generic [ref=e199]:
+                    - generic [ref=e200]: Services
+                    - generic [ref=e201]: "0"
+                  - img [ref=e203]
+              - separator [ref=e205]
+              - heading "Automations 0" [level=2] [ref=e207]:
+                - button "Automations 0" [ref=e208]:
+                  - generic [ref=e211]:
+                    - generic [ref=e212]: Automations
+                    - generic [ref=e213]: "0"
+                  - img [ref=e215]
+          - link "React Flow attribution" [ref=e219] [cursor=pointer]:
+            - /url: https://reactflow.dev
+            - text: React Flow
+        - generic:
+          - generic: "N"
+    - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e226] [cursor=pointer]:
+    - img [ref=e227]
+  - generic [ref=e231]:
+    - generic [ref=e233]:
+      - generic [ref=e234]:
+        - button "Select element" [ref=e237] [cursor=pointer]:
+          - img [ref=e238]
+        - generic:
+          - generic:
+            - button "Open comments":
+              - generic:
+                - img
+        - generic:
+          - generic:
+            - button "Copy all comments":
+              - img
+      - button "Disable React Grab" [pressed] [ref=e242] [cursor=pointer]
+    - button "Collapse toolbar" [ref=e245] [cursor=pointer]:
+      - img [ref=e246]
+  - alert [ref=e248]
+```

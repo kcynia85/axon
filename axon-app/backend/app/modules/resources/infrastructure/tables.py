@@ -1,11 +1,9 @@
-from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, Enum as SAEnum, Text
+from sqlalchemy import Column, String, DateTime, Boolean, Enum as SAEnum
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
-from sqlalchemy.orm import relationship
 from app.shared.infrastructure.base import Base
 from app.shared.utils.time import now_utc
 from app.modules.resources.domain.enums import (
-    AutomationPlatform, AutomationHttpMethod, ValidationStatus,
-    ServiceCategory, ToolCategory, AvailabilityWorkspace
+    ToolCategory
 )
 
 class PromptArchetypeTable(Base):

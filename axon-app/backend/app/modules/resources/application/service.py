@@ -1,6 +1,6 @@
 import logging
 from uuid import UUID, uuid4
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Any
 from app.modules.resources.infrastructure.repo import ResourcesRepository
 from app.modules.resources.domain.models import (
     PromptArchetype, ExternalService, ServiceCapability, InternalTool, Automation
@@ -132,7 +132,6 @@ class ResourcesService:
         Receives a tool from the remote dev environment, saves it, and triggers a sync.
         Uses absolute path to avoid issues with current working directory.
         """
-        import os
         from pathlib import Path
         import logging
         

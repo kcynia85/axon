@@ -1,12 +1,11 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete, func, union, or_, String, cast
+from sqlalchemy import select, update, delete, func, or_, String, cast
 from sqlalchemy.orm import selectinload
 from app.modules.workspaces.domain.models import Pattern, Template, Crew, ExternalService, ServiceCapability, Automation, TrashItem
 from app.modules.workspaces.infrastructure.tables import (
-    PatternTable, TemplateTable, CrewTable, crew_agents_association,
-    ExternalServiceTable, ServiceCapabilityTable, AutomationTable, AutomationExecutionTable
+    PatternTable, TemplateTable, CrewTable, ExternalServiceTable, ServiceCapabilityTable, AutomationTable
 )
 from app.shared.utils.time import now_utc
 
@@ -119,11 +118,11 @@ class WorkspaceRepository:
             template_keywords=row.template_keywords or [],
             template_inputs=row.template_inputs or [],
             template_outputs=row.template_outputs or [],
-            availability_workspace=row.availability_workspace,
+            availability_workspace=row.availability_workspace or [],
             created_at=row.created_at,
-            updated_at=row.updated_at
+            updated_at=row.updated_at,
+            deleted_at=row.deleted_at
         )
-
     # --- Crews ---
     async def list_crews(self, workspace: Optional[str] = None, limit: int = 100, offset: int = 0) -> List[Crew]:
         stmt = select(CrewTable).options(selectinload(CrewTable.agents)).where(CrewTable.deleted_at == None).order_by(CrewTable.created_at.desc())
@@ -214,6 +213,8 @@ class WorkspaceRepository:
             service_description=service.service_description,
             service_category=service.service_category,
             service_url=service.service_url,
+            service_input_schema=service.service_input_schema,
+            service_output_schema=service.service_output_schema,
             service_keywords=service.service_keywords,
             availability_workspace=service.availability_workspace,
             created_at=service.created_at,
@@ -270,7 +271,10 @@ class WorkspaceRepository:
             id=row.id, service_name=row.service_name, 
             service_description=row.service_description,
             service_category=row.service_category,
-            service_url=row.service_url, service_keywords=row.service_keywords or [],
+            service_url=row.service_url, 
+            service_input_schema=row.service_input_schema,
+            service_output_schema=row.service_output_schema,
+            service_keywords=row.service_keywords or [],
             availability_workspace=row.availability_workspace,
             capabilities=[ServiceCapability(id=c.id, capability_name=c.capability_name, capability_description=c.capability_description, external_service_id=c.external_service_id) for c in row.capabilities],
             created_at=row.created_at, updated_at=row.updated_at

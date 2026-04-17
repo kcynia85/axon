@@ -9,7 +9,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app.shared.infrastructure.database import AsyncSessionLocal
 from app.modules.projects.infrastructure.tables import ProjectTable
-from app.modules.projects.domain.enums import ProjectStatus
 from app.modules.spaces.infrastructure.tables import SpaceTable, SpaceNodeTable, SpaceZoneTable
 from app.modules.spaces.domain.enums import SpaceStatus, WorkspaceDomain, NodeExecutionStatus
 

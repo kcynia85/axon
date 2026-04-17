@@ -1,6 +1,7 @@
 // frontend/src/modules/spaces/ui/nodes/pure/SpaceAgentNodeView.tsx
 
 import React from 'react';
+import Image from 'next/image';
 import { Bot, AlertCircle } from "lucide-react";
 import { SpaceAgentViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
@@ -28,12 +29,24 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
 
         {/* Content Layer - Isolated from shimmer to prevent jitter */}
         <div className="relative z-10 w-full h-full">
-            <div className={viewModel.visual.headerClassName}>
-                <div className={viewModel.visual.iconClassName}>
-                    <Bot size={18} />
-                </div>
-                <div className="flex flex-col gap-0.5">
-                    <span className={viewModel.visual.titleClassName}>{viewModel.displayName}</span>
+            <div className={cn(viewModel.visual.headerClassName, "!gap-1.5")}>
+                {viewModel.visualUrl ? (
+                    <div className="w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative border-zinc-700 shrink-0 mr-3">
+                        <Image 
+                            src={viewModel.visualUrl} 
+                            alt={viewModel.displayName}
+                            fill
+                            sizes="40px"
+                            className="object-cover object-top scale-110 transition-all duration-500 bg-black"
+                        />
+                    </div>
+                ) : (
+                    <div className={cn(viewModel.visual.iconClassName, "shrink-0 mr-3")}>
+                        <Bot size={18} />
+                    </div>
+                )}
+                <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className={cn(viewModel.visual.titleClassName, "truncate")}>{viewModel.displayName}</span>
                     <span className={viewModel.visual.subtitleClassName}>{viewModel.statusText}</span>
                 </div>
             </div>
@@ -64,7 +77,7 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
                 {(viewModel.isWorking || viewModel.isDone) && (
                     <div className="flex flex-col gap-2">
                         <div className="flex justify-between items-end">
-                            <span className="text-[10px] font-bold text-zinc-400 italic">
+                            <span className="text-[10px] font-bold text-zinc-400">
                                 {viewModel.isDone ? 'Task completed' : 'Creating content...'}
                             </span>
                             <span className="text-[10px] font-black text-white tabular-nums">{viewModel.progressLabel}</span>

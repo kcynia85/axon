@@ -1,7 +1,7 @@
 import asyncio
 import sys
 import os
-from sqlalchemy import select, text
+from sqlalchemy import select
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 

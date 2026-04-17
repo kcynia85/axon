@@ -2,12 +2,10 @@ import asyncio
 import sys
 import os
 import inngest
-from uuid import UUID
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from backend.app.shared.infrastructure.inngest_client import inngest_client
-from backend.app.modules.agents.domain.enums import AgentRole
 
 async def trigger_test_event():
     print("🚀 Triggering Manual Inngest Event...")

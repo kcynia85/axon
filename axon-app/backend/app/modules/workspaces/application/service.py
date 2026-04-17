@@ -10,8 +10,7 @@ from app.modules.workspaces.application.schemas import (
     CreateTemplateRequest, UpdateTemplateRequest,
     CreateCrewRequest, UpdateCrewRequest,
     CreateExternalServiceRequest, UpdateExternalServiceRequest,
-    CreateAutomationRequest, UpdateAutomationRequest,
-    CreateCapabilityRequest
+    CreateAutomationRequest, UpdateAutomationRequest
 )
 
 # Function-First Use Cases (Standard-compliant)

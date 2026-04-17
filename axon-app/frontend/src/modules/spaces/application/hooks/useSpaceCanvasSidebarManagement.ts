@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { 
     LIST_OF_AVAILABLE_WORKSPACES, 
-    MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY,
-    MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS
+    MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS,
+    WorkspaceColor
 } from "../../domain/constants";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
+import { useAgents } from "@/modules/agents/infrastructure/useAgents";
+import { useCrews } from "@/modules/workspaces/application/useCrews";
+import { useServices, useTemplates, useAutomations } from "@/modules/workspaces/application/useWorkspaces";
 
 type WorkspaceUnitDisplay = {
     readonly identifier: string;
@@ -22,12 +25,19 @@ type ComponentItemDisplay = {
     readonly type: string;
     readonly zoneColor: string;
     readonly hoverClassName: string;
+    readonly rawData: Record<string, unknown>;
     readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
 };
 
 export const useSpaceCanvasSidebarManagement = () => {
     const [currentlySelectedWorkspaceIdentifier, setCurrentlySelectedWorkspaceIdentifier] = useState<string | null>(null);
     const [componentSearchQuery, setComponentSearchQuery] = useState("");
+
+    const { data: agents = [] } = useAgents(currentlySelectedWorkspaceIdentifier || "");
+    const { data: crews = [] } = useCrews(currentlySelectedWorkspaceIdentifier || "");
+    const { data: services = [] } = useServices(currentlySelectedWorkspaceIdentifier || "");
+    const { data: templates = [] } = useTemplates(currentlySelectedWorkspaceIdentifier || "");
+    const { data: automations = [] } = useAutomations(currentlySelectedWorkspaceIdentifier || "");
 
     const selectWorkspaceUnit = (workspaceIdentifier: string) => {
         setCurrentlySelectedWorkspaceIdentifier(workspaceIdentifier);
@@ -83,22 +93,44 @@ export const useSpaceCanvasSidebarManagement = () => {
 
     const filteredComponentCategoriesForDisplay = (() => {
         const query = componentSearchQuery.trim().toLowerCase();
-        const activeColor = currentlySelectedWorkspaceIdentifier ? MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[currentlySelectedWorkspaceIdentifier] : 'default';
+        const activeColor = currentlySelectedWorkspaceIdentifier ? MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[currentlySelectedWorkspaceIdentifier] : 'blue' as WorkspaceColor;
         const visualStyles = getVisualStylesForZoneColor(activeColor);
 
-        return Object.entries(MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY).reduce<Record<string, readonly ComponentItemDisplay[]>>((accumulator, [categoryKey, componentList]) => {
-            const filteredList = componentList
-                .filter((componentItem) => componentItem.componentName.toLowerCase().includes(query))
-                .map((componentItem) => ({
-                    identifier: componentItem.uniqueIdentifier,
-                    displayName: componentItem.componentName,
-                    type: componentItem.componentType,
+        const categories = {
+            patterns: { items: [] as any[] },
+            crews: { items: crews },
+            agents: { items: agents },
+            automations: { items: automations },
+            services: { items: services },
+            templates: { items: templates },
+        };
+
+        return Object.entries(categories).reduce<Record<string, readonly ComponentItemDisplay[]>>((accumulator, [categoryKey, category]) => {
+            const filteredList = (category.items as any[])
+                .map(item => ({
+                    id: item.id,
+                    name: item.agent_role_text || item.crew_name || item.service_name || item.template_name || item.automation_name || "Unknown",
+                    type: categoryKey === 'crews' ? 'crew' : 
+                          categoryKey === 'agents' ? 'agent' : 
+                          categoryKey === 'services' ? 'service' :
+                          categoryKey === 'templates' ? 'template' :
+                          categoryKey === 'automations' ? 'automation' :
+                          categoryKey === 'patterns' ? 'pattern' : 'unknown',
+                    rawData: item
+                }))
+                .filter((item) => item.name.toLowerCase().includes(query))
+                .map((item) => ({
+                    identifier: item.id,
+                    displayName: item.name,
+                    type: item.type,
                     zoneColor: activeColor,
                     hoverClassName: visualStyles.level1HoverBackgroundClassName,
+                    rawData: item.rawData,
                     onDragStart: (dragEvent: React.DragEvent<HTMLElement>) => 
-                        handleDragAndDropStart(dragEvent, 'entity', {
-                            label: componentItem.componentName,
-                            type: componentItem.componentType,
+                        handleDragAndDropStart(dragEvent, item.type === 'pattern' ? 'pattern' : 'entity', {
+                            ...item.rawData,
+                            label: item.name,
+                            type: item.type,
                             zoneColor: activeColor
                         })
                 }));

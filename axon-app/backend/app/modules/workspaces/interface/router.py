@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-from typing import List, Optional
+from typing import List
 from uuid import UUID
 
 from app.api.deps import get_current_user
 from app.modules.workspaces.application.service import (
-    get_unique_workspaces_use_case,
     list_patterns_use_case, get_pattern_use_case, create_pattern_use_case, update_pattern_use_case, delete_pattern_use_case,
     list_templates_use_case, get_template_use_case, create_template_use_case, update_template_use_case, delete_template_use_case,
     list_crews_use_case, get_crew_use_case, create_crew_use_case, update_crew_use_case, delete_crew_use_case,
@@ -13,13 +12,8 @@ from app.modules.workspaces.application.service import (
     get_trash_use_case, restore_item_use_case, purge_item_use_case
 )
 from app.modules.workspaces.application.schemas import (
-    PatternResponse, CreatePatternRequest, UpdatePatternRequest,
-    TemplateResponse, CreateTemplateRequest, UpdateTemplateRequest,
-    CrewResponse, CreateCrewRequest, UpdateCrewRequest,
-    WorkspaceResponse,
-    ExternalServiceResponse, CreateExternalServiceRequest, UpdateExternalServiceRequest,
-    AutomationResponse, CreateAutomationRequest, UpdateAutomationRequest,
-    TrashItemResponse
+    PatternResponse, TemplateResponse, CrewResponse, WorkspaceResponse,
+    ExternalServiceResponse, AutomationResponse, TrashItemResponse
 )
 
 router = APIRouter(

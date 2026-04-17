@@ -6,6 +6,8 @@ import { cn } from "@/shared/lib/utils";
 import type { RecentlyUsedProperties } from "./types";
 
 export const RecentlyUsed = ({ spaces: recentlyUsedSpaces, className: containerClassName }: RecentlyUsedProperties) => {
+  if (!recentlyUsedSpaces || recentlyUsedSpaces.length === 0) return null;
+
   return (
     <div className={cn("space-y-6", containerClassName)}>
       <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 border-b border-zinc-100 dark:border-zinc-900 pb-2 w-full px-1">

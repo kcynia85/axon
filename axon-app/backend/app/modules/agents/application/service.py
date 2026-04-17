@@ -106,8 +106,6 @@ async def inspect_agent_deletion_use_case(
     return [AffectedCrew(**c) for c in crews]
 
 import tiktoken
-from app.modules.settings.infrastructure import repo as settings_repo
-from app.modules.settings.dependencies import get_db as get_settings_db # Shared DB session usually
 
 async def estimate_cost_use_case(
     id: UUID,

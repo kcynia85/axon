@@ -3,27 +3,25 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useSpaceQuery } from "./hooks";
 
 type SpacePageManagementLogic = {
     readonly spaceIdentifier: string;
     readonly isPageLoading: boolean;
     readonly pageErrorInformation: Error | null;
-    readonly initialCanvasInformation: { readonly id: string };
+    readonly initialCanvasInformation: any;
 };
 
 export const useSpacePageManagementLogic = (): SpacePageManagementLogic => {
   const routeParameters = useParams();
   const spaceIdentifier = routeParameters.id as string;
   
-  // Mocking data loading state for the current implementation phase
-  const isPageLoading = false;
-  const pageErrorInformation = null;
-  const initialCanvasInformation = { id: spaceIdentifier };
+  const { data: spaceData, isLoading, error } = useSpaceQuery(spaceIdentifier);
 
   return {
     spaceIdentifier,
-    isPageLoading,
-    pageErrorInformation,
-    initialCanvasInformation,
+    isPageLoading: isLoading,
+    pageErrorInformation: error as Error,
+    initialCanvasInformation: spaceData,
   };
 };

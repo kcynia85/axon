@@ -13,7 +13,7 @@ def get_weather(city: str) -> Dict[str, Any]:
     Returns:
         Słownik z temperaturą i opisem pogody.
     """
-    url = f"https://api.open-meteo.com/v1/forecast?latitude=52.2297&longitude=21.0122&current_weather=true"
+    url = "https://api.open-meteo.com/v1/forecast?latitude=52.2297&longitude=21.0122&current_weather=true"
     
     try:
         with httpx.Client(timeout=10.0) as client:

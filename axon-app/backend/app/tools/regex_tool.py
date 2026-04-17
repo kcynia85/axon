@@ -1,6 +1,6 @@
 from . import tool
 import re
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 @tool("Email Extractor", keywords=["text", "regex", "utility"])
 def extract_emails(text: str) -> Dict[str, Any]:

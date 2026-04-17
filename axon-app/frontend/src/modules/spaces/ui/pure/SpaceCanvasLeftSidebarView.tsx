@@ -13,9 +13,9 @@ import {
 import { 
   Box, 
   Users, 
-  UserRound, 
+  Bot, 
   FileText, 
-  Globe, 
+  Cloud, 
   Zap,
   GripVertical,
   ChevronLeft,
@@ -23,46 +23,19 @@ import {
   Search,
   Plus
 } from "lucide-react";
+import { SpaceCanvasLeftSidebarProperties } from "../types";
+import { cn } from "@/shared/lib/utils";
 
 const configurationForComponentSections = [
     { sectionKey: "patterns", sectionTitle: "Patterns", sectionIcon: Box },
     { sectionKey: "crews", sectionTitle: "Crews", sectionIcon: Users },
-    { sectionKey: "agents", sectionTitle: "Agents", sectionIcon: UserRound },
+    { sectionKey: "agents", sectionTitle: "Agents", sectionIcon: Bot },
     { sectionKey: "templates", sectionTitle: "Templates", sectionIcon: FileText },
-    { sectionKey: "services", sectionTitle: "Services", sectionIcon: Globe },
+    { sectionKey: "services", sectionTitle: "Services", sectionIcon: Cloud },
     { sectionKey: "automations", sectionTitle: "Automations", sectionIcon: Zap },
 ];
 
-type WorkspaceUnitDisplay = {
-    readonly identifier: string;
-    readonly displayName: string;
-    readonly hoverClassName: string;
-    readonly onClick: () => void;
-    readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
-};
-
-type ComponentItemDisplay = {
-    readonly identifier: string;
-    readonly displayName: string;
-    readonly type: string;
-    readonly hoverClassName: string;
-    readonly zoneColor: string;
-    readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
-};
-
-type SpaceCanvasLeftSidebarViewProperties = {
-    readonly currentlySelectedWorkspaceIdentifier: string | null;
-    readonly componentSearchQuery: string;
-    readonly setComponentSearchQuery: (value: string) => void;
-    readonly returnToWorkspaceSelection: () => void;
-    readonly workspaceUnitsForDisplay: readonly WorkspaceUnitDisplay[];
-    readonly activeWorkspaceDisplayName: string;
-    readonly activeWorkspaceHeaderClassName: string;
-    readonly filteredComponentCategoriesForDisplay: Record<string, readonly ComponentItemDisplay[]>;
-    readonly onAddComponent?: (type: string, data: Record<string, unknown>, workspace: string) => void;
-};
-
-export const SpaceCanvasLeftSidebarView: React.FC<SpaceCanvasLeftSidebarViewProperties> = ({
+export const SpaceCanvasLeftSidebarView: React.FC<SpaceCanvasLeftSidebarProperties> = ({
     currentlySelectedWorkspaceIdentifier,
     componentSearchQuery,
     setComponentSearchQuery,
@@ -184,6 +157,7 @@ export const SpaceCanvasLeftSidebarView: React.FC<SpaceCanvasLeftSidebarViewProp
                                                         variant="light"
                                                         className="w-7 h-7 min-w-7 rounded-lg text-zinc-600 hover:text-white hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all"
                                                         onPress={() => onAddComponent?.(component.type, {
+                                                            ...component.rawData,
                                                             label: component.displayName,
                                                             type: component.type,
                                                             zoneColor: component.zoneColor,

@@ -1,7 +1,8 @@
 // frontend/src/modules/spaces/ui/nodes/pure/SpaceCrewNodeView.tsx
 
 import React from 'react';
-import { Cpu, AlertCircle, Play, Users } from "lucide-react";
+import Image from 'next/image';
+import { AlertCircle, Play, Users } from "lucide-react";
 import { SpaceCrewViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
 
@@ -30,15 +31,55 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
 
         {/* Content Layer - Isolated from shimmer to prevent jitter */}
         <div className="relative z-10 w-full h-full">
+            {/* Process Type Badge - Top Right */}
+            <div className="absolute top-3 right-3 z-20">
+                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-500 backdrop-blur-md">
+                    {viewModel.processType || 'Sequential'}
+                </div>
+            </div>
+
             <div className={cn(
                 viewModel.visual.headerClassName,
-                "bg-gradient-to-b from-zinc-900/50 to-transparent pb-6"
+                "bg-gradient-to-b from-zinc-900/50 to-transparent pb-6 !gap-1.5"
             )}>
-                <div className={cn(
-                    viewModel.visual.iconClassName,
-                    viewModel.isConsultation && "text-orange-500 border-orange-500/30 bg-orange-500/10"
-                )}>
-                    {viewModel.isConsultation ? <AlertCircle size={18} /> : <Cpu size={18} />}
+                <div className="flex items-center transition-transform duration-500 ease-out origin-left -ml-1">
+                    {viewModel.agents && viewModel.agents.length > 0 ? (
+                        <div className="flex -space-x-3 mr-3">
+                            {viewModel.agents.slice(0, 3).map((agent, index) => (
+                                <div key={agent.id} className={cn(
+                                    "w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative",
+                                    "border-zinc-700",
+                                    index === 0 ? "z-30" : index === 1 ? "z-20" : "z-10"
+                                )}>
+                                    {agent.visualUrl ? (
+                                        <Image 
+                                            src={agent.visualUrl} 
+                                            alt={`Agent`}
+                                            fill
+                                            sizes="40px"
+                                            className="object-cover object-top scale-110 transition-all duration-500 bg-black"
+                                        />
+                                    ) : (
+                                        <Users size={18} className="text-zinc-500" />
+                                    )}
+                                </div>
+                            ))}
+                            {viewModel.agents.length > 3 && (
+                                <div className="w-10 h-10 flex items-center justify-center text-[11px] font-black tracking-tighter z-40 text-zinc-500 pl-3 border-2 border-transparent">
+                                    +{viewModel.agents.length - 3}
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className={cn(
+                            viewModel.visual.iconClassName,
+                            viewModel.isConsultation 
+                                ? "text-orange-500 border-orange-500/30 bg-orange-500/10" 
+                                : "text-zinc-400 border-zinc-800 bg-zinc-900"
+                        )}>
+                            {viewModel.isConsultation ? <AlertCircle size={18} /> : <Users size={18} />}
+                        </div>
+                    )}
                 </div>
                 <div className="flex flex-col gap-0.5 overflow-hidden">
                     <span className={viewModel.visual.titleClassName}>{viewModel.displayName}</span>
@@ -52,26 +93,15 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
             </div>
             
             <div className="px-4 pb-5 pt-0 flex flex-col gap-4 node-body -mt-2">
-                {/* Protocol Info */}
-                <div className="flex items-center gap-2 px-2 py-1.5 bg-zinc-900/50 border border-zinc-800 rounded-lg">
-                    <Users size={12} className="text-zinc-500" />
-                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-[0.1em]">Protocol Active</span>
-                    <div className="ml-auto flex -space-x-1.5">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="w-4 h-4 rounded-full border border-black bg-zinc-800" />
-                        ))}
-                    </div>
-                </div>
-
                 {/* Team List */}
                 <div className="space-y-1.5">
-                    <h4 className="text-[8px] font-black text-zinc-600 uppercase tracking-widest px-0.5">Team</h4>
+                    <h4 className="text-[12px] font-black text-zinc-500">Team</h4>
                     <div className="space-y-1">
-                        {viewModel.teamRoles?.map((role, i) => {
-                            const isActive = viewModel.activeAgentTitle === role;
+                        {viewModel.agents?.map((agent, i) => {
+                            const isActive = viewModel.activeAgentTitle === agent.title;
                             return (
                                 <div key={i} className={cn(
-                                    "flex items-center justify-between gap-2 px-2 py-1 rounded-md transition-all",
+                                    "flex items-center justify-between gap-2 px-2 rounded-md transition-all",
                                     isActive ? "bg-zinc-200/5 border border-zinc-200/10" : "hover:bg-zinc-200/5"
                                 )}>
                                     <div className="flex items-center gap-2 truncate">
@@ -80,10 +110,10 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
                                             isActive ? "bg-white animate-pulse" : "bg-zinc-700"
                                         )} />
                                         <span className={cn(
-                                            "text-[10px] font-bold truncate",
+                                            "text-[12px] font-bold truncate",
                                             isActive ? "text-white" : "text-zinc-400"
                                         )}>
-                                            {role}
+                                            {agent.title}
                                         </span>
                                     </div>
                                 </div>

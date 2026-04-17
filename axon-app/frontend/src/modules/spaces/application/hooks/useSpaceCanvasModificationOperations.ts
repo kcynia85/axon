@@ -3,6 +3,7 @@
 import { useReactFlow } from '@xyflow/react';
 import type { Node, Edge } from '@xyflow/react';
 import { mapTemplateWorkspaceConfigToNodeData } from '../../domain/defaults';
+import { MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS } from '../../domain/constants';
 
 export const useSpaceCanvasModificationOperations = (
   updateCanvasNodes: React.Dispatch<React.SetStateAction<Node[]>>,
@@ -18,15 +19,39 @@ export const useSpaceCanvasModificationOperations = (
   ) => {
     takeSnapshot();
     const currentCanvasNodes = getNodes();
-    const parentZoneForNewNode = currentCanvasNodes.find(
-      (node) => node.type === 'zone' && node.data.type === targetWorkspaceId
+    
+    // Map targetWorkspaceId to the expected zone color/type
+    const expectedColor = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[targetWorkspaceId];
+    
+    let parentZoneForNewNode = currentCanvasNodes.find(
+      (node) => node.type === 'zone' && (node.data.color === expectedColor || node.data.type === targetWorkspaceId)
     );
 
+    let extraNodes: Node[] = [];
+    if (!parentZoneForNewNode && expectedColor) {
+      // Create zone if it doesn't exist
+      const zoneId = `zone_${expectedColor}_${Math.random().toString(36).substring(2, 11)}`;
+      const workspaceLabel = targetWorkspaceId.replace('ws-', '').toUpperCase();
+      
+      parentZoneForNewNode = {
+        id: zoneId,
+        type: 'zone',
+        position: { x: 100, y: 100 }, // Default position for new zone
+        data: {
+          label: workspaceLabel,
+          color: expectedColor,
+          zoneColor: expectedColor,
+          type: targetWorkspaceId
+        },
+        style: { width: 500, height: 400 },
+      };
+      extraNodes.push(parentZoneForNewNode);
+    }
+
     let newNodePosition = { x: 100, y: 100 };
-    let parentZoneId: string | undefined = undefined;
+    let parentZoneId: string | undefined = parentZoneForNewNode?.id;
 
     if (parentZoneForNewNode) {
-      parentZoneId = parentZoneForNewNode.id;
       newNodePosition = {
         x: 50 + Math.random() * 100,
         y: 50 + Math.random() * 100
@@ -48,10 +73,11 @@ export const useSpaceCanvasModificationOperations = (
         ...templateCanvasData,
         ...(isTemplate && { actions: [], status: 'working' }),
         state: 'missing_context',
+        zoneColor: expectedColor || parentZoneForNewNode?.data.zoneColor || 'purple'
       },
     };
 
-    updateCanvasNodes((previousCanvasNodes) => previousCanvasNodes.concat(newlyCreatedNode));
+    updateCanvasNodes((previousCanvasNodes) => [...extraNodes, ...previousCanvasNodes, newlyCreatedNode]);
   };
 
   const updateNodeDataOnCanvas = (nodeId: string, newNodeData: Record<string, unknown>) => {

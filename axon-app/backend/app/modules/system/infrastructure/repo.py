@@ -1,4 +1,4 @@
-from uuid import UUID, uuid4
+from uuid import uuid4
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update

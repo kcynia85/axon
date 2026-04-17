@@ -1,4 +1,3 @@
-import pytest
 from app.shared.security.guardrails import check_input_safety, preprocess_input
 
 class TestSecurityGuard:

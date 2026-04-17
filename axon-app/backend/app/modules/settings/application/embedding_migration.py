@@ -4,7 +4,6 @@ Warns about embedding model changes without forced reindex.
 """
 
 import warnings
-from typing import Optional
 from dataclasses import dataclass
 from app.shared.infrastructure.database import AsyncSessionLocal
 from app.modules.settings.infrastructure.repo import SettingsRepository

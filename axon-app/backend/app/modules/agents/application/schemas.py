@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from uuid import UUID
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
 from app.modules.agents.domain.enums import AgentRole
 
 class ChatRequest(BaseModel):

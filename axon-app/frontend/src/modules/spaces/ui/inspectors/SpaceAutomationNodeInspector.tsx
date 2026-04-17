@@ -12,7 +12,8 @@ import { SpaceAutomationNodeInspectorView } from "../pure/SpaceAutomationNodeIns
 export const SpaceAutomationNodeInspector = ({ 
     automationData, 
     nodeId,
-    onPropertyChange 
+    onPropertyChange,
+    canvasNodes
 }: SpaceAutomationInspectorProperties) => {
     const [selectedTabIdentifier, setSelectedTabIdentifier] = useState<string>("workflow");
     const [componentSearchQuery, setComponentSearchQuery] = useState("");
@@ -53,6 +54,7 @@ export const SpaceAutomationNodeInspector = ({
             onDeleteArtefact={handleDeleteArtefact}
             onAddArtefact={handleAddArtefact}
             onTriggerWorkflow={handleTriggerWorkflow}
+            canvasNodes={canvasNodes}
         />
     );
 };

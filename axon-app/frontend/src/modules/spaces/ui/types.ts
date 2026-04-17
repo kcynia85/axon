@@ -20,7 +20,8 @@ export type SpaceListProperties = {
 };
 
 export type SpacesBrowserProperties = {
-    readonly initialSpaces: Space[];
+  readonly initialSpaces: readonly Space[];
+  readonly isLoading?: boolean;
 };
 
 export type RecentlyUsedProperties = {
@@ -37,9 +38,12 @@ export type SpaceCardProperties = {
 };
 
 export type SpaceCanvasHeaderProperties = {
+    readonly spaceId: string;
     readonly activeSpaceDisplayName: string;
     readonly parentProjectDisplayName: string;
     readonly parentProjectIdentifier?: string;
+    readonly onRenameSpace?: (newName: string) => void;
+    readonly isSaving?: boolean;
 };
 
 export type SpaceCanvasSidebarProperties = {
@@ -65,6 +69,7 @@ export type SpaceAgentInspectorProperties = {
     readonly nodeId: string;
     readonly onStatusChange: (nodeId: string, status: string) => void;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
+    readonly canvasNodes: Node[];
 };
 
 export type SpaceCrewInspectorProperties = {
@@ -72,12 +77,14 @@ export type SpaceCrewInspectorProperties = {
     readonly nodeId: string;
     readonly onStatusChange: (nodeId: string, status: string) => void;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
+    readonly canvasNodes: Node[];
 };
 
 export type SpaceAutomationInspectorProperties = {
     readonly automationData: SpaceAutomationDomainData;
     readonly nodeId: string;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
+    readonly canvasNodes: Node[];
 };
 
 export type SpaceServiceInspectorProperties = {
@@ -85,12 +92,14 @@ export type SpaceServiceInspectorProperties = {
     readonly nodeId: string;
     readonly onArtifactStatusChange: (nodeId: string, artifactId: string, status: string) => void;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
+    readonly canvasNodes: Node[];
 };
 
 export type SpaceTemplateInspectorProperties = {
     readonly templateData: SpaceTemplateDomainData;
     readonly nodeId: string;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
+    readonly canvasNodes: Node[];
 };
 
 export type SpacePatternInspectorProperties = {
@@ -202,6 +211,8 @@ export type SpaceNodeViewModel = {
     readonly statusLabel?: string;
     readonly isStatusActive?: boolean;
     readonly VisualIcon?: any;
+    readonly visualUrl?: string | null;
+    readonly managerVisualUrl?: string | null;
 };
 
 export type SpaceAgentViewModel = SpaceNodeViewModel;
@@ -213,6 +224,36 @@ export type SpaceTemplateViewModel = SpaceNodeViewModel;
 export type SpaceZoneViewModel = SpaceNodeViewModel;
 export type SpaceEntityViewModel = SpaceNodeViewModel;
 
+export type WorkspaceUnitDisplayItem = {
+    readonly identifier: string;
+    readonly displayName: string;
+    readonly hoverClassName: string;
+    readonly onClick: () => void;
+    readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
+};
+
+export type ComponentCategoryDisplayItem = {
+    readonly id: string;
+    readonly name: string;
+    readonly items: readonly {
+        readonly identifier: string;
+        readonly displayName: string;
+        readonly type: string;
+        readonly zoneColor: string;
+        readonly hoverClassName: string;
+        readonly rawData: Record<string, unknown>;
+        readonly onDragStart: (event: React.DragEvent<HTMLElement>) => void;
+    }[];
+};
+
 export type SpaceCanvasLeftSidebarProperties = {
+    readonly componentSearchQuery: string;
+    readonly setComponentSearchQuery: (query: string) => void;
+    readonly returnToWorkspaceSelection: () => void;
+    readonly workspaceUnitsForDisplay: readonly WorkspaceUnitDisplayItem[];
+    readonly activeWorkspaceDisplayName: string;
+    readonly activeWorkspaceHeaderClassName: string;
+    readonly filteredComponentCategoriesForDisplay: readonly ComponentCategoryDisplayItem[];
+    readonly currentlySelectedWorkspaceIdentifier: string | null;
     readonly onAddComponent: (nodeType: string, initialNodeData: Record<string, unknown>, targetWorkspaceId: string) => void;
 };

@@ -3,7 +3,7 @@ import sys
 import os
 from uuid import uuid4
 from datetime import datetime
-from sqlalchemy import select, text
+from sqlalchemy import select
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
 

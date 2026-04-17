@@ -1,6 +1,5 @@
 import asyncio
 import httpx
-import os
 import sys
 from pathlib import Path
 
@@ -72,7 +71,7 @@ async def verify_sync():
         # Check input schema
         props = tool.tool_input_schema.get("properties", {})
         if "test_param" not in props:
-            print(f"❌ Schema missing property 'test_param'!")
+            print("❌ Schema missing property 'test_param'!")
             return False
         print("✅ Input schema verified.")
         

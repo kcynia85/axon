@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 
 from app.modules.settings.domain.models import (

@@ -205,7 +205,7 @@ class SettingsService:
             
             return ConnectionTestResponse(
                 success=True,
-                message=f"Połączono pomyślnie",
+                message="Połączono pomyślnie",
                 latency_ms=latency_ms,
                 raw_json={"info": "See discovery results below", "count": len(mapped_models)},
                 mapped_models=mapped_models
@@ -408,7 +408,7 @@ class SettingsService:
         import time
         from app.shared.infrastructure.vecs_client import get_vecs_client
         import httpx
-        from urllib.parse import quote_plus, urlparse, urlunparse
+        from urllib.parse import quote_plus
         from app.modules.settings.domain.enums import ConnectionStatus, VectorDBType
 
         db = await self.repo.get_vector_database(id)
@@ -556,7 +556,7 @@ class SettingsService:
                             "database_name": db_name,
                             "connection_verified_at": time.strftime("%Y-%m-%d %H:%M:%S")
                         }
-            except Exception as meta_err:
+            except Exception:
                 server_details = {"info": "Connected successfully, but failed to fetch server metadata details."}
 
             await self.repo.update_vector_database(id, {

@@ -21,12 +21,9 @@ class SpaceTable(Base):
     project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=True)
     owner_id = Column(UUID(as_uuid=True), nullable=False)
     space_viewport_config = Column(JSONB, default={})
+    canvas_data = Column(JSONB, default={"nodes": [], "edges": []}, nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
-
-    zones = relationship("SpaceZoneTable", back_populates="space", cascade="all, delete-orphan")
-    nodes = relationship("SpaceNodeTable", back_populates="space", cascade="all, delete-orphan")
-    edges = relationship("NodeEdgeTable", back_populates="space", cascade="all, delete-orphan")
 
 class SpaceZoneTable(Base):
     __tablename__ = "space_zones"
@@ -42,7 +39,7 @@ class SpaceZoneTable(Base):
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
-    space = relationship("SpaceTable", back_populates="zones")
+    space = relationship("SpaceTable")
 
 class SpaceNodeTable(Base):
     __tablename__ = "space_nodes"
@@ -59,7 +56,7 @@ class SpaceNodeTable(Base):
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
 
-    space = relationship("SpaceTable", back_populates="nodes")
+    space = relationship("SpaceTable")
     execution_logs = relationship("ExecutionLogTable", back_populates="node", cascade="all, delete-orphan")
 
 class NodeEdgeTable(Base):
@@ -72,7 +69,7 @@ class NodeEdgeTable(Base):
     edge_target_handle_id = Column(String, nullable=False)
     space_id = Column(UUID(as_uuid=True), ForeignKey("spaces.id"), nullable=False)
 
-    space = relationship("SpaceTable", back_populates="edges")
+    space = relationship("SpaceTable")
 
 class ExecutionLogTable(Base):
     __tablename__ = "execution_logs"

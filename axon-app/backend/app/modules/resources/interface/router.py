@@ -3,7 +3,6 @@ from typing import List
 from uuid import UUID
 
 from app.api.deps import get_current_user
-from app.shared.security.schemas import UserPayload
 from app.modules.resources.application.service import ResourcesService
 from app.modules.resources.dependencies import get_resources_service
 from app.modules.resources.application.schemas import (

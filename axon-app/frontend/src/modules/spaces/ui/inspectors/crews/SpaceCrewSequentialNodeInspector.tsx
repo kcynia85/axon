@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Tabs, Tab, Input, Button, Avatar } from "@heroui/react";
+import Image from "next/image";
+import { Tabs, Tab, Input, Button } from "@heroui/react";
 import { Zap, CheckCircle2, Layers, FileText, CircleStop, Terminal, ChevronUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/shared/lib/utils";
@@ -19,11 +20,12 @@ import type { SpaceCrewInspectorProperties } from "../../types";
  * Delegates logic to useSpaceCrewSequentialInspector hook.
  */
 export const SpaceCrewSequentialNodeInspector = ({ 
-    data, 
+    crewData, 
     nodeId,
-    onPropertyChange
+    onPropertyChange,
+    canvasNodes
 }: SpaceCrewInspectorProperties) => {
-    const { state, actions } = useSpaceCrewSequentialInspector(data, nodeId, onPropertyChange);
+    const { state, actions } = useSpaceCrewSequentialInspector(crewData, nodeId, onPropertyChange);
 
     return (
         <SpaceInspectorPanel>
@@ -68,8 +70,20 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-2">
-                                                            <Avatar name={task.assignedAgentTitle} size="sm" className="w-6 h-6 bg-zinc-800 text-[8px] font-black text-zinc-400" />
-                                                            <span className="text-[11px] font-black text-zinc-200">{i + 1}. {task.assignedAgentTitle}</span>
+                                                            <div className="w-8 h-8 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden shadow-sm relative shrink-0">
+                                                                {task.visualUrl ? (
+                                                                    <Image 
+                                                                        src={task.visualUrl} 
+                                                                        alt={task.assignedAgentTitle}
+                                                                        fill
+                                                                        sizes="32px"
+                                                                        className="object-cover object-top scale-110 transition-all duration-500 bg-black"
+                                                                    />
+                                                                ) : (
+                                                                    <Users size={14} className="text-zinc-500" />
+                                                                )}
+                                                            </div>
+                                                            <span className="text-[14px] font-black text-zinc-200">{task.assignedAgentTitle}</span>
                                                         </div>
                                                     </div>
                                                     <Input 
@@ -77,11 +91,11 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                         variant="underlined" 
                                                         value={task.label} 
                                                         onValueChange={(val) => actions.handleTaskLabelChange(task.id, val)} 
-                                                        endContent={isFilled && <CheckCircle2 size={12} className="text-white" />}
+                                                        endContent={isFilled && <CheckCircle2 size={12} className="text-zinc-400" />}
                                                         classNames={{ 
-                                                            input: "text-[10px] font-bold text-zinc-400 italic", 
+                                                            input: "!text-zinc-400 text-[14px] font-normal", 
                                                             inputWrapper: cn(
-                                                                "h-8 border-b-2 transition-all px-0",
+                                                                "h-10 border-b-2 transition-all px-0",
                                                                 isFilled ? "border-white" : "border-zinc-800/50"
                                                             )
                                                         }} 
@@ -100,17 +114,17 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                 animate={{ opacity: 1, y: 0 }}
                                                 className="space-y-5 p-4 bg-orange-500/5 border border-orange-500/10 rounded-2xl"
                                             >
-                                                {state.consultationQuestions.map((q: any) => {
-                                                    const isAnswered = (state.consultationAnswers[q.id] || q.answer || "").trim().length > 0;
+                                                {state.consultationQuestions.map((question: any) => {
+                                                    const isAnswered = (state.consultationAnswers[question.id] || question.answer || "").trim().length > 0;
                                                     return (
-                                                        <div key={q.id} className="space-y-2.5">
-                                                            <p className="text-[11px] text-zinc-400 font-bold italic leading-relaxed">{q.question}</p>
+                                                        <div key={question.id} className="space-y-2.5">
+                                                            <p className="text-[11px] text-zinc-400 font-bold italic leading-relaxed">{question.question}</p>
                                                             <Input 
                                                                 placeholder="Type your answer..." 
                                                                 size="sm" 
                                                                 variant="bordered" 
-                                                                value={state.consultationAnswers[q.id] || q.answer || ""} 
-                                                                onValueChange={(val) => actions.handleAnswerChange(q.id, val)} 
+                                                                value={state.consultationAnswers[question.id] || question.answer || ""} 
+                                                                onValueChange={(val) => actions.handleAnswerChange(question.id, val)} 
                                                                 endContent={isAnswered && <CheckCircle2 size={14} className="text-white" />}
                                                                 classNames={{ 
                                                                     input: "text-xs font-mono text-zinc-300", 
@@ -141,14 +155,22 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center gap-2">
                                                                     <div className="relative">
-                                                                        <Avatar 
-                                                                            name={task.assignedAgentTitle} 
-                                                                            size="sm" 
-                                                                            className={cn(
-                                                                                "w-6 h-6 text-[8px] font-black transition-all", 
-                                                                                isAgentWorking ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)]" : "bg-zinc-800 text-zinc-500"
-                                                                            )} 
-                                                                        />
+                                                                        <div className={cn(
+                                                                            "w-6 h-6 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative shrink-0 transition-all",
+                                                                            isAgentWorking ? "border-white shadow-[0_0_15px_rgba(255,255,255,0.4)]" : "border-zinc-700"
+                                                                        )}>
+                                                                            {task.visualUrl ? (
+                                                                                <Image 
+                                                                                    src={task.visualUrl} 
+                                                                                    alt={task.assignedAgentTitle}
+                                                                                    fill
+                                                                                    sizes="24px"
+                                                                                    className="object-cover object-top scale-110 transition-all duration-500 bg-black"
+                                                                                />
+                                                                            ) : (
+                                                                                <Users size={10} className="text-zinc-500" />
+                                                                            )}
+                                                                        </div>
                                                                         {isAgentWorking && (
                                                                             <motion.div 
                                                                                 layoutId="active-glow"
@@ -159,8 +181,8 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                                         )}
                                                                     </div>
                                                                     <div className="flex items-center gap-2">
-                                                                        <span className={cn("text-[11px] font-black uppercase tracking-tighter", isAgentWorking ? "text-white" : "text-zinc-600")}>
-                                                                            {i+1}. {task.assignedAgentTitle}
+                                                                        <span className={cn("text-[16px] font-black uppercase tracking-tighter", isAgentWorking ? "text-white" : "text-zinc-600")}>
+                                                                            {task.assignedAgentTitle}
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -271,7 +293,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                     }
                 >
                     <div className="h-[calc(100vh-192px)] pb-40">
-                        <SpaceCrewContextTab isContextComplete={state.isContextComplete} contextRequirements={state.contextRequirements} nodeSearch={state.nodeSearch} setNodeSearch={actions.setNodeSearch} handleContextLinkChange={actions.handleContextLinkChange} handleLinkContextFromNode={actions.handleLinkContextFromNode} />
+                        <SpaceCrewContextTab isContextComplete={state.isContextComplete} contextRequirements={state.contextRequirements} nodeSearchQuery={state.nodeSearch} onSearchQueryChange={actions.setNodeSearch} onContextLinkChange={actions.handleContextLinkChange} onLinkContextFromNode={actions.handleLinkContextFromNode} canvasNodes={canvasNodes} />
                     </div>
                 </Tab>
 

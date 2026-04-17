@@ -71,6 +71,8 @@ class ExternalService(BaseModel):
     service_description: Optional[str] = None
     service_category: str
     service_url: str
+    service_input_schema: Optional[Dict[str, Any]] = None
+    service_output_schema: Optional[Dict[str, Any]] = None
     service_keywords: List[str] = Field(default_factory=list)
     availability_workspace: List[str] = Field(default_factory=list)
     capabilities: List[ServiceCapability] = Field(default_factory=list)

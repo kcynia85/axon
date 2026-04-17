@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, Boolean, Integer, Enum as SAEnum, ForeignKey
+from sqlalchemy import Column, String, DateTime, Integer, Enum as SAEnum, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from pgvector.sqlalchemy import Vector
 from sqlalchemy.orm import relationship

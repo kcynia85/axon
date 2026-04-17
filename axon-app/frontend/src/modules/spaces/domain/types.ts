@@ -99,6 +99,8 @@ export type SpaceAgentDomainData = {
 export type SpaceAutomationDomainData = {
   readonly label: string;
   readonly state: string;
+  readonly description?: string | null;
+  readonly platform?: string;
   readonly artifactName?: string;
   readonly artifactStatus?: string;
   readonly artifactLabel?: string;
@@ -114,6 +116,7 @@ export type CrewTask = {
   readonly label: string;
   readonly status: 'pending' | 'working' | 'done';
   readonly assignedAgentTitle: string;
+  readonly visualUrl?: string | null;
   readonly output?: string;
   readonly thought?: string;
 };
@@ -132,6 +135,7 @@ export type SpaceCrewDomainData = {
   readonly roles: readonly string[];
   readonly process_type?: 'sequential' | 'hierarchical' | 'parallel';
   readonly manager_title?: string;
+  readonly manager_visual_url?: string | null;
   readonly tasks?: readonly CrewTask[];
   readonly active_agent_id?: string;
   readonly shared_memory?: readonly SharedMemoryEntry[];
@@ -282,7 +286,9 @@ export type SpaceNodeViewModel = {
     readonly artifactStatusText?: string;
     readonly hasArtifact?: boolean;
     readonly teamRoles?: readonly string[];
+    readonly agents?: readonly { id: string; title: string; visualUrl?: string | null }[];
     readonly activeAgentTitle?: string;
+    readonly processType?: string;
     readonly categoryText?: string;
     readonly iconBackgroundClassName?: string;
     readonly artefacts?: readonly { id: string; label: string; status: string }[];

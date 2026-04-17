@@ -15,7 +15,7 @@ import { useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
-import { AutomationSidePeekContent } from "@/modules/workspaces/ui/AutomationSidePeekContent";
+import { AutomationSidePeekContent } from "@/modules/workspaces/ui/AutomationSidePeek";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { SortOption } from "@/shared/domain/filters";

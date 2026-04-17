@@ -2,7 +2,6 @@ import asyncio
 import sys
 import os
 import logging
-from pathlib import Path
 
 # Add the current directory to sys.path to allow imports from app
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))

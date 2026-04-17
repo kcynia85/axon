@@ -9,20 +9,53 @@ export type WorkspaceUnit = {
 };
 
 export const MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS: Record<string, WorkspaceColor> = {
-  product: "blue",
-  discovery: "purple",
-  design: "pink",
-  delivery: "green",
-  growth: "yellow",
+  "ws-discovery": "purple",
+  "ws-design": "pink",
+  "ws-delivery": "green",
+  "ws-product": "blue",
+  "ws-growth": "yellow",
 };
 
 export const LIST_OF_AVAILABLE_WORKSPACES: readonly WorkspaceUnit[] = [
-  { identifier: "product", displayName: "Product Management", visualColor: "blue" },
-  { identifier: "discovery", displayName: "Discovery", visualColor: "purple" },
-  { identifier: "design", displayName: "Design", visualColor: "pink" },
-  { identifier: "delivery", displayName: "Delivery", visualColor: "green" },
-  { identifier: "growth", displayName: "Growth and Product", visualColor: "yellow" },
+    { identifier: "ws-discovery", displayName: "Discovery", visualColor: "purple" },
+    { identifier: "ws-design", displayName: "Design", visualColor: "pink" },
+    { identifier: "ws-delivery", displayName: "Delivery", visualColor: "green" },
+    { identifier: "ws-product", displayName: "Product Management", visualColor: "blue" },
+    { identifier: "ws-growth", displayName: "Growth & Market", visualColor: "yellow" },
 ];
+
+export const MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY = {
+    patterns: {
+        id: "patterns",
+        name: "Standard Patterns",
+        items: [] as SpaceComponentItem[],
+    },
+    crews: {
+        id: "crews",
+        name: "AI Crews",
+        items: [] as SpaceComponentItem[],
+    },
+    agents: {
+        id: "agents",
+        name: "Autonomous Agents",
+        items: [] as SpaceComponentItem[],
+    },
+    automations: {
+        id: "automations",
+        name: "Workflow Automations",
+        items: [] as SpaceComponentItem[],
+    },
+    services: {
+        id: "services",
+        name: "External Services",
+        items: [] as SpaceComponentItem[],
+    },
+    templates: {
+        id: "templates",
+        name: "Archetype Templates",
+        items: [] as SpaceComponentItem[],
+    }
+};
 
 export type SpaceComponentType = "pattern" | "crew" | "agent" | "template" | "service" | "automation";
 
@@ -30,35 +63,6 @@ export type SpaceComponentItem = {
   readonly uniqueIdentifier: string;
   readonly componentName: string;
   readonly componentType: SpaceComponentType;
-};
-
-export const MAP_OF_AVAILABLE_COMPONENTS_BY_CATEGORY: Record<string, readonly SpaceComponentItem[]> = {
-  patterns: [
-    { uniqueIdentifier: "interview", componentName: "Interview Analysis", componentType: "pattern" },
-    { uniqueIdentifier: "survey", componentName: "Survey Analysis", componentType: "pattern" },
-  ],
-  crews: [
-    { uniqueIdentifier: "design-crew", componentName: "Design Crew", componentType: "crew" },
-    { uniqueIdentifier: "research-crew", componentName: "Research Crew", componentType: "crew" },
-  ],
-  agents: [
-    { uniqueIdentifier: "researcher", componentName: "User Researcher", componentType: "agent" },
-    { uniqueIdentifier: "analyst", componentName: "Data Analyst", componentType: "agent" },
-    { uniqueIdentifier: "writer", componentName: "Content Writer", componentType: "agent" },
-  ],
-  templates: [
-    { uniqueIdentifier: "prd", componentName: "PRD Template", componentType: "template" },
-    { uniqueIdentifier: "tech-spec", componentName: "Technical Spec", componentType: "template" },
-  ],
-  services: [
-    { uniqueIdentifier: "jira", componentName: "Jira Integration", componentType: "service" },
-    { uniqueIdentifier: "figma", componentName: "Figma Sync", componentType: "service" },
-    { uniqueIdentifier: "elevenlabs", componentName: "ElevenLabs", componentType: "service" },
-  ],
-  automations: [
-    { uniqueIdentifier: "notify", componentName: "Slack Notify", componentType: "automation" },
-    { uniqueIdentifier: "ci-cd", componentName: "CI/CD Pipeline", componentType: "automation" },
-  ],
 };
 
 // --- Inspector Constants ---

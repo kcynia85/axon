@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from uuid import UUID
-from app.modules.projects.domain.enums import ProjectStatus, ResourceProvider, ApprovalStatus
+from app.modules.projects.domain.enums import ProjectStatus, ResourceProvider
 
 # --- Command DTOs (Input) ---
 

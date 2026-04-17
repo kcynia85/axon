@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, Enum as SAEnum, Integer, Float, Table
+from sqlalchemy import Column, String, ForeignKey, DateTime, Enum as SAEnum, Table
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import relationship
 from app.shared.infrastructure.base import Base
@@ -69,6 +69,8 @@ class ExternalServiceTable(Base):
     service_description = Column(String, nullable=True)
     service_category = Column(String, nullable=False)
     service_url = Column(String, nullable=False)
+    service_input_schema = Column(JSONB, nullable=True)
+    service_output_schema = Column(JSONB, nullable=True)
     service_keywords = Column(ARRAY(String), nullable=True)
     availability_workspace = Column(ARRAY(String), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)

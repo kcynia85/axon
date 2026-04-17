@@ -1,12 +1,8 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
-import jwt
-from app.config import settings
 from app.shared.security.schemas import UserPayload
-from pydantic import ValidationError
-from app.shared.infrastructure.database import get_db
 
-from uuid import uuid4, UUID
+from uuid import UUID
 
 # This defines where to look for the token (Authorization: Bearer)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)

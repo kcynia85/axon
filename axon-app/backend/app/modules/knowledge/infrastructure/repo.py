@@ -3,10 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, text
 from typing import Optional, List, Any, Dict
 import logging
-import json
 from app.modules.knowledge.domain.models import Asset, KnowledgeHub, KnowledgeResource
 from app.modules.knowledge.infrastructure.tables import AssetTable, KnowledgeHubTable, KnowledgeResourceTable, TextChunkTable
-from app.shared.infrastructure.vecs_client import get_vecs_client
 from app.shared.utils.time import now_utc
 
 logger = logging.getLogger(__name__)
@@ -137,7 +135,6 @@ async def get_knowledge_resource(session: AsyncSession, resource_id: UUID) -> Op
         return None
 
 async def get_knowledge_resource_chunks(session: AsyncSession, resource_id: UUID):
-    from app.modules.knowledge.infrastructure.tables import TextChunkTable
     stmt = select(TextChunkTable).where(TextChunkTable.knowledge_resource_id == resource_id).order_by(TextChunkTable.chunk_index)
     result = await session.execute(stmt)
     return result.scalars().all()
@@ -157,7 +154,6 @@ async def update_knowledge_resource_status(
     chunk_count: int = 0, 
     error: str = None
 ) -> Optional[KnowledgeResource]:
-    from app.modules.knowledge.domain.enums import RAGIndexingStatus
     
     values = {
         "resource_rag_indexing_status": status,

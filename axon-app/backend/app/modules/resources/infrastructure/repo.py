@@ -13,11 +13,7 @@ from app.modules.resources.infrastructure.tables import (
     PromptArchetypeTable, InternalToolTable
 )
 from app.modules.workspaces.infrastructure.tables import (
-    ExternalServiceTable, ServiceCapabilityTable, AutomationTable, AutomationExecutionTable,
-    CrewTable, PatternTable, TemplateTable
-)
-from app.modules.agents.infrastructure.tables import (
-    AgentConfigTable, ChatSessionTable, AgentLogTable
+    ExternalServiceTable, ServiceCapabilityTable, AutomationTable
 )
 from app.shared.utils.time import now_utc
 

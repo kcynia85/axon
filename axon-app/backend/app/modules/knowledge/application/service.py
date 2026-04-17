@@ -8,7 +8,6 @@ from app.modules.knowledge.infrastructure import repo as knowledge_repo
 from app.modules.knowledge.application.schemas import AssetUpdate, SuccessResponse, KnowledgeHubCreate, KnowledgeResourceCreate
 from app.modules.knowledge.domain.enums import RAGIndexingStatus
 from app.modules.knowledge.dependencies import get_db
-from app.shared.utils.time import now_utc
 
 # Function-First Service Layer
 

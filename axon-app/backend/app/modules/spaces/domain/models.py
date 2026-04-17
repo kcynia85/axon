@@ -18,6 +18,7 @@ class Space(BaseModel):
     space_status: SpaceStatus = SpaceStatus.DRAFT
     project_id: Optional[UUID] = None
     space_viewport_config: dict[str, Any] = Field(default_factory=dict)
+    canvas_data: dict[str, Any] = Field(default_factory=lambda: {"nodes": [], "edges": []})
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
 

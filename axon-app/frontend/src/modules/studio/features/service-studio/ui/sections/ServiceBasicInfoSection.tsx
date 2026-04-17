@@ -38,10 +38,10 @@ export const ServiceBasicInfoSection = () => {
 					control={control}
 					name="url"
 					render={({ field, fieldState }) => (
-						<FormItemField label="Connection URL / API Root" error={fieldState.error?.message}>
+						<FormItemField label="URL" error={fieldState.error?.message}>
 							<FormTextField 
 								{...field}
-								placeholder="https://api.service.com/v1" 
+								placeholder="https://elevenlabs.io/" 
 							/>
 						</FormItemField>
 					)}

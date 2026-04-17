@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, Query, UploadFile, File, Form, BackgroundTasks, HTTPException
 from typing import List, Optional
-from uuid import UUID, uuid4
+from uuid import UUID
 import json
 import tempfile
 import os
 import logging
 
-from app.modules.knowledge.domain.models import Asset, KnowledgeHub, KnowledgeResource
+from app.modules.knowledge.domain.models import Asset, KnowledgeResource
 from app.modules.knowledge.application.schemas import (
-    AssetUpdate, SuccessResponse, KnowledgeHubCreate, 
+    SuccessResponse, KnowledgeHubCreate, 
     KnowledgeResourceCreate, KnowledgeResourceResponse,
     KnowledgeHubResponse
 )

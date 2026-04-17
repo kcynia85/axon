@@ -2,11 +2,9 @@ import importlib
 import pkgutil
 import inspect
 import sys
-import os
 import logging
 from pathlib import Path
 from typing import List, Dict, Any
-from app.modules.resources.domain.models import InternalTool
 
 logger = logging.getLogger(__name__)
 

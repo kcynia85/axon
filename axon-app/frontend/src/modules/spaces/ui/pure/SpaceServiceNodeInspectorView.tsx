@@ -51,6 +51,7 @@ export type SpaceServiceNodeInspectorViewProps = {
     readonly onAddArtefact: () => void;
     readonly onCapabilityChange: (value: string) => void;
     readonly onAttachedLabelChange: (artefactId: string, value: string) => void;
+    readonly canvasNodes: any[];
 };
 
 const ARTEFACT_STATUS_VISUAL_CONFIG = {
@@ -85,6 +86,7 @@ export const SpaceServiceNodeInspectorView = ({
     onAddArtefact,
     onCapabilityChange,
     onAttachedLabelChange,
+    canvasNodes,
 }: SpaceServiceNodeInspectorViewProps) => {
     const filteredCapabilities = MOCK_CAPABILITIES.filter((capability) =>
         capability.label.toLowerCase().includes(capabilitySearchQuery.toLowerCase())
@@ -123,10 +125,11 @@ export const SpaceServiceNodeInspectorView = ({
                         <SpaceCrewContextTab 
                             isContextComplete={isContextDone}
                             contextRequirements={serviceData.contexts || []}
-                            nodeSearch={componentSearchQuery}
-                            setNodeSearch={onSearchQueryChange}
-                            handleContextLinkChange={onContextLinkChange}
-                            handleLinkContextFromNode={onLinkContextFromNode}
+                            nodeSearchQuery={componentSearchQuery}
+                            onSearchQueryChange={onSearchQueryChange}
+                            onContextLinkChange={onContextLinkChange}
+                            onLinkContextFromNode={onLinkContextFromNode}
+                            canvasNodes={canvasNodes}
                         />
                     </div>
                 </Tab>

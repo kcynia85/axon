@@ -1,4 +1,4 @@
-from typing import Protocol, Any, Optional
+from typing import Protocol, Any
 from abc import abstractmethod
 
 class KnowledgeRetriever(Protocol):

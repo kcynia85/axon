@@ -1,5 +1,5 @@
 from uuid import UUID
-from typing import List, Optional
+from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.spaces.domain.models import Space
@@ -10,8 +10,7 @@ from app.modules.spaces.application.schemas import (
     ReactFlowNodeData, 
     ReactFlowNodePosition, 
     ReactFlowEdge,
-    ReactFlowViewport,
-    ReactFlowZone
+    ReactFlowViewport
 )
 from app.shared.infrastructure.database import get_db
 
@@ -25,62 +24,63 @@ class SpaceService:
     async def create_space(self, space: Space) -> Space:
         return await self.repo.create_space(space)
 
+    async def list_spaces(self) -> List[Space]:
+        """Returns all available spaces."""
+        return await self.repo.list_spaces()
+
     async def get_space_canvas(self, space_id: str) -> SpaceDetailDTO:
         """
         Retrieves the Space and converts it into a React Flow compatible DTO.
+        Uses JSONB canvas_data for the graph structure.
         """
-        # We need a repo method that fetches everything eagerly
-        # Currently get_space does this with selectinload
-        space_orm = await self.repo.get_space_orm(space_id) 
-        # Note: We need to expose get_space_orm or map inside repo. 
-        # Let's adjust repo to return domain objects + relations, or use ORM for read-model efficiency.
-        
-        if not space_orm:
+        space = await self.repo.get_space(space_id)
+        if not space:
             raise HTTPException(status_code=404, detail="Space not found")
 
-        # Map ORM -> React Flow DTO
+        # Map JSONB data to DTO
+        canvas_data = space.canvas_data or {"nodes": [], "edges": []}
+        nodes_raw = canvas_data.get("nodes", [])
+        edges_raw = canvas_data.get("edges", [])
+        
         nodes_dto = [
             ReactFlowNode(
-                id=str(n.id),
-                type=n.component_type,
-                position=ReactFlowNodePosition(x=n.node_position_x, y=n.node_position_y),
+                id=n["id"],
+                type=n["type"],
+                position=ReactFlowNodePosition(x=n["position"]["x"], y=n["position"]["y"]),
+                width=n.get("width"),
+                height=n.get("height"),
                 data=ReactFlowNodeData(
-                    label=n.node_label,
-                    status=n.node_execution_status.value,
-                    runtime=n.node_runtime_state
-                )
-            ) for n in space_orm.nodes
+                    label=n["data"].get("label"),
+                    status=n["data"].get("status", "idle"),
+                    **{k: v for k, v in n["data"].items() if k not in ["label", "status"]}
+                ),
+                # Pass through any other top-level fields (e.g., style, className, etc.)
+                **{k: v for k, v in n.items() if k not in ["id", "type", "position", "width", "height", "data"]}
+            ) for n in nodes_raw
         ]
 
         edges_dto = [
             ReactFlowEdge(
-                id=str(e.id),
-                source=str(e.source_node_id),
-                target=str(e.target_node_id),
-                sourceHandle=e.edge_source_handle_id,
-                targetHandle=e.edge_target_handle_id
-            ) for e in space_orm.edges
+                id=e["id"],
+                source=e["source"],
+                target=e["target"],
+                sourceHandle=e.get("sourceHandle"),
+                targetHandle=e.get("targetHandle"),
+                # Pass through any other edge fields (e.g., type, animated, style, etc.)
+                **{k: v for k, v in e.items() if k not in ["id", "source", "target", "sourceHandle", "targetHandle"]}
+            ) for e in edges_raw
         ]
         
-        # Map zones
-        zones_dto = [
-            ReactFlowZone(
-                id=str(z.id),
-                workspaceDomain=z.workspace_domain.value,
-                position=ReactFlowNodePosition(x=z.zone_position_x, y=z.zone_position_y),
-                width=z.zone_width,
-                height=z.zone_height,
-                color=z.zone_color
-            ) for z in space_orm.zones
-        ]
+        # Map zones if present (currently zones are nodes of type 'zone' in React Flow)
+        zones_dto = [] # Implementation for dedicated zones if needed
         
-        viewport_config = space_orm.space_viewport_config or {}
+        viewport_config = space.space_viewport_config or {}
 
         return SpaceDetailDTO(
-            id=space_orm.id,
-            name=space_orm.space_name,
-            description=space_orm.space_description,
-            status=space_orm.space_status.value,
+            id=space.id,
+            name=space.space_name,
+            description=space.space_description,
+            status=space.space_status.value,
             viewport=ReactFlowViewport(
                 x=viewport_config.get("x", 0),
                 y=viewport_config.get("y", 0),
@@ -90,6 +90,27 @@ class SpaceService:
             edges=edges_dto,
             zones=zones_dto
         )
+
+    async def update_canvas_data(self, space_id: str, updates: dict) -> None:
+        """Persists viewport and node/edge data into JSONB."""
+        # Frontend sends data nested in 'config'
+        config = updates.get("config", updates)
+        
+        # Persist full objects to ensure coordinates, sizes and all metadata are preserved
+        canvas_data = {
+            "nodes": config.get("nodes", []),
+            "edges": config.get("edges", [])
+        }
+        viewport = config.get("viewport", {"x": 0, "y": 0, "zoom": 1})
+        await self.repo.update_canvas(space_id, canvas_data, viewport)
+
+    async def update_space_metadata(self, space_id: str, updates: dict) -> Space:
+        """Updates space name, description or status."""
+        await self.repo.update_space(space_id, updates)
+        updated_space = await self.repo.get_space(space_id)
+        if not updated_space:
+            raise HTTPException(status_code=404, detail="Space not found after update")
+        return updated_space
 
     # ... existing methods ...
 

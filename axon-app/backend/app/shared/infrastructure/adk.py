@@ -107,7 +107,7 @@ class GoogleADK:
                 if cached_response:
                     print(f"[ADK] Cache Hit for prompt: {prompt[:30]}...")
                     return cached_response
-            except Exception as e:
+            except Exception:
                 # print(f"[ADK] Cache Check Failed: {e}") # Reduce noise
                 pass
 

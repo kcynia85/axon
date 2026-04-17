@@ -1,4 +1,4 @@
-import asyncio; from sqlalchemy import select; from app.shared.infrastructure.database import AsyncSessionLocal; from app.modules.settings.infrastructure.tables import VectorDatabaseTable;
+import asyncio; from sqlalchemy import select; from app.shared.infrastructure.database import AsyncSessionLocal; from app.modules.settings.infrastructure.tables import VectorDatabaseTable
 async def find():
     async with AsyncSessionLocal() as s:
         res = await s.execute(select(VectorDatabaseTable).where(VectorDatabaseTable.vector_database_name == 'Supabase Test'))
