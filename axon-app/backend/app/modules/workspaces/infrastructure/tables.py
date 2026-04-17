@@ -61,6 +61,7 @@ class CrewTable(Base):
     
     # Relationships
     agents = relationship("AgentConfigTable", secondary=crew_agents_association, backref="crews")
+    manager = relationship("AgentConfigTable", foreign_keys=[manager_agent_id])
 
 class ExternalServiceTable(Base):
     __tablename__ = "external_services"

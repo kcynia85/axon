@@ -21,16 +21,24 @@ export const useCrewInspectorBaseLogic = (
     const isBriefing = data.state === 'briefing';
     const isDone = data.state === 'done';
     const isAborted = data.state === 'aborted';
+    const isIdle = data.state === 'idle' || !data.state;
 
     const roles = data.roles || [];
+    const resolvedMembersList = data.resolved_members || (data as any)._resolved_members || (data as any).members || [];
 
-    // Priorytetyzujemy zadania wstrzyknięte do Node'a
-    const tasks = data.tasks || roles.map((role, i) => ({
-        id: `task_${i}`,
+    // Force fallback if tasks array is empty (data.tasks || ... is not enough because [] is truthy)
+    const tasks = (data.tasks && data.tasks.length > 0) ? data.tasks : (resolvedMembersList.length > 0 ? resolvedMembersList.map((member: any, index: number) => ({
+        id: member.id || `task_${index}`,
+        label: `Zadanie dla: ${member.role || member.agent_role_text || member.agent_name || "Agent"}`,
+        status: 'pending' as const,
+        assignedAgentTitle: member.role || member.agent_role_text || member.agent_name || "Agent",
+        visualUrl: member.visualUrl || member.agent_visual_url || member.avatar_url
+    })) : roles.map((role, index) => ({
+        id: `task_${index}`,
         label: `Zadanie dla: ${role}`,
         status: 'pending' as const,
         assignedAgentTitle: role
-    }));
+    })));
 
     const logs = data.execution_logs || [];
     const sharedMemory = data.shared_memory || [];
@@ -134,6 +142,7 @@ export const useCrewInspectorBaseLogic = (
         isBriefing,
         isDone,
         isAborted,
+        isIdle,
         tasks,
         logs,
         sharedMemory,

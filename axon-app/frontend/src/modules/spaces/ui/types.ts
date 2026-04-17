@@ -139,6 +139,11 @@ export type SpaceCanvasOrchestrationLogic = {
 
 export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogic & {
     readonly workspaceId: string;
+    readonly canvasViewProperties: any;
+    readonly spaceData: any;
+    readonly isSaving: boolean;
+    readonly availableAgents?: readonly any[];
+    readonly availableCrews?: readonly any[];
 };
 
 export type SpaceCanvasViewProperties = {
@@ -213,6 +218,8 @@ export type SpaceNodeViewModel = {
     readonly VisualIcon?: any;
     readonly visualUrl?: string | null;
     readonly managerVisualUrl?: string | null;
+    readonly agents?: readonly { id: string; title: string; visualUrl?: string | null }[];
+    readonly processType?: string;
 };
 
 export type SpaceAgentViewModel = SpaceNodeViewModel;

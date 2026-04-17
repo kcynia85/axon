@@ -1,6 +1,5 @@
 ---
-template_type: crew
-target_workspace: Design
+workspace: Design
 ---
 
 # Behavioral Design Checklist (Psychology Audit)

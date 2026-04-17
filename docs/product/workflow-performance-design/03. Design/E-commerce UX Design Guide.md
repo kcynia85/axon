@@ -1,6 +1,5 @@
 ---
-template_type: flow
-target_workspace: Design
+workspace: Design
 ---
 
 # E-commerce UX Design Guide

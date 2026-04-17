@@ -1,6 +1,5 @@
 ---
-template_type: crew
-target_workspace: Design
+workspace: Design
 ---
 
 # Inclusive Design Checklist (WCAG 2.1 AA)

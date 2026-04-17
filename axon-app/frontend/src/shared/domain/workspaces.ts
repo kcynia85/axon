@@ -55,6 +55,12 @@ export const AgentSchema = z.object({
 
 export type Agent = z.infer<typeof AgentSchema>;
 
+export const ResolvedMemberSchema = z.object({
+  id: z.string(),
+  role: z.string(),
+  visualUrl: z.string().nullable().optional()
+});
+
 export const CrewSchema = z.object({
   id: z.string(),
   crew_name: z.string(),
@@ -64,6 +70,8 @@ export const CrewSchema = z.object({
   crew_keywords: z.array(z.string()).default([]),
   availability_workspace: z.array(z.string()).default([]),
   agent_member_ids: z.array(z.string()).default([]),
+  resolved_members: z.array(ResolvedMemberSchema).default([]),
+  resolved_manager: ResolvedMemberSchema.nullable().optional(),
   data_interface: DataInterfaceSchema.default({ context: [], artefacts: [] }),
   metadata: z.record(z.any()).optional(),
   created_at: z.string().datetime(),

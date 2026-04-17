@@ -78,6 +78,7 @@ export type SpaceAgentDomainData = {
   readonly state: string;
   readonly progress: number;
   readonly zoneColor: WorkspaceColor;
+  readonly agent_visual_url?: string | null;
   readonly plan_steps?: readonly AgentPlanStep[];
   readonly metrics?: AgentMetrics;
   readonly pending_question?: string;
@@ -128,6 +129,12 @@ export type SharedMemoryEntry = {
   readonly timestamp: string;
 };
 
+export type ResolvedMember = {
+  readonly id: string;
+  readonly role: string;
+  readonly visualUrl?: string | null;
+};
+
 export type SpaceCrewDomainData = {
   readonly label: string;
   readonly state: string;
@@ -149,6 +156,8 @@ export type SpaceCrewDomainData = {
     readonly answer?: string;
   }[];
   readonly metrics?: AgentMetrics;
+  readonly resolved_members?: readonly ResolvedMember[];
+  readonly resolved_manager?: ResolvedMember | null;
 };
 
 export type SpacePatternDomainData = {
@@ -170,6 +179,8 @@ export type SpaceServiceDomainData = {
 export type TemplateAction = {
   readonly id: string;
   readonly label: string;
+  readonly description?: string;
+  readonly psyche_level?: string;
   readonly isCompleted: boolean;
   readonly section?: string;
 };

@@ -59,18 +59,31 @@ export const useSpaceCanvasModificationOperations = (
     }
 
     const uniqueNodeIdentifier = `node_${Math.random().toString(36).substring(2, 11)}`;
-    const isTemplate = nodeType === 'template';
+    const isTemplate = nodeType === 'template' || (initialNodeData as any).type === 'template';
+    const isCrew = nodeType === 'crew' || (initialNodeData as any).type === 'crew';
+    
     const templateCanvasData = isTemplate ? mapTemplateWorkspaceConfigToNodeData(initialNodeData) : {};
+    
+    // Hydrate crew data if missing
+    const crewCanvasData = isCrew ? {
+        state: 'idle',
+        tasks: [],
+        members: (initialNodeData as any).members || (initialNodeData as any).agent_member_ids || [],
+        resolved_members: (initialNodeData as any).resolved_members || (initialNodeData as any)._resolved_members || [],
+        resolved_manager: (initialNodeData as any).resolved_manager || (initialNodeData as any)._resolved_manager || null,
+        process_type: (initialNodeData as any).crew_process_type || (initialNodeData as any).process_type || 'Sequential',
+    } : {};
 
     const newlyCreatedNode: Node = {
       id: uniqueNodeIdentifier,
-      type: nodeType,
+      type: isCrew ? 'crew' : (isTemplate ? 'template' : nodeType),
       position: newNodePosition,
       parentId: parentZoneId,
       extent: parentZoneId ? 'parent' : undefined,
       data: {
         ...initialNodeData,
         ...templateCanvasData,
+        ...crewCanvasData,
         ...(isTemplate && { actions: [], status: 'working' }),
         state: 'missing_context',
         zoneColor: expectedColor || parentZoneForNewNode?.data.zoneColor || 'purple'

@@ -1,17 +1,18 @@
-// frontend/src/modules/spaces/application/hooks/useSpaceCanvasOrchestrator.ts
-
-import { useState } from 'react';
-import type { Node } from '@xyflow/react';
+import { useState, useRef } from 'react';
+import type { Node, Edge } from '@xyflow/react';
+import { useReactFlow } from '@xyflow/react';
 import { useSpaceCanvasState } from './useSpaceCanvasState';
 import { useSpaceCanvasConnectionLogic } from './useSpaceCanvasConnectionLogic';
 import { useSpaceCanvasDragAndDropLogic } from './useSpaceCanvasDragAndDropLogic';
 import { useSpaceCanvasModificationOperations } from './useSpaceCanvasModificationOperations';
 import { useSpaceCanvasHistory } from './useSpaceCanvasHistory';
+import { useSpaceCanvasPersistence } from './useSpaceCanvasPersistence';
 import { SpacePatternBlueprint } from '../../domain/types';
 import { SpaceCanvasOrchestrationLogic } from '../../ui/types';
 import { BlueprintEngine } from '../../domain/BlueprintEngine';
+import React from 'react';
 
-export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown): SpaceCanvasOrchestrationLogic => {
+export const useSpaceCanvasOrchestrator = (spaceId: string, initialCanvasConfiguration?: unknown): SpaceCanvasOrchestrationLogic => {
   const {
     canvasNodes,
     canvasEdges,
@@ -20,24 +21,66 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
     handleCanvasNodesChange,
     handleCanvasEdgesChange,
     currentlySelectedNode,
+    latestNodesReference,
+    latestEdgesReference
   } = useSpaceCanvasState(initialCanvasConfiguration);
+
+  const { getViewport } = useReactFlow();
+  const { mutate: persistCanvas } = useSpaceCanvasPersistence(spaceId);
+  const debounceTimerReference = useRef<NodeJS.Timeout>();
+
+  // Unified event-driven persistence function (Zero useEffect approach)
+  const triggerDebouncedPersistence = () => {
+      if (debounceTimerReference.current) clearTimeout(debounceTimerReference.current);
+      
+      debounceTimerReference.current = setTimeout(() => {
+          // Always use the latest values from synchronous refs updated in setters
+          // and fresh viewport from React Flow instance
+          persistCanvas({ 
+              nodes: latestNodesReference.current, 
+              edges: latestEdgesReference.current,
+              viewport: getViewport()
+          });
+      }, 1000); // Faster persistence (1s)
+  };
+
+  const updateCanvasNodesWithPersistence = (updater: any) => {
+      updateCanvasNodes(updater);
+      triggerDebouncedPersistence();
+  };
+
+  const updateCanvasEdgesWithPersistence = (updater: any) => {
+      updateCanvasEdges(updater);
+      triggerDebouncedPersistence();
+  };
+
+  const onNodesChangeWithPersistence = (changes: any) => {
+      handleCanvasNodesChange(changes);
+      // Synchronous ref update in handleCanvasNodesChange ensures we have latest data
+      triggerDebouncedPersistence();
+  };
+
+  const onEdgesChangeWithPersistence = (changes: any) => {
+      handleCanvasEdgesChange(changes);
+      triggerDebouncedPersistence();
+  };
 
   const { takeSnapshot, handleKeyDown } = useSpaceCanvasHistory(
     canvasNodes,
     canvasEdges,
-    updateCanvasNodes,
-    updateCanvasEdges
+    updateCanvasNodesWithPersistence,
+    updateCanvasEdgesWithPersistence
   );
 
   const {
     handleNewConnectionCreated,
     validateConnectionBetweenNodes,
-  } = useSpaceCanvasConnectionLogic(updateCanvasEdges);
+  } = useSpaceCanvasConnectionLogic(updateCanvasEdgesWithPersistence);
 
   const {
     handleDragOverEvent,
     handleDropEvent,
-  } = useSpaceCanvasDragAndDropLogic(updateCanvasNodes);
+  } = useSpaceCanvasDragAndDropLogic(updateCanvasNodesWithPersistence);
 
   const {
     addNewNodeToCanvas,
@@ -45,7 +88,7 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
     duplicateNode,
     deleteNodes,
     updateNodesStatus,
-  } = useSpaceCanvasModificationOperations(updateCanvasNodes, updateCanvasEdges, takeSnapshot);
+  } = useSpaceCanvasModificationOperations(updateCanvasNodesWithPersistence, updateCanvasEdgesWithPersistence, takeSnapshot);
 
   const [clipboard, setClipboard] = useState<{ nodes: Node[]; isCut: boolean } | null>(null);
 
@@ -58,15 +101,20 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
   };
 
   const createPatternFromSelection = (name: string, description: string, type?: 'pattern' | 'super-pattern') => {
-    const selectedNodes = canvasNodes.filter(n => n.selected);
-    return BlueprintEngine.serializeSelection(selectedNodes as any, canvasNodes as any, canvasEdges as any, { name, description, type });
+    const selectedNodesForBlueprint = canvasNodes.filter(node => node.selected);
+    return BlueprintEngine.serializeSelection(
+        selectedNodesForBlueprint as any, 
+        canvasNodes as any, 
+        canvasEdges as any, 
+        { name, description, type }
+    );
   };
 
   const instantiatePatternFromBlueprint = (blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => {
     takeSnapshot();
-    const { nodes, edges } = BlueprintEngine.instantiatePattern(blueprint, position);
-    updateCanvasNodes(current => [...current, ...nodes]);
-    updateCanvasEdges(current => [...current, ...edges]);
+    const { nodes: newNodes, edges: newEdges } = BlueprintEngine.instantiatePattern(blueprint, position);
+    updateCanvasNodesWithPersistence((currentNodes: Node[]) => [...currentNodes, ...newNodes]);
+    updateCanvasEdgesWithPersistence((currentEdges: Edge[]) => [...currentEdges, ...newEdges]);
   };
 
   const pasteNodes = (position?: { x: number; y: number }) => {
@@ -87,11 +135,11 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
       };
     });
 
-    updateCanvasNodes((currentNodes) => currentNodes.concat(newNodes));
+    updateCanvasNodesWithPersistence((currentNodes: Node[]) => currentNodes.concat(newNodes));
 
     if (isCut) {
       const cutNodeIds = nodes.map(n => n.id);
-      updateCanvasNodes((currentNodes) => currentNodes.filter(n => !cutNodeIds.includes(n.id)));
+      updateCanvasNodesWithPersistence((currentNodes: Node[]) => currentNodes.filter(n => !cutNodeIds.includes(n.id)));
       setClipboard(null);
     }
   };
@@ -99,8 +147,8 @@ export const useSpaceCanvasOrchestrator = (initialCanvasConfiguration?: unknown)
   return {
     canvasNodes,
     canvasEdges,
-    handleCanvasNodesChange,
-    handleCanvasEdgesChange,
+    handleCanvasNodesChange: onNodesChangeWithPersistence,
+    handleCanvasEdgesChange: onEdgesChangeWithPersistence,
     handleNewConnectionCreated,
     validateConnectionBetweenNodes,
     handleDragOverEvent,

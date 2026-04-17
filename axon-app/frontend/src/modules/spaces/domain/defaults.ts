@@ -128,10 +128,10 @@ export const mapCrewWorkspaceConfigToNodeData = (transferData: Record<string, un
   }));
   
   // Pobieramy rozwiązanych członków (role + visualUrl)
-  const resolvedMembers = (transferData._resolved_members as Record<string, unknown>[]) || [];
-  const roles = resolvedMembers.map(m => m.role as string);
+  const resolvedMembers = (transferData.resolved_members || transferData._resolved_members) as Record<string, unknown>[] || [];
+  const roles = resolvedMembers.map(member => (member.role || member.agent_role_text || member.agent_name || "Agent") as string);
 
-  const resolvedManager = (transferData._resolved_manager as Record<string, unknown>) || null;
+  const resolvedManager = (transferData.resolved_manager || transferData._resolved_manager) as Record<string, unknown> || null;
 
   // Sprawdzamy oba możliwe pola dla typu procesu
   const rawProcessType = (transferData.crew_process_type || transferData.process_type) as string;
@@ -139,15 +139,15 @@ export const mapCrewWorkspaceConfigToNodeData = (transferData: Record<string, un
 
   return {
     process_type,
-    manager_title: resolvedManager?.role as string | undefined,
-    manager_visual_url: resolvedManager?.visualUrl as string | undefined,
+    manager_title: (resolvedManager?.role || resolvedManager?.agent_role_text || resolvedManager?.agent_name) as string | undefined,
+    manager_visual_url: (resolvedManager?.visualUrl || resolvedManager?.visual_url || resolvedManager?.agent_visual_url) as string | undefined,
     roles,
     tasks: resolvedMembers.map((member, i) => ({
-        id: `t-${i}-${Math.random().toString(36).substring(2, 5)}`,
-        label: `Zadanie dla: ${member.role}`,
+        id: member.id as string || `t-${i}-${Math.random().toString(36).substring(2, 5)}`,
+        label: `Zadanie dla: ${member.role || member.agent_role_text || member.agent_name || "Agent"}`,
         status: 'pending' as const,
-        assignedAgentTitle: member.role as string,
-        visualUrl: member.visualUrl as string | undefined
+        assignedAgentTitle: (member.role || member.agent_role_text || member.agent_name || "Agent") as string,
+        visualUrl: (member.visualUrl || member.visual_url || member.agent_visual_url) as string | undefined
     })),
     shared_memory: [],
     context_requirements: contextRequirements,

@@ -2,8 +2,8 @@ from uuid import UUID
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete, func, or_, String, cast
-from sqlalchemy.orm import selectinload
-from app.modules.workspaces.domain.models import Pattern, Template, Crew, ExternalService, ServiceCapability, Automation, TrashItem
+from sqlalchemy.orm import selectinload, joinedload
+from app.modules.workspaces.domain.models import Pattern, Template, Crew, ResolvedMember, ExternalService, ServiceCapability, Automation, TrashItem
 from app.modules.workspaces.infrastructure.tables import (
     PatternTable, TemplateTable, CrewTable, ExternalServiceTable, ServiceCapabilityTable, AutomationTable
 )
@@ -125,7 +125,10 @@ class WorkspaceRepository:
         )
     # --- Crews ---
     async def list_crews(self, workspace: Optional[str] = None, limit: int = 100, offset: int = 0) -> List[Crew]:
-        stmt = select(CrewTable).options(selectinload(CrewTable.agents)).where(CrewTable.deleted_at == None).order_by(CrewTable.created_at.desc())
+        stmt = select(CrewTable).options(
+            selectinload(CrewTable.agents), 
+            joinedload(CrewTable.manager)
+        ).where(CrewTable.deleted_at == None).order_by(CrewTable.created_at.desc())
         if workspace:
              stmt = stmt.where(or_(
                  CrewTable.availability_workspace.contains([workspace]),
@@ -136,7 +139,10 @@ class WorkspaceRepository:
         return [self._crew_to_domain(row) for row in result.scalars().all()]
 
     async def get_crew(self, crew_id: UUID) -> Optional[Crew]:
-        stmt = select(CrewTable).options(selectinload(CrewTable.agents)).where(CrewTable.id == crew_id, CrewTable.deleted_at == None)
+        stmt = select(CrewTable).options(
+            selectinload(CrewTable.agents),
+            joinedload(CrewTable.manager)
+        ).where(CrewTable.id == crew_id, CrewTable.deleted_at == None)
         result = await self.session.execute(stmt)
         row = result.scalar_one_or_none()
         return self._crew_to_domain(row) if row else None
@@ -144,7 +150,10 @@ class WorkspaceRepository:
     async def update_crew(self, crew_id: UUID, data: dict, agent_ids: Optional[List[UUID]] = None) -> Optional[Crew]:
         data["updated_at"] = now_utc()
         from app.modules.agents.infrastructure.tables import AgentConfigTable
-        stmt = select(CrewTable).options(selectinload(CrewTable.agents)).where(CrewTable.id == crew_id)
+        stmt = select(CrewTable).options(
+            selectinload(CrewTable.agents),
+            joinedload(CrewTable.manager)
+        ).where(CrewTable.id == crew_id)
         result = await self.session.execute(stmt)
         row = result.scalar_one_or_none()
         if not row: return None
@@ -156,6 +165,7 @@ class WorkspaceRepository:
              agents_result = await self.session.execute(agents_stmt)
              row.agents = agents_result.scalars().all()
         await self.session.commit()
+        await self.session.refresh(row)
         return self._crew_to_domain(row)
 
     async def delete_crew(self, crew_id: UUID) -> bool:
@@ -165,7 +175,7 @@ class WorkspaceRepository:
         return result.rowcount > 0
 
     async def create_crew(self, crew: Crew, agent_ids: List[UUID]) -> Crew:
-        data = crew.model_dump(exclude={"agent_member_ids"})
+        data = crew.model_dump(exclude={"agent_member_ids", "resolved_members", "resolved_manager"})
         if "metadata" in data: data["metadata_"] = data.pop("metadata")
         new_row = CrewTable(**data)
         from app.modules.agents.infrastructure.tables import AgentConfigTable
@@ -175,6 +185,15 @@ class WorkspaceRepository:
             new_row.agents = agents_result.scalars().all()
         self.session.add(new_row)
         await self.session.commit()
+        
+        # Reload with relationships
+        stmt = select(CrewTable).options(
+            selectinload(CrewTable.agents),
+            joinedload(CrewTable.manager)
+        ).where(CrewTable.id == new_row.id)
+        result = await self.session.execute(stmt)
+        new_row = result.scalar_one()
+        
         return self._crew_to_domain(new_row)
 
     def _crew_to_domain(self, row: CrewTable) -> Crew:
@@ -190,7 +209,19 @@ class WorkspaceRepository:
             metadata=row.metadata_ or {},
             created_at=row.created_at,
             updated_at=row.updated_at,
-            agent_member_ids=[a.id for a in row.agents] if hasattr(row, "agents") and row.agents else []
+            agent_member_ids=[a.id for a in row.agents] if hasattr(row, "agents") and row.agents else [],
+            resolved_members=[
+                ResolvedMember(
+                    id=a.id, 
+                    role=a.agent_role_text or (a.role.value if a.role else "Agent"), 
+                    visualUrl=a.agent_visual_url
+                ) for a in row.agents
+            ] if hasattr(row, "agents") and row.agents else [],
+            resolved_manager=ResolvedMember(
+                id=row.manager.id,
+                role=row.manager.agent_role_text or (row.manager.role.value if row.manager.role else "Manager"),
+                visualUrl=row.manager.agent_visual_url
+            ) if hasattr(row, "manager") and row.manager else None
         )
 
     # --- External Services ---

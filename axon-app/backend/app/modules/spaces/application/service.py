@@ -14,12 +14,19 @@ from app.modules.spaces.application.schemas import (
 )
 from app.shared.infrastructure.database import get_db
 
+from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
+from app.modules.agents.infrastructure.repo import AgentConfigRepository
+from app.modules.workspaces.dependencies import get_workspace_repo
+from app.modules.agents.dependencies import get_agent_repo
+
 async def get_space_repo(session: AsyncSession = Depends(get_db)) -> SpaceRepository:
     return SpaceRepository(session)
 
 class SpaceService:
-    def __init__(self, repo: SpaceRepository):
+    def __init__(self, repo: SpaceRepository, workspace_repo: WorkspaceRepository = None, agent_repo: AgentConfigRepository = None):
         self.repo = repo
+        self.workspace_repo = workspace_repo
+        self.agent_repo = agent_repo
 
     async def create_space(self, space: Space) -> Space:
         return await self.repo.create_space(space)
@@ -42,22 +49,57 @@ class SpaceService:
         nodes_raw = canvas_data.get("nodes", [])
         edges_raw = canvas_data.get("edges", [])
         
-        nodes_dto = [
-            ReactFlowNode(
-                id=n["id"],
-                type=n["type"],
-                position=ReactFlowNodePosition(x=n["position"]["x"], y=n["position"]["y"]),
-                width=n.get("width"),
-                height=n.get("height"),
-                data=ReactFlowNodeData(
-                    label=n["data"].get("label"),
-                    status=n["data"].get("status", "idle"),
-                    **{k: v for k, v in n["data"].items() if k not in ["label", "status"]}
-                ),
-                # Pass through any other top-level fields (e.g., style, className, etc.)
-                **{k: v for k, v in n.items() if k not in ["id", "type", "position", "width", "height", "data"]}
-            ) for n in nodes_raw
-        ]
+        nodes_dto = []
+        for n in nodes_raw:
+            node_type = n.get("type")
+            node_data = n.get("data", {})
+            
+            # HYDRATION: Fetch latest data for crews and agents if IDs are present
+            if node_type == "crew" and "id" in node_data and self.workspace_repo:
+                try:
+                    crew_id = UUID(node_data["id"]) if isinstance(node_data["id"], str) else node_data["id"]
+                    crew = await self.workspace_repo.get_crew(crew_id)
+                    if crew:
+                        # Update node data with latest from DB
+                        node_data.update({
+                            "resolved_members": [m.model_dump() for m in crew.resolved_members],
+                            "resolved_manager": crew.resolved_manager.model_dump() if crew.resolved_manager else None,
+                            "agent_member_ids": [str(mid) for mid in crew.agent_member_ids],
+                            "manager_agent_id": str(crew.manager_agent_id) if crew.manager_agent_id else None,
+                            "crew_name": crew.crew_name,
+                            "crew_process_type": crew.crew_process_type.value if hasattr(crew.crew_process_type, "value") else crew.crew_process_type
+                        })
+                except Exception as e:
+                    print(f"Failed to hydrate crew node {n['id']}: {e}")
+
+            elif node_type == "agent" and "id" in node_data and self.agent_repo:
+                try:
+                    agent_id = UUID(node_data["id"]) if isinstance(node_data["id"], str) else node_data["id"]
+                    agent = await self.agent_repo.get(agent_id)
+                    if agent:
+                        node_data.update({
+                            "agent_visual_url": agent.agent_visual_url,
+                            "agent_name": agent.agent_name,
+                            "agent_role_text": agent.agent_role_text
+                        })
+                except Exception as e:
+                    print(f"Failed to hydrate agent node {n['id']}: {e}")
+
+            nodes_dto.append(
+                ReactFlowNode(
+                    id=n["id"],
+                    type=n["type"],
+                    position=ReactFlowNodePosition(x=n["position"]["x"], y=n["position"]["y"]),
+                    width=n.get("width"),
+                    height=n.get("height"),
+                    data=ReactFlowNodeData(
+                        label=node_data.get("label"),
+                        status=node_data.get("status", "idle"),
+                        **{k: v for k, v in node_data.items() if k not in ["label", "status"]}
+                    ),
+                    **{k: v for k, v in n.items() if k not in ["id", "type", "position", "width", "height", "data"]}
+                )
+            )
 
         edges_dto = [
             ReactFlowEdge(

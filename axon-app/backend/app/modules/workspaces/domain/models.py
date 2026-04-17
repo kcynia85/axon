@@ -41,6 +41,11 @@ class Template(BaseModel):
     updated_at: datetime = Field(default_factory=now_utc)
     deleted_at: Optional[datetime] = None
 
+class ResolvedMember(BaseModel):
+    id: UUID
+    role: str
+    visualUrl: Optional[str] = None
+
 class Crew(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     crew_name: str
@@ -55,6 +60,8 @@ class Crew(BaseModel):
     updated_at: datetime = Field(default_factory=now_utc)
     deleted_at: Optional[datetime] = None
     agent_member_ids: List[UUID] = Field(default_factory=list)
+    resolved_members: List[ResolvedMember] = Field(default_factory=list)
+    resolved_manager: Optional[ResolvedMember] = None
 
 # --- Migrated Models ---
 

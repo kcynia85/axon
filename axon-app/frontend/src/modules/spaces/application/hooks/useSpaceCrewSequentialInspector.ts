@@ -7,7 +7,7 @@ import { useCrewInspectorBaseLogic } from "./useCrewInspectorBaseLogic";
 export const useSpaceCrewSequentialInspector = (data: any, nodeId: string, onPropertyChange: any) => {
     const logic = useCrewInspectorBaseLogic(data, onPropertyChange);
     const {
-        isMissingContext, isWorking, isConsultation, isBriefing, isDone, isAborted,
+        isMissingContext, isWorking, isConsultation, isBriefing, isDone, isAborted, isIdle,
         tasks, progressValue, transitionTo, handleAnswerChange,
         allQuestionsAnswered, consultationAnswers, consultationQuestions,
         sharedMemory,
@@ -77,7 +77,7 @@ export const useSpaceCrewSequentialInspector = (data: any, nodeId: string, onPro
 
     return {
         state: {
-            isMissingContext, isWorking, isConsultation, isBriefing, isDone, isAborted,
+            isMissingContext, isWorking, isConsultation, isBriefing, isDone, isAborted, isIdle,
             tasks, progressValue, allQuestionsAnswered, consultationAnswers, consultationQuestions,
             sharedMemory, isContextComplete, contextRequirements, nodeSearch,
             editingArtefactId, selectedTab, isDetailsOpen, logs, isLogsOpen,

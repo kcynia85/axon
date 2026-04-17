@@ -101,7 +101,9 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                                                                         className="object-cover object-top scale-110 transition-all duration-500 bg-black"
                                                                     />
                                                                 ) : (
-                                                                    <Users size={14} className="text-zinc-500" />
+                                                                    <div className="w-full h-full bg-zinc-800 flex items-center justify-center text-zinc-500 text-[10px]">
+                                                                        {task.assignedAgentTitle.charAt(0)}
+                                                                    </div>
                                                                 )}
                                                             </div>
                                                             <div className="flex-1 min-w-0">

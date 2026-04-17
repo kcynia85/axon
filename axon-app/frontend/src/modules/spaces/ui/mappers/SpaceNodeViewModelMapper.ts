@@ -91,7 +91,11 @@ export const mapAutomationToViewModel = (automationDomainData: SpaceAutomationDo
     };
 };
 
-export const mapCrewToViewModel = (crewDomainData: SpaceCrewDomainData, isSelected: boolean): SpaceCrewViewModel => {
+export const mapCrewToViewModel = (
+    crewDomainData: SpaceCrewDomainData, 
+    isSelected: boolean,
+    availableCrews?: readonly any[]
+): SpaceCrewViewModel => {
     const visualProperties = mapVisualProperties(crewDomainData.zoneColor, isSelected);
     // Overriding container width for Crew to accommodate badge and multiple avatars
     const crewVisualProperties = { ...visualProperties, containerClassName: visualProperties.containerClassName.replace('w-[280px]', 'w-[360px]') };
@@ -116,15 +120,17 @@ export const mapCrewToViewModel = (crewDomainData: SpaceCrewDomainData, isSelect
     const visualStyles = getVisualStylesForZoneColor(crewDomainData.zoneColor);
 
     // DENSE MAPPING: Try to get agents from all possible sources
-    const rawMembers = (crewDomainData as any)._resolved_members || (crewDomainData as any).members || [];
+    const rawMembers = crewDomainData.resolved_members || (crewDomainData as any)._resolved_members || (crewDomainData as any).members || [];
     const rawTasks = crewDomainData.tasks || [];
+    const rawRoles = crewDomainData.roles || [];
     
     let agents: { id: string; title: string; visualUrl?: string | null }[] = [];
     
+    // Attempt to hydrate from resolved members or task assignments
     if (rawMembers.length > 0) {
         agents = rawMembers.map((member: any) => ({
             id: member.id || member.agent_id || Math.random().toString(),
-            title: member.role || member.title || member.agent_name || "Agent",
+            title: member.role || member.title || member.agent_name || member.agent_role_text || "Agent",
             visualUrl: member.visualUrl || member.agent_visual_url || member.avatar_url
         }));
     } else if (rawTasks.length > 0) {
@@ -133,18 +139,24 @@ export const mapCrewToViewModel = (crewDomainData: SpaceCrewDomainData, isSelect
             title: task.assignedAgentTitle || "Agent",
             visualUrl: task.visualUrl
         }));
+    } else if (rawRoles.length > 0) {
+        // Fallback: Use roles if agents list is empty
+        agents = rawRoles.map((role: string) => ({
+            id: Math.random().toString(),
+            title: role,
+        }));
     }
 
     const stateValue = crewDomainData.state || (crewDomainData as any).status || 'idle';
-    const managerData = (crewDomainData as any)._resolved_manager;
+    const managerData = crewDomainData.resolved_manager || (crewDomainData as any)._resolved_manager;
 
     return {
         visual: crewVisualProperties,
         zoneColor: crewDomainData.zoneColor,
         displayName: crewDomainData.label || (crewDomainData as any).crew_name || 'Crew',
-        statusText: statusDisplayMap[stateValue] || stateValue.replace('_', ' ').toUpperCase(),
-        teamRoles: crewDomainData.roles || agents.map((a: any) => a.title),
-        agents,
+        statusText: (statusDisplayMap[stateValue] || stateValue.replace('_', ' ').toUpperCase()),
+        teamRoles: rawRoles.length > 0 ? rawRoles : (agents.length > 0 ? agents.map((a: any) => a.title) : ['Pending...']),
+        agents: agents.length > 0 ? agents : [{ id: 'fallback', title: 'Awaiting sync...' }],
         activeAgentTitle: activeAgentTitleText,
         processType: crewDomainData.process_type || (crewDomainData as any).crew_process_type || 'Sequential',
         managerVisualUrl: crewDomainData.manager_visual_url || managerData?.visualUrl || managerData?.agent_visual_url,

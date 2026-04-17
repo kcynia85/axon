@@ -8,6 +8,10 @@ from app.modules.spaces.application.service import (
 )
 from app.modules.spaces.application.schemas import SpaceDetailDTO
 from app.modules.spaces.infrastructure.repo import SpaceRepository
+from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
+from app.modules.agents.infrastructure.repo import AgentConfigRepository
+from app.modules.workspaces.dependencies import get_workspace_repo
+from app.modules.agents.dependencies import get_agent_repo
 
 router = APIRouter(prefix="/spaces", tags=["Spaces"])
 
@@ -34,12 +38,14 @@ async def list_spaces(
 @router.get("/{space_id}/canvas", response_model=SpaceDetailDTO)
 async def get_space_canvas(
     space_id: str,
-    repo: SpaceRepository = Depends(get_space_repo)
+    repo: SpaceRepository = Depends(get_space_repo),
+    workspace_repo: WorkspaceRepository = Depends(get_workspace_repo),
+    agent_repo: AgentConfigRepository = Depends(get_agent_repo)
 ):
     """
     Returns the complete Space graph optimized for React Flow.
     """
-    service = SpaceService(repo)
+    service = SpaceService(repo, workspace_repo, agent_repo)
     return await service.get_space_canvas(space_id)
 
 @router.patch("/{space_id}/canvas", status_code=status.HTTP_204_NO_CONTENT)
