@@ -1,6 +1,6 @@
 import React from "react";
 import { ProjectCard } from "./ProjectCard";
-import { ProjectListItem } from "./ProjectListItem";
+import { ProjectListItem } from "./components/ProjectListItem";
 import { ResourceList } from "@/shared/ui/complex/ResourceList";
 import { ProjectListProps } from "./types";
 

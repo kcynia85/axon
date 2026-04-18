@@ -1,7 +1,7 @@
 import React from "react";
-import { ProjectActivityTabProps } from "./types";
+import { ProjectActivityTabProps } from "../types";
 import { ProjectDetailsContentGroup } from "./ProjectDetailsLayout";
-import { BaseDiv, BaseParagraph, BaseHeading3 } from "../../browse-projects/ui/components/ProjectBaseAtoms";
+import { BaseDiv, BaseParagraph, BaseHeading3 } from "./ProjectBaseAtoms";
 
 export const ProjectActivityTab: React.FC<ProjectActivityTabProps> = () => {
     return (

@@ -8,8 +8,8 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/shared/ui/ui/Dialog";
-import { CreateProjectFormScrollArea } from "../../../projects/features/browse-projects/ui/components/CreateProjectFormLayout";
-import { useProjectsQuery } from "@/modules/projects/features/browse-projects/application/hooks";
+import { CreateProjectFormScrollArea } from "@/modules/projects/ui/components/CreateProjectFormLayout";
+import { useProjectsQuery } from "@/modules/projects/application/hooks";
 import { useUpdateSpaceMutation } from "../../application/hooks";
 import { Search } from "lucide-react";
 import { Input } from "@/shared/ui/ui/Input";

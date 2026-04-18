@@ -1,5 +1,4 @@
-import { getProjectDetails, getProjectArtifacts } from "@/modules/projects/features/browse-projects/infrastructure/api";
-import { ProjectDetailsView } from "@/modules/projects/features/project-details/ui/ProjectDetailsView";
+import { getProjectDetails, getProjectArtifacts, ProjectDetails } from "@/modules/projects";
 import { notFound } from "next/navigation";
 
 type PageProps = {
@@ -20,7 +19,7 @@ export default async function ProjectPage({ params, searchParams }: PageProps) {
 
     return (
         <div className="container mx-auto py-10 px-4">
-            <ProjectDetailsView project={project} artifacts={artifacts} activeTab={tab} />
+            <ProjectDetails project={project} artifacts={artifacts} activeTab={tab} />
         </div>
     );
 }

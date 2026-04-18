@@ -1,5 +1,5 @@
 import { Project, ProjectStatus, Artifact, ApprovalStatus } from "@/modules/projects/domain";
-import { ProjectViewModel, ArtifactViewModel } from "../ui/types";
+import { ProjectViewModel, ArtifactViewModel } from "../types";
 import { StatusVariant } from "@/shared/ui/complex/StatusBadge";
 
 export const mapProjectToViewModel = (project: Project): ProjectViewModel => {
@@ -10,14 +10,14 @@ export const mapProjectToViewModel = (project: Project): ProjectViewModel => {
     let statusVariant: StatusVariant = "default";
 
     if (status) {
-        const s = status.toLowerCase();
-        if (s === ProjectStatus.IN_PROGRESS || s === 'in_progress') {
+        const lowercaseStatus = status.toLowerCase();
+        if (lowercaseStatus === ProjectStatus.IN_PROGRESS || lowercaseStatus === 'in_progress') {
             statusLabel = "In Progress";
             statusVariant = "warning";
-        } else if (s === ProjectStatus.DONE || s === 'done' || s === 'completed') {
+        } else if (lowercaseStatus === ProjectStatus.DONE || lowercaseStatus === 'done' || lowercaseStatus === 'completed') {
             statusLabel = "Completed";
             statusVariant = "success";
-        } else if (s === ProjectStatus.IDEA || s === 'idea') {
+        } else if (lowercaseStatus === ProjectStatus.IDEA || lowercaseStatus === 'idea') {
             statusLabel = "Idea";
             statusVariant = "info";
         } else {

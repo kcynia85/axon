@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { ProjectList } from '../features/browse-projects/ui/ProjectList'
-import { ProjectViewModel } from '../features/browse-projects/ui/types'
+import { ProjectList } from '../ui/ProjectList'
+import { ProjectViewModel } from '../ui/types'
 import { TooltipProvider } from '@/shared/ui/ui/Tooltip'
 
 const mockViewModels: ProjectViewModel[] = [

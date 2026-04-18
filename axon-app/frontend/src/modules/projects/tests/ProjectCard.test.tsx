@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
-import { ProjectCard } from '../features/browse-projects/ui/ProjectCard'
-import { ProjectViewModel } from '../features/browse-projects/ui/types'
+import { ProjectCard } from '../ui/ProjectCard'
+import { ProjectViewModel } from '../ui/types'
 import { TooltipProvider } from '@/shared/ui/ui/Tooltip'
 
 const mockViewModel: ProjectViewModel = {

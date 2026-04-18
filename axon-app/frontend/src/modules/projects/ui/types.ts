@@ -1,6 +1,6 @@
 import { StatusVariant } from "@/shared/ui/complex/StatusBadge";
 import { ViewMode } from "@/shared/ui/complex/ResourceList";
-import { Project } from "@/modules/projects/domain";
+import { Project, Artifact, KeyResource } from "@/modules/projects/domain";
 import { UseFormReturn, FieldArrayWithId } from "react-hook-form";
 import { CreateProjectFormData } from "../application/schemas";
 import { FilterGroup, FilterOption } from "@/shared/domain/filters";
@@ -62,6 +62,39 @@ export type ProjectsBrowserProps = {
 
 export type CreateProjectDialogProps = object;
 
+// --- Project Details Props ---
+
+export type ProjectDetailsViewProps = {
+    readonly project: Project;
+    readonly viewModel: ProjectViewModel;
+    readonly artifactViewModels: readonly ArtifactViewModel[];
+    readonly activeTab?: string;
+    readonly onTabChange?: (tab: string) => void;
+    readonly isLoadingArtifacts?: boolean;
+    readonly isDeleteModalOpen: boolean;
+    readonly isDeleting: boolean;
+    readonly onOpenDeleteModal: () => void;
+    readonly onCloseDeleteModal: () => void;
+    readonly onConfirmDeletion: () => void;
+}
+
+export type ProjectOverviewTabProps = {
+    readonly viewModel: ProjectViewModel;
+    readonly onDelete: () => void;
+    readonly isDeleting: boolean;
+}
+
+export type ProjectResourcesTabProps = {
+    readonly keyResources: readonly KeyResource[];
+}
+
+export type ProjectArtifactsTabProps = {
+    readonly artifacts: readonly ArtifactViewModel[];
+    readonly isLoading: boolean;
+}
+
+export type ProjectActivityTabProps = object;
+
 // --- Form Component Props ---
 
 export type ProjectNameFieldProps = {
@@ -90,7 +123,21 @@ export type ProjectSpaceSelectorProps = {
     readonly projectName: string;
 }
 
-// --- Project Card Atom Props ---
+// --- Layout & Atom Props ---
+
+export type ProjectDetailsContainerProps = {
+    readonly children: React.ReactNode;
+}
+
+export type ProjectDetailsSectionProps = {
+    readonly sectionLabel: string;
+    readonly children: React.ReactNode;
+}
+
+export type ProjectDetailsLinkProps = {
+    readonly href: string;
+    readonly children: React.ReactNode;
+}
 
 export type ProjectCardHeaderProps = {
     readonly title: string;
@@ -102,10 +149,6 @@ export type ProjectCardContentProps = {
     readonly tags: readonly string[];
     readonly artifactsCount: number;
 }
-
-export type ProjectCardFooterProps = object;
-
-// --- Project List Item Atom Props ---
 
 export type ProjectListItemInfoProps = {
     readonly title: string;
@@ -131,8 +174,6 @@ export type ProjectListItemContainerProps = {
 export type ProjectListItemActionsGroupProps = {
     readonly children: React.ReactNode;
 }
-
-// --- Projects Browser Section Props ---
 
 export type ProjectsFilterSectionProps = {
     readonly filterGroups: readonly FilterGroup[];
@@ -160,8 +201,6 @@ export type ProjectsBrowserContentProps = {
     readonly isLoading: boolean;
     readonly isError: boolean;
 }
-
-// --- Recently Used Atom Props ---
 
 export type RecentlyUsedHeaderProps = {
     readonly title: string;

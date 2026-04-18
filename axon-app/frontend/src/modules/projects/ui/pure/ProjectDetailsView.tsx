@@ -1,39 +1,32 @@
 'use client';
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/Tabs";
-import { useDeleteProjectMutation } from "../../browse-projects/application/hooks";
-import { mapProjectToViewModel, mapArtifactToViewModel } from "../../browse-projects/ui/mappers/ProjectViewModelMapper";
-import { ProjectDetailsViewProps } from "./types";
-import { ProjectDetailsContainer } from "./ProjectDetailsLayout";
-import { ProjectOverviewTab } from "./ProjectOverviewTab";
-import { ProjectResourcesTab } from "./ProjectResourcesTab";
-import { ProjectArtifactsTab } from "./ProjectArtifactsTab";
-import { ProjectActivityTab } from "./ProjectActivityTab";
+import { ProjectDetailsViewProps } from "../types";
+import { ProjectDetailsContainer } from "../components/ProjectDetailsLayout";
+import { ProjectOverviewTab } from "../components/ProjectOverviewTab";
+import { ProjectResourcesTab } from "../components/ProjectResourcesTab";
+import { ProjectArtifactsTab } from "../components/ProjectArtifactsTab";
+import { ProjectActivityTab } from "../components/ProjectActivityTab";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 
+/**
+ * ProjectDetailsView - Pure presentation component for project details.
+ * Strictly 0% business logic, 0% state.
+ */
 export const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = ({ 
     project, 
-    artifacts, 
+    viewModel,
+    artifactViewModels,
     activeTab = "overview", 
     onTabChange,
-    isLoadingArtifacts = false
+    isLoadingArtifacts = false,
+    isDeleteModalOpen,
+    isDeleting,
+    onOpenDeleteModal,
+    onCloseDeleteModal,
+    onConfirmDeletion
 }) => {
-    const { mutate: deleteProject, isPending: isDeleting } = useDeleteProjectMutation();
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
-
-    const viewModel = useMemo(() => mapProjectToViewModel(project), [project]);
-    const artifactViewModels = useMemo(() => artifacts.map(mapArtifactToViewModel), [artifacts]);
-
-    const handleDelete = () => {
-        setIsDeleteModalOpen(true);
-    };
-
-    const confirmDelete = () => {
-        deleteProject(project.id);
-        setIsDeleteModalOpen(false);
-    };
-
     return (
         <>
             <ProjectDetailsContainer>
@@ -58,7 +51,7 @@ export const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = ({
                     <TabsContent value="overview">
                         <ProjectOverviewTab 
                             viewModel={viewModel}
-                            onDelete={handleDelete}
+                            onDelete={onOpenDeleteModal}
                             isDeleting={isDeleting}
                         />
                     </TabsContent>
@@ -84,10 +77,10 @@ export const ProjectDetailsView: React.FC<ProjectDetailsViewProps> = ({
 
             <DestructiveDeleteModal
                 isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={confirmDelete}
+                onClose={onCloseDeleteModal}
+                onConfirm={onConfirmDeletion}
                 title="Delete Project"
-                resourceName={project.name || "this project"}
+                resourceName={project.project_name || project.name || "this project"}
                 affectedResources={[]}
                 isLoading={isDeleting}
             />

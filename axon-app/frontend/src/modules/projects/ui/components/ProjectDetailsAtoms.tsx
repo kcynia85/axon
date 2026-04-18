@@ -2,7 +2,7 @@ import React from "react";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/shared/ui/ui/Button";
 import Link from "next/link";
-import { BaseParagraph, BaseDiv } from "../../browse-projects/ui/components/ProjectBaseAtoms";
+import { BaseParagraph, BaseDiv } from "./ProjectBaseAtoms";
 
 export const ProjectDetailsTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <h2 className="text-xl font-bold">{children}</h2>

@@ -11,7 +11,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/shared/ui/ui/Form"
 import { useCreateSpaceForm } from "../../application/useCreateSpaceForm";
 import { SpaceProjectSelector } from "./SpaceProjectSelector";
-import { CreateProjectFormScrollArea } from "../../../projects/features/browse-projects/ui/components/CreateProjectFormLayout";
+import { CreateProjectFormScrollArea } from "@/modules/projects/ui/components/CreateProjectFormLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { FormTextField } from "@/shared/ui/form/FormTextField";
 

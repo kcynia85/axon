@@ -1,5 +1,5 @@
 import React from "react";
-import { ProjectOverviewTabProps } from "./types";
+import { ProjectOverviewTabProps } from "../types";
 import { ProjectDetailsSection, ProjectDetailsContentGroup } from "./ProjectDetailsLayout";
 import { 
     ProjectDetailsTitle, 
@@ -11,6 +11,9 @@ import {
     ProjectDetailsDeleteButton
 } from "./ProjectDetailsAtoms";
 
+/**
+ * ProjectOverviewTab - Presentation component for project overview information.
+ */
 export const ProjectOverviewTab: React.FC<ProjectOverviewTabProps> = ({ 
     viewModel, 
     onDelete, 
@@ -18,25 +21,25 @@ export const ProjectOverviewTab: React.FC<ProjectOverviewTabProps> = ({
 }) => {
     return (
         <ProjectDetailsContentGroup>
-            <ProjectDetailsSection label="Project name">
+            <ProjectDetailsSection sectionLabel="Project name">
                 <ProjectDetailsTitle>{viewModel.title}</ProjectDetailsTitle>
             </ProjectDetailsSection>
 
-            <ProjectDetailsSection label="Status">
+            <ProjectDetailsSection sectionLabel="Status">
                 <ProjectDetailsValue>{viewModel.statusLabel}</ProjectDetailsValue>
             </ProjectDetailsSection>
 
-            <ProjectDetailsSection label="Active workspaces">
+            <ProjectDetailsSection sectionLabel="Active workspaces">
                 <ProjectDetailsContentGroup>
-                    {(viewModel.workspaces || []).map((ws, i) => (
-                        <ProjectDetailsValue key={i} className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
-                            {ws}
+                    {(viewModel.workspaces || []).map((workspaceName, index) => (
+                        <ProjectDetailsValue key={index} className="text-sm font-bold text-zinc-800 dark:text-zinc-200">
+                            {workspaceName}
                         </ProjectDetailsValue>
                     ))}
                 </ProjectDetailsContentGroup>
             </ProjectDetailsSection>
 
-            <ProjectDetailsSection label="Keywords">
+            <ProjectDetailsSection sectionLabel="Keywords">
                 <ProjectDetailsSecondaryValue>
                     {(viewModel.displayTags || []).join(", ") || "No keywords"}
                 </ProjectDetailsSecondaryValue>

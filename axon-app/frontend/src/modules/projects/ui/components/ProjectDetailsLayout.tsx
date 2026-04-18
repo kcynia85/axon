@@ -3,8 +3,8 @@ import {
     ProjectDetailsContainerProps, 
     ProjectDetailsSectionProps,
     ProjectDetailsLinkProps
-} from "./types";
-import { BaseDiv, BaseSpan } from "../../browse-projects/ui/components/ProjectBaseAtoms";
+} from "../types";
+import { BaseDiv, BaseSpan } from "./ProjectBaseAtoms";
 
 export const ProjectDetailsContainer: React.FC<ProjectDetailsContainerProps> = ({ children }) => (
     <BaseDiv className="flex flex-col h-full space-y-6">
@@ -12,9 +12,9 @@ export const ProjectDetailsContainer: React.FC<ProjectDetailsContainerProps> = (
     </BaseDiv>
 );
 
-export const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ label, children }) => (
+export const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ sectionLabel, children }) => (
     <BaseDiv className="space-y-1">
-        <BaseSpan className="text-[10px] font-bold text-zinc-400">{label}</BaseSpan>
+        <BaseSpan className="text-[10px] font-bold text-zinc-400">{sectionLabel}</BaseSpan>
         {children}
     </BaseDiv>
 );

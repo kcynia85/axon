@@ -8,7 +8,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/shared/ui/ui/Card";
 import { Badge } from "@/shared/ui/ui/Badge";
 import { TagChip } from "@/shared/ui/ui/TagChip";
 import { Button } from "@/shared/ui/ui/Button";
-import { BaseSpan } from "@/modules/projects/features/browse-projects/ui/components/ProjectBaseAtoms";
+import { BaseSpan } from "@/modules/projects/ui/components/ProjectBaseAtoms";
 import { getVisualStylesForZoneColor } from "@/modules/spaces/ui/utils/presentation_mappers";
 import { usePendingDeletionsStore } from "../../lib/store/usePendingDeletionsStore";
 import {

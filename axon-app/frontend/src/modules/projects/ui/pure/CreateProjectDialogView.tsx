@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/shared/ui/ui/Button"
 import {
   Dialog,
@@ -9,20 +9,44 @@ import {
   DialogTrigger,
 } from "@/shared/ui/ui/Dialog"
 import { Form } from "@/shared/ui/ui/Form"
-import { Plus } from "lucide-react"
-import { useCreateProjectForm } from "../application/useCreateProjectForm";
-import { ProjectNameField } from "./components/ProjectNameField";
-import { ProjectResourcesField } from "./components/ProjectResourcesField";
-import { ProjectKeywordsField } from "./components/ProjectKeywordsField";
-import { ProjectSpaceSelector } from "./components/ProjectSpaceSelector";
-import { CreateProjectDialogProps } from "./types";
-import { CreateProjectFormScrollArea } from "./components/CreateProjectFormLayout";
+import { ProjectNameField } from "../components/ProjectNameField";
+import { ProjectResourcesField } from "../components/ProjectResourcesField";
+import { ProjectKeywordsField } from "../components/ProjectKeywordsField";
+import { ProjectSpaceSelector } from "../components/ProjectSpaceSelector";
+import { CreateProjectFormScrollArea } from "../components/CreateProjectFormLayout";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
+import { UseFormReturn, FieldArrayWithId } from "react-hook-form";
+import { CreateProjectFormData } from "@/modules/projects/application/schemas";
 
-export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ trigger }) => {
-  const [open, setOpen] = useState(false);
-  
-  const {
+type CreateProjectDialogViewProperties = {
+    readonly trigger?: React.ReactNode;
+    readonly isDialogOpen: boolean;
+    readonly onOpenChange: (open: boolean) => void;
+    readonly onClose: () => void;
+    readonly form: UseFormReturn<CreateProjectFormData>;
+    readonly linkFields: FieldArrayWithId<CreateProjectFormData, "links", "id">[];
+    readonly appendLink: (value: { url: string }) => void;
+    readonly removeLink: (index: number) => void;
+    readonly projectName: string;
+    readonly spaceMode: "new" | "existing";
+    readonly currentKeywords: readonly string[];
+    readonly keywordInput: string;
+    readonly handleKeywordChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    readonly handleKeywordKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+    readonly removeKeyword: (keyword: string) => void;
+    readonly handleSubmit: (values: CreateProjectFormData) => Promise<void>;
+    readonly isPending: boolean;
+};
+
+/**
+ * CreateProjectDialogView - Pure presentation component for the create project dialog.
+ * Strictly 0% business logic, 0% state.
+ */
+export const CreateProjectDialogView = ({ 
+    trigger,
+    isDialogOpen,
+    onOpenChange,
+    onClose,
     form,
     linkFields,
     appendLink,
@@ -36,10 +60,9 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ trigge
     removeKeyword,
     handleSubmit,
     isPending
-  } = useCreateProjectForm(() => setOpen(false));
-
+}: CreateProjectDialogViewProperties) => {
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
           <ActionButton label="Nowy projekt" />
@@ -79,7 +102,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({ trigge
                 type="button" 
                 variant="ghost" 
                 size="sm"
-                onClick={() => setOpen(false)}
+                onClick={onClose}
                 className="text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 font-black tracking-normal text-base"
               >
                 Anuluj

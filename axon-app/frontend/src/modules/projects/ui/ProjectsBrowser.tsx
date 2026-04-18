@@ -2,10 +2,10 @@
 
 import React from "react";
 import { SortOption } from "@/shared/domain/filters";
-import { useProjectsBrowser } from "../application/useProjectsBrowser";
+import { useProjectsBrowser } from "@/modules/projects/application/useProjectsBrowser";
 import { ProjectsBrowserProps } from "./types";
 import { QuickFilter } from "@/shared/ui/complex/ActionBar";
-import { ProjectsBrowserView } from "./ProjectsBrowserView";
+import { ProjectsBrowserView } from "./pure/ProjectsBrowserView";
 
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },

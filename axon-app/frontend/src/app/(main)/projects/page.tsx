@@ -1,7 +1,7 @@
 import { getProjects } from "@/modules/projects";
-import { CreateProjectDialog } from "@/modules/projects/features/browse-projects/ui/CreateProjectDialog";
+import { CreateProjectDialog } from "@/modules/projects";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
-import { ProjectsBrowser } from "@/modules/projects/features/browse-projects/ui/ProjectsBrowser";
+import { ProjectsBrowser } from "@/modules/projects";
 import { shouldShowPagination } from "@/shared/lib/pagination";
 
 const ProjectsPage = async () => {

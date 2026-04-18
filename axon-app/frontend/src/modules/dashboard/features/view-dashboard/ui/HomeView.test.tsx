@@ -8,7 +8,7 @@ vi.mock('@/shared/ui/complex/MagicSphere', () => ({
     MagicSphere: () => <div data-testid="magic-sphere" />
 }))
 
-vi.mock('@/modules/projects/features/browse-projects/ui/CreateProjectDialog', () => ({
+vi.mock('@/modules/projects', () => ({
     CreateProjectDialog: ({ trigger }: { trigger: React.ReactNode }) => <div>{trigger}</div>
 }))
 

@@ -1,14 +1,14 @@
 import React from "react";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
 import { SidePeek } from "@/shared/ui/layout/SidePeek";
-import { ProjectDetailsView } from "../../project-details/ui/ProjectDetailsView";
+import { ProjectDetails } from "../ProjectDetails";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
-import { ProjectsBrowserContent } from "./components/ProjectsBrowserContent";
-import { RecentlyUsedProjects } from "./RecentlyUsedProjects";
+import { ProjectsBrowserContent } from "../components/ProjectsBrowserContent";
+import { RecentlyUsedProjects } from "../RecentlyUsedProjects";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
-import { ProjectViewModel } from "./types";
+import { ProjectViewModel, ArtifactViewModel } from "../types";
 import { ActiveFilter, FilterGroup, SortOption } from "@/shared/domain/filters";
-import { Project } from "../../../domain";
+import { Project, Artifact } from "../../domain";
 
 export type ProjectsBrowserViewProps = {
     readonly projects: readonly Project[];
@@ -18,7 +18,7 @@ export type ProjectsBrowserViewProps = {
     readonly isLoading: boolean;
     readonly isError: boolean;
     readonly selectedProject: Project | null;
-    readonly artifacts: any[];
+    readonly artifacts: readonly Artifact[];
     readonly isLoadingArtifacts: boolean;
     readonly isSidebarOpen: boolean;
     readonly activeTab: string;
@@ -125,7 +125,7 @@ export const ProjectsBrowserView = ({
                 onOpenChange={onSidebarOpenChange}
             >
                 {selectedProject && (
-                    <ProjectDetailsView 
+                    <ProjectDetails 
                         project={selectedProject} 
                         artifacts={artifacts} 
                         activeTab={activeTab}

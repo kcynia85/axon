@@ -1,5 +1,6 @@
 export * from "./domain";
-export * from "./features/browse-projects/infrastructure/api";
-export { ProjectList } from "./features/browse-projects/ui/ProjectList";
-export { ProjectsBrowser } from "./features/browse-projects/ui/ProjectsBrowser";
-export { CreateProjectDialog } from "./features/browse-projects/ui/CreateProjectDialog";
+export * from "./infrastructure/api";
+export { ProjectList } from "./ui/ProjectList";
+export { ProjectsBrowser } from "./ui/ProjectsBrowser";
+export { CreateProjectDialog } from "./ui/CreateProjectDialog";
+export { ProjectDetails } from "./ui/ProjectDetails";

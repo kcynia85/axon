@@ -1,4 +1,4 @@
-import { ProjectsSkeleton } from "@/modules/projects/features/browse-projects/ui/ProjectsSkeleton";
+import { ProjectsSkeleton } from "@/modules/projects/ui/components/ProjectsSkeleton";
 
 export default function Loading() {
     return <ProjectsSkeleton />;

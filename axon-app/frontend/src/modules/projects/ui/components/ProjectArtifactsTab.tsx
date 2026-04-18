@@ -1,11 +1,14 @@
 import React from "react";
-import { ProjectArtifactsTabProps } from "./types";
+import { ProjectArtifactsTabProps } from "../types";
 import { ProjectDetailsContentGroup, ProjectDetailsArtifactItem } from "./ProjectDetailsLayout";
-import { BaseDiv, BaseSpan, BaseHeading3, BaseParagraph } from "../../browse-projects/ui/components/ProjectBaseAtoms";
+import { BaseDiv, BaseSpan, BaseHeading3, BaseParagraph } from "./ProjectBaseAtoms";
 import { Skeleton } from "@/shared/ui/ui/Skeleton";
 import { CheckCircle2, Clock } from "lucide-react";
-import { ArtifactViewModel } from "../../browse-projects/ui/types";
+import { ArtifactViewModel } from "../types";
 
+/**
+ * ProjectArtifactsTab - Presentation component for displaying project artifacts.
+ */
 export const ProjectArtifactsTab: React.FC<ProjectArtifactsTabProps> = ({ artifacts, isLoading }) => {
     if (isLoading) {
         return (
@@ -16,13 +19,13 @@ export const ProjectArtifactsTab: React.FC<ProjectArtifactsTabProps> = ({ artifa
         );
     }
 
-    const defaultArtifacts: ArtifactViewModel[] = [
+    const defaultArtifacts: readonly ArtifactViewModel[] = [
         { id: '1', name: 'JTBD analysis report', sourcePath: 'discovery/jtbd-research-flow', statusLabel: 'Approved', statusVariant: 'success' },
         { id: '2', name: 'Market competitive analysis', sourcePath: 'discovery/competitive-analysis-crew', statusLabel: 'Approved', statusVariant: 'success' },
         { id: '3', name: 'Product strategy document', sourcePath: 'product-mgmt/strategy-definition-flow', statusLabel: 'In review', statusVariant: 'info' }
     ];
 
-    const displayArtifacts = artifacts.length > 0 ? artifacts : defaultArtifacts;
+    const artifactsForDisplay = artifacts.length > 0 ? artifacts : defaultArtifacts;
 
     return (
         <ProjectDetailsContentGroup>
@@ -34,26 +37,27 @@ export const ProjectArtifactsTab: React.FC<ProjectArtifactsTabProps> = ({ artifa
             </BaseDiv>
 
             <BaseDiv className="flex flex-col space-y-8">
-                {displayArtifacts.map((art) => (
-                    <ProjectDetailsArtifactItem key={art.id}>
-                        <BaseHeading3 className="text-base font-bold group-hover:underline underline-offset-4">{art.name}</BaseHeading3>
-                        <BaseParagraph className="text-[10px] font-bold text-zinc-400">{art.sourcePath}</BaseParagraph>
+                {artifactsForDisplay.map((artifact) => (
+                    <ProjectDetailsArtifactItem key={artifact.id}>
+                        <BaseHeading3 className="text-base font-bold group-hover:underline underline-offset-4">{artifact.name}</BaseHeading3>
+                        <BaseParagraph className="text-[10px] font-bold text-zinc-400">{artifact.sourcePath}</BaseParagraph>
                         <BaseDiv className="flex items-center gap-2">
-                            {art.statusVariant === 'success' ? (
+                            {artifact.statusVariant === 'success' ? (
                                 <BaseSpan className="text-[10px] font-bold text-green-600 flex items-center gap-1.5">
                                     <CheckCircle2 size={12} />
-                                    {art.statusLabel}
+                                    {artifact.statusLabel}
                                 </BaseSpan>
                             ) : (
                                 <BaseSpan className="text-[10px] font-bold text-blue-500 flex items-center gap-1.5">
                                     <Clock size={12} />
-                                    {art.statusLabel}
+                                    {artifact.statusLabel}
                                 </BaseSpan>
                             )}
                         </BaseDiv>
                     </ProjectDetailsArtifactItem>
                 ))}
             </BaseDiv>
+
         </ProjectDetailsContentGroup>
     );
 };

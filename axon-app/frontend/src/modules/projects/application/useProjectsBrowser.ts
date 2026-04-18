@@ -4,6 +4,7 @@ import { useResourceFilters } from "@/shared/lib/hooks/useResourceFilters";
 import { useViewMode } from "@/shared/lib/hooks/useViewMode";
 import { useProjectsQuery, useProjectArtifactsQuery } from "./hooks";
 import { mapProjectToViewModel } from "../ui/mappers/ProjectViewModelMapper";
+import { SortOption } from "@/shared/domain/filters";
 
 export const useProjectsBrowser = (initialProjects: readonly Project[] = []) => {
   const [viewMode, setViewMode] = useViewMode("projects", "grid");

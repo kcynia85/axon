@@ -1,10 +1,10 @@
 import React from "react";
-import { ProjectListItemProps } from "./types";
-import { ProjectListItemInfo } from "./components/ProjectListItemInfo";
-import { ProjectListItemStats } from "./components/ProjectListItemStats";
-import { ProjectListItemActions } from "./components/ProjectListItemActions";
-import { ProjectListItemContainer } from "./components/ProjectListItemContainer";
-import { ProjectListItemActionsGroup } from "./components/ProjectListItemActionsGroup";
+import { ProjectListItemProps } from "../types";
+import { ProjectListItemInfo } from "./ProjectListItemInfo";
+import { ProjectListItemStats } from "./ProjectListItemStats";
+import { ProjectListItemActions } from "./ProjectListItemActions";
+import { ProjectListItemContainer } from "./ProjectListItemContainer";
+import { ProjectListItemActionsGroup } from "./ProjectListItemActionsGroup";
 
 export const ProjectListItem: React.FC<ProjectListItemProps> = ({ viewModel, onViewDetails }) => {
     return (

@@ -1,6 +1,8 @@
+"use client";
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProjects, createProject, deleteProject, getProjectArtifacts } from "../infrastructure/api";
-import { CreateProjectFormData } from "../application/schemas";
+import { CreateProjectFormData } from "./schemas";
 import { ProjectStatus } from "@/modules/projects/domain";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

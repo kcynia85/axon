@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Card, CardHeader, CardContent, CardFooter } from "@/shared/ui/ui/Card";
-import { ProjectCardTitle } from "@/modules/projects/features/browse-projects/ui/components/ProjectTypography";
-import { BaseSpan } from "@/modules/projects/features/browse-projects/ui/components/ProjectBaseAtoms";
+import { ProjectCardTitle } from "@/modules/projects/ui/components/ProjectTypography";
+import { BaseSpan } from "@/modules/projects/ui/components/ProjectBaseAtoms";
 import type { 
   MainCardProps, 
   MainCardHeaderProps, 
