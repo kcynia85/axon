@@ -98,14 +98,13 @@ export const SpaceCanvasPresentationView = ({
     <div className="w-full h-full relative bg-black font-mono text-white selection:bg-purple-500/30" onClick={() => setContextMenu(null)}>
       <style>{CANVAS_STYLES}</style>
 
-            <SpaceCanvasHeader 
-                spaceId={workspaceId}
+            <SpaceCanvasHeader
+                spaceIdentifier={workspaceId}
                 activeSpaceDisplayName={spaceData?.name || "Loading..."}
                 parentProjectDisplayName={spaceData?.projectName || "Detached"}
                 parentProjectIdentifier={spaceData?.projectId}
                 isSaving={isSaving}
             />
-
       <ReactFlow
         nodes={canvasNodes}
         edges={canvasEdges}

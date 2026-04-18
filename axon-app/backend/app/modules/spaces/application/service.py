@@ -19,14 +19,17 @@ from app.modules.agents.infrastructure.repo import AgentConfigRepository
 from app.modules.workspaces.dependencies import get_workspace_repo
 from app.modules.agents.dependencies import get_agent_repo
 
+from app.modules.projects.infrastructure.repo import ProjectRepository
+
 async def get_space_repo(session: AsyncSession = Depends(get_db)) -> SpaceRepository:
     return SpaceRepository(session)
 
 class SpaceService:
-    def __init__(self, repo: SpaceRepository, workspace_repo: WorkspaceRepository = None, agent_repo: AgentConfigRepository = None):
+    def __init__(self, repo: SpaceRepository, workspace_repo: WorkspaceRepository = None, agent_repo: AgentConfigRepository = None, project_repo: ProjectRepository = None):
         self.repo = repo
         self.workspace_repo = workspace_repo
         self.agent_repo = agent_repo
+        self.project_repo = project_repo
 
     async def create_space(self, space: Space) -> Space:
         return await self.repo.create_space(space)
@@ -43,6 +46,13 @@ class SpaceService:
         space = await self.repo.get_space(space_id)
         if not space:
             raise HTTPException(status_code=404, detail="Space not found")
+
+        # Fetch project name if project_id is present
+        project_name = None
+        if space.project_id and self.project_repo:
+            project = await self.project_repo.get(space.project_id)
+            if project:
+                project_name = project.project_name or project.name
 
         # Map JSONB data to DTO
         canvas_data = space.canvas_data or {"nodes": [], "edges": []}
@@ -123,6 +133,8 @@ class SpaceService:
             name=space.space_name,
             description=space.space_description,
             status=space.space_status.value,
+            projectId=space.project_id,
+            projectName=project_name,
             viewport=ReactFlowViewport(
                 x=viewport_config.get("x", 0),
                 y=viewport_config.get("y", 0),

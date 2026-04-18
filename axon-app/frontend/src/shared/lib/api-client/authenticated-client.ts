@@ -55,6 +55,13 @@ export const authenticatedClient = {
       body: JSON.stringify(data),
     }),
 
+  patch: async <T>(endpoint: string, data: unknown, options: RequestInit = {}): Promise<T> => 
+    request<T>(endpoint, {
+      ...options,
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+
   delete: async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => 
     request<T>(endpoint, { ...options, method: "DELETE" }),
 };

@@ -102,7 +102,7 @@ export const SpaceCanvasInfrastructureApi = {
           throw new Error("Failed to update space metadata in the backend.");
       }
 
-      return updates as Space;
+      return { id, ...updates } as Space;
   },
 
   createSpace: async (spaceData: any): Promise<Space> => {

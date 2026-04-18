@@ -62,6 +62,8 @@ class SpaceDetailDTO(BaseModel):
     name: str
     description: Optional[str] = None
     status: str
+    projectId: Optional[UUID] = None
+    projectName: Optional[str] = None
     
     # Canvas State
     viewport: ReactFlowViewport

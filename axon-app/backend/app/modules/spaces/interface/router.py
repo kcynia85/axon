@@ -13,6 +13,9 @@ from app.modules.agents.infrastructure.repo import AgentConfigRepository
 from app.modules.workspaces.dependencies import get_workspace_repo
 from app.modules.agents.dependencies import get_agent_repo
 
+from app.modules.projects.infrastructure.repo import ProjectRepository
+from app.modules.projects.dependencies import get_project_repo
+
 router = APIRouter(prefix="/spaces", tags=["Spaces"])
 
 @router.post("/", response_model=Space, status_code=status.HTTP_201_CREATED)
@@ -40,12 +43,13 @@ async def get_space_canvas(
     space_id: str,
     repo: SpaceRepository = Depends(get_space_repo),
     workspace_repo: WorkspaceRepository = Depends(get_workspace_repo),
-    agent_repo: AgentConfigRepository = Depends(get_agent_repo)
+    agent_repo: AgentConfigRepository = Depends(get_agent_repo),
+    project_repo: ProjectRepository = Depends(get_project_repo)
 ):
     """
     Returns the complete Space graph optimized for React Flow.
     """
-    service = SpaceService(repo, workspace_repo, agent_repo)
+    service = SpaceService(repo, workspace_repo, agent_repo, project_repo)
     return await service.get_space_canvas(space_id)
 
 @router.patch("/{space_id}/canvas", status_code=status.HTTP_204_NO_CONTENT)

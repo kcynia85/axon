@@ -38,12 +38,19 @@ export type SpaceCardProperties = {
 };
 
 export type SpaceCanvasHeaderProperties = {
-    readonly spaceId: string;
+    readonly spaceIdentifier: string;
     readonly activeSpaceDisplayName: string;
     readonly parentProjectDisplayName: string;
     readonly parentProjectIdentifier?: string;
-    readonly onRenameSpace?: (newName: string) => void;
     readonly isSaving?: boolean;
+    readonly isEditing?: boolean;
+    readonly temporarySpaceDisplayName?: string;
+    readonly showSuccessFeedback?: boolean;
+    readonly onRenameSpace?: (newName: string) => void;
+    readonly onToggleEditing?: () => void;
+    readonly onCancelEditing?: () => void;
+    readonly onChangeTemporaryDisplayName?: (newName: string) => void;
+    readonly onKeyDown?: (event: React.KeyboardEvent) => void;
 };
 
 export type SpaceCanvasSidebarProperties = {

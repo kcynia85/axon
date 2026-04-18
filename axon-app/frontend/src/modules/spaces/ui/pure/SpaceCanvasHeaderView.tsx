@@ -1,6 +1,4 @@
-// frontend/src/modules/spaces/ui/pure/SpaceCanvasHeaderView.tsx
-
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import {
   Card,
   CardBody,
@@ -10,48 +8,27 @@ import { SpaceCanvasHeaderProperties } from "../types";
 import { CheckCircle2, Cloud, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserNav } from "@/shared/ui/layout/UserNav";
+import { AttachProjectDialog } from "../components/AttachProjectDialog";
 
+/**
+ * SpaceCanvasHeaderView - Pure presentation component for the space header.
+ * Strictly 0% business logic, 0% state, 0% useEffect.
+ */
 export const SpaceCanvasHeaderView = ({ 
+    spaceIdentifier,
     activeSpaceDisplayName, 
     parentProjectDisplayName, 
     parentProjectIdentifier,
+    isSaving,
+    isEditing,
+    temporarySpaceDisplayName,
+    showSuccessFeedback,
     onRenameSpace,
-    isSaving
+    onToggleEditing,
+    onCancelEditing,
+    onChangeTemporaryDisplayName,
+    onKeyDown
 }: SpaceCanvasHeaderProperties) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [tempName, setTempName] = useState(activeSpaceDisplayName);
-    const [showSuccess, setShowSuccess] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        setTempName(activeSpaceDisplayName);
-    }, [activeSpaceDisplayName]);
-
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
-            inputRef.current.select();
-        }
-    }, [isEditing]);
-
-    const handleCommit = () => {
-        if (!isEditing) return;
-        setIsEditing(false);
-        if (tempName && tempName !== activeSpaceDisplayName) {
-            onRenameSpace?.(tempName);
-            setShowSuccess(true);
-            setTimeout(() => setShowSuccess(false), 2000);
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") handleCommit();
-        if (e.key === "Escape") {
-            setTempName(activeSpaceDisplayName);
-            setIsEditing(false);
-        }
-    };
-
     return (
         <>
             <div className="absolute top-8 left-8 z-50 pointer-events-none select-none">
@@ -63,30 +40,31 @@ export const SpaceCanvasHeaderView = ({
                         <span className="text-zinc-300">{activeSpaceDisplayName}</span>
                      </div>
 
-                    <Card className="bg-black/40 border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)] rounded-2xl py-3 px-8 min-w-[340px] backdrop-blur-xl">
+                    <Card className="bg-black/40 border border-zinc-200 shadow-[0_0_30px_rgba(0,0,0,0.5)] top-2 rounded-2xl py-3 px-8 min-w-[340px] backdrop-blur-xl">
                         <CardBody className="p-0 flex-row justify-between items-center gap-8 overflow-visible">
                             <div className="flex flex-col gap-0.5 w-full">
                                 <div className="flex items-center gap-3">
                                     {isEditing ? (
                                         <input
-                                            ref={inputRef}
-                                            value={tempName}
-                                            onChange={(e) => setTempName(e.target.value)}
-                                            onBlur={handleCommit}
-                                            onKeyDown={handleKeyDown}
+                                            autoFocus
+                                            onFocus={(event) => event.target.select()}
+                                            value={temporarySpaceDisplayName}
+                                            onChange={(event) => onChangeTemporaryDisplayName?.(event.target.value)}
+                                            onBlur={onRenameSpace}
+                                            onKeyDown={onKeyDown}
                                             className="text-2xl font-black tracking-tight text-white bg-transparent border-none outline-none p-0 w-full focus:ring-0"
                                         />
                                     ) : (
                                         <h1 
                                             className="text-2xl font-black tracking-tight text-white cursor-text hover:text-zinc-200 transition-colors"
-                                            onClick={() => setIsEditing(true)}
+                                            onClick={onToggleEditing}
                                         >
                                             {activeSpaceDisplayName}
                                         </h1>
                                     )}
 
                                     <AnimatePresence>
-                                        {showSuccess && (
+                                        {showSuccessFeedback && (
                                             <motion.div 
                                                 initial={{ opacity: 0, scale: 0.5, x: -10 }}
                                                 animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -100,11 +78,11 @@ export const SpaceCanvasHeaderView = ({
                                 </div>
                                 
                                 <div className="flex items-center gap-3">
-                                    <span className="text-[11px] font-bold text-zinc-500 tracking-wide uppercase">
+                                    <span className="text-[12px] font-bold text-zinc-500">
                                         {parentProjectIdentifier ? (
-                                            <>Linked: <Link href={`/projects/${parentProjectIdentifier}`} className="text-zinc-300 hover:text-white underline decoration-zinc-700 underline-offset-4 transition-colors normal-case">{parentProjectDisplayName}</Link></>
+                                            <>Linked: <Link href={`/projects/${parentProjectIdentifier}`} className="hover:text-white underline decoration-zinc-700 underline-offset-4 transition-colors normal-case">{parentProjectDisplayName}</Link></>
                                         ) : (
-                                            <>Status: <span className="text-zinc-400 normal-case">Detached</span></>
+                                            <AttachProjectDialog spaceId={spaceIdentifier}><button className="text-zinc-500 normal-case underline decoration-zinc-700 underline-offset-4 hover:text-white transition-colors cursor-pointer">Detached</button></AttachProjectDialog>
                                         )}
                                     </span>
                                 </div>
