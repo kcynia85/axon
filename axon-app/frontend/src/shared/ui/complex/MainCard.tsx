@@ -44,18 +44,18 @@ export const MainCard = ({ href, onClick, children, className }: MainCardProps) 
  * MainCardHeader - Standardized header with title block and status area.
  */
 export const MainCardHeader = ({ title, icon: Icon, children, className }: MainCardHeaderProps) => (
-  <CardHeader className={cn("pb-4 pt-6 flex flex-col items-start gap-3", className)}>
+  <CardHeader className={cn("pb-4 pt-6 flex flex-col items-start justify-start text-left gap-3", className)}>
     {/* Title Block - Fixed height ensures vertical alignment across cards */}
-    <div className="min-h-[56px] w-full flex items-start">
-      <div className="flex items-start gap-2">
+    <div className="min-h-[136px] w-full flex flex-col items-start justify-start text-left gap-3">
+      <div className="flex items-start justify-start gap-2 text-left w-full">
         {Icon && <Icon className="h-5 w-5 text-primary mt-1 shrink-0" />}
-        <ProjectCardTitle>{title}</ProjectCardTitle>
+        <div className="flex flex-col gap-3 w-full">
+          <ProjectCardTitle>{title}</ProjectCardTitle>
+          <div className="flex items-center justify-start h-6 w-full text-left">
+            {children}
+          </div>
+        </div>
       </div>
-    </div>
-    
-    {/* Status/Badges Slot */}
-    <div className="flex items-center h-6">
-      {children}
     </div>
   </CardHeader>
 );
@@ -64,7 +64,7 @@ export const MainCardHeader = ({ title, icon: Icon, children, className }: MainC
  * MainCardContent - Flexible content area.
  */
 export const MainCardContent = ({ children, className }: MainCardContentProps) => (
-  <CardContent className={cn("flex-1 pt-2 pb-6", className)}>
+  <CardContent className={cn("flex-1 pt-2 pb-10 flex flex-col items-start justify-start text-left", className)}>
     {children}
   </CardContent>
 );

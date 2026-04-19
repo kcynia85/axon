@@ -1,14 +1,14 @@
 import React from "react";
 import { FilterBar } from "@/shared/ui/complex/FilterBar";
-import { SidePeek } from "@/shared/ui/layout/SidePeek";
-import { ProjectDetails } from "../ProjectDetails";
 import { BrowserLayout } from "@/shared/ui/layout/BrowserLayout";
 import { ProjectsBrowserContent } from "../components/ProjectsBrowserContent";
 import { RecentlyUsedProjects } from "../RecentlyUsedProjects";
 import { ActionBar, QuickFilter } from "@/shared/ui/complex/ActionBar";
-import { ProjectViewModel, ArtifactViewModel } from "../types";
+import { ProjectViewModel } from "../types";
 import { ActiveFilter, FilterGroup, SortOption } from "@/shared/domain/filters";
-import { Project, Artifact } from "../../domain";
+import { Project } from "../../domain";
+
+import { ProjectSidePeek } from "../ProjectSidePeek";
 
 export type ProjectsBrowserViewProps = {
     readonly projects: readonly Project[];
@@ -18,10 +18,7 @@ export type ProjectsBrowserViewProps = {
     readonly isLoading: boolean;
     readonly isError: boolean;
     readonly selectedProject: Project | null;
-    readonly artifacts: readonly Artifact[];
-    readonly isLoadingArtifacts: boolean;
     readonly isSidebarOpen: boolean;
-    readonly activeTab: string;
     readonly searchQuery: string;
     readonly sortBy: string;
     readonly sortOptions: readonly SortOption[];
@@ -37,8 +34,9 @@ export type ProjectsBrowserViewProps = {
     readonly onApplyFilters: (selectedIds: string[]) => void;
     readonly onPendingFilterIdsChange: (selectedIds: string[]) => void;
     readonly onViewDetails: (id: string) => void;
+    readonly onConfigure: (id: string) => void;
+    readonly onDelete: (id: string) => void;
     readonly onSidebarOpenChange: (open: boolean) => void;
-    readonly onTabChange: (tab: string) => void;
     readonly previewCount: number;
 }
 
@@ -50,10 +48,7 @@ export const ProjectsBrowserView = ({
     isLoading,
     isError,
     selectedProject,
-    artifacts,
-    isLoadingArtifacts,
     isSidebarOpen,
-    activeTab,
     searchQuery,
     sortBy,
     sortOptions,
@@ -69,8 +64,9 @@ export const ProjectsBrowserView = ({
     onApplyFilters,
     onPendingFilterIdsChange,
     onViewDetails,
+    onConfigure,
+    onDelete,
     onSidebarOpenChange,
-    onTabChange,
     previewCount
 }: ProjectsBrowserViewProps): React.ReactNode => {
     return (
@@ -119,21 +115,13 @@ export const ProjectsBrowserView = ({
                 />
             </BrowserLayout>
 
-            <SidePeek 
-                title={selectedProject?.project_name || "Project Details"}
-                open={isSidebarOpen} 
-                onOpenChange={onSidebarOpenChange}
-            >
-                {selectedProject && (
-                    <ProjectDetails 
-                        project={selectedProject} 
-                        artifacts={artifacts} 
-                        activeTab={activeTab}
-                        onTabChange={onTabChange}
-                        isLoadingArtifacts={isLoadingArtifacts}
-                    />
-                )}
-            </SidePeek>
+            <ProjectSidePeek 
+                project={selectedProject}
+                isOpen={isSidebarOpen}
+                onClose={() => onSidebarOpenChange(false)}
+                onConfigure={onConfigure}
+                onDelete={onDelete}
+            />
         </>
     );
 };

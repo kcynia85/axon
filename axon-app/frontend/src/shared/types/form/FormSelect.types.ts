@@ -5,6 +5,7 @@ export type FormSelectOption = {
 	readonly name: string;
 	readonly subtitle?: string;
 	readonly avatarUrl?: string;
+	readonly variant?: "default" | "success" | "warning" | "error" | "info";
 };
 
 export type FormSelectProps = {
@@ -15,6 +16,7 @@ export type FormSelectProps = {
 	readonly placeholder?: string;
 	readonly searchPlaceholder?: string;
 	readonly className?: string;
+	readonly hideRecent?: boolean;
 	readonly renderTrigger?: (
 		selectedOptions: FormSelectOption[],
 	) => React.ReactNode;

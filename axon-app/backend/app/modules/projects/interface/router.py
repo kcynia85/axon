@@ -13,6 +13,8 @@ from app.modules.projects.application.schemas import (
 )
 from app.api.deps import get_current_user
 from app.shared.security.schemas import UserPayload
+from app.modules.spaces.infrastructure.repo import SpaceRepository
+from app.modules.spaces.application.service import get_space_repo
 
 router = APIRouter(
     prefix="/projects", 
@@ -25,6 +27,7 @@ async def list_projects(
     limit: int = 100,
     offset: int = 0,
     repository: ProjectRepository = Depends(get_project_repo),
+    space_repository: SpaceRepository = Depends(get_space_repo),
     user: UserPayload = Depends(get_current_user)
 ) -> List[Project]:
     """
@@ -34,7 +37,8 @@ async def list_projects(
         limit=limit, 
         offset=offset, 
         user=user, 
-        repository=repository
+        repository=repository,
+        space_repository=space_repository
     )
 
 @router.post("/", response_model=Project, status_code=status.HTTP_201_CREATED)
@@ -123,6 +127,7 @@ async def add_resource(
 async def list_artifacts(
     project_identifier: UUID,
     repository: ProjectRepository = Depends(get_project_repo),
+    space_repository: SpaceRepository = Depends(get_space_repo),
     user: UserPayload = Depends(get_current_user)
 ) -> List[Artifact]:
     """
@@ -131,7 +136,8 @@ async def list_artifacts(
     return await service.list_artifacts_use_case(
         project_id=project_identifier, 
         user=user, 
-        repository=repository
+        repository=repository,
+        space_repository=space_repository
     )
 
 @router.post("/{project_identifier}/artifacts", response_model=Artifact, status_code=status.HTTP_201_CREATED)

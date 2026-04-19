@@ -16,11 +16,11 @@ export const ProjectCardTitleGroup: React.FC<{ children: React.ReactNode; classN
 /**
  * Horizontal Auto Layout (Row)
  * Direction: Horizontal
- * Spacing: Space Between
+ * Spacing: Start
  * Align: Center
  */
 export const ProjectCardContentLayout: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
-    <BaseDiv className={cn("flex items-center justify-between gap-4 w-full", className)}>
+    <BaseDiv className={cn("flex items-center justify-start gap-6", className)}>
         {children}
     </BaseDiv>
 );
@@ -28,10 +28,10 @@ export const ProjectCardContentLayout: React.FC<{ children: React.ReactNode; cla
 /**
  * Horizontal Auto Layout (Tags)
  * Direction: Horizontal
- * Hug Contents -> Fill Container (flex-1)
+ * Hug Contents
  */
-export const ProjectCardTagsGroup: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-     <BaseDiv className="flex items-center gap-2 overflow-hidden flex-nowrap flex-1">
+export const ProjectCardTagsGroup: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
+     <BaseDiv className={cn("flex items-center gap-2 overflow-hidden flex-nowrap", className)}>
         {children}
      </BaseDiv>
 );
@@ -40,8 +40,8 @@ export const ProjectCardTagsGroup: React.FC<{ children: React.ReactNode }> = ({ 
  * Horizontal Auto Layout (Stats)
  * Hug Contents (shrink-0)
  */
-export const ProjectCardStatsGroup: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-     <BaseDiv className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 font-medium shrink-0">
+export const ProjectCardStatsGroup: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
+     <BaseDiv className={cn("flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 font-medium shrink-0", className)}>
         {children}
      </BaseDiv>
 );

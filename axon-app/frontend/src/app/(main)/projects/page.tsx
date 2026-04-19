@@ -1,7 +1,5 @@
-import { getProjects } from "@/modules/projects";
-import { CreateProjectDialog } from "@/modules/projects";
+import { getProjects, NewProjectStudioButton, ProjectsBrowser } from "@/modules/projects";
 import { PageLayout } from "@/shared/ui/layout/PageLayout";
-import { ProjectsBrowser } from "@/modules/projects";
 import { shouldShowPagination } from "@/shared/lib/pagination";
 
 const ProjectsPage = async () => {
@@ -15,7 +13,7 @@ const ProjectsPage = async () => {
                 { label: "Home", href: "/home" },
                 { label: "Projects" }
             ]}
-            actions={<CreateProjectDialog />}
+            actions={<NewProjectStudioButton />}
             pagination={null} // Uses default pagination if passed as empty or specific if needed
             showPagination={shouldShowPagination(projects.length)}
         >

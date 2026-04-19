@@ -8,11 +8,13 @@ export enum HubType {
 }
 
 export enum ProjectStatus {
-    IDEA = "idea",
-    IN_PROGRESS = "in_progress",
-    REVIEW = "review",
-    DONE = "done",
-    ARCHIVED = "archived"
+    IDEA = "Idea",
+    IN_PROGRESS = "In Progress",
+    COMPLETED = "Completed",
+    // Keep others as legacy if needed, or remove if not in DB
+    REVIEW = "Review",
+    DONE = "Completed",
+    ARCHIVED = "Archived"
 }
 
 export enum ResourceProvider {
@@ -53,6 +55,8 @@ export type Artifact = {
     readonly approved_by_user_id?: string;
     readonly artifact_approved_at?: string;
     readonly project_id: string;
+    readonly space_id?: string; // Added for direct navigation
+    readonly node_id?: string;  // Added for direct navigation
     readonly created_at: string;
     readonly updated_at: string;
     // legacy support (keeping for some UI maybe)
@@ -68,13 +72,14 @@ export type Project = {
     readonly project_summary?: string;
     readonly project_keywords: string[];
     readonly project_strategy_url?: string;
-    readonly space_id?: string;
+    readonly space_ids: string[];
     readonly owner_id: string;
     readonly created_at: string;
     readonly updated_at: string;
     readonly key_resources: KeyResource[];
     readonly artifacts: Artifact[];
     readonly workspaces: string[];
+    readonly aggregated_artifacts_count?: number;
     // legacy support
     readonly name?: string;
     readonly description?: string;

@@ -11,7 +11,8 @@ class ProjectCreateDTO(BaseModel):
     project_summary: Optional[str] = None
     project_keywords: List[str] = Field(default_factory=list)
     project_strategy_url: Optional[str] = None
-    # space_id is optional, can be linked later
+    space_ids: List[UUID] = Field(default_factory=list)
+    key_resources: List[str] = Field(default_factory=list)
 
 class ProjectUpdateDTO(BaseModel):
     project_name: Optional[str] = None
@@ -19,7 +20,8 @@ class ProjectUpdateDTO(BaseModel):
     project_summary: Optional[str] = None
     project_keywords: Optional[List[str]] = None
     project_strategy_url: Optional[str] = None
-    space_id: Optional[UUID] = None
+    space_ids: Optional[List[UUID]] = None
+    key_resources: Optional[List[str]] = None
 
 class ResourceCreateDTO(BaseModel):
     resource_provider_type: ResourceProvider

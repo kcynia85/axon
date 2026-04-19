@@ -26,8 +26,10 @@ export const ProjectDetailsContentGroup: React.FC<{ children: React.ReactNode }>
 );
 
 export const ProjectDetailsArtifactItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-    <BaseDiv className="group cursor-pointer space-y-1">
-        {children}
+    <BaseDiv className="group cursor-pointer bg-white/5 hover:bg-white/[0.08] border border-white/[0.03] hover:border-white/10 rounded-2xl p-5 transition-all duration-300">
+        <div className="flex flex-col space-y-1">
+            {children}
+        </div>
     </BaseDiv>
 );
 

@@ -1,23 +1,26 @@
 import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Project } from "@/modules/projects/domain";
 import { useResourceFilters } from "@/shared/lib/hooks/useResourceFilters";
 import { useViewMode } from "@/shared/lib/hooks/useViewMode";
-import { useProjectsQuery, useProjectArtifactsQuery } from "./hooks";
+import { useProjectsQuery, useDeleteProjectMutation } from "./hooks";
 import { mapProjectToViewModel } from "../ui/mappers/ProjectViewModelMapper";
 import { SortOption } from "@/shared/domain/filters";
+import { useDeleteWithUndo } from "@/shared/hooks/useDeleteWithUndo";
 
 export const useProjectsBrowser = (initialProjects: readonly Project[] = []) => {
+  const { workspace: workspaceId } = useParams<{ workspace: string }>();
+  const router = useRouter();
   const [viewMode, setViewMode] = useViewMode("projects", "grid");
   
   // Data Fetching
   const { data: projects = initialProjects, isLoading, isError } = useProjectsQuery();
+  const { mutate: deleteProject } = useDeleteProjectMutation();
+  const { deleteWithUndo } = useDeleteWithUndo();
   
   // Sidebar State
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
-
-  const { data: artifacts = [], isLoading: isLoadingArtifacts } = useProjectArtifactsQuery(selectedProjectId);
 
   // Derived state - React Compiler handles optimization
   const selectedProject = projects.find(p => p.id === selectedProjectId) || null;
@@ -29,8 +32,8 @@ export const useProjectsBrowser = (initialProjects: readonly Project[] = []) => 
       if (!matchesSearch) return false;
       if (filterIds.length === 0) return true;
       
-      const status = (project.project_status || project.status || "").toLowerCase();
-      const statusFilters = filterIds.filter(id => ["in_progress", "done", "idea", "review", "archived"].includes(id));
+      const status = project.project_status || project.status || "";
+      const statusFilters = filterIds.filter(id => ["Idea", "In Progress", "Completed", "Review", "Archived"].includes(id));
       if (statusFilters.length > 0 && !statusFilters.includes(status)) return false;
       
       return true;
@@ -45,10 +48,10 @@ export const useProjectsBrowser = (initialProjects: readonly Project[] = []) => 
         title: "Status:",
         type: "checkbox",
         options: [
-          { id: "in_progress", label: "In Progress", isChecked: false },
-          { id: "done", label: "Completed", isChecked: false },
-          { id: "idea", label: "Idea", isChecked: false },
-          { id: "review", label: "Review", isChecked: false },
+          { id: "In Progress", label: "In Progress", isChecked: false },
+          { id: "Completed", label: "Completed", isChecked: false },
+          { id: "Idea", label: "Idea", isChecked: false },
+          { id: "Review", label: "Review", isChecked: false },
         ]
       },
       {
@@ -65,8 +68,25 @@ export const useProjectsBrowser = (initialProjects: readonly Project[] = []) => 
 
   const handleViewDetails = (id: string) => {
     setSelectedProjectId(id);
-    setActiveTab("overview");
     setIsSidebarOpen(true);
+  };
+
+  const handleConfigure = (id: string) => {
+    if (workspaceId) {
+      router.push(`/workspaces/${workspaceId}/projects/studio/${id}`);
+    } else {
+      router.push(`/projects/studio/${id}`);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    const project = projects.find(p => p.id === id);
+    const name = project?.project_name || project?.name || "Projekt";
+    deleteWithUndo(id, name, () => deleteProject(id));
+    if (selectedProjectId === id) {
+        setIsSidebarOpen(false);
+        setSelectedProjectId(null);
+    }
   };
 
   // Derived state - React Compiler handles optimization
@@ -99,13 +119,11 @@ export const useProjectsBrowser = (initialProjects: readonly Project[] = []) => 
     isLoading,
     isError,
     selectedProject,
-    artifacts,
-    isLoadingArtifacts,
     isSidebarOpen,
     setIsSidebarOpen,
-    activeTab,
-    setActiveTab,
     handleViewDetails,
+    handleConfigure,
+    handleDelete,
     filterConfig
   };
 };

@@ -25,6 +25,8 @@ class Artifact(BaseModel):
     approved_by_user_id: Optional[UUID] = None
     artifact_approved_at: Optional[datetime] = None
     project_id: UUID
+    space_id: Optional[UUID] = None # Added for direct navigation
+    node_id: Optional[str] = None  # Added for direct navigation (can be node_id in React Flow)
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
 
@@ -35,7 +37,7 @@ class Project(BaseModel):
     project_summary: Optional[str] = None
     project_keywords: List[str] = Field(default_factory=list)
     project_strategy_url: Optional[str] = None
-    space_id: Optional[UUID] = None
+    space_ids: List[UUID] = Field(default_factory=list)
     owner_id: UUID
     created_at: datetime = Field(default_factory=now_utc)
     updated_at: datetime = Field(default_factory=now_utc)
@@ -44,6 +46,7 @@ class Project(BaseModel):
     key_resources: List[KeyResource] = Field(default_factory=list)
     artifacts: List[Artifact] = Field(default_factory=list)
     workspaces: List[str] = Field(default_factory=list) # Derived from Space Zones
+    aggregated_artifacts_count: Optional[int] = None # Added for list view optimization
 
     @field_validator("project_keywords", mode="before")
     @classmethod

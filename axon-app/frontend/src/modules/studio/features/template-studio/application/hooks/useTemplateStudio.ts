@@ -84,12 +84,23 @@ export const useTemplateStudio = (templateId?: string | null) => {
 					expectedType: i.field_type,
 					isRequired: i.is_required
 				})),
-				template_outputs: data.artefact_items.map(o => ({
-					id: (o as any).id || crypto.randomUUID(),
-					label: o.name,
-					outputType: o.field_type,
-					isRequired: o.is_required
-				})),
+				template_outputs: data.artefact_items.map(o => {
+					// Map frontend "string" to backend valid enum if necessary, 
+					// or ensure it's one of the allowed values
+					let outputType = o.field_type;
+					if (outputType === "string") {
+						outputType = "text"; // Map to 'text' if frontend sends 'string'
+					} else if (!["link", "text", "file", "any"].includes(outputType)) {
+						outputType = "any";
+					}
+
+					return {
+						id: (o as any).id || crypto.randomUUID(),
+						label: o.name,
+						outputType: outputType,
+						isRequired: o.is_required
+					};
+				}),
 			};
 
 			if (templateId) {

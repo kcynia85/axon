@@ -1,9 +1,10 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from sqlalchemy.orm import selectinload
 from app.modules.projects.domain.models import Project, KeyResource, Artifact
+from app.modules.projects.domain.enums import ResourceProvider
 from app.modules.projects.infrastructure.tables import ProjectTable, KeyResourceTable, ArtifactTable
 from app.shared.utils.time import now_utc
 
@@ -11,16 +12,48 @@ class ProjectRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    def _get_provider_type(self, url: str) -> ResourceProvider:
+        lower_url = url.lower()
+        if "notion.so" in lower_url:
+            return ResourceProvider.NOTION
+        if "figma.com" in lower_url:
+            return ResourceProvider.FIGMA
+        if "github.com" in lower_url:
+            return ResourceProvider.GITHUB
+        return ResourceProvider.OTHER
+
+    async def _sync_resources(self, project_id: UUID, urls: List[str]):
+        # Delete existing resources for this project
+        await self.session.execute(
+            delete(KeyResourceTable).where(KeyResourceTable.project_id == project_id)
+        )
+        
+        # Add new resources
+        for url in urls:
+            if not url or not url.strip():
+                continue
+            
+            provider = self._get_provider_type(url)
+            db_res = KeyResourceTable(
+                id=uuid4(),
+                project_id=project_id,
+                resource_url=url,
+                resource_label=provider.value,
+                resource_provider_type=provider
+            )
+            self.session.add(db_res)
+
     def _to_domain(self, row: ProjectTable) -> Project:
         return Project(
             id=row.id,
             project_name=row.project_name,
             project_status=row.project_status,
             project_summary=row.project_summary,
-            project_keywords=row.project_keywords,
+            project_keywords=row.project_keywords or [],
             project_strategy_url=row.project_strategy_url,
-            space_id=row.space_id,
+            space_ids=row.space_ids or [],
             owner_id=row.owner_id,
+
             created_at=row.created_at,
             updated_at=row.updated_at,
             # Eagerly loaded
@@ -51,7 +84,6 @@ class ProjectRepository:
                     updated_at=a.updated_at
                 ) for a in row.artifacts
             ],
-            # Workspaces derived from Space Zones (not loaded here, handled by Service/SpaceRepo if needed)
         )
 
     async def create(self, project: Project) -> Project:
@@ -62,16 +94,24 @@ class ProjectRepository:
             project_summary=project.project_summary,
             project_keywords=project.project_keywords,
             project_strategy_url=project.project_strategy_url,
-            space_id=project.space_id,
+            space_ids=[str(sid) for sid in project.space_ids] if project.space_ids else [],
             owner_id=project.owner_id,
             created_at=project.created_at,
             updated_at=project.updated_at
         )
         self.session.add(db_project)
         await self.session.commit()
-        await self.session.refresh(db_project)
-        # Return empty lists for relations on create
-        return self._to_domain(db_project)
+        # Eager load relationships to avoid MissingGreenlet on _to_domain
+        result = await self.session.execute(
+            select(ProjectTable)
+            .where(ProjectTable.id == db_project.id)
+            .options(
+                selectinload(ProjectTable.key_resources),
+                selectinload(ProjectTable.artifacts)
+            )
+        )
+        row = result.scalar_one()
+        return self._to_domain(row)
 
     async def get(self, project_id: UUID) -> Optional[Project]:
         result = await self.session.execute(
@@ -101,12 +141,26 @@ class ProjectRepository:
 
     async def update(self, project_id: UUID, update_data: dict) -> Optional[Project]:
         # Filter valid columns
-        valid_cols = {c.name for c in ProjectTable.__table__.columns}
+        valid_cols = {c.key for c in ProjectTable.__table__.columns}
+        
+        # Extract key_resources for separate handling
+        key_resources_urls = update_data.pop('key_resources', None)
+        
         clean_data = {k: v for k, v in update_data.items() if k in valid_cols and k != 'id'}
         
+        # Sync resources if provided
+        if key_resources_urls is not None:
+            await self._sync_resources(project_id, key_resources_urls)
+
         if not clean_data:
+            if key_resources_urls is not None:
+                await self.session.commit()
             return await self.get(project_id)
             
+        # Convert UUIDs to strings for JSONB columns
+        if 'space_ids' in clean_data and clean_data['space_ids'] is not None:
+            clean_data['space_ids'] = [str(sid) for sid in clean_data['space_ids']]
+
         clean_data['updated_at'] = now_utc()
 
         stmt = (

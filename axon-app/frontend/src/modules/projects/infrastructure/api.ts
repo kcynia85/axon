@@ -9,10 +9,12 @@ export const createProject = async (data: Partial<Project>): Promise<Project> =>
     // Map frontend Partial<Project> to ProjectCreateDTO
     const payload = {
         project_name: data.project_name || "New Project",
-        project_status: data.project_status || "idea",
-        project_summary: data.project_summary || "",
+        project_status: data.project_status || "Idea",
+        project_summary: data.project_summary || null,
         project_keywords: data.project_keywords || [],
-        project_strategy_url: data.project_strategy_url || ""
+        project_strategy_url: data.project_strategy_url || null,
+        space_ids: data.space_ids || [],
+        key_resources: data.key_resources || []
     };
     return await authenticatedClient.post<Project>("/projects/", payload);
 };
@@ -35,5 +37,16 @@ export const deleteProject = async (id: string): Promise<void> => {
 };
 
 export const updateProject = async (id: string, data: Partial<Project>): Promise<Project> => {
-    return await authenticatedClient.patch<Project>(`/projects/${id}`, data);
+    // Map to ProjectUpdateDTO
+    const payload = {
+        project_name: data.project_name,
+        project_status: data.project_status,
+        project_summary: data.project_summary,
+        project_keywords: data.project_keywords,
+        project_strategy_url: data.project_strategy_url,
+        space_ids: data.space_ids || [],
+        key_resources: data.key_resources
+    };
+    return await authenticatedClient.patch<Project>(`/projects/${id}`, payload);
 };
+

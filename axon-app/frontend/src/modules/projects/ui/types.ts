@@ -21,13 +21,18 @@ export type ProjectViewModel = {
     readonly createdAt: string;
     readonly spaceUrl: string;
 };
-
 export type ArtifactViewModel = {
     readonly id: string;
     readonly name: string;
     readonly sourcePath: string;
     readonly statusLabel: string;
     readonly statusVariant: "success" | "info" | "default";
+    readonly spaceId?: string;
+    readonly nodeId?: string;
+};
+
+    readonly spaceId?: string;
+    readonly nodeId?: string;
 };
 
 // --- Component Props ---
@@ -91,6 +96,7 @@ export type ProjectResourcesTabProps = {
 export type ProjectArtifactsTabProps = {
     readonly artifacts: readonly ArtifactViewModel[];
     readonly isLoading: boolean;
+    readonly spaces?: readonly { id: string, name: string }[];
 }
 
 export type ProjectActivityTabProps = object;
@@ -115,12 +121,6 @@ export type ProjectKeywordsFieldProps = {
     readonly onKeywordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     readonly onKeywordKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     readonly onRemoveKeyword: (keyword: string) => void;
-}
-
-export type ProjectSpaceSelectorProps = {
-    readonly form: UseFormReturn<CreateProjectFormData>;
-    readonly spaceMode: "new" | "existing";
-    readonly projectName: string;
 }
 
 // --- Layout & Atom Props ---

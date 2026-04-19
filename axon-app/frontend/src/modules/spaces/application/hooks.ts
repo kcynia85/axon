@@ -35,6 +35,14 @@ export const useUpdateSpaceMutation = () => {
         onSuccess: (updatedSpace) => {
             queryClient.invalidateQueries({ queryKey: spacesKeys.lists() });
             queryClient.invalidateQueries({ queryKey: ['spaces', updatedSpace.id] });
+            queryClient.invalidateQueries({ queryKey: ['space-canvas', updatedSpace.id] });
+            
+            // Invalidate project artifacts as they might be affected by space status/name changes
+            queryClient.invalidateQueries({ 
+                queryKey: ['projects', 'artifacts'],
+                exact: false 
+            });
+            
             toast.success("Zmiany zostały zapisane");
         },
         onError: () => {
@@ -51,6 +59,13 @@ export const usePersistCanvasMutation = () => {
             SpaceCanvasInfrastructureApi.persistCanvasConfiguration(spaceId, config),
         onSuccess: (_, { spaceId }) => {
             queryClient.invalidateQueries({ queryKey: ['spaces', spaceId] });
+            queryClient.invalidateQueries({ queryKey: ['space-canvas', spaceId] });
+            
+            // Invalidate project artifacts aggregated from canvas
+            queryClient.invalidateQueries({ 
+                queryKey: ['projects', 'artifacts'],
+                exact: false 
+            });
         }
     });
 };

@@ -97,3 +97,23 @@ class SpaceRepository:
                 updated_at=row.updated_at
             ) for row in rows
         ]
+
+    async def list_by_project(self, project_id: UUID) -> List[Space]:
+        """Returns all spaces associated with a specific project."""
+        result = await self.session.execute(
+            select(SpaceTable).where(SpaceTable.project_id == project_id)
+        )
+        rows = result.scalars().all()
+        return [
+            Space(
+                id=row.id,
+                space_name=row.space_name,
+                space_description=row.space_description,
+                space_status=row.space_status,
+                project_id=row.project_id,
+                space_viewport_config=row.space_viewport_config,
+                canvas_data=row.canvas_data,
+                created_at=row.created_at,
+                updated_at=row.updated_at
+            ) for row in rows
+        ]

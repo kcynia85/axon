@@ -3,6 +3,7 @@ import type React from "react";
 import Image from "next/image";
 import { cn } from "@/shared/lib/utils";
 import { Badge } from "@/shared/ui/ui/Badge";
+import { StatusBadge } from "@/shared/ui/complex/StatusBadge";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -31,6 +32,7 @@ export const FormSelect = (props: FormSelectProps) => {
 		placeholder = "Select option...",
 		searchPlaceholder = "Search...",
 		className,
+		hideRecent = false,
 		renderTrigger,
 	} = props;
 
@@ -89,9 +91,16 @@ export const FormSelect = (props: FormSelectProps) => {
 								</div>
 							)}
 							<div className="flex flex-col">
-								<span className="text-base font-bold text-zinc-900 dark:text-white leading-none">
-									{selectedOptions[0]?.name || placeholder}
-								</span>
+								{selectedOptions[0]?.variant ? (
+									<StatusBadge 
+										status={selectedOptions[0].name} 
+										variant={selectedOptions[0].variant as any} 
+									/>
+								) : (
+									<span className="text-base font-bold text-zinc-900 dark:text-white leading-none">
+										{selectedOptions[0]?.name || placeholder}
+									</span>
+								)}
 								{selectedOptions[0]?.subtitle && (
 									<span className="text-[10px] text-zinc-400 font-mono mt-1">
 										{selectedOptions[0].subtitle}
@@ -129,7 +138,7 @@ export const FormSelect = (props: FormSelectProps) => {
 				</div>
 
 				<div className="max-h-[400px] overflow-y-auto custom-scrollbar p-1">
-					{recentOptions.length > 0 && !search && (
+					{recentOptions.length > 0 && !search && !hideRecent && (
 						<>
 							<DropdownMenuLabel className="px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-400 flex items-center gap-2">
 								<Clock size={12} /> Recently Used
@@ -152,9 +161,13 @@ export const FormSelect = (props: FormSelectProps) => {
 											</div>
 										)}
 										<div className="flex flex-col">
-											<span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
-												{opt.name}
-											</span>
+											{opt.variant ? (
+												<StatusBadge status={opt.name} variant={opt.variant as any} />
+											) : (
+												<span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+													{opt.name}
+												</span>
+											)}
 											{opt.subtitle && (
 												<span className="text-[14px] text-zinc-400 font-mono">
 													{opt.subtitle}
@@ -192,9 +205,13 @@ export const FormSelect = (props: FormSelectProps) => {
 									</div>
 								)}
 								<div className="flex flex-col">
-									<span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
-										{opt.name}
-									</span>
+									{opt.variant ? (
+										<StatusBadge status={opt.name} variant={opt.variant as any} />
+									) : (
+										<span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+											{opt.name}
+										</span>
+									)}
 									{opt.subtitle && (
 										<span className="text-[14px] text-zinc-400 font-mono">
 											{opt.subtitle}

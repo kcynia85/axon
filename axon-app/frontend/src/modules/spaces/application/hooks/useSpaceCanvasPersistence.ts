@@ -9,7 +9,16 @@ export const useSpaceCanvasPersistence = (spaceId: string) => {
         mutationFn: (canvasData: Partial<SpaceCanvas>) => 
             SpaceCanvasInfrastructureApi.persistCanvasConfiguration(spaceId, canvasData),
         onSuccess: () => {
+            // Invalidate space data
             queryClient.invalidateQueries({ queryKey: ['space-canvas', spaceId] });
+            queryClient.invalidateQueries({ queryKey: ['spaces', spaceId] });
+            
+            // CRITICAL: Invalidate all project artifacts because they are aggregated from space canvas data
+            // We use a broad match on the 'artifacts' subkey of projects
+            queryClient.invalidateQueries({ 
+                queryKey: ['projects', 'artifacts'],
+                exact: false 
+            });
         }
     });
 };

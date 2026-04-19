@@ -1,5 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { Checkbox } from "@/shared/ui/ui/Checkbox";
+import { Badge } from "@/shared/ui/ui/Badge";
 import type { FormCheckboxProps } from "@/shared/types/form/FormCheckbox.types";
 import { useFormCheckbox } from "@/shared/hooks/form/useFormCheckbox";
 
@@ -15,6 +16,7 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 		className,
 		hideCheckbox = false,
 		tags,
+		badge,
 	} = props;
 
 	const checkboxClass =
@@ -57,7 +59,7 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 
 			<div className={cn("flex items-center gap-3", hideCheckbox && "w-full")}>
 				{Icon && <Icon className="w-4 h-4 opacity-70" />}
-				<div className="space-y-1">
+				<div className="space-y-1 flex-1">
 					<h5
 						className={cn(
 							"font-bold text-base transition-colors",
@@ -75,15 +77,20 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 						</p>
 					)}
 					{tags && tags.length > 0 && (
-						<div className="flex flex-wrap gap-1.5 pt-1">
+						<div className="flex flex-wrap gap-1.5 mt-2">
 							{tags.map((tag, idx) => (
 								<span key={idx} className="text-[10px] text-zinc-500 font-mono">
-									#{tag.toLowerCase()}
+									{tag.toLowerCase()}
 								</span>
 							))}
 						</div>
 					)}
 				</div>
+				{badge && (
+					<Badge variant="outline" className="text-xs h-5 px-2 py-0 font-bold ml-auto shrink-0 border-zinc-800 text-zinc-500 uppercase">
+						{badge}
+					</Badge>
+				)}
 			</div>
 		</div>
 	);

@@ -7,6 +7,8 @@ import { ProjectsBrowserProps } from "./types";
 import { QuickFilter } from "@/shared/ui/complex/ActionBar";
 import { ProjectsBrowserView } from "./pure/ProjectsBrowserView";
 
+import { usePendingDeletionsStore } from "@/shared/lib/store/usePendingDeletionsStore";
+
 const SORT_OPTIONS: readonly SortOption[] = [
   { id: "name-asc", label: "Name (A-Z)" },
   { id: "name-desc", label: "Name (Z-A)" },
@@ -29,13 +31,11 @@ export const ProjectsBrowser = ({ initialProjects = [] }: ProjectsBrowserProps) 
     isLoading,
     isError,
     selectedProject,
-    artifacts,
-    isLoadingArtifacts,
     isSidebarOpen,
     setIsSidebarOpen,
-    activeTab,
-    setActiveTab,
     handleViewDetails,
+    handleConfigure,
+    handleDelete,
     filterConfig
   } = useProjectsBrowser(initialProjects);
 
@@ -63,10 +63,7 @@ export const ProjectsBrowser = ({ initialProjects = [] }: ProjectsBrowserProps) 
         isLoading={isLoading}
         isError={isError}
         selectedProject={selectedProject}
-        artifacts={artifacts}
-        isLoadingArtifacts={isLoadingArtifacts}
         isSidebarOpen={isSidebarOpen}
-        activeTab={activeTab}
         searchQuery={searchQuery}
         sortBy={sortBy}
         sortOptions={SORT_OPTIONS}
@@ -82,9 +79,11 @@ export const ProjectsBrowser = ({ initialProjects = [] }: ProjectsBrowserProps) 
         onApplyFilters={handleApplyFilters}
         onPendingFilterIdsChange={setPendingFilterIds}
         onViewDetails={handleViewDetails}
+        onConfigure={handleConfigure}
+        onDelete={handleDelete}
         onSidebarOpenChange={setIsSidebarOpen}
-        onTabChange={setActiveTab}
         previewCount={getPreviewCount(projects)}
     />
   );
 };
+

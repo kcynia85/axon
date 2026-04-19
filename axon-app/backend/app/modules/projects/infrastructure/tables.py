@@ -14,7 +14,7 @@ class ProjectTable(Base):
     project_summary = Column(String, nullable=True)
     project_keywords = Column(JSONB, default=[])
     project_strategy_url = Column(String, nullable=True)
-    space_id = Column(UUID(as_uuid=True), ForeignKey("spaces.id"), nullable=True)
+    space_ids = Column(JSONB, default=[])
     owner_id = Column(UUID(as_uuid=True), nullable=False)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)

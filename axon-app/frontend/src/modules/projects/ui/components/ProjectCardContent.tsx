@@ -1,37 +1,35 @@
 import React from "react";
-import { CardContent } from "@/shared/ui/ui/Card";
 import { Layers } from "lucide-react";
 import { ProjectCardContentProps } from "../types";
-import { 
-    ProjectCardTagsGroup, 
-    ProjectCardStatsGroup,
-    ProjectCardContentLayout
-} from "./ProjectCardLayout";
 import { ProjectTagText } from "./ProjectTypography";
 import { Tooltip } from "@/shared/ui/ui/Tooltip";
+import { BaseDiv } from "./ProjectBaseAtoms";
+import { cn } from "@/shared/lib/utils";
 
 export const ProjectCardContent = ({ 
     tags = [], 
     artifactsCount 
 }: ProjectCardContentProps) => {
+    const hasTags = tags && tags.length > 0;
+
     return (
-        <CardContent className="flex-1 pt-2 pb-6">
-            <ProjectCardContentLayout>
-                <ProjectCardTagsGroup>
-                    {(tags || []).map((tag: string, i: number) => (
+        <BaseDiv className="flex flex-col items-start justify-start gap-4 w-full">
+            {hasTags && (
+                <div className="flex items-center gap-2 flex-wrap">
+                    {tags.map((tag: string, i: number) => (
                         <ProjectTagText key={i}>{tag}</ProjectTagText>
                     ))}
-                </ProjectCardTagsGroup>
+                </div>
+            )}
 
-                <Tooltip content="Generated Artifacts" side="top">
-                    <ProjectCardStatsGroup>
-                        <Layers size={14} className="opacity-60" />
-                        <span className="text-[12px] tabular-nums uppercase tracking-widest font-black opacity-60">
-                            {artifactsCount}
-                        </span>
-                    </ProjectCardStatsGroup>
-                </Tooltip>
-            </ProjectCardContentLayout>
-        </CardContent>
+            <Tooltip content="Generated Artifacts" side="top">
+                <div className="flex items-center gap-2 text-zinc-500 hover:text-zinc-700 transition-colors">
+                    <Layers size={14} className="opacity-40" />
+                    <span className="text-[14px] font-bold leading-none whitespace-nowrap">
+                        Artefakty: <span className="ml-1">{artifactsCount}</span>
+                    </span>
+                </div>
+            </Tooltip>
+        </BaseDiv>
     );
 };
