@@ -35,23 +35,8 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('role')
     )
-    op.create_table('assets',
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('slug', sa.String(), nullable=False),
-    sa.Column('title', sa.String(), nullable=False),
-    sa.Column('content', sa.String(), nullable=False),
-    sa.Column('type', sa.String(), nullable=False),
-    sa.Column('domain', sa.String(), nullable=False),
-    sa.Column('metadata', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
-    sa.Column('description_embedding', pgvector.sqlalchemy.vector.VECTOR(dim=768), nullable=True),
-    sa.Column('is_deleted', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index('idx_assets_embedding', 'assets', ['description_embedding'], unique=False, postgresql_using='hnsw', postgresql_ops={'description_embedding': 'vector_cosine_ops'})
-    op.create_index('idx_assets_metadata', 'assets', ['metadata'], unique=False, postgresql_using='gin')
-    op.create_index(op.f('ix_assets_slug'), 'assets', ['slug'], unique=True)
+    op.create_unique_constraint(None, 'agent_configs', ['role'])
+    # assets table removed here, created in d603bce469d5
     op.create_table('projects',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
@@ -102,7 +87,7 @@ def upgrade() -> None:
     )
     op.create_index('idx_agent_logs_content', 'agent_logs', ['content'], unique=False, postgresql_using='gin')
     op.create_index('idx_agent_logs_session', 'agent_logs', ['session_id'], unique=False)
-    op.drop_table('axon-table')
+    # op.drop_table('axon-table')
     # ### end Alembic commands ###
 
 

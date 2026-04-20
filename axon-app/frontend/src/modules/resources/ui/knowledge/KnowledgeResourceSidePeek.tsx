@@ -105,14 +105,12 @@ export const KnowledgeResourceSidePeek = ({
                     {/* ── Metadata Summary ── */}
                     <SidePeekGrid>
                         <SidePeekGridItem 
-                            label="Status Indeksacji" 
+                            label="Przypisany Hub" 
                             value={
                                 <Badge 
-                                    className={cn(
-                                        "font-mono text-[14px] normal-case bg-white text-black hover:bg-white/90",
-                                    )}
+                                    className="font-bold bg-white text-black hover:bg-white/90"
                                 >
-                                    {knowledgeResource.resource_rag_indexing_status}
+                                    {knowledgeResource.knowledge_hub_name || "Brak Hubu"}
                                 </Badge>
                             } 
                         />

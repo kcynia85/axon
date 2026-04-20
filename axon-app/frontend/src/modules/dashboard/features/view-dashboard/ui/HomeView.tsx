@@ -2,11 +2,13 @@ import React from "react";
 import { PageContent } from "@/shared/ui/layout/PageContent";
 import { MagicSphere } from "@/shared/ui/complex/MagicSphere";
 import { AiAssistantCard } from "@/shared/ui/complex/AiAssistantCard";
+import { KnowledgeSearchResults } from "@/modules/knowledge/ui/KnowledgeSearchResults";
 import { HomeViewProps } from "./HomeView.types";
 
 export const HomeView = ({
     inputValue,
-    recentlyUsed = [],
+    searchResults = [],
+    isSearching = false,
     onInputChange,
     onSubmission,
     onKeyDown,
@@ -37,7 +39,13 @@ export const HomeView = ({
                             onChange={onInputChange}
                             onSubmit={() => onSubmission()}
                             onKeyDown={onKeyDown}
-                        />
+                        >
+                            <KnowledgeSearchResults 
+                                results={searchResults}
+                                isLoading={isSearching}
+                                isVisible={inputValue.length > 2}
+                            />
+                        </AiAssistantCard>
                     </div>
 
                    

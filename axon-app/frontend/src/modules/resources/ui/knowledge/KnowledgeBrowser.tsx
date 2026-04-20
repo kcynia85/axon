@@ -240,7 +240,7 @@ export const KnowledgeBrowser = () => {
                 tags: resource.resource_metadata?.tags || [],
                 status: resource.resource_rag_indexing_status as any,
                 vectorDatabaseName: resource.vector_database_name,
-                hubName: resource.hub_name,
+                hubName: resource.knowledge_hub_name,
                 hubId: resource.knowledge_hub_id || undefined,
                 chunkCount: resource.resource_chunk_count
             }))}

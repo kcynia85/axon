@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FormField } from "@/shared/ui/ui/Form";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormTextarea } from "@/shared/ui/form/FormTextarea";
@@ -7,7 +8,7 @@ import { FormSelect } from "@/shared/ui/form/FormSelect";
 import { FormCheckbox } from "@/shared/ui/form/FormCheckbox";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormSubheading } from "@/shared/ui/form/FormSubheading";
-import { ALL_HUBS } from "../../types/agent-studio.constants";
+import { resourcesApi } from "@/modules/resources/infrastructure/api";
 import type { CognitionSectionProps } from "../../types/sections/cognition.types";
 import { useCognitionSection } from "../../application/hooks/sections/useCognitionSection";
 
@@ -17,6 +18,17 @@ import { useCognitionSection } from "../../application/hooks/sections/useCogniti
  */
 export const CognitionSection = (props: CognitionSectionProps) => {
 	const { control, syncDraft } = useCognitionSection(props);
+
+	const { data: knowledgeHubs, isLoading } = useQuery({
+		queryKey: ["knowledge-hubs"],
+		queryFn: resourcesApi.getKnowledgeHubs,
+	});
+
+	const hubOptions = (knowledgeHubs || []).map(hub => ({
+		id: hub.id,
+		name: hub.hub_name,
+		subtitle: hub.hub_description || "Knowledge Hub",
+	}));
 
 	return (
 		<FormSection id="MEMORY" number={2} title="Cognition" variant="island">
@@ -31,13 +43,13 @@ export const CognitionSection = (props: CognitionSectionProps) => {
 								<FormItemField>
 									<FormSelect
 										multiple
-										options={ALL_HUBS as any}
+										options={hubOptions}
 										value={field.value || []}
 										onChange={(value) => {
 											field.onChange(value);
 											syncDraft();
 										}}
-										placeholder="Select Knowledge Sources..."
+										placeholder={isLoading ? "Loading Hubs..." : "Select Knowledge Sources..."}
 										searchPlaceholder="Search hubs..."
 									/>
 								</FormItemField>

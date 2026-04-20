@@ -80,9 +80,13 @@ async def list_knowledge_resources(
             VectorDatabaseTable.vector_database_expected_dimensions,
             KnowledgeHubTable.hub_name
         )
-        .outerjoin(VectorDatabaseTable, KnowledgeResourceTable.vector_database_id == VectorDatabaseTable.id)
+        .join(VectorDatabaseTable, KnowledgeResourceTable.vector_database_id == VectorDatabaseTable.id)
         .outerjoin(KnowledgeHubTable, KnowledgeResourceTable.knowledge_hub_id == KnowledgeHubTable.id)
-        .where(KnowledgeResourceTable.deleted_at.is_(None))
+        .where(
+            KnowledgeResourceTable.deleted_at.is_(None),
+            VectorDatabaseTable.vector_database_name == "Supabase Local",
+            KnowledgeResourceTable.knowledge_hub_id.is_not(None)
+        )
         .order_by(KnowledgeResourceTable.created_at.desc())
         .limit(limit)
         .offset(offset)
@@ -299,61 +303,48 @@ async def create_asset(session: AsyncSession, asset: Asset, embedding: List[floa
 
 async def discover_resources_from_all_databases(session: AsyncSession) -> List[dict]:
     """
-    Discovery Service: Standalone utility to scan vector stores.
+    Discovery Service: Scans only the active/default vector store (Supabase Local).
     """
-    from app.modules.settings.infrastructure.tables import VectorDatabaseTable
-    from sqlalchemy.ext.asyncio import create_async_engine
-    from sqlalchemy.orm import sessionmaker
-    import chromadb
-    from urllib.parse import urlparse
-    from qdrant_client import QdrantClient
-
-    stmt = select(VectorDatabaseTable)
-    result = await session.execute(stmt)
-    vdbs = result.scalars().all()
-    discovered_resources = {}
-
-    for vdb in vdbs:
-        db_type = str(vdb.vector_database_type.value if hasattr(vdb.vector_database_type, 'value') else vdb.vector_database_type).upper()
-        collection_name = vdb.vector_database_collection_name or "axon_knowledge_vectors"
+    from app.api.deps import get_vector_store_adapter
+    from app.shared.infrastructure.adapters.vector_stores.proxy import VectorStoreProxy
+    
+    # Get the active adapter via proxy
+    adapter_proxy = await get_vector_store_adapter()
+    if not isinstance(adapter_proxy, VectorStoreProxy):
+        return []
         
-        try:
-            if "CHROMA" in db_type:
-                config = vdb.vector_database_config or {}
-                url = vdb.vector_database_connection_url or (f"http://{config.get('chroma_host')}:{config.get('chroma_port')}" if config.get('chroma_host') else None)
-                if url:
-                    parsed_url = urlparse(url)
-                    client = chromadb.HttpClient(host=parsed_url.hostname or "localhost", port=parsed_url.port or 8000) if parsed_url.scheme and "http" in parsed_url.scheme else chromadb.PersistentClient(path=url)
-                    col = client.get_collection(name=collection_name)
-                    data = col.get(include=['metadatas'])
-                    for meta in (data.get('metadatas') or []):
-                        rid, fname = meta.get('sourceId'), meta.get('file_name')
-                        if rid and fname and rid not in discovered_resources:
-                            discovered_resources[rid] = {"id": str(rid), "resource_file_name": fname, "resource_rag_indexing_status": "Ready", "vector_database_name": vdb.vector_database_name, "is_discovered": True}
-            
-            elif "QDRANT" in db_type:
-                config = vdb.vector_database_config or {}
-                url = vdb.vector_database_connection_url or config.get("qdrant_url") or "http://localhost:6333"
-                client = QdrantClient(url=url)
-                if client.collection_exists(collection_name):
-                    points, _ = client.scroll(collection_name=collection_name, limit=1000, with_payload=True)
-                    for p in points:
-                        rid, fname = p.payload.get('sourceId'), p.payload.get('file_name')
-                        if rid and fname and rid not in discovered_resources:
-                            discovered_resources[rid] = {"id": str(rid), "resource_file_name": fname, "resource_rag_indexing_status": "Ready", "vector_database_name": vdb.vector_database_name, "is_discovered": True}
+    config = await adapter_proxy.config_resolver()
+    db_url = config.get("url")
+    if not db_url:
+        return []
 
-            elif "POSTGRES" in db_type or "SUPABASE" in db_type:
-                ext_engine = create_async_engine(vdb.vector_database_connection_url)
-                async with sessionmaker(ext_engine, class_=AsyncSession)() as ext_session:
-                    res = await ext_session.execute(text(f"SELECT DISTINCT(metadata->>'sourceId'), metadata->>'file_name' FROM vecs.\"{collection_name}\" WHERE metadata ? 'sourceId' AND metadata ? 'file_name'"))
-                    for row in res.fetchall():
-                        rid, fname = row
-                        if rid and fname and rid not in discovered_resources:
-                            discovered_resources[rid] = {"id": str(rid), "resource_file_name": fname, "resource_rag_indexing_status": "Ready", "vector_database_name": vdb.vector_database_name, "is_discovered": True}
-                await ext_engine.dispose()
-        except Exception as e: logger.debug(f"Discovery skipped for {vdb.vector_database_name}: {e}")
+    discovered_resources = {}
+    collection_name = "knowledge_base"
+    
+    try:
+        from sqlalchemy.ext.asyncio import create_async_engine
+        from sqlalchemy.orm import sessionmaker
+        
+        ext_engine = create_async_engine(db_url)
+        async with sessionmaker(ext_engine, class_=AsyncSession)() as ext_session:
+            # Universal discovery query for pgvector/vecs based schema (Supabase Local)
+            res = await ext_session.execute(text(f"SELECT DISTINCT(metadata->>'sourceId'), metadata->>'file_name' FROM vecs.\"{collection_name}\" WHERE metadata ? 'sourceId' AND metadata ? 'file_name'"))
+            for row in res.fetchall():
+                rid, fname = row
+                if rid and fname and rid not in discovered_resources:
+                    discovered_resources[rid] = {
+                        "id": str(rid), 
+                        "resource_file_name": fname, 
+                        "resource_rag_indexing_status": "Ready", 
+                        "vector_database_name": "Supabase Local", 
+                        "is_discovered": True
+                    }
+        await ext_engine.dispose()
+    except Exception as e: 
+        logger.error(f"Discovery failed for default store: {e}")
 
     return list(discovered_resources.values())
+
 
 async def get_asset_by_slug(session: AsyncSession, slug: str) -> Optional[Asset]:
     result = await session.execute(select(AssetTable).where(AssetTable.slug == slug, AssetTable.deleted_at.is_(None)))

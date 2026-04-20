@@ -97,6 +97,10 @@ export const useSpaceAgentInspector = (data: any, nodeId: string, onPropertyChan
         onPropertyChange('context_requirements', newContexts);
     };
 
+    const handleKnowledgeHubsChange = (hubIds: string[]) => {
+        onPropertyChange('knowledge_hub_ids', hubIds);
+    };
+
     const handleLinkContextFromNode = (contextId: string, nodeLabel: string, artifactLabel: string) => {
         const newContexts = contextRequirements.map(c => 
             c.id === contextId 
@@ -181,6 +185,7 @@ export const useSpaceAgentInspector = (data: any, nodeId: string, onPropertyChan
             handleAnswerChange,
             submitConsultation,
             handleContextLinkChange,
+            handleKnowledgeHubsChange,
             handleLinkContextFromNode,
             handleArtefactStatusChange,
             handleArtefactOutputToggle,

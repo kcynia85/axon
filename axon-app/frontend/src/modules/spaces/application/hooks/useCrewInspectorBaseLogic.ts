@@ -68,6 +68,10 @@ export const useCrewInspectorBaseLogic = (
         onPropertyChange('context_requirements', newContexts);
     };
 
+    const handleKnowledgeHubsChange = (hubIds: string[]) => {
+        onPropertyChange('knowledge_hub_ids', hubIds);
+    };
+
     const handleLinkContextFromNode = (contextId: string, nodeLabel: string, artifactLabel: string) => {
         const newContexts = contextRequirements.map(c => 
             c.id === contextId 
@@ -152,6 +156,7 @@ export const useCrewInspectorBaseLogic = (
         handleTaskLabelChange,
         handleArtefactContentChange,
         handleContextLinkChange,
+        handleKnowledgeHubsChange,
         handleLinkContextFromNode,
         handleArtefactStatusChange,
         handleArtefactOutputToggle,

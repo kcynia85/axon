@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     # AI
     GOOGLE_API_KEY: str
+    OPENAI_API_KEY: Optional[str] = None
 
     # Feature Flags (Phase 11.T Transitional Bridge)
     FEATURE_LANGCHAIN_ADAPTER: bool = True  # T3: LangChainAdapter - default ON
@@ -26,7 +27,7 @@ class Settings(BaseSettings):
     # Inngest (Workflows)
     INNGEST_SIGNING_KEY: Optional[str] = None
     INNGEST_EVENT_KEY: Optional[str] = None
-    INNGEST_BASE_URL: str = "http://127.0.0.1:8290"
+    INNGEST_BASE_URL: str = "http://127.0.0.1:8288"
 
     # Storage (MinIO / S3)
     STORAGE_ENDPOINT: str = "http://localhost:9000"

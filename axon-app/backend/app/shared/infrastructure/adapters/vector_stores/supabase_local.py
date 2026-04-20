@@ -26,14 +26,22 @@ class SupabaseLocalVectorAdapter(VectorStoreAdapter):
         return client.get_or_create_collection(name=collection_name, dimension=768)
 
     async def search(self, collection_name: str, query: str, limit: int = 5) -> List[dict[str, Any]]:
-        embedding = await self.gateway.get_embeddings(query)
+        # Use text-embedding-3-small with 768 dimensions for Knowledge RAG
+        embedding = await self.gateway.get_embeddings(
+            query, 
+            model_name="text-embedding-3-small", 
+            provider_name="openai",
+            dimensions=768
+        )
         collection = self._get_collection(collection_name)
         
         def _search_sync():
+            # query returns List[str] if no metadata/value requested
+            # query returns List[Tuple[str, dict]] if include_metadata=True
             return collection.query(
                 data=embedding,
                 limit=limit,
-                include_value=True,
+                include_value=False,
                 include_metadata=True
             )
         
@@ -42,12 +50,23 @@ class SupabaseLocalVectorAdapter(VectorStoreAdapter):
         
         formatted_results = []
         for res in results:
-            doc_id = str(res[0]) if isinstance(res, tuple) else str(res)
-            metadata = res[2] if isinstance(res, tuple) and len(res) > 2 else {}
+            # Handle both list of IDs and list of (ID, Metadata) results
+            # vecs returns sqlalchemy.engine.row.Row objects which behave like tuples
+            try:
+                if hasattr(res, "__getitem__"):
+                    doc_id = str(res[0])
+                    metadata = res[1] if len(res) > 1 else {}
+                else:
+                    doc_id = str(res)
+                    metadata = {}
+            except Exception:
+                doc_id = str(res)
+                metadata = {}
+            
             formatted_results.append({
                 "id": doc_id,
-                "content": metadata.get("content", ""),
-                "metadata": metadata
+                "metadata": metadata,
+                "score": 0.0
             })
         return formatted_results
 

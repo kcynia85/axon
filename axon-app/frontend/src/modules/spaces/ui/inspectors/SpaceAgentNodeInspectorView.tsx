@@ -4,12 +4,13 @@ import React from "react";
 import Image from "next/image";
 import { Tabs, Tab, Input, ScrollShadow, Button } from "@heroui/react";
 import { 
-  Bot, Layers, FileText, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, ShieldCheck, Zap, CircleStop,
+  Bot, Layers, FileText, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, ShieldCheck, Zap, CircleStop, Sparkles
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type Node } from "@xyflow/react";
 import { cn } from "@/shared/lib/utils";
 import { SpaceCrewContextTab } from "./crews/shared/SpaceCrewContextTab";
+import { SpaceCognitionTab } from "./shared/SpaceCognitionTab";
 import { SpaceCrewArtefactsTab } from "./crews/shared/SpaceCrewArtefactsTab";
 import { SpaceInspectorFooter } from "./components/SpaceInspectorFooter";
 import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";

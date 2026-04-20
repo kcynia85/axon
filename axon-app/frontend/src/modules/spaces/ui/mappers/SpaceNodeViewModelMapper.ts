@@ -66,6 +66,7 @@ export const mapAgentToViewModel = (agentDomainData: SpaceAgentDomainData, isSel
         visualUrl: agentDomainData.agent_visual_url,
         hasOutputArtefacts,
         activeOutputClassName: visualStyles.activeOutputClassName,
+        knowledgeHubIds: agentDomainData.knowledge_hub_ids,
     };
 };
 
@@ -171,6 +172,7 @@ export const mapCrewToViewModel = (
         VisualIcon: Users,
         hasOutputArtefacts,
         activeOutputClassName: visualStyles.activeOutputClassName,
+        knowledgeHubIds: crewDomainData.knowledge_hub_ids,
     };
 };
 

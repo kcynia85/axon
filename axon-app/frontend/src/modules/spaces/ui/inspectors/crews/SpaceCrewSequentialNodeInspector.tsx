@@ -3,10 +3,11 @@
 import React from "react";
 import Image from "next/image";
 import { Tabs, Tab, Input, Button } from "@heroui/react";
-import { Zap, CheckCircle2, Layers, FileText, CircleStop, Terminal, ChevronUp, ChevronDown, Users } from "lucide-react";
+import { Zap, CheckCircle2, Layers, FileText, CircleStop, Terminal, ChevronUp, ChevronDown, Users, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/shared/lib/utils";
 import { SpaceCrewContextTab } from "./shared/SpaceCrewContextTab";
+import { SpaceCognitionTab } from "../shared/SpaceCognitionTab";
 import { SpaceCrewArtefactsTab } from "./shared/SpaceCrewArtefactsTab";
 import { SpaceCrewProgressBar } from "./shared/SpaceCrewProgressBar";
 import { SpaceCrewOrchestrationLayout } from "./shared/SpaceCrewOrchestrationLayout";

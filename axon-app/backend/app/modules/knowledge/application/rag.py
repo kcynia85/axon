@@ -87,10 +87,13 @@ if LANGCHAIN_RAG_AVAILABLE:
                 ))
             return docs
 
+from app.shared.domain.ports.vector_store import VectorStoreAdapter
+
 class RAGService:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, vector_store: Optional[VectorStoreAdapter] = None):
         self.session = session
         self.asset_repo = AssetRepository(session)
+        self.vector_store = vector_store
 
     @observe(name="search_knowledge_base")
     async def search_knowledge(
@@ -103,139 +106,37 @@ class RAGService:
         embedding_model_name: str = None
     ) -> List[Dict[str, Any]]:
         """
-        Semantic search over Knowledge Base with Hybrid Search and Reranking.
-        Searches across all configured vector databases.
+        Semantic search over Knowledge Base using the active VectorStoreAdapter (Supabase Local).
         """
-        from app.modules.settings.infrastructure.tables import VectorDatabaseTable, LLMProviderTable
-        from sqlalchemy import select
-        from urllib.parse import urlparse
-        
-        # 1. Fetch all vector databases
-        stmt_vdbs = select(VectorDatabaseTable).where(VectorDatabaseTable.deleted_at.is_(None))
-        res_vdbs = await self.session.execute(stmt_vdbs)
-        vdbs = res_vdbs.scalars().all()
-        
-        if not vdbs:
-            logger.warning("No vector databases configured.")
+        all_results = []
+
+        if not self.vector_store:
+            logger.error("No active VectorStoreAdapter available for search.")
             return []
 
-        # 2. Group VectorDBs by their embedding configuration
-        vdb_groups = {}
-        from app.shared.infrastructure.adapters.langchain_adapter import get_llm_adapter
-        adapter = get_llm_adapter()
-
-        for vdb in vdbs:
-            vdb_model = embedding_model_name or vdb.vector_database_embedding_model_reference
-            vdb_provider = provider_name
-            if not vdb_provider:
-                vdb_provider = "openai" if "openai" in vdb_model.lower() or "text-embedding-3" in vdb_model.lower() else "google"
+        try:
+            # Default collection for Knowledge Base
+            collection_name = "knowledge_base"
+            proxy_results = await self.vector_store.search(
+                collection_name=collection_name,
+                query=query,
+                limit=limit * 2
+            )
             
-            vdb_api_key = api_key
-            if not vdb_api_key:
-                stmt_prov = select(LLMProviderTable).where(LLMProviderTable.provider_technical_id.ilike(f"%{vdb_provider}%"))
-                res_prov = await self.session.execute(stmt_prov)
-                provider_obj = res_prov.scalars().first()
-                vdb_api_key = provider_obj.provider_api_key if provider_obj else None
-
-            group_key = (vdb_model, vdb_provider, vdb_api_key)
-            if group_key not in vdb_groups: vdb_groups[group_key] = []
-            vdb_groups[group_key].append(vdb)
-
-        # 3. Perform search
-        all_results = []
-        for (model, provider, key), group_vdbs in vdb_groups.items():
-            try:
-                query_vector = await adapter.get_embeddings(text=query, model_name=model, provider_name=provider, api_key=key)
-                if not query_vector: continue
-
-                for vdb in group_vdbs:
-                    db_type = str(vdb.vector_database_type.value if hasattr(vdb.vector_database_type, 'value') else vdb.vector_database_type).upper()
-                    collection_name = vdb.vector_database_collection_name or "knowledge_base"
-                    
-                    try:
-                        if "CHROMA" in db_type:
-                            import chromadb
-                            config = vdb.vector_database_config or {}
-                            url = vdb.vector_database_connection_url or (f"http://{config.get('chroma_host', 'localhost')}:{config.get('chroma_port', 8000)}" if config.get('chroma_host') else "http://localhost:8000")
-                            
-                            parsed_url = urlparse(url)
-                            if parsed_url.scheme and "http" in parsed_url.scheme:
-                                client = chromadb.HttpClient(
-                                    host=parsed_url.hostname or "localhost", 
-                                    port=parsed_url.port or 8000,
-                                    headers={"Authorization": f"Bearer {key}"} if key and "openai" not in provider.lower() else None
-                                ) 
-                            else:
-                                client = chromadb.PersistentClient(path=url)
-                            
-                            col = client.get_collection(name=collection_name)
-                            where_clause = {"hubIds": {"$contains": hub_id}} if hub_id else None
-                            
-                            chroma_res = col.query(query_embeddings=[query_vector], n_results=limit * 2, where=where_clause)
-                            if chroma_res['ids'] and len(chroma_res['ids']) > 0:
-                                for i in range(len(chroma_res['ids'][0])):
-                                    meta = chroma_res['metadatas'][0][i] or {}
-                                    if 'text' not in meta and chroma_res['documents']:
-                                        meta['text'] = chroma_res['documents'][0][i]
-                                    all_results.append({
-                                        "id": chroma_res['ids'][0][i],
-                                        "metadata": meta,
-                                        "score": 1.0 / (1.0 + (chroma_res['distances'][0][i] if chroma_res['distances'] else 0))
-                                    })
-
-                        elif "QDRANT" in db_type:
-                            from qdrant_client import QdrantClient
-                            from qdrant_client.models import Filter, FieldCondition, MatchValue
-                            config = vdb.vector_database_config or {}
-                            url = vdb.vector_database_connection_url or config.get("qdrant_url") or "http://localhost:6333"
-                            client = QdrantClient(url=url)
-                            
-                            query_filter = Filter(must=[FieldCondition(key="hubIds", match=MatchValue(value=hub_id))]) if hub_id else None
-                            if client.collection_exists(collection_name):
-                                # Determine correct method and parameter name
-                                if hasattr(client, "query_points"):
-                                    qdrant_res = client.query_points(collection_name=collection_name, query=query_vector, limit=limit * 2, query_filter=query_filter)
-                                    points = qdrant_res.points
-                                else:
-                                    qdrant_res = client.search(collection_name=collection_name, query_vector=query_vector, limit=limit * 2, query_filter=query_filter)
-                                    points = qdrant_res
-                                
-                                for r in points:
-                                    all_results.append({"id": str(r.id), "metadata": r.payload or {}, "score": r.score})
-                                
-                        elif "POSTGRES" in db_type or "SUPABASE" in db_type:
-                            from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-                            from sqlalchemy.orm import sessionmaker
-                            url = vdb.vector_database_connection_url
-                            if url:
-                                if "postgresql://" in url and "asyncpg" not in url:
-                                    url = url.replace("postgresql://", "postgresql+asyncpg://")
-                                
-                                # asyncpg doesn't support sslmode in URL, it uses ssl=...
-                                # Or we can just strip it for now as it's often problematic in local dev
-                                if "sslmode=" in url:
-                                    from urllib.parse import urlparse, parse_qs, urlunparse
-                                    u = urlparse(url)
-                                    q = parse_qs(u.query)
-                                    q.pop('sslmode', None)
-                                    # For Supabase cloud, we might need ssl=True instead
-                                    if "supabase.com" in url:
-                                        q['ssl'] = ['require']
-                                    from urllib.parse import urlencode
-                                    url = urlunparse(u._replace(query=urlencode(q, doseq=True)))
-
-                                ext_engine = create_async_engine(url)
-                                async with sessionmaker(ext_engine, class_=AsyncSession)() as ext_session:
-                                    pg_results = await search_knowledge_hybrid(
-                                        session=ext_session, query=query, query_vector=query_vector,
-                                        table_name=collection_name, hub_id=hub_id, limit=limit * 2
-                                    )
-                                    all_results.extend(pg_results)
-                                await ext_engine.dispose()
-                    except Exception as e:
-                        logger.error(f"Search failed for {vdb.vector_database_name}: {e}")
-            except Exception as e:
-                logger.error(f"Failed search group {model}: {e}")
+            for res in proxy_results:
+                # Filter by hub_id if provided (metadata filtering)
+                if hub_id:
+                    meta_hubs = res.get("metadata", {}).get("hubIds") or []
+                    if hub_id not in meta_hubs:
+                        continue
+                        
+                all_results.append({
+                    "id": res.get("id"),
+                    "metadata": res.get("metadata", {}),
+                    "score": float(res.get("score", 0.0))
+                })
+        except Exception as e:
+            logger.error(f"Search via VectorStoreAdapter failed: {e}")
 
         # 4. Reranking
         if not all_results: return []
@@ -244,10 +145,13 @@ class RAGService:
             valid_passages = [p for p in passages if p["text"].strip()]
             if valid_passages:
                 reranked = await asyncio.to_thread(_rerank_sync, query, valid_passages)
-                return [{"id": r["id"], "metadata": r["meta"], "score": r.get("score", 0.0)} for r in reranked[:limit]]
+                return [{"id": r["id"], "metadata": r["meta"], "score": float(r.get("score", 0.0))} for r in reranked[:limit]]
         except Exception as e:
             logger.error(f"Reranking failed: {e}")
-        return sorted(all_results, key=lambda x: x.get("score", 0.0), reverse=True)[:limit]
+        
+        return all_results[:limit]
+
+
 
     async def query_with_langchain(
         self, 

@@ -12,6 +12,8 @@ import sqlalchemy as sa
 import pgvector.sqlalchemy
 
 
+from sqlalchemy.dialects import postgresql
+
 # revision identifiers, used by Alembic.
 revision: str = 'd603bce469d5'
 down_revision: Union[str, Sequence[str], None] = '473a652c2712'
@@ -29,12 +31,15 @@ def upgrade() -> None:
         sa.Column('content', sa.String(), nullable=False),
         sa.Column('type', sa.String(), nullable=False),
         sa.Column('domain', sa.String(), nullable=False),
-        sa.Column('metadata', sa.JSON(), default={}),
+        sa.Column('metadata', postgresql.JSONB(), default={}),
         sa.Column('description_embedding', pgvector.sqlalchemy.Vector(768), nullable=True),
         sa.Column('is_deleted', sa.Boolean(), default=False),
         sa.Column('created_at', sa.DateTime(timezone=True), default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime(timezone=True), default=sa.func.now(), onupdate=sa.func.now()),
     )
+    op.create_index('idx_assets_embedding', 'assets', ['description_embedding'], unique=False, postgresql_using='hnsw', postgresql_ops={'description_embedding': 'vector_cosine_ops'})
+    op.create_index('idx_assets_metadata', 'assets', ['metadata'], unique=False, postgresql_using='gin')
+    op.create_index(op.f('ix_assets_slug'), 'assets', ['slug'], unique=True)
 
 
 def downgrade() -> None:

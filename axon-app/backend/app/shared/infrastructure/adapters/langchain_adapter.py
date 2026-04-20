@@ -88,7 +88,7 @@ class LangChainAdapter(LLMGateway):
             from langchain_openai import OpenAIEmbeddings
             params = {
                 "model": model_name or "text-embedding-3-small",
-                "api_key": api_key or os.getenv("OPENAI_API_KEY")
+                "api_key": api_key or settings.OPENAI_API_KEY or os.getenv("OPENAI_API_KEY")
             }
             if dimensions:
                 params["dimensions"] = dimensions

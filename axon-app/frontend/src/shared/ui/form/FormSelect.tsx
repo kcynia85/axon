@@ -190,12 +190,21 @@ export const FormSelect = (props: FormSelectProps) => {
 					{filteredOptions.map((opt) => (
 						<DropdownMenuItem
 							key={opt.id}
-							onClick={() => handleSelect(opt.id)}
-							className="px-4 py-4 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer flex items-center justify-between group transition-colors"
+							disabled={opt.disabled}
+							onClick={() => !opt.disabled && handleSelect(opt.id)}
+							className={cn(
+								"px-4 py-4 rounded-xl flex items-center justify-between group transition-colors",
+								opt.disabled 
+									? "opacity-40 grayscale cursor-not-allowed pointer-events-none" 
+									: "hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer"
+							)}
 						>
 							<div className="flex items-center gap-4">
 								{opt.avatarUrl && (
-									<div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10 shrink-0 bg-black">
+									<div className={cn(
+										"relative w-10 h-10 rounded-full overflow-hidden border-2 shrink-0 bg-black",
+										opt.disabled ? "border-zinc-800" : "border-primary/10"
+									)}>
 										<Image 
 											src={opt.avatarUrl} 
 											alt={opt.name} 
@@ -208,20 +217,43 @@ export const FormSelect = (props: FormSelectProps) => {
 									{opt.variant ? (
 										<StatusBadge status={opt.name} variant={opt.variant as any} />
 									) : (
-										<span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
+										<span className={cn(
+											"text-[16px] font-bold transition-colors",
+											opt.disabled 
+												? "text-zinc-600" 
+												: "text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white"
+										)}>
 											{opt.name}
 										</span>
 									)}
 									{opt.subtitle && (
-										<span className="text-[14px] text-zinc-400 font-mono">
+										<span className={cn(
+											"text-[14px] font-mono",
+											opt.disabled ? "text-zinc-700" : "text-zinc-400"
+										)}>
 											{opt.subtitle}
 										</span>
 									)}
 								</div>
 							</div>
-							{selectedIds.includes(opt.id) && (
-								<Check className="w-4 h-4 text-primary" />
-							)}
+							<div className="flex items-center gap-3">
+								{opt.badgeLabel && (
+									<Badge 
+										variant="outline" 
+										className={cn(
+											"text-[10px] font-black uppercase px-2 py-0.5 rounded-lg tracking-wider",
+											opt.disabled 
+												? "border-zinc-800 text-zinc-700" 
+												: "border-blue-500/30 bg-blue-500/10 text-blue-400"
+										)}
+									>
+										{opt.badgeLabel}
+									</Badge>
+								)}
+								{selectedIds.includes(opt.id) && !opt.disabled && (
+									<Check className="w-4 h-4 text-primary" />
+								)}
+							</div>
 						</DropdownMenuItem>
 					))}
 					{filteredOptions.length === 0 && (

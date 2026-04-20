@@ -15,7 +15,8 @@ from app.modules.knowledge.application.schemas import (
 from app.modules.knowledge.application import service
 from app.modules.knowledge.dependencies import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_vector_store_adapter
+from app.shared.domain.ports.vector_store import VectorStoreAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -165,11 +166,12 @@ async def create_asset(asset: Asset, session: AsyncSession = Depends(get_db)):
 
 @router.get("/search")
 async def search_knowledge(
-    query: str = Query(...),
+    query: str,
     hub_id: Optional[str] = Query(None),
     limit: int = Query(5),
-    session: AsyncSession = Depends(get_db)
+    session: AsyncSession = Depends(get_db),
+    vector_store: VectorStoreAdapter = Depends(get_vector_store_adapter)
 ):
     from app.modules.knowledge.application.rag import RAGService
-    rag_service = RAGService(session)
+    rag_service = RAGService(session, vector_store=vector_store)
     return await rag_service.search_knowledge(query, hub_id=hub_id, limit=limit)

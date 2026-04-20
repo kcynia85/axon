@@ -39,9 +39,9 @@ async def get_vector_store_adapter():
             if not dbs:
                 return {}
             
-            # Simplified logic: pick the first available DB as the active global default.
-            # Both RAG#1 and RAG#2 will use it, separating concerns via collection names.
-            active_db = dbs[0]
+            # Strictly prefer 'Supabase Local' as the active global default.
+            # Other databases are currently ignored for RAG operations.
+            active_db = next((db for db in dbs if db.vector_database_name == "Supabase Local"), dbs[0])
             
             config = {
                 "provider": "supabase_local" if "POSTGRES" in active_db.vector_database_type.name else "other",
@@ -60,5 +60,6 @@ async def get_vector_store_adapter():
             
             return config
 
-    # The actual LLMGateway for embedding models will be injected fully in Faza 2 & 3.
-    return VectorStoreProxy(config_resolver, gateway=None)
+    from app.shared.infrastructure.adapters.langchain_adapter import get_llm_adapter
+    gateway = get_llm_adapter()
+    return VectorStoreProxy(config_resolver, gateway=gateway)

@@ -15,6 +15,7 @@ type AiAssistantCardProps = {
   readonly onSubmit: () => void;
   readonly onKeyDown?: (e: React.KeyboardEvent) => void;
   readonly placeholder?: string;
+  readonly children?: React.ReactNode;
 };
 
 export const AiAssistantCard = ({
@@ -23,6 +24,7 @@ export const AiAssistantCard = ({
   onSubmit,
   onKeyDown,
   placeholder = "Ask AI anything... What do you want to accomplish today?",
+  children
 }: AiAssistantCardProps) => {
   return (
     <div className="w-full max-w-3xl mx-auto">
@@ -66,6 +68,7 @@ export const AiAssistantCard = ({
           </div>
         </div>
       </div>
+      {children}
     </div>
   );
 };

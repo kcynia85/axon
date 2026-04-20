@@ -35,7 +35,7 @@ export const useKnowledgeStudio = (
             metadata: [],
             chunkTypeId: "",
             chunkType: "Wybierz strategię...",
-            vectorStoreId: "",
+            vectorStoreId: vectorDatabases.find(db => db.vector_database_name === "Supabase Local")?.id || "",
             hubs: [],
             tags: [],
             simulatedChunks: [],
@@ -133,6 +133,11 @@ export const useKnowledgeStudio = (
 
         if (!data.vectorStoreId) {
             toast.error("Wybierz bazę wektorową.");
+            return;
+        }
+
+        if (!data.hubs || data.hubs.length === 0) {
+            toast.error("Wybierz przynajmniej jeden Hub Wiedzy.");
             return;
         }
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Bot, AlertCircle } from "lucide-react";
+import { Bot, AlertCircle, Sparkles } from "lucide-react";
 import { SpaceAgentViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
 
@@ -46,7 +46,15 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
                     </div>
                 )}
                 <div className="flex flex-col gap-0.5 min-w-0">
-                    <span className={cn(viewModel.visual.titleClassName, "truncate")}>{viewModel.displayName}</span>
+                    <div className="flex items-center gap-2">
+                        <span className={cn(viewModel.visual.titleClassName, "truncate")}>{viewModel.displayName}</span>
+                        {viewModel.knowledgeHubIds && viewModel.knowledgeHubIds.length > 0 && (
+                            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                                <Sparkles size={10} className="shrink-0" />
+                                <span className="text-[8px] font-black">{viewModel.knowledgeHubIds.length}</span>
+                            </div>
+                        )}
+                    </div>
                     <span className={viewModel.visual.subtitleClassName}>{viewModel.statusText}</span>
                 </div>
             </div>

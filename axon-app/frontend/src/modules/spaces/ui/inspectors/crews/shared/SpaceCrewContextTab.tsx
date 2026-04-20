@@ -1,6 +1,4 @@
-// frontend/src/modules/spaces/ui/inspectors/crews/shared/SpaceCrewContextTab.tsx
-
-import React from "react";
+import React, { useState } from "react";
 import {
     ScrollShadow,
     Input,
@@ -15,10 +13,13 @@ import {
     Link as LinkIcon, 
     Search, 
     Archive,
-    ChevronDown
+    ChevronDown,
+    FileText,
+    Sparkles
 } from "lucide-react";
 import { TemplateContext } from "@/modules/spaces/domain/types";
 import { cn } from "@/shared/lib/utils";
+import { useKnowledgeSearch } from "@/modules/knowledge/application/useKnowledgeSearch";
 
 export type SpaceCrewContextTabProperties = {
     readonly isContextComplete: boolean;
@@ -38,6 +39,9 @@ export const SpaceCrewContextTab = ({
     onLinkContextFromNode,
     canvasNodes = []
 }: SpaceCrewContextTabProperties) => {
+    const [kbSearchQuery, setKbSearchQuery] = useState("");
+    const { data: kbResults, isLoading: isKbLoading } = useKnowledgeSearch(kbSearchQuery, kbSearchQuery.length > 2);
+
     const workflowOutputs = React.useMemo(() => {
         if (!canvasNodes) return [];
         
@@ -123,12 +127,12 @@ export const SpaceCrewContextTab = ({
                                         }}
                                     />
 
-                                    <div className="flex justify-start">
+                                    <div className="grid grid-cols-2 gap-3">
                                         <Select
                                             size="sm"
                                             variant="bordered"
                                             aria-label="Node Outputs"
-                                            placeholder="LINK FROM NODE OUTPUT"
+                                            placeholder="NODE OUTPUT"
                                             selectedKeys={[]}
                                             isDisabled={compatibleOutputs.length === 0 && nodeSearchQuery === ""}
                                             onSelectionChange={(selectionKeys) => {
@@ -144,19 +148,19 @@ export const SpaceCrewContextTab = ({
                                             classNames={{
                                                 base: "w-full",
                                                 trigger: cn(
-                                                    "h-12 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-none transition-all bg-transparent",
+                                                    "h-11 font-black uppercase tracking-widest text-[9px] rounded-xl shadow-none transition-all bg-transparent",
                                                     isMissing 
                                                         ? "text-red-500/60 border-red-900/20 data-[hover=true]:border-red-500 data-[hover=true]:text-red-500 data-[hover=true]:bg-red-500/[0.02]" 
                                                         : "text-zinc-500 border-zinc-800 data-[hover=true]:text-zinc-300 data-[hover=true]:bg-white/[0.03] data-[hover=true]:border-zinc-700"
                                                 ),
-                                                value: "text-zinc-500 font-black uppercase tracking-widest text-[10px]",
+                                                value: "text-zinc-500 font-black uppercase tracking-widest text-[9px]",
                                                 popoverContent: "bg-zinc-950 border border-zinc-800 rounded-2xl p-0 shadow-2xl",
                                                 listbox: "p-2",
                                             }}
                                             renderValue={() => (
-                                                <div className="flex items-center gap-3">
-                                                    <span>LINK FROM NODE OUTPUT</span>
-                                                    <ChevronDown size={14} className="ml-auto opacity-50" />
+                                                <div className="flex items-center gap-2">
+                                                    <Network size={12} />
+                                                    <span>NODE OUTPUT</span>
                                                 </div>
                                             )}
                                             listboxProps={{
@@ -164,14 +168,9 @@ export const SpaceCrewContextTab = ({
                                                     <div className="px-1 py-2 border-b border-zinc-900 mb-1">
                                                         <Input
                                                             size="sm"
-                                                            placeholder="Search node or artifact..."
+                                                            placeholder="Search..."
                                                             value={nodeSearchQuery}
                                                             onChange={(event) => onSearchQueryChange(event.target.value)}
-                                                            onKeyDown={(event) => {
-                                                                if (event.key !== "ArrowDown" && event.key !== "ArrowUp" && event.key !== "Enter" && event.key !== "Escape") {
-                                                                    event.stopPropagation();
-                                                                }
-                                                            }}
                                                             startContent={<Search size={14} className="text-zinc-600" />}
                                                             classNames={{
                                                                 input: "text-zinc-300 text-[11px] font-bold",
@@ -182,34 +181,103 @@ export const SpaceCrewContextTab = ({
                                                 )
                                             }}
                                         >
-                                            {compatibleOutputs.length > 0 ? (
-                                                compatibleOutputs.map((sourceItem, sourceIndex) => (
+                                            {compatibleOutputs.map((sourceItem, sourceIndex) => (
+                                                <SelectItem 
+                                                    key={sourceIndex} 
+                                                    textValue={sourceItem.node}
+                                                    className="data-[hover=true]:bg-white/[0.05] rounded-xl py-3 px-4 group transition-all"
+                                                >
+                                                    <div className="flex flex-col gap-1.5">
+                                                        <div className="flex items-center justify-between gap-4">
+                                                            <span className="text-[11px] font-black uppercase tracking-wider text-zinc-400 group-data-[hover=true]:text-zinc-200 transition-colors">
+                                                                {sourceItem.node}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            <Archive size={12} className="text-zinc-600 group-data-[hover=true]:text-zinc-400 transition-colors" />
+                                                            <span className="text-[10px] font-bold text-zinc-500 font-mono truncate group-data-[hover=true]:text-zinc-300 transition-colors">
+                                                                {sourceItem.artifact}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                        </Select>
+
+                                        <Select
+                                            size="sm"
+                                            variant="bordered"
+                                            aria-label="Knowledge Base"
+                                            placeholder="KNOWLEDGE"
+                                            selectedKeys={[]}
+                                            onSelectionChange={(selectionKeys) => {
+                                                const selectedKey = Array.from(selectionKeys)[0];
+                                                if (selectedKey !== undefined) {
+                                                    const result = kbResults?.[Number(selectedKey)];
+                                                    if (result) {
+                                                        // Link by resource ID or path
+                                                        onContextLinkChange(contextItem.id, `kb://${result.id}`);
+                                                    }
+                                                }
+                                            }}
+                                            onOpenChange={(isDropdownOpen) => !isDropdownOpen && setKbSearchQuery("")}
+                                            classNames={{
+                                                base: "w-full",
+                                                trigger: cn(
+                                                    "h-11 font-black uppercase tracking-widest text-[9px] rounded-xl shadow-none transition-all bg-transparent",
+                                                    "text-zinc-500 border-zinc-800 data-[hover=true]:text-blue-400 data-[hover=true]:bg-blue-500/[0.03] data-[hover=true]:border-blue-500/30"
+                                                ),
+                                                value: "text-zinc-500 font-black uppercase tracking-widest text-[9px]",
+                                                popoverContent: "bg-zinc-950 border border-zinc-800 rounded-2xl p-0 shadow-2xl",
+                                                listbox: "p-2",
+                                            }}
+                                            renderValue={() => (
+                                                <div className="flex items-center gap-2">
+                                                    <Sparkles size={12} className="text-blue-500/50" />
+                                                    <span>KNOWLEDGE</span>
+                                                </div>
+                                            )}
+                                            listboxProps={{
+                                                topContent: (
+                                                    <div className="px-1 py-2 border-b border-zinc-900 mb-1">
+                                                        <Input
+                                                            size="sm"
+                                                            placeholder="Search knowledge..."
+                                                            value={kbSearchQuery}
+                                                            onChange={(event) => setKbSearchQuery(event.target.value)}
+                                                            startContent={<Search size={14} className="text-zinc-600" />}
+                                                            classNames={{
+                                                                input: "text-zinc-300 text-[11px] font-bold",
+                                                                inputWrapper: "h-10 bg-zinc-900 border-zinc-800 data-[hover=true]:border-zinc-700 transition-colors shadow-none",
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )
+                                            }}
+                                        >
+                                            {kbResults && kbResults.length > 0 ? (
+                                                kbResults.map((result, idx) => (
                                                     <SelectItem 
-                                                        key={sourceIndex} 
-                                                        textValue={sourceItem.node}
+                                                        key={idx} 
+                                                        textValue={result.metadata.text}
                                                         className="data-[hover=true]:bg-white/[0.05] rounded-xl py-3 px-4 group transition-all"
                                                     >
-                                                        <div className="flex flex-col gap-1.5">
-                                                            <div className="flex items-center justify-between gap-4">
-                                                                <span className="text-[11px] font-black uppercase tracking-wider text-zinc-400 group-data-[hover=true]:text-zinc-200 transition-colors">
-                                                                    {sourceItem.node}
-                                                                </span>
-                                                                <span className="text-[8px] font-black px-1.5 py-0.5 bg-zinc-900/50 text-zinc-600 rounded border border-zinc-800 uppercase tracking-tighter shrink-0 group-data-[hover=true]:border-zinc-700 transition-colors">
-                                                                    {sourceItem.type}
-                                                                </span>
-                                                            </div>
+                                                        <div className="flex flex-col gap-1">
                                                             <div className="flex items-center gap-2">
-                                                                <Archive size={12} className="text-zinc-600 group-data-[hover=true]:text-zinc-400 transition-colors" />
-                                                                <span className="text-[10px] font-bold text-zinc-500 font-mono truncate group-data-[hover=true]:text-zinc-300 transition-colors">
-                                                                    {sourceItem.artifact}
+                                                                <FileText size={12} className="text-blue-400" />
+                                                                <span className="text-[11px] font-bold text-zinc-200 line-clamp-1">
+                                                                    {result.metadata.text}
                                                                 </span>
                                                             </div>
+                                                            <span className="text-[9px] font-mono text-zinc-500">
+                                                                Score: {(result.score * 100).toFixed(0)}%
+                                                            </span>
                                                         </div>
                                                     </SelectItem>
                                                 ))
                                             ) : (
                                                 <SelectItem key="none" isReadOnly className="text-[10px] font-black uppercase tracking-widest text-zinc-700 text-center py-8 italic">
-                                                    No matching outputs
+                                                    {isKbLoading ? "Searching..." : "Type to search knowledge"}
                                                 </SelectItem>
                                             )}
                                         </Select>
@@ -229,3 +297,4 @@ export const SpaceCrewContextTab = ({
         </ScrollShadow>
     );
 };
+

@@ -95,6 +95,7 @@ export type SpaceAgentDomainData = {
   readonly alignment_summary?: string;
   readonly requires_critique?: boolean;
   readonly critique_notes?: readonly string[];
+  readonly knowledge_hub_ids?: readonly string[];
 };
 
 export type SpaceAutomationDomainData = {
@@ -158,6 +159,7 @@ export type SpaceCrewDomainData = {
   readonly metrics?: AgentMetrics;
   readonly resolved_members?: readonly ResolvedMember[];
   readonly resolved_manager?: ResolvedMember | null;
+  readonly knowledge_hub_ids?: readonly string[];
 };
 
 export type SpacePatternDomainData = {
@@ -318,6 +320,7 @@ export type SpaceNodeViewModel = {
     readonly statusLabel?: string;
     readonly isStatusActive?: boolean;
     readonly VisualIcon?: any;
+    readonly knowledgeHubIds?: readonly string[];
 };
 
 export type SpaceAgentViewModel = SpaceNodeViewModel;

@@ -179,11 +179,14 @@ export const VectorDatabasesList = () => {
             const formattedType = database.vector_database_type.replace(/_/g, " ").toLowerCase();
             const displayType = formattedType.charAt(0).toUpperCase() + formattedType.slice(1);
 
+            const isActive = database.vector_database_name === "Supabase Local";
+
             return {
                 ...database,
                 title: displayType,
                 description: database.vector_database_name,
                 status: isConnected ? "connected" : "disconnected",
+                badgeLabel: isActive ? "Active" : null,
                 categories: [
                     hostingLabel
                 ]

@@ -192,7 +192,14 @@ export const KnowledgeResourceForm = ({
             <FormSection id="VECTOR_STORE" number={5} title="Baza Wektorowa" variant="island">
                 <FormItemField>
                     <FormSelect
-                        options={vectorStores.map(db => ({ id: db.id, name: db.vector_database_name }))}
+                        options={vectorStores.map(db => {
+                            const isActive = db.vector_database_name === "Supabase Local";
+                            return { 
+                                id: db.id, 
+                                name: db.vector_database_name,
+                                disabled: !isActive
+                            };
+                        })}
                         value={data.vectorStoreId}
                         onChange={(value) => onDataChange({ vectorStoreId: value as string })}
                         placeholder={isLoadingVectorStores ? "Ładowanie..." : "Wybierz bazę wektorową..."}

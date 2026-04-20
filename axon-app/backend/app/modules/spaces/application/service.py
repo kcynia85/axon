@@ -77,7 +77,8 @@ class SpaceService:
                             "agent_member_ids": [str(mid) for mid in crew.agent_member_ids],
                             "manager_agent_id": str(crew.manager_agent_id) if crew.manager_agent_id else None,
                             "crew_name": crew.crew_name,
-                            "crew_process_type": crew.crew_process_type.value if hasattr(crew.crew_process_type, "value") else crew.crew_process_type
+                            "crew_process_type": crew.crew_process_type.value if hasattr(crew.crew_process_type, "value") else crew.crew_process_type,
+                            "knowledge_hub_ids": [str(hid) for hid in crew.knowledge_hub_ids] if crew.knowledge_hub_ids else []
                         })
                 except Exception as e:
                     print(f"Failed to hydrate crew node {n['id']}: {e}")
@@ -90,7 +91,8 @@ class SpaceService:
                         node_data.update({
                             "agent_visual_url": agent.agent_visual_url,
                             "agent_name": agent.agent_name,
-                            "agent_role_text": agent.agent_role_text
+                            "agent_role_text": agent.agent_role_text,
+                            "knowledge_hub_ids": [str(hid) for hid in agent.knowledge_hub_ids] if agent.knowledge_hub_ids else []
                         })
                 except Exception as e:
                     print(f"Failed to hydrate agent node {n['id']}: {e}")

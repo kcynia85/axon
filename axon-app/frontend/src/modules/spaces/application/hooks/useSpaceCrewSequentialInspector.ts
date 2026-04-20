@@ -89,9 +89,10 @@ export const useSpaceCrewSequentialInspector = (data: any, nodeId: string, onPro
             transitionTo, handleAnswerChange, setNodeSearch,
             setEditingArtefactId, toggleVersionHistory, handleRestoreVersion,
             handleArtefactContentChange, setSelectedTab, setIsDetailsOpen,
-            setIsLogsOpen, submitConsultation,
+            submitConsultation,
             handleTaskLabelChange: logic.handleTaskLabelChange,
             handleContextLinkChange: logic.handleContextLinkChange,
+            handleKnowledgeHubsChange: logic.handleKnowledgeHubsChange,
             handleLinkContextFromNode: logic.handleLinkContextFromNode,
             handleArtefactStatusChange: logic.handleArtefactStatusChange,
             handleArtefactOutputToggle: logic.handleArtefactOutputToggle

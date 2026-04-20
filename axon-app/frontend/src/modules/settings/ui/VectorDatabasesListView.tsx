@@ -9,6 +9,7 @@ import { VectorDatabaseSidePeek } from "./VectorDatabaseSidePeek";
 import { DestructiveDeleteModal } from "@/shared/ui/modals/DestructiveDeleteModal";
 import { ActionButton } from "@/shared/ui/complex/ActionButton";
 import { VectorDatabasesListViewProps } from "./VectorDatabasesListView.types";
+import { cn } from "@/shared/lib/utils";
 
 export const VectorDatabasesListView = ({
     search,
@@ -76,28 +77,33 @@ export const VectorDatabasesListView = ({
                     items={displayItems}
                     isLoading={isLoading}
                     viewMode={viewMode}
-                    renderItem={(db) => (
-                        <ResourceCard
-                            key={db.id}
-                            title={db.title}
-                            description={db.description}
-                            href="#"
-                            icon={Database}
-                            categories={db.categories}
-                            status={db.status}
-                            onClick={() => onDbClick(db)}
-                            onEdit={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onEditDb(db.id);
-                            }}
-                            onDelete={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onDeleteDb(db.id, db.title);
-                            }}
-                        />
-                    )}
+                    renderItem={(db) => {
+                        const isActive = db.badgeLabel === "Active";
+                        return (
+                            <ResourceCard
+                                key={db.id}
+                                title={db.title}
+                                description={db.description}
+                                href="#"
+                                icon={Database}
+                                categories={db.categories}
+                                status={db.status}
+                                badgeLabel={db.badgeLabel}
+                                className={cn(!isActive && "opacity-50 grayscale pointer-events-none")}
+                                onClick={() => isActive && onDbClick(db)}
+                                onEdit={isActive ? (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onEditDb(db.id);
+                                } : undefined}
+                                onDelete={isActive ? (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onDeleteDb(db.id, db.title);
+                                } : undefined}
+                            />
+                        );
+                    }}
                 />
             </BrowserLayout>
 
