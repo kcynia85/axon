@@ -8,12 +8,13 @@ from app.modules.agents.application import orchestrator
 from app.modules.agents.dependencies import get_inngest_client, get_db
 from app.modules.agents.domain.models import Tool, AgentConfig
 from app.modules.agents.infrastructure import repo as agent_repo
+from app.shared.infrastructure.inngest_client import inngest_client
 
 # Function-First Service Layer
 
 async def stream_chat_use_case(
     request: ChatRequest,
-    inngest_client: inngest.Inngest = Depends(get_inngest_client)
+    inngest_client_dep: inngest.Inngest = Depends(get_inngest_client)
 ):
     """
     Orchestrates the chat session creation and streaming response.
@@ -26,7 +27,7 @@ async def stream_chat_use_case(
     return orchestrator.run_turn_stream(
         session=session, 
         user_input=request.message,
-        inngest_client=inngest_client
+        inngest_client=inngest_client_dep
     )
 
 async def get_available_tools() -> List[Tool]:
@@ -76,7 +77,18 @@ async def create_agent_use_case(
     agent: AgentConfig,
     session: AsyncSession = Depends(get_db)
 ) -> AgentConfig:
-    return await agent_repo.create_agent_config(session, agent)
+    created = await agent_repo.create_agent_config(session, agent)
+    await inngest_client.send(
+        inngest.Event(
+            name="system.entity.upserted",
+            data={
+                "entity_id": str(created.id),
+                "entity_type": "agent",
+                "payload": created.model_dump(mode="json")
+            }
+        )
+    )
+    return created
 
 async def get_agent_use_case(
     id: UUID,
@@ -89,13 +101,36 @@ async def update_agent_use_case(
     agent: AgentConfig,
     session: AsyncSession = Depends(get_db)
 ) -> Optional[AgentConfig]:
-    return await agent_repo.update_agent_config(session, id, agent.model_dump(exclude_unset=True))
+    updated = await agent_repo.update_agent_config(session, id, agent.model_dump(exclude_unset=True))
+    if updated:
+        await inngest_client.send(
+            inngest.Event(
+                name="system.entity.upserted",
+                data={
+                    "entity_id": str(updated.id),
+                    "entity_type": "agent",
+                    "payload": updated.model_dump(mode="json")
+                }
+            )
+        )
+    return updated
 
 async def delete_agent_use_case(
     id: UUID,
     session: AsyncSession = Depends(get_db)
 ) -> bool:
-    return await agent_repo.delete_agent_config(session, id)
+    success = await agent_repo.delete_agent_config(session, id)
+    if success:
+        await inngest_client.send(
+            inngest.Event(
+                name="system.entity.deleted",
+                data={
+                    "entity_id": str(id),
+                    "entity_type": "agent"
+                }
+            )
+        )
+    return success
 
 async def inspect_agent_deletion_use_case(
     id: UUID,

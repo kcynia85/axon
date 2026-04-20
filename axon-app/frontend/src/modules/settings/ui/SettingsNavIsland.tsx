@@ -30,6 +30,15 @@ const settingsNavGroups = [
             { name: "Vectors", href: "/settings/knowledge-engine/vectors", queryKey: ["vector-databases"], queryFn: settingsApi.getVectorDatabases },
         ],
     },
+    {
+        id: "system",
+        title: "System",
+        href: "/settings/system",
+        items: [
+            { name: "System", href: "/settings/system/awareness", queryKey: ["system-awareness"], queryFn: settingsApi.getSystemEmbeddings },
+            { name: "Meta Agent", href: "/settings/system/meta-agent", queryKey: ["system-meta-agent"], queryFn: () => Promise.resolve([]) },
+        ],
+    },
 ];
 
 export const SettingsNavIsland = () => {

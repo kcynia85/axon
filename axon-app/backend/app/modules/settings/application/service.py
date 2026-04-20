@@ -406,7 +406,6 @@ class SettingsService:
 
     async def test_vector_database(self, id: UUID) -> ConnectionTestResponse:
         import time
-        from app.shared.infrastructure.vecs_client import get_vecs_client
         import httpx
         from urllib.parse import quote_plus
         from app.modules.settings.domain.enums import ConnectionStatus, VectorDBType
@@ -534,10 +533,12 @@ class SettingsService:
 
         start_time = time.time()
         try:
-            # Connect using the specific URL from Vector Studio instead of global settings
-            client = get_vecs_client(connection_url)
-            # Test if we can list collections or just ping
-            client.list_collections()
+            from app.shared.infrastructure.adapters.vector_stores.supabase_local import SupabaseLocalVectorAdapter
+            adapter = SupabaseLocalVectorAdapter(connection_url, None)
+            is_connected = await adapter.test_connection()
+            
+            if not is_connected:
+                raise Exception("Adapter failed to verify connection to Supabase/pgvector.")
             
             latency_ms = (time.time() - start_time) * 1000
             
@@ -771,7 +772,8 @@ class SettingsService:
             try:
                 litellm_data = await PricingScraper.get_pricing_data()
                 for model_key, m_info in litellm_data.items():
-                    if not isinstance(m_info, dict): continue
+                    if not isinstance(m_info, dict):
+                        continue
                     
                     # Match by prefix or explicit provider field in litellm if it exists
                     # Heuristic: model_key starts with prefix

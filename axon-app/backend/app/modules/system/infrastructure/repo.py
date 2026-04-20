@@ -1,9 +1,9 @@
-from uuid import uuid4
-from typing import Optional
+from uuid import uuid4, UUID
+from typing import Optional, List, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
-from app.modules.system.domain.models import MetaAgent, VoiceMetaAgent
-from app.modules.system.infrastructure.tables import MetaAgentTable, VoiceMetaAgentTable
+from sqlalchemy import select, update, delete
+from app.modules.system.domain.models import MetaAgent, VoiceMetaAgent, SystemAwarenessSearchResult
+from app.modules.system.infrastructure.tables import MetaAgentTable, VoiceMetaAgentTable, SystemEmbeddingTable
 
 class SystemRepository:
     def __init__(self, session: AsyncSession):
@@ -78,3 +78,115 @@ class SystemRepository:
         
         await self.session.commit()
         return (await self.get_voice_meta_agent())
+
+class SystemEmbeddingRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def upsert_embedding(
+        self,
+        entity_id: UUID,
+        entity_type: str,
+        embedding: List[float],
+        payload: Dict[str, Any],
+        metadata: Dict[str, Any]
+    ) -> None:
+        """Upsert a system embedding for a given entity."""
+        stmt = select(SystemEmbeddingTable).where(
+            SystemEmbeddingTable.entity_id == entity_id,
+            SystemEmbeddingTable.entity_type == entity_type
+        )
+        result = await self.session.execute(stmt)
+        row = result.scalar_one_or_none()
+
+        if row:
+            # Update
+            update_stmt = update(SystemEmbeddingTable).where(
+                SystemEmbeddingTable.id == row.id
+            ).values(
+                embedding=embedding,
+                payload=payload,
+                metadata_=metadata
+            )
+            await self.session.execute(update_stmt)
+        else:
+            # Insert
+            new_embedding = SystemEmbeddingTable(
+                id=uuid4(),
+                entity_id=entity_id,
+                entity_type=entity_type,
+                embedding=embedding,
+                payload=payload,
+                metadata_=metadata
+            )
+            self.session.add(new_embedding)
+        
+        await self.session.commit()
+
+    async def delete_embedding(self, entity_id: UUID, entity_type: str) -> None:
+        """Delete an embedding for a specific entity."""
+        stmt = delete(SystemEmbeddingTable).where(
+            SystemEmbeddingTable.entity_id == entity_id,
+            SystemEmbeddingTable.entity_type == entity_type
+        )
+        await self.session.execute(stmt)
+        await self.session.commit()
+
+    async def list_embeddings(self, limit: int = 100, offset: int = 0) -> List[Dict[str, Any]]:
+        """List all system embeddings for the Settings UI."""
+        stmt = select(
+            SystemEmbeddingTable.id,
+            SystemEmbeddingTable.entity_id,
+            SystemEmbeddingTable.entity_type,
+            SystemEmbeddingTable.payload,
+            SystemEmbeddingTable.updated_at
+        ).order_by(SystemEmbeddingTable.updated_at.desc()).limit(limit).offset(offset)
+        
+        result = await self.session.execute(stmt)
+        rows = result.all()
+        
+        return [
+            {
+                "id": str(row.id),
+                "entity_id": str(row.entity_id),
+                "entity_type": row.entity_type,
+                "payload": row.payload,
+                "updated_at": row.updated_at.isoformat() if row.updated_at else None
+            }
+            for row in rows
+        ]
+
+    async def search_similar(
+        self,
+        query_embedding: List[float],
+        limit: int = 5,
+        threshold: float = 0.7,
+        entity_type: Optional[str] = None
+    ) -> List[SystemAwarenessSearchResult]:
+        """Search for similar system embeddings using cosine distance."""
+        # Using cosine distance (<=>). Similarity = 1 - distance
+        distance = SystemEmbeddingTable.embedding.cosine_distance(query_embedding)
+        similarity = (1 - distance).label("similarity_score")
+        
+        stmt = select(SystemEmbeddingTable, similarity)
+        
+        if entity_type:
+            stmt = stmt.where(SystemEmbeddingTable.entity_type == entity_type)
+            
+        stmt = stmt.where(similarity >= threshold).order_by(distance).limit(limit)
+        
+        result = await self.session.execute(stmt)
+        rows = result.all()
+        
+        results = []
+        for row, sim_score in rows:
+            results.append(
+                SystemAwarenessSearchResult(
+                    entity_id=row.entity_id,
+                    entity_type=row.entity_type,
+                    payload=row.payload or {},
+                    similarity_score=sim_score
+                )
+            )
+        return results
+

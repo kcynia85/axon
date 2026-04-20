@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
+from typing import List, Dict, Any
 from app.api.deps import get_current_user
 from app.modules.system.application.service import SystemService
 from app.modules.system.dependencies import get_system_service
@@ -42,3 +43,12 @@ async def upsert_voice_meta_agent(
 ):
     """Create or Update global Voice Meta Agent configuration."""
     return await service.upsert_voice_meta_agent(request)
+
+@router.get("/embeddings", response_model=List[Dict[str, Any]])
+async def list_system_embeddings(
+    limit: int = Query(100, ge=1, le=1000),
+    offset: int = Query(0, ge=0),
+    service: SystemService = Depends(get_system_service)
+):
+    """List indexed system embeddings."""
+    return await service.list_embeddings(limit=limit, offset=offset)

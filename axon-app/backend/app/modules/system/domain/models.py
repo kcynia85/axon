@@ -31,3 +31,13 @@ class VoiceMetaAgent(BaseModel):
     voice_provider: VoiceProvider
     voice_id: str
     meta_agent_system_prompt: str
+    meta_agent_temperature: float = 0.7
+
+class SystemAwarenessSearchResult(BaseModel):
+    """
+    Result returned by the SystemAwarenessRetrieverService.
+    """
+    entity_id: UUID
+    entity_type: str
+    payload: Dict[str, Any]
+    similarity_score: float

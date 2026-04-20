@@ -270,3 +270,9 @@ export const useDeleteVectorDatabase = () => {
         },
     });
 }
+
+export const useTestVectorDatabase = () => {
+    return useMutation({
+        mutationFn: (id: string) => settingsApi.testVectorDB(id),
+    });
+}

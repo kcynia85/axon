@@ -13,6 +13,7 @@ import {
     ChunkingStrategySchema,
     VectorDatabaseSchema
 } from "@/shared/domain/settings";
+import { SystemEmbeddingSchema, SystemEmbedding, MetaAgent, MetaAgentSchema } from "@/shared/domain/system";
 
 export type AvailableModelResponse = {
     id: string;
@@ -239,5 +240,24 @@ export const settingsApi = {
     getSettingsEnums: async (): Promise<Record<string, string[]>> => {
         const res = await apiClient.get("/settings/metadata/enums");
         return await res.json() as Record<string, string[]>;
+    },
+
+    // --- System ---
+    getSystemEmbeddings: async (): Promise<SystemEmbedding[]> => {
+        const res = await apiClient.get("/system/embeddings");
+        const data = await res.json() as unknown[];
+        return data.map((embedding) => SystemEmbeddingSchema.parse(embedding));
+    },
+
+    getMetaAgent: async (): Promise<MetaAgent> => {
+        const res = await apiClient.get("/system/meta-agent");
+        const data = await res.json() as unknown;
+        return MetaAgentSchema.parse(data);
+    },
+
+    updateMetaAgent: async (data: Partial<MetaAgent>): Promise<MetaAgent> => {
+        const res = await apiClient.put("/system/meta-agent", data);
+        const raw = await res.json() as unknown;
+        return MetaAgentSchema.parse(raw);
     }
 };
