@@ -192,25 +192,53 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                             </span>
                                         </div>
                                         
-                                        <div className="flex flex-col gap-3 max-h-[300px] overflow-y-auto pr-2">
-                                            {drafts.map((draft, idx) => (
-                                                <div key={idx} className="p-2.5 rounded-lg bg-zinc-900/50 border border-zinc-700/30">
-                                                    <div className="text-sm font-bold text-white flex items-center gap-2">
-                                                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                                                        {draft.name} <span className="text-[10px] text-zinc-500 uppercase">({draft.entity})</span>
+                                        <div className="flex flex-col gap-5 max-h-[400px] overflow-y-auto pr-2">
+                                            {/* Grouping by target_workspace */}
+                                            {Object.entries(
+                                                drafts.reduce((acc, draft) => {
+                                                    const ws = draft.target_workspace || 'ws-discovery';
+                                                    if (!acc[ws]) acc[ws] = [];
+                                                    acc[ws].push(draft);
+                                                    return acc;
+                                                }, {} as Record<string, MetaAgentDraftEntity[]>)
+                                            ).map(([workspaceId, wsDrafts]) => (
+                                                <div key={workspaceId} className="flex flex-col gap-2">
+                                                    <div className="flex items-center gap-2 px-1">
+                                                        <div className={cn(
+                                                            "w-1.5 h-3 rounded-full",
+                                                            workspaceId === 'ws-discovery' ? "bg-purple-500" :
+                                                            workspaceId === 'ws-design' ? "bg-pink-500" :
+                                                            workspaceId === 'ws-delivery' ? "bg-green-500" :
+                                                            workspaceId === 'ws-product' ? "bg-blue-500" : "bg-yellow-500"
+                                                        )} />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                                            {workspaceId.replace('ws-', '')} Zone
+                                                        </span>
                                                     </div>
-                                                    <div className="text-[11px] text-zinc-400 line-clamp-2 mt-1">{draft.description}</div>
+                                                    <div className="flex flex-col gap-2 pl-3 border-l border-zinc-800 ml-1.5">
+                                                        {wsDrafts.map((draft, idx) => (
+                                                            <div key={idx} className="p-2.5 rounded-lg bg-zinc-900/50 border border-zinc-700/30 hover:border-zinc-600/50 transition-colors">
+                                                                <div className="text-sm font-bold text-white flex items-center gap-2">
+                                                                    {draft.entity === 'agent' ? <Search size={12} className="text-zinc-500" /> : 
+                                                                     draft.entity === 'crew' ? <Languages size={12} className="text-zinc-500" /> :
+                                                                     <FileText size={12} className="text-zinc-500" />}
+                                                                    {draft.name}
+                                                                </div>
+                                                                <div className="text-[11px] text-zinc-400 line-clamp-2 mt-1 leading-relaxed">{draft.description}</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
 
                                         {reasoning && (
-                                            <div className="text-xs italic text-zinc-500 border-l-2 border-zinc-700 pl-3 mt-4">
+                                            <div className="text-[11px] italic text-zinc-500 border-l-2 border-zinc-800 pl-3 mt-6 leading-relaxed">
                                                 {reasoning}
                                             </div>
                                         )}
 
-                                        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-zinc-700/50">
+                                        <div className="flex items-center gap-2 mt-6 pt-3 border-t border-zinc-700/50">
                                             <button 
                                                 onClick={() => onApproveDrafts(drafts, connections)}
                                                 className="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-2 rounded-lg transition-colors"

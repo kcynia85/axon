@@ -88,7 +88,7 @@ Propose a COMPLETE FLOW of entities (agents, crews, tasks, tools, etc.) that ful
 Each proposed entity must be "Studio-Ready", meaning it should have all configuration fields required to function perfectly in the system.
 
 ENTITY SCHEMAS & GUIDELINES:
-- AGENT: Requires 'agent_name', 'agent_role_text', 'agent_goal', 'agent_backstory', 'system_instruction'. Can include 'tools' (list of strings), 'model_tier' (TIER_1_BASIC, TIER_2_EXPERT, TIER_3_ULTIMATE), 'temperature', 'native_skills' (WEB_SEARCH, CODE_INTERPRETER). Important: Do NOT repeat skills or tools.
+- AGENT: Requires 'agent_name', 'agent_role_text', 'agent_goal', 'agent_backstory', 'system_instruction'. Can include 'tools' (list of strings), 'model_tier' (TIER_1_FAST, TIER_2_EXPERT), 'temperature', 'native_skills' (WEB_SEARCH, CODE_INTERPRETER). Important: Do NOT repeat skills or tools.
 - CREW: Requires 'crew_name', 'crew_description', 'crew_process_type' (Sequential, Hierarchical, Parallel). Can include 'agent_member_ids' (if referencing existing agents).
 - TEMPLATE: Requires 'template_name', 'template_description', 'template_markdown_content'. Can include 'template_checklist_items', 'template_inputs', 'template_outputs'.
 - SERVICE: Requires 'service_name', 'service_description', 'service_category', 'service_url'. Can include 'capabilities' (list of {'capability_name', 'capability_description'}).
@@ -100,11 +100,21 @@ WORKSPACE ZONES (Mandatory field 'target_workspace'):
 - 'ws-product': For product management, backlog, and requirements.
 - 'ws-growth': For marketing, growth hacking, and external outreach.
 
+CROSS-ZONE COMMUNICATION:
+- Direct connections (edges) between nodes in DIFFERENT zones are FORBIDDEN by the canvas logic.
+- To pass data from a source node in Zone A to a target node in Zone B:
+    1. The source node MUST include an artifact in its 'payload' under 'artefacts' with 'isOutput: true'.
+       Example: "payload": {{ "artefacts": [{{ "id": "output-1", "label": "Result Report", "isOutput": true, "status": "approved" }}] }}
+    2. The target node MUST include a context requirement in its 'payload' under 'context_requirements' that references the source node's label and artifact label.
+       Example: "payload": {{ "context_requirements": [{{ "id": "ctx-1", "label": "Input Data", "sourceNodeLabel": "Researcher Bot", "sourceArtifactLabel": "Result Report" }}] }}
+- Only use 'connections' in the JSON response for nodes within the SAME zone.
+
 Instructions:
 1. Synthesize information from the Knowledge Base and System Awareness.
 2. Design a sequence of entities. Reuse existing system entities if they fit perfectly by referencing their IDs in the payload.
 3. Categorize each entity into the most appropriate 'target_workspace'.
-4. Generate a structured JSON response matching the provided schema.
+4. Handle cross-zone data flow via 'isOutput: true' artifacts and 'context_requirements' instead of direct connections.
+5. Generate a structured JSON response matching the provided schema.
 5. Each entity must have 'status' set to 'draft'.
 6. Important: The 'payload' field of each draft must contain the detailed configuration fields mentioned above.
 7. Do NOT wrap in Markdown. Output raw JSON only.

@@ -58,13 +58,14 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
   const handleApproveDrafts = async (drafts: any[], connections: any[]) => {
       try {
           const draftNameToNodeIdMap = new Map<string, string>();
+          const nodesToAddToCanvas: Array<{ type: string; data: Record<string, unknown>; workspaceId: string }> = [];
+          const persistedEntities: any[] = [];
 
-          // 1. Persist all entities to the backend/workspace first
+          // 1. Persist all entities to the backend/workspace FIRST
           for (const draft of drafts) {
               const type = draft.entity;
               let persistedEntity: any = null;
               const p = draft.payload || {};
-              // The target workspace identifier (e.g. ws-discovery, ws-delivery)
               const targetWorkspace = draft.target_workspace || "ws-discovery";
 
               switch (type) {
@@ -121,19 +122,37 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
               }
 
               if (persistedEntity?.id) {
-                  // 2. Add the resulting real entity to the canvas and get the unique node ID
-                  const canvasNodeId = orchestrator.addNewNodeToCanvas(type, {
-                      ...persistedEntity,
-                      name: persistedEntity.agent_name || persistedEntity.crew_name || persistedEntity.template_name || persistedEntity.service_name || draft.name,
-                      description: persistedEntity.agent_role_text || persistedEntity.crew_description || persistedEntity.template_description || persistedEntity.service_description || draft.description,
-                      is_persisted: true 
-                  }, targetWorkspace);
+                  const finalName = persistedEntity.agent_name || persistedEntity.crew_name || persistedEntity.template_name || persistedEntity.service_name || draft.name;
+                  const finalDescription = persistedEntity.agent_role_text || persistedEntity.crew_description || persistedEntity.template_description || persistedEntity.service_description || draft.description;
 
-                  draftNameToNodeIdMap.set(draft.name, canvasNodeId);
+                  persistedEntities.push({
+                      draftName: draft.name,
+                      type,
+                      workspaceId: targetWorkspace,
+                      data: {
+                          ...persistedEntity,
+                          label: finalName,
+                          name: finalName,
+                          description: finalDescription,
+                          is_persisted: true,
+                          artefacts: p.artefacts || persistedEntity.artefacts || [],
+                          context_requirements: p.context_requirements || persistedEntity.context_requirements || []
+                      }
+                  });
               }
           }
 
-          // 3. Create connections/edges between the new nodes based on LLM blueprint
+          // 2. Add all nodes to canvas in a SINGLE BATCH to avoid race conditions and misparenting
+          const createdIds = orchestrator.addMultipleNodesToCanvas(
+              persistedEntities.map(pe => ({ type: pe.type, data: pe.data, workspaceId: pe.workspaceId }))
+          );
+
+          // Map draft names to newly created node IDs
+          persistedEntities.forEach((pe, index) => {
+              draftNameToNodeIdMap.set(pe.draftName, createdIds[index]);
+          });
+
+          // 3. Create connections/edges between the new nodes based on SAME-ZONE connections
           for (const conn of connections) {
               const sourceNodeId = draftNameToNodeIdMap.get(conn.source_draft_name);
               const targetNodeId = draftNameToNodeIdMap.get(conn.target_draft_name);

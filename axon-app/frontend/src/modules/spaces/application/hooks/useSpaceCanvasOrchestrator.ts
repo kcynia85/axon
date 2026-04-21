@@ -84,6 +84,7 @@ export const useSpaceCanvasOrchestrator = (spaceId: string, initialCanvasConfigu
 
   const {
     addNewNodeToCanvas,
+    addMultipleNodesToCanvas,
     updateNodeDataOnCanvas,
     duplicateNode,
     deleteNodes,
@@ -154,6 +155,7 @@ export const useSpaceCanvasOrchestrator = (spaceId: string, initialCanvasConfigu
     handleDragOverEvent,
     handleDropEvent,
     addNewNodeToCanvas,
+    addMultipleNodesToCanvas,
     updateNodeDataOnCanvas,
     currentlySelectedNode,
     duplicateNode,

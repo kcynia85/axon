@@ -131,6 +131,7 @@ export type SpaceCanvasOrchestrationLogic = {
     readonly handleDragOverEvent: (event: React.DragEvent) => void;
     readonly handleDropEvent: (event: React.DragEvent) => void;
     readonly addNewNodeToCanvas: (nodeType: string, initialNodeData: Record<string, unknown>, targetWorkspaceId: string) => string;
+    readonly addMultipleNodesToCanvas: (nodes: Array<{ type: string; data: Record<string, unknown>; workspaceId: string }>) => string[];
     readonly updateNodeDataOnCanvas: (nodeId: string, updatedInformation: any) => void;
     readonly currentlySelectedNode: Node | null;
     readonly duplicateNode: (node: Node) => void;

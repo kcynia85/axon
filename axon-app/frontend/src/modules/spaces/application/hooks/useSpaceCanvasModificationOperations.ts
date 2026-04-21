@@ -12,86 +12,87 @@ export const useSpaceCanvasModificationOperations = (
 ) => {
   const { getNodes } = useReactFlow();
 
+  const addMultipleNodesToCanvas = (
+    nodesToAdd: Array<{ type: string; data: Record<string, unknown>; workspaceId: string }>
+  ): string[] => {
+    takeSnapshot();
+    const currentCanvasNodes = [...getNodes()];
+    const newNodes: Node[] = [];
+    const createdIds: string[] = [];
+
+    for (const item of nodesToAdd) {
+      const expectedColor = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[item.workspaceId];
+      
+      // Check in both existing nodes AND nodes added in this batch
+      let parentZone = [...currentCanvasNodes, ...newNodes].find(
+        (node) => node.type === 'zone' && (node.data.color === expectedColor || node.data.type === item.workspaceId)
+      );
+
+      if (!parentZone && expectedColor) {
+        const zoneId = `zone_${expectedColor}_${Math.random().toString(36).substring(2, 11)}`;
+        const workspaceLabel = item.workspaceId.replace('ws-', '').toUpperCase();
+        
+        parentZone = {
+          id: zoneId,
+          type: 'zone',
+          position: { x: 100 + (newNodes.length * 100), y: 100 }, 
+          data: {
+            label: workspaceLabel,
+            color: expectedColor,
+            zoneColor: expectedColor,
+            type: item.workspaceId,
+            ports: []
+          },
+          style: { width: 500, height: 400 },
+        };
+        newNodes.push(parentZone);
+      }
+
+      const uniqueId = `node_${Math.random().toString(36).substring(2, 11)}`;
+      const isTemplate = item.type === 'template' || (item.data as any).type === 'template';
+      const isCrew = item.type === 'crew' || (item.data as any).type === 'crew';
+      
+      const templateCanvasData = isTemplate ? mapTemplateWorkspaceConfigToNodeData(item.data) : {};
+      const crewCanvasData = isCrew ? {
+          state: 'idle',
+          tasks: [],
+          members: (item.data as any).members || (item.data as any).agent_member_ids || [],
+          resolved_members: (item.data as any).resolved_members || (item.data as any)._resolved_members || [],
+          resolved_manager: (item.data as any).resolved_manager || (item.data as any)._resolved_manager || null,
+          process_type: (item.data as any).crew_process_type || (item.data as any).process_type || 'Sequential',
+      } : {};
+
+      const newNode: Node = {
+        id: uniqueId,
+        type: isCrew ? 'crew' : (isTemplate ? 'template' : item.type),
+        position: { x: 50 + Math.random() * 200, y: 50 + Math.random() * 200 },
+        parentId: parentZone?.id,
+        extent: parentZone?.id ? 'parent' : undefined,
+        data: {
+          ...item.data,
+          ...templateCanvasData,
+          ...crewCanvasData,
+          ...(isTemplate && { actions: [], status: 'working' }),
+          state: 'missing_context',
+          zoneColor: expectedColor || 'purple'
+        },
+      };
+
+      newNodes.push(newNode);
+      createdIds.push(uniqueId);
+    }
+
+    updateCanvasNodes((prev) => [...prev, ...newNodes]);
+    return createdIds;
+  };
+
   const addNewNodeToCanvas = (
     nodeType: string,
     initialNodeData: Record<string, unknown>,
     targetWorkspaceId: string
   ): string => {
-    takeSnapshot();
-    const currentCanvasNodes = getNodes();
-    
-    // Map targetWorkspaceId to the expected zone color/type
-    const expectedColor = MAP_OF_WORKSPACE_IDENTIFIERS_TO_COLORS[targetWorkspaceId];
-    
-    let parentZoneForNewNode = currentCanvasNodes.find(
-      (node) => node.type === 'zone' && (node.data.color === expectedColor || node.data.type === targetWorkspaceId)
-    );
-
-    let extraNodes: Node[] = [];
-    if (!parentZoneForNewNode && expectedColor) {
-      // Create zone if it doesn't exist
-      const zoneId = `zone_${expectedColor}_${Math.random().toString(36).substring(2, 11)}`;
-      const workspaceLabel = targetWorkspaceId.replace('ws-', '').toUpperCase();
-      
-      parentZoneForNewNode = {
-        id: zoneId,
-        type: 'zone',
-        position: { x: 100, y: 100 }, // Default position for new zone
-        data: {
-          label: workspaceLabel,
-          color: expectedColor,
-          zoneColor: expectedColor,
-          type: targetWorkspaceId
-        },
-        style: { width: 500, height: 400 },
-      };
-      extraNodes.push(parentZoneForNewNode);
-    }
-
-    let newNodePosition = { x: 100, y: 100 };
-    let parentZoneId: string | undefined = parentZoneForNewNode?.id;
-
-    if (parentZoneForNewNode) {
-      newNodePosition = {
-        x: 50 + Math.random() * 100,
-        y: 50 + Math.random() * 100
-      };
-    }
-
-    const uniqueNodeIdentifier = `node_${Math.random().toString(36).substring(2, 11)}`;
-    const isTemplate = nodeType === 'template' || (initialNodeData as any).type === 'template';
-    const isCrew = nodeType === 'crew' || (initialNodeData as any).type === 'crew';
-    
-    const templateCanvasData = isTemplate ? mapTemplateWorkspaceConfigToNodeData(initialNodeData) : {};
-    
-    // Hydrate crew data if missing
-    const crewCanvasData = isCrew ? {
-        state: 'idle',
-        tasks: [],
-        members: (initialNodeData as any).members || (initialNodeData as any).agent_member_ids || [],
-        resolved_members: (initialNodeData as any).resolved_members || (initialNodeData as any)._resolved_members || [],
-        resolved_manager: (initialNodeData as any).resolved_manager || (initialNodeData as any)._resolved_manager || null,
-        process_type: (initialNodeData as any).crew_process_type || (initialNodeData as any).process_type || 'Sequential',
-    } : {};
-
-    const newlyCreatedNode: Node = {
-      id: uniqueNodeIdentifier,
-      type: isCrew ? 'crew' : (isTemplate ? 'template' : nodeType),
-      position: newNodePosition,
-      parentId: parentZoneId,
-      extent: parentZoneId ? 'parent' : undefined,
-      data: {
-        ...initialNodeData,
-        ...templateCanvasData,
-        ...crewCanvasData,
-        ...(isTemplate && { actions: [], status: 'working' }),
-        state: 'missing_context',
-        zoneColor: expectedColor || parentZoneForNewNode?.data.zoneColor || 'purple'
-      },
-    };
-
-    updateCanvasNodes((previousCanvasNodes) => [...extraNodes, ...previousCanvasNodes, newlyCreatedNode]);
-    return uniqueNodeIdentifier;
+    const ids = addMultipleNodesToCanvas([{ type: nodeType, data: initialNodeData, workspaceId: targetWorkspaceId }]);
+    return ids[0];
   };
 
   const updateNodeDataOnCanvas = (nodeId: string, newNodeData: Record<string, unknown>) => {
@@ -144,6 +145,7 @@ export const useSpaceCanvasModificationOperations = (
 
   return {
     addNewNodeToCanvas,
+    addMultipleNodesToCanvas,
     updateNodeDataOnCanvas,
     duplicateNode,
     deleteNodes,
