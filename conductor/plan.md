@@ -22,10 +22,10 @@ Płaska lista komponentów do zbudowania (podział według Modular Monolith & Cl
 - [FE] Integracja RAG#1 z sekcją "Cognition" -> "Knowledge Hubs" w Agent Studio.
 - [FE] Integracja RAG#1 na Space Canvas (Agent Node, Crew Node) oraz w Inspektorach.
 - [FE] Widok konfiguracji Meta-Agenta (Settings -> "Meta Agent" -> "Settings").
-- [FE] Komponent pływającego przycisku (biała kulka) na Space Canvas.
-- [FE] Wysuwany panel boczny Meta-Agenta (wzorzec Notion AI).
-- [BE] Endpoint generowania propozycji przez Meta-Agenta (z wykorzystaniem ścisłej walidacji wyjścia LLM przez modele Pydantic; odrzucanie/ponawianie błędnych struktur).
-- [FE] Przepływ Human-in-the-Loop (UI renderujące zwalidowany Draft, przycisk akceptacji, konwersja do docelowego Artefaktu/Bytu na Canvasie).
+- [x] [BE] Endpoint generowania propozycji przez Meta-Agenta (z wykorzystaniem ścisłej walidacji wyjścia LLM przez modele Pydantic; odrzucanie/ponawianie błędnych struktur).
+- [x] [FE] Komponent pływającego przycisku (biała kulka) na Space Canvas.
+- [x] [FE] Wysuwany panel boczny Meta-Agenta (wzorzec Notion AI).
+- [x] [FE] Przepływ Human-in-the-Loop (UI renderujące zwalidowany Draft, przycisk akceptacji, konwersja do docelowego Artefaktu/Bytu na Canvasie).
 
 ## [KROK 2 — GRAPH ZALEŻNOŚCI]
 

@@ -56,7 +56,7 @@ class LangChainAdapter(LLMGateway):
             from langchain_openai import ChatOpenAI
             return ChatOpenAI(
                 model=model_name or "gpt-4o",
-                api_key=api_key or os.getenv("OPENAI_API_KEY"),
+                api_key=api_key or settings.OPENAI_API_KEY or os.getenv("OPENAI_API_KEY"),
                 temperature=temperature,
                 streaming=streaming
             )
@@ -72,8 +72,8 @@ class LangChainAdapter(LLMGateway):
 
     def get_embeddings_model(
         self, 
-        model_name: str | None = "text-embedding-3-small",
-        provider_name: str | None = "openai",
+        model_name: str | None = None,
+        provider_name: str | None = None,
         dimensions: int | None = None,
         api_key: str | None = None
     ) -> Any:
@@ -83,11 +83,24 @@ class LangChainAdapter(LLMGateway):
         if not self._enabled:
             raise RuntimeError("LangChainAdapter is not enabled.")
 
-        provider = (provider_name or "openai").lower()
+        # Determine provider
+        provider = (provider_name or "").lower()
+        effective_model = model_name
+        
+        if not provider and effective_model:
+            if "text-embedding-3" in effective_model.lower():
+                provider = "openai"
+            elif "text-embedding" in effective_model.lower() or "models/" in effective_model.lower() or "embedding" in effective_model.lower():
+                provider = "google"
+        
+        # Default fallback
+        if not provider:
+            provider = "openai"
+
         if provider == "openai":
             from langchain_openai import OpenAIEmbeddings
             params = {
-                "model": model_name or "text-embedding-3-small",
+                "model": effective_model or "text-embedding-3-small",
                 "api_key": api_key or settings.OPENAI_API_KEY or os.getenv("OPENAI_API_KEY")
             }
             if dimensions:
@@ -96,13 +109,13 @@ class LangChainAdapter(LLMGateway):
         elif provider in ["ollama", "local"]:
             from langchain_community.embeddings import OllamaEmbeddings
             return OllamaEmbeddings(
-                model=model_name or "nomic-embed-text"
+                model=effective_model or "nomic-embed-text"
             )
         else:
             # Default to Google
             from langchain_google_genai import GoogleGenerativeAIEmbeddings
             params = {
-                "model": model_name or "models/text-embedding-004",
+                "model": effective_model or "models/embedding-001",
                 "google_api_key": api_key or settings.GOOGLE_API_KEY
             }
             if dimensions:
@@ -128,8 +141,7 @@ class LangChainAdapter(LLMGateway):
         response = await llm.ainvoke(messages)
         return str(response.content)
 
-    async def generate_stream(
-        self, 
+    async def generate_stream(self, 
         prompt: str, 
         model_name: str | None = "gemini-2.0-flash",
         tools: list[Any] | None = None,
@@ -152,8 +164,8 @@ class LangChainAdapter(LLMGateway):
     async def get_embeddings(
         self, 
         text: str, 
-        model_name: str | None = "models/text-embedding-004",
-        provider_name: str | None = None,
+        model_name: str | None = "text-embedding-3-small",
+        provider_name: str | None = "openai",
         dimensions: int | None = None,
         api_key: str | None = None
     ) -> list[float]:

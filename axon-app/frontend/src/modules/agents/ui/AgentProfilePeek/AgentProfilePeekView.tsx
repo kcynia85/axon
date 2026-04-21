@@ -148,10 +148,10 @@ export const AgentProfilePeekView = ({
         {allSkills.length > 0 && (
           <SidePeekSection title="Skills">
             <div className="space-y-1.5">
-              {allSkills.map((skill) => {
+              {allSkills.map((skill, index) => {
                 const Icon = skill.Icon || Code2;
                 return (
-                  <div key={skill.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
+                  <div key={`${skill.id}-${index}`} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-primary/5">
                     <div className="flex items-center gap-3">
                       <Icon className="w-4 h-4 text-primary/60 shrink-0" />
                       <span className="text-base font-medium">{skill.name}</span>

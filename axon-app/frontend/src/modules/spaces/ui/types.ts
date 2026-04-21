@@ -130,7 +130,7 @@ export type SpaceCanvasOrchestrationLogic = {
     readonly validateConnectionBetweenNodes: (connection: Connection) => boolean;
     readonly handleDragOverEvent: (event: React.DragEvent) => void;
     readonly handleDropEvent: (event: React.DragEvent) => void;
-    readonly addNewNodeToCanvas: (nodeType: string, initialNodeData: Record<string, unknown>, targetWorkspaceId: string) => void;
+    readonly addNewNodeToCanvas: (nodeType: string, initialNodeData: Record<string, unknown>, targetWorkspaceId: string) => string;
     readonly updateNodeDataOnCanvas: (nodeId: string, updatedInformation: any) => void;
     readonly currentlySelectedNode: Node | null;
     readonly duplicateNode: (node: Node) => void;
@@ -147,10 +147,32 @@ export type SpaceCanvasOrchestrationLogic = {
 export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogic & {
     readonly workspaceId: string;
     readonly canvasViewProperties: any;
-    readonly spaceData: any;
+    readonly spaceData?: any;
     readonly isSaving: boolean;
-    readonly availableAgents?: readonly any[];
-    readonly availableCrews?: readonly any[];
+    readonly availableAgents: any[];
+    readonly availableCrews: any[];
+    readonly metaAgent?: {
+        isPanelOpen: boolean;
+        togglePanel: () => void;
+        closePanel: () => void;
+        drafts: any[];
+        connections: any[];
+        reasoning: string | null;
+        isProposing: boolean;
+        error: Error | null;
+        onPropose: (query: string) => void;
+        onApproveDrafts: (drafts: any[], connections: any[]) => void;
+        onRejectDraft: () => void;
+        onNewChat: () => void;
+        contextLabel: string;
+        knowledgeEnabled: boolean;
+        setKnowledgeEnabled: (enabled: boolean) => void;
+        systemAwarenessEnabled: boolean;
+        setSystemAwarenessEnabled: (enabled: boolean) => void;
+        attachedFiles: any[];
+        addFiles: (files: any[]) => void;
+        removeFile: (name: string) => void;
+    };
 };
 
 export type SpaceCanvasViewProperties = {

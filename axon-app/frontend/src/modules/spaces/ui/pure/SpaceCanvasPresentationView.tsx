@@ -17,6 +17,8 @@ import { SpaceCanvasHeader } from '../SpaceCanvasHeader';
 import { SpaceCanvasLeftSidebar } from '../SpaceCanvasLeftSidebar';
 import { SpaceCanvasRightSidebar } from '../SpaceCanvasRightSidebar';
 import { SpaceCreatePatternModal } from './SpaceCreatePatternModal';
+import { MetaAgentOrb } from '../meta-agent/MetaAgentOrb';
+import { MetaAgentPanel } from '../meta-agent/MetaAgentPanel';
 import { cn } from "@/shared/lib/utils";
 import { SpaceCanvasPresentationViewProperties } from '../types';
 
@@ -57,7 +59,8 @@ export const SpaceCanvasPresentationView = ({
     handleKeyDown,
     canvasViewProperties,
     spaceData,
-    isSaving
+    isSaving,
+    metaAgent
 }: PureSpaceCanvasViewProperties): React.ReactNode => {
   const {
     contextMenu,
@@ -318,6 +321,36 @@ export const SpaceCanvasPresentationView = ({
         <div className="absolute bottom-6 left-6 z-50 flex items-center gap-2 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all pointer-events-none">
             <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center font-black text-white text-lg italic shadow-lg">N</div>
         </div>
+      )}
+
+      {metaAgent && !isFullscreen && (
+        <>
+            <MetaAgentOrb 
+                isOpen={metaAgent.isPanelOpen} 
+                onClick={metaAgent.togglePanel} 
+            />
+            <MetaAgentPanel 
+                isOpen={metaAgent.isPanelOpen}
+                onClose={metaAgent.closePanel}
+                drafts={metaAgent.drafts}
+                connections={metaAgent.connections}
+                reasoning={metaAgent.reasoning}
+                isProposing={metaAgent.isProposing}
+                error={metaAgent.error}
+                onPropose={metaAgent.onPropose}
+                onApproveDrafts={metaAgent.onApproveDrafts}
+                onRejectDraft={metaAgent.onRejectDraft}
+                onNewChat={metaAgent.onNewChat}
+                contextLabel={metaAgent.contextLabel}
+                knowledgeEnabled={metaAgent.knowledgeEnabled}
+                setKnowledgeEnabled={metaAgent.setKnowledgeEnabled}
+                systemAwarenessEnabled={metaAgent.systemAwarenessEnabled}
+                setSystemAwarenessEnabled={metaAgent.setSystemAwarenessEnabled}
+                attachedFiles={metaAgent.attachedFiles}
+                addFiles={metaAgent.addFiles}
+                removeFile={metaAgent.removeFile}
+            />
+        </>
       )}
     </div>
   );

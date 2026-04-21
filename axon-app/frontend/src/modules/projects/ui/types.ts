@@ -31,10 +31,6 @@ export type ArtifactViewModel = {
     readonly nodeId?: string;
 };
 
-    readonly spaceId?: string;
-    readonly nodeId?: string;
-};
-
 // --- Component Props ---
 
 export type ProjectCardProps = {

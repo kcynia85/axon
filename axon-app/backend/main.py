@@ -16,6 +16,7 @@ from app.modules.agents.interface.router import router as agents_router
 from app.modules.agents.interface.config_router import router as agents_config_router
 from app.modules.knowledge.interface.router import router as knowledge_router
 from app.modules.spaces.interface.router import router as spaces_router
+from app.modules.spaces.interface.meta_agent_router import router as meta_agent_router
 from app.modules.resources.interface.router import router as resources_router
 from app.modules.settings.interface.router import router as settings_router
 from app.modules.inbox.interface.router import router as inbox_router
@@ -92,11 +93,13 @@ app.include_router(agents_router)
 app.include_router(agents_config_router)
 app.include_router(knowledge_router)
 app.include_router(spaces_router)
+app.include_router(meta_agent_router)
 app.include_router(resources_router)
 app.include_router(settings_router)
 app.include_router(inbox_router)
 app.include_router(system_router)
 app.include_router(workspaces_router)
+
 
 # Inngest Handler
 inngest_handler = serve(

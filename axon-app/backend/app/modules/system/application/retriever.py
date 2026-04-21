@@ -14,9 +14,10 @@ class SystemAwarenessRetrieverService:
     async def search(self, query: str, limit: int = 5, threshold: float = 0.7, entity_type: Optional[str] = None) -> List[SystemAwarenessSearchResult]:
         """
         Generates an embedding for the query and searches the system_embeddings table.
+        Uses 768 dimensions to match the DB schema.
         """
-        # Generate embedding for the query
-        query_embedding = await self.adapter.get_embeddings(query)
+        # Generate embedding for the query with enforced 768 dimensions
+        query_embedding = await self.adapter.get_embeddings(query, dimensions=768)
         
         # Search the repository
         results = await self.repo.search_similar(

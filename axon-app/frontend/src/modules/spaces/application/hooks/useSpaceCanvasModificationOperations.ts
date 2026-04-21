@@ -16,7 +16,7 @@ export const useSpaceCanvasModificationOperations = (
     nodeType: string,
     initialNodeData: Record<string, unknown>,
     targetWorkspaceId: string
-  ) => {
+  ): string => {
     takeSnapshot();
     const currentCanvasNodes = getNodes();
     
@@ -91,6 +91,7 @@ export const useSpaceCanvasModificationOperations = (
     };
 
     updateCanvasNodes((previousCanvasNodes) => [...extraNodes, ...previousCanvasNodes, newlyCreatedNode]);
+    return uniqueNodeIdentifier;
   };
 
   const updateNodeDataOnCanvas = (nodeId: string, newNodeData: Record<string, unknown>) => {
