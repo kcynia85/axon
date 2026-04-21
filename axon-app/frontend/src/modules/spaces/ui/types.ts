@@ -169,7 +169,6 @@ export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogi
         knowledgeEnabled: boolean;
         setKnowledgeEnabled: (enabled: boolean) => void;
         systemAwarenessEnabled: boolean;
-        setSystemAwarenessEnabled: (enabled: boolean) => void;
         attachedFiles: any[];
         addFiles: (files: any[]) => void;
         removeFile: (name: string) => void;

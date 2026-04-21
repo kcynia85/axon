@@ -9,8 +9,8 @@ export const useMetaAgent = (spaceId: string) => {
     const [reasoning, setReasoning] = useState<string | null>(null);
     
     // Settings state
-    const [knowledgeEnabled, setKnowledgeEnabled] = useState(true);
-    const [systemAwarenessEnabled, setSystemAwarenessEnabled] = useState(true);
+    const [knowledgeEnabled, setKnowledgeEnabled] = useState(false);
+    const systemAwarenessEnabled = true;
 
     // Attachments state
     const [attachedFiles, setAttachedFiles] = useState<MetaAgentAttachment[]>([]);
@@ -63,7 +63,6 @@ export const useMetaAgent = (spaceId: string) => {
         knowledgeEnabled,
         setKnowledgeEnabled,
         systemAwarenessEnabled,
-        setSystemAwarenessEnabled,
         attachedFiles,
         addFiles,
         removeFile,
