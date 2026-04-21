@@ -4,6 +4,7 @@ import re
 from typing import Optional, List
 from app.modules.spaces.domain.meta_agent_models import MetaAgentProposalRequest, MetaAgentProposalResponse
 from app.modules.system.application.retriever import SystemAwarenessRetrieverService
+from app.modules.system.infrastructure.repo import SystemRepository
 from app.modules.knowledge.application.rag import RAGService
 from app.shared.infrastructure.adapters.langchain_adapter import get_llm_adapter
 
@@ -14,9 +15,10 @@ class MetaAgentService:
     Service responsible for interacting with the Meta-Agent logic, retrieving system context
     via RAG#2 and Knowledge context via RAG#1, enforcing strict Pydantic output from the LLM.
     """
-    def __init__(self, system_retriever: SystemAwarenessRetrieverService, rag_service: RAGService):
+    def __init__(self, system_retriever: SystemAwarenessRetrieverService, rag_service: RAGService, system_repo: SystemRepository):
         self.system_retriever = system_retriever
         self.rag_service = rag_service
+        self.system_repo = system_repo
         self.llm_adapter = get_llm_adapter()
 
     async def propose_draft(self, request: MetaAgentProposalRequest) -> MetaAgentProposalResponse:
@@ -24,6 +26,11 @@ class MetaAgentService:
         Uses RAG#1 (Knowledge) and RAG#2 (System Awareness) to get context based on user query, 
         then asks the LLM for a structured proposal of a complete flow (multiple entities).
         """
+        # Fetch global Meta-Agent configuration from Settings
+        meta_agent_config = await self.system_repo.get_meta_agent()
+        custom_system_instruction = meta_agent_config.meta_agent_system_prompt if meta_agent_config else "You are the Axon Meta-Agent, a senior AI architect."
+        llm_temperature = meta_agent_config.meta_agent_temperature if meta_agent_config else 0.7
+
         context_data = request.context or {}
         knowledge_enabled = context_data.get("knowledge_enabled", True)
         system_awareness_enabled = context_data.get("system_awareness_enabled", True)
@@ -67,7 +74,8 @@ class MetaAgentService:
         schema_str = MetaAgentProposalResponse.model_json_schema()
         
         prompt = f"""
-You are the Axon Meta-Agent, a senior AI architect. Your task is to design a functional AI flow (Space Canvas) based on the user's requirements and available context.
+{custom_system_instruction}
+Your task is to design a functional AI flow (Space Canvas) based on the user's requirements and available context.
 
 User Requirement: "{request.query}"
 
@@ -115,10 +123,9 @@ Instructions:
 3. Categorize each entity into the most appropriate 'target_workspace'.
 4. Handle cross-zone data flow via 'isOutput: true' artifacts and 'context_requirements' instead of direct connections.
 5. Generate a structured JSON response matching the provided schema.
-5. Each entity must have 'status' set to 'draft'.
-6. Important: The 'payload' field of each draft must contain the detailed configuration fields mentioned above.
-7. Do NOT wrap in Markdown. Output raw JSON only.
-
+6. Each entity must have 'status' set to 'draft'.
+7. Important: The 'payload' field of each draft must contain the detailed configuration fields mentioned above.
+8. Do NOT wrap in Markdown. Output raw JSON only.
 
 JSON Schema:
 {json.dumps(schema_str, indent=2)}
@@ -127,10 +134,15 @@ JSON Schema:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                response_text = await self.llm_adapter.generate_content(
-                    prompt=prompt,
-                    model_name=None, 
+                # Use custom chat model configuration from Settings
+                chat_model = self.llm_adapter.get_chat_model(
+                    temperature=llm_temperature
                 )
+                
+                from langchain_core.messages import HumanMessage
+                messages = [HumanMessage(content=prompt)]
+                response = await chat_model.ainvoke(messages)
+                response_text = str(response.content)
                 
                 # Robust JSON extraction
                 json_match = re.search(r"(\{.*\})", response_text, re.DOTALL)
