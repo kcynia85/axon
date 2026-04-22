@@ -3,11 +3,13 @@
 import * as React from "react";
 import { useResolveInboxItem } from "../application/useInbox";
 import {
-    Check
+    Check,
+    AlertCircle
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { InboxItem } from "@/shared/domain/inbox";
 import { InboxEmptyState } from "./InboxEmptyState";
+import { is } from "date-fns/locale/is";
 
 type InboxItemProps = {
     readonly item: InboxItem;
@@ -26,57 +28,67 @@ const InboxItemComponent = ({
     const timeString = new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const isNew = item.item_status === "NEW";
-    const isCritical = item.item_priority === "CRITICAL";
+    const isError = item.item_type === "ERROR_ALERT";
+
+    // Simplified informative labels
+    const getSourceLabel = (source: string, type: string) => {
+        if (source === "System Awareness") return "System";
+        if (source === "Knowledge Engine") return "Knowledge";
+        if (type === "ARTIFACT_READY") return "Artefact";
+        return source;
+    };
 
     return (
         <div
             className={cn(
                 "group relative flex py-5 px-6 gap-5 border-b border-zinc-50 dark:border-zinc-900/50 hover:bg-zinc-50/30 dark:hover:bg-zinc-900/10 transition-colors cursor-default",
-                !isNew && "opacity-40"
+                !isNew && "opacity-40",
+                isError && isNew && "bg-red-500/5"
             )}
         >
-            {/* Minimal Status Dot */}
-            <div className="w-2 shrink-0 flex items-start justify-center pt-1.5">
+            {/* Status Indicator (Icon or Dot) */}
+            <div className="w-4 shrink-0 flex items-start justify-center pt-1.5">
                 {isNew && (
-                    <div className={cn(
-                        "w-2 h-2 rounded-full transition-all duration-500",
-                        isCritical 
-                            ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]" 
-                            : "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]"
-                    )} />
+                    isError ? (
+                        <AlertCircle size={16} className="text-red-500" />
+                    ) : (
+                        <div className={cn(
+                            "w-2 h-2 rounded-full transition-all duration-500",
+                            "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]"
+                        )} />
+                    )
                 )}
             </div>
 
             <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                 <div className="flex justify-between items-baseline gap-4">
                     <span className={cn(
-                        "text-[13px] leading-tight tracking-tight truncate transition-colors",
-                        isNew ? "font-semibold text-zinc-900 dark:text-zinc-100" : "font-medium text-zinc-400"
+                        "text-[14px] leading-tight tracking-tight truncate transition-colors font-semibold",
+                        isError 
+                            ? "text-red-500" 
+                            : (isNew ? "text-zinc-900 dark:text-zinc-100" : "text-zinc-400 font-medium")
                     )}>
                         {item.item_title}
                     </span>
-                    <span className="text-[10px] tabular-nums text-zinc-400 font-medium tracking-tight">
-                        {timeString}
+                    <span className="text-[12px] text-zinc-400 font-medium tracking-tight">
+                        {isError ? null : timeString} 
                     </span>
                 </div>
                 
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest shrink-0">
-                            {item.item_source}
-                        </span>
-                        {isCritical && (
-                            <span className="text-[9px] font-black text-red-500/80 uppercase tracking-tighter">
-                                • Priority
+                <div className="flex flex-col gap-1.5">
+                    {!isError ? (
+                        <div className="flex items-center gap-2">
+                            <span className="text-[12px] font-bold transition-colors text-zinc-400 dark:text-zinc-500">
+                                {getSourceLabel(item.item_source, item.item_type)}
                             </span>
-                        )}
-                    </div>
-                    <p className={cn(
-                        "text-[12px] line-clamp-2 leading-relaxed font-medium transition-colors",
-                        isNew ? "text-zinc-500 dark:text-zinc-400" : "text-zinc-400 dark:text-zinc-600"
-                    )}>
-                        {item.item_content}
-                    </p>
+                        </div>
+                    ) : (
+                        isNew && (
+                            <p className="text-[12px] text-red-500/70 font-medium line-clamp-1 ">
+                                {item.item_content}
+                            </p>
+                        )
+                    )}
                 </div>
             </div>
 
@@ -88,7 +100,10 @@ const InboxItemComponent = ({
                             mouseEvent.stopPropagation();
                             onResolve(item.id);
                         }}
-                        className="flex items-center justify-center w-8 h-8 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none"
+                        className={cn(
+                            "flex items-center justify-center w-8 h-8 transition-colors outline-none",
+                            isError ? "text-red-400 hover:text-red-600" : "text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+                        )}
                     >
                         <Check className="h-5 w-5" />
                     </button>
@@ -120,12 +135,11 @@ export const InboxList = ({
     if (isLoading) {
         return (
             <div className="space-y-0 px-0 py-2">
-                {[1, 2, 3, 4, 5].map((index) => (
+                {[1, 2, 3].map((index) => (
                     <div key={index} className="flex gap-4 py-5 px-6 border-b border-zinc-50 dark:border-zinc-900/50">
                         <div className="w-2 h-2 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded-full mt-1.5" />
                         <div className="flex-1 space-y-3">
                             <div className="h-4 w-1/2 bg-zinc-100 dark:bg-zinc-800 animate-pulse rounded" />
-                            <div className="h-3 w-full bg-zinc-50 dark:bg-zinc-900/50 animate-pulse rounded" />
                         </div>
                     </div>
                 ))}

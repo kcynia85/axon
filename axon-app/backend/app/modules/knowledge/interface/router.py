@@ -84,7 +84,6 @@ async def preview_knowledge_resource(
 
 @router.post("/resources", response_model=KnowledgeResourceResponse)
 async def create_knowledge_resource(
-    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     metadata_json: str = Form(...),
     session: AsyncSession = Depends(get_db)
@@ -105,13 +104,26 @@ async def create_knowledge_resource(
     os.makedirs(upload_dir, exist_ok=True)
     
     file_ext = os.path.splitext(file.filename)[1]
+    # We use a path accessible by Inngest worker (relative to root)
     tmp_file_path = os.path.join(upload_dir, f"resource_{resource.id}{file_ext}")
     
     with open(tmp_file_path, "wb") as f:
         f.write(content_bytes)
     
-    # 4. Background indexing task
-    background_tasks.add_task(process_and_index_resource_task, resource, tmp_file_path)
+    # 4. Trigger Inngest Indexing Event
+    # This ensures RAG#1 indexing is handled by the same agnostic notification pipeline as RAG#2
+    from app.shared.infrastructure.inngest_client import inngest_client
+    import inngest
+    
+    await inngest_client.send(
+        inngest.Event(
+            name="knowledge/source.uploaded",
+            data={
+                "source_id": str(resource.id),
+                "file_path": tmp_file_path,
+            }
+        )
+    )
     
     return resource
 

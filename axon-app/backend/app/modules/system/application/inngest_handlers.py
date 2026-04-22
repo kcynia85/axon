@@ -27,33 +27,46 @@ async def system_entity_upserted_workflow(ctx: inngest.Context):
     if not entity_id or not entity_type or not payload:
         return {"status": "error", "message": "Missing entity_id, entity_type, or payload"}
 
-    async def index_entity():
-        async with AsyncSessionLocal() as session:
-            repo = SystemEmbeddingRepository(session)
-            service = SystemIndexingService(repo)
-            await service.index_entity(
-                entity_id=UUID(entity_id),
-                entity_type=entity_type,
-                payload=payload,
-                metadata=metadata
-            )
-            return True
+    name = payload.get("name") or payload.get("title") or payload.get("display_name") or "New Entity"
 
-    await step.run("index-system-entity", index_entity)
+    async def index_entity():
+        try:
+            async with AsyncSessionLocal() as session:
+                repo = SystemEmbeddingRepository(session)
+                service = SystemIndexingService(repo)
+                await service.index_entity(
+                    entity_id=UUID(entity_id),
+                    entity_type=entity_type,
+                    payload=payload,
+                    metadata=metadata
+                )
+                return {"success": True}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+
+    index_result = await step.run("index-system-entity", index_entity)
 
     async def create_notification():
         async with AsyncSessionLocal() as session:
             inbox_repo = InboxRepository(session)
             
-            name = payload.get("name") or payload.get("title") or payload.get("display_name") or "New Entity"
-            
-            item = InboxItem(
-                item_type=InboxItemType.SYSTEM_MESSAGE,
-                item_priority=InboxItemPriority.NORMAL,
-                item_title="System Knowledge Updated",
-                item_content=f"Agnostic awareness has indexed the {entity_type}: {name}.",
-                item_source="System Awareness"
-            )
+            if index_result.get("success"):
+                item = InboxItem(
+                    item_type=InboxItemType.SYSTEM_MESSAGE,
+                    item_priority=InboxItemPriority.NORMAL,
+                    item_title=f"{name} Indexed",
+                    item_content=f"Successfully indexed structure.",
+                    item_source="System Awareness"
+                )
+            else:
+                # For error: just the name (will be red in UI)
+                item = InboxItem(
+                    item_type=InboxItemType.ERROR_ALERT,
+                    item_priority=InboxItemPriority.HIGH,
+                    item_title=name,
+                    item_content=f"Error: {index_result.get('error')}",
+                    item_source="System Awareness"
+                )
             await inbox_repo.create_item(item)
             return True
 
@@ -63,13 +76,14 @@ async def system_entity_upserted_workflow(ctx: inngest.Context):
         await broadcast_via_bridge("awareness", {
             "event": "awareness_synchronized", 
             "entity_id": entity_id, 
-            "entity_type": entity_type
+            "entity_type": entity_type,
+            "success": index_result.get("success")
         })
         return True
         
     await step.run("broadcast-sync", broadcast_sync)
 
-    return {"status": "success", "entity_id": entity_id, "entity_type": entity_type}
+    return {"status": "success" if index_result.get("success") else "error", "entity_id": entity_id}
 
 
 @inngest_client.create_function(
@@ -85,16 +99,19 @@ async def system_entity_deleted_workflow(ctx: inngest.Context):
         return {"status": "error", "message": "Missing entity_id or entity_type"}
 
     async def remove_entity():
-        async with AsyncSessionLocal() as session:
-            repo = SystemEmbeddingRepository(session)
-            service = SystemIndexingService(repo)
-            await service.remove_entity(
-                entity_id=UUID(entity_id),
-                entity_type=entity_type
-            )
-            return True
+        try:
+            async with AsyncSessionLocal() as session:
+                repo = SystemEmbeddingRepository(session)
+                service = SystemIndexingService(repo)
+                await service.remove_entity(
+                    entity_id=UUID(entity_id),
+                    entity_type=entity_type
+                )
+                return {"success": True}
+        except Exception as e:
+            return {"success": False, "error": str(e)}
 
-    await step.run("remove-system-entity", remove_entity)
+    index_result = await step.run("remove-system-entity", remove_entity)
 
     async def create_notification():
         async with AsyncSessionLocal() as session:
@@ -102,8 +119,8 @@ async def system_entity_deleted_workflow(ctx: inngest.Context):
             item = InboxItem(
                 item_type=InboxItemType.SYSTEM_MESSAGE,
                 item_priority=InboxItemPriority.NORMAL,
-                item_title="System Knowledge Removed",
-                item_content=f"Removed {entity_type} ({entity_id}) from agnostic awareness.",
+                item_title="Knowledge Removed",
+                item_content=f"Removed {entity_type} from agnostic awareness.",
                 item_source="System Awareness"
             )
             await inbox_repo.create_item(item)
@@ -116,10 +133,11 @@ async def system_entity_deleted_workflow(ctx: inngest.Context):
             "event": "awareness_synchronized", 
             "entity_id": entity_id, 
             "entity_type": entity_type,
-            "action": "deleted"
+            "action": "deleted",
+            "success": index_result.get("success")
         })
         return True
         
     await step.run("broadcast-sync", broadcast_sync)
 
-    return {"status": "success", "entity_id": entity_id, "entity_type": entity_type}
+    return {"status": "success" if index_result.get("success") else "error", "entity_id": entity_id}

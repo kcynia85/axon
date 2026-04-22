@@ -43,11 +43,32 @@ export const InboxDrawer = () => {
         return itemsToFilter.filter(item => {
             if (filterIds.length === 0) return true;
             
-            const statusFilters = filterIds.filter(id => ["NEW", "RESOLVED", "ARCHIVED"].includes(id));
-            const typeFilters = filterIds.filter(id => ["ARTIFACT_READY", "ERROR_ALERT", "SYSTEM_MESSAGE", "ACTION_REQUIRED", "CONSULTATION", "APPROVAL_NEEDED"].includes(id));
+            const statusFilters = filterIds.filter(id => ["NEW", "RESOLVED"].includes(id));
+            const categoryFilters = filterIds.filter(id => ["SYSTEM", "KNOWLEDGE", "ARTEFACTS"].includes(id));
 
-            if (statusFilters.length > 0 && !statusFilters.includes(item.item_status)) return false;
-            if (typeFilters.length > 0 && !typeFilters.includes(item.item_type)) return false;
+            // 1. Status Filter
+            if (statusFilters.length > 0 && !statusFilters.includes(item.item_status)) {
+                return false;
+            }
+            
+            // 2. Category Filter (Agnostic mapping)
+            if (categoryFilters.length > 0) {
+                const isSystem = item.item_source === "System Awareness";
+                const isKnowledge = item.item_source === "Knowledge Engine";
+                const isArtefact = item.item_type === "ARTIFACT_READY";
+
+                const wantSystem = categoryFilters.includes("SYSTEM");
+                const wantKnowledge = categoryFilters.includes("KNOWLEDGE");
+                const wantArtefacts = categoryFilters.includes("ARTEFACTS");
+
+                // If at least one category filter is selected, item must match one of them
+                let matchesCategory = false;
+                if (wantSystem && isSystem) matchesCategory = true;
+                if (wantKnowledge && isKnowledge) matchesCategory = true;
+                if (wantArtefacts && isArtefact) matchesCategory = true;
+                
+                return matchesCategory;
+            }
 
             return true;
         });
@@ -76,21 +97,18 @@ export const InboxDrawer = () => {
                 ]
             },
             {
-                id: "type",
-                title: "Type:",
+                id: "category",
+                title: "Category:",
                 type: "checkbox",
                 options: [
-                    { id: "ARTIFACT_READY", label: "Artifacts", isChecked: false },
-                    { id: "ERROR_ALERT", label: "Errors", isChecked: false },
-                    { id: "ACTION_REQUIRED", label: "Actions", isChecked: false },
-                    { id: "CONSULTATION", label: "Consultations", isChecked: false },
-                    { id: "APPROVAL_NEEDED", label: "Approvals", isChecked: false },
+                    { id: "SYSTEM", label: "System", isChecked: false },
+                    { id: "KNOWLEDGE", label: "Knowledge", isChecked: false },
+                    { id: "ARTEFACTS", label: "Artefacts", isChecked: false },
                 ]
             }
         ]
     });
 
-    // Zero manual optimization - React Compiler handles it
     const filteredInboxItems = getFilteredItems(inboxItems);
     const processedItems = [...filteredInboxItems].sort((itemA, itemB) => {
         const dateA = new Date(itemA.created_at).getTime();
@@ -109,7 +127,6 @@ export const InboxDrawer = () => {
                     "fixed top-4 bottom-4 right-4 w-[28rem] p-0 flex flex-col focus:outline-none z-[60] border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-2xl transition-all duration-500 ease-in-out bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl"
                 )}
             >
-                {/* Clean Header */}
                 <SheetHeader className="px-6 pt-6 pb-4 flex flex-row items-center justify-between space-y-0">
                     <div className="flex items-center gap-3">
                         <SheetTitle className="text-[15px] font-bold text-zinc-900 dark:text-zinc-100">
@@ -129,7 +146,6 @@ export const InboxDrawer = () => {
                     </div>
                 </SheetHeader>
 
-                {/* Actions Row */}
                 <div className="px-6 pb-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-5">
@@ -142,7 +158,7 @@ export const InboxDrawer = () => {
                                 trigger={
                                     <button className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none group">
                                         <Filter size={12} />
-                                        Filters
+                                        FILTERS
                                     </button>
                                 }
                             />
@@ -166,14 +182,12 @@ export const InboxDrawer = () => {
                     </div>
                 </div>
 
-                {/* Items Area */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar border-t border-zinc-100 dark:border-zinc-900/50 mt-0">
                     {isInboxOpen && (
                         <InboxList items={processedItems} isLoading={isLoading} />
                     )}
                 </div>
 
-                {/* Subtle Footer */}
                 <div className="px-6 py-4 flex items-center justify-between opacity-40 hover:opacity-100 transition-opacity mt-auto">
                     <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
                         {processedItems.length} total
