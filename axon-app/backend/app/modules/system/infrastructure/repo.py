@@ -2,8 +2,8 @@ from uuid import uuid4, UUID
 from typing import Optional, List, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
-from app.modules.system.domain.models import MetaAgent, VoiceMetaAgent, SystemAwarenessSearchResult
-from app.modules.system.infrastructure.tables import MetaAgentTable, VoiceMetaAgentTable, SystemEmbeddingTable
+from app.modules.system.domain.models import MetaAgent, VoiceMetaAgent, SystemAwarenessSearchResult, SystemAwarenessSettings
+from app.modules.system.infrastructure.tables import MetaAgentTable, VoiceMetaAgentTable, SystemEmbeddingTable, SystemAwarenessSettingsTable
 
 class SystemRepository:
     def __init__(self, session: AsyncSession):
@@ -65,9 +65,7 @@ class SystemRepository:
             stmt = update(VoiceMetaAgentTable).where(VoiceMetaAgentTable.id == existing.id).values(**data)
             await self.session.execute(stmt)
         else:
-             # Ensure mandatory fields are present or defaulted (though for voice provider/id usually explicit)
-             # If API sends partial update for non-existent record, it might fail if mandatory fields missing.
-             # We assume service layer handles defaults or validation.
+             # Ensure mandatory fields are present or defaulted
              new_voice = VoiceMetaAgentTable(
                  id=uuid4(),
                  voice_provider=data.get("voice_provider"),
@@ -78,6 +76,37 @@ class SystemRepository:
         
         await self.session.commit()
         return (await self.get_voice_meta_agent())
+
+    # --- System Awareness Settings ---
+
+    async def get_awareness_settings(self) -> Optional[SystemAwarenessSettings]:
+        result = await self.session.execute(select(SystemAwarenessSettingsTable).limit(1))
+        row = result.scalar_one_or_none()
+        if row:
+            return SystemAwarenessSettings(
+                id=row.id,
+                embedding_model_id=row.embedding_model_id,
+                indexing_enabled=row.indexing_enabled,
+                realtime_sync_enabled=row.realtime_sync_enabled
+            )
+        return None
+
+    async def upsert_awareness_settings(self, data: dict) -> SystemAwarenessSettings:
+        existing = await self.get_awareness_settings()
+        if existing:
+            stmt = update(SystemAwarenessSettingsTable).where(SystemAwarenessSettingsTable.id == existing.id).values(**data)
+            await self.session.execute(stmt)
+        else:
+            new_settings = SystemAwarenessSettingsTable(
+                id=uuid4(),
+                embedding_model_id=data.get("embedding_model_id"),
+                indexing_enabled=data.get("indexing_enabled", True),
+                realtime_sync_enabled=data.get("realtime_sync_enabled", True)
+            )
+            self.session.add(new_settings)
+        
+        await self.session.commit()
+        return (await self.get_awareness_settings())
 
 class SystemEmbeddingRepository:
     def __init__(self, session: AsyncSession):

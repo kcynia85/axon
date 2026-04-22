@@ -28,3 +28,14 @@ class UpdateVoiceMetaAgentRequest(BaseModel):
     voice_provider: Optional[VoiceProvider] = None
     voice_id: Optional[str] = None
     meta_agent_system_prompt: Optional[str] = None
+
+class SystemAwarenessSettingsResponse(BaseModel):
+    id: UUID
+    embedding_model_id: Optional[UUID]
+    indexing_enabled: bool
+    realtime_sync_enabled: bool
+
+class UpdateSystemAwarenessSettingsRequest(BaseModel):
+    embedding_model_id: Optional[UUID] = None
+    indexing_enabled: Optional[bool] = None
+    realtime_sync_enabled: Optional[bool] = None

@@ -76,6 +76,18 @@ async def index_all():
             }
             print(f"Indexing Space: {payload['name']}")
             await service.index_entity(space.id, "space", payload)
+
+        # 3b. Templates
+        print("Fetching Templates...")
+        from app.modules.workspaces.infrastructure.tables import TemplateTable
+        templates = (await session.execute(select(TemplateTable))).scalars().all()
+        for template in templates:
+            payload = {
+                "name": getattr(template, "template_name", "") or str(template.id),
+                "description": getattr(template, "template_description", ""),
+            }
+            print(f"Indexing Template: {payload['name']}")
+            await service.index_entity(template.id, "template", payload)
             
         # 4. Internal Tools
         print("Fetching Internal Tools...")

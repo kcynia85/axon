@@ -113,6 +113,7 @@ export type LLMRouter = z.infer<typeof LLMRouterSchema>;
 
 export const EmbeddingModelSchema = z.object({
     id: z.string().uuid(),
+    provider_id: z.string().uuid().optional().nullable(),
     model_provider_name: z.string(),
     model_id: z.string(),
     model_vector_dimensions: z.number().int(),

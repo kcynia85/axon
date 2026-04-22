@@ -1,23 +1,17 @@
 import inngest
-import httpx
 import os
+import json
 from uuid import UUID
 from app.shared.infrastructure.inngest_client import inngest_client
 from app.shared.infrastructure.database import AsyncSessionLocal
 from app.modules.system.infrastructure.repo import SystemEmbeddingRepository
 from app.modules.system.application.indexing_service import SystemIndexingService
 
-# Helper for broadcasting via bridge
-async def broadcast_via_bridge(channel: str, message: dict):
-    api_url = os.getenv("INTERNAL_API_URL", "http://localhost:8000")
-    try:
-        async with httpx.AsyncClient() as client:
-            await client.post(f"{api_url}/system/internal/broadcast", json={
-                "channel": channel,
-                "message": message
-            })
-    except Exception as e:
-        print(f"Error calling broadcast bridge: {e}")
+# Inbox & Broadcast imports
+from app.modules.inbox.infrastructure.repo import InboxRepository
+from app.modules.inbox.domain.models import InboxItem
+from app.modules.inbox.domain.enums import InboxItemType, InboxItemPriority
+from app.shared.infrastructure.inngest_utils import broadcast_via_bridge
 
 @inngest_client.create_function(
     fn_id="system-entity-upserted",
@@ -46,6 +40,24 @@ async def system_entity_upserted_workflow(ctx: inngest.Context):
             return True
 
     await step.run("index-system-entity", index_entity)
+
+    async def create_notification():
+        async with AsyncSessionLocal() as session:
+            inbox_repo = InboxRepository(session)
+            
+            name = payload.get("name") or payload.get("title") or payload.get("display_name") or "New Entity"
+            
+            item = InboxItem(
+                item_type=InboxItemType.SYSTEM_MESSAGE,
+                item_priority=InboxItemPriority.NORMAL,
+                item_title="System Knowledge Updated",
+                item_content=f"Agnostic awareness has indexed the {entity_type}: {name}.",
+                item_source="System Awareness"
+            )
+            await inbox_repo.create_item(item)
+            return True
+
+    await step.run("create-notification", create_notification)
 
     async def broadcast_sync():
         await broadcast_via_bridge("awareness", {
@@ -83,6 +95,21 @@ async def system_entity_deleted_workflow(ctx: inngest.Context):
             return True
 
     await step.run("remove-system-entity", remove_entity)
+
+    async def create_notification():
+        async with AsyncSessionLocal() as session:
+            inbox_repo = InboxRepository(session)
+            item = InboxItem(
+                item_type=InboxItemType.SYSTEM_MESSAGE,
+                item_priority=InboxItemPriority.NORMAL,
+                item_title="System Knowledge Removed",
+                item_content=f"Removed {entity_type} ({entity_id}) from agnostic awareness.",
+                item_source="System Awareness"
+            )
+            await inbox_repo.create_item(item)
+            return True
+
+    await step.run("create-notification", create_notification)
 
     async def broadcast_sync():
         await broadcast_via_bridge("awareness", {

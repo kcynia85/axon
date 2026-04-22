@@ -259,5 +259,17 @@ export const settingsApi = {
         const res = await apiClient.put("/system/meta-agent", data);
         const raw = await res.json() as unknown;
         return MetaAgentSchema.parse(raw);
+    },
+
+    getSystemAwarenessSettings: async (): Promise<SystemAwarenessSettings> => {
+        const res = await apiClient.get("/system/awareness");
+        const data = await res.json() as unknown;
+        return SystemAwarenessSettingsSchema.parse(data);
+    },
+
+    updateSystemAwarenessSettings: async (data: Partial<SystemAwarenessSettings>): Promise<SystemAwarenessSettings> => {
+        const res = await apiClient.put("/system/awareness", data);
+        const raw = await res.json() as unknown;
+        return SystemAwarenessSettingsSchema.parse(raw);
     }
 };

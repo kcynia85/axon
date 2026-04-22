@@ -12,7 +12,8 @@ from app.shared.infrastructure.websocket_manager import manager
 from app.shared.infrastructure.database import AsyncSessionLocal
 from app.modules.system.application.schemas import (
     MetaAgentResponse, UpdateMetaAgentRequest,
-    VoiceMetaAgentResponse, UpdateVoiceMetaAgentRequest
+    VoiceMetaAgentResponse, UpdateVoiceMetaAgentRequest,
+    SystemAwarenessSettingsResponse, UpdateSystemAwarenessSettingsRequest
 )
 
 router = APIRouter(
@@ -29,26 +30,21 @@ async def db_listen_task():
     while True:
         try:
             async with AsyncSessionLocal() as session:
-                # We need a direct asyncpg connection for the listener
-                # SQLAlchemy's AsyncConnection.get_raw_connection() returns an asyncpg.Connection
                 conn = await session.connection()
                 raw_conn = await conn.get_raw_connection()
                 
                 async def callback(connection, pid, channel, payload):
-                    print(f"[PID:{os.getpid()}] Received DB Notification on {channel}")
                     try:
                         message = json.loads(payload)
                         await manager.broadcast("awareness", message)
                     except Exception as e:
                         print(f"Error in DB callback: {e}")
 
-                # Access the underlying asyncpg connection object
                 driver_conn = raw_conn.driver_connection
                 await driver_conn.add_listener("awareness_channel", callback)
-                print(f"[PID:{os.getpid()}] Listener added successfully")
                 
                 while True:
-                    await asyncio.sleep(10) # Keep task alive
+                    await asyncio.sleep(10)
         except Exception as e:
             print(f"DB Listen Task error: {e}. Retrying in 5s...")
             await asyncio.sleep(5)
@@ -57,6 +53,8 @@ async def db_listen_task():
 async def startup_event():
     global listen_task
     listen_task = asyncio.create_task(db_listen_task())
+
+# --- Meta Agent ---
 
 @router.get("/meta-agent", response_model=MetaAgentResponse, dependencies=[Depends(get_current_user)])
 async def get_meta_agent(
@@ -71,6 +69,8 @@ async def upsert_meta_agent(
 ):
     return await service.upsert_meta_agent(request)
 
+# --- Voice ---
+
 @router.get("/voice", response_model=VoiceMetaAgentResponse, dependencies=[Depends(get_current_user)])
 async def get_voice_meta_agent(
     service: SystemService = Depends(get_system_service)
@@ -84,6 +84,33 @@ async def upsert_voice_meta_agent(
 ):
     return await service.upsert_voice_meta_agent(request)
 
+# --- Awareness Settings ---
+
+@router.get("/awareness", response_model=SystemAwarenessSettingsResponse, dependencies=[Depends(get_current_user)])
+async def get_awareness_settings(
+    service: SystemService = Depends(get_system_service)
+):
+    settings = await service.get_awareness_settings()
+    if not settings:
+        # Return default structure if not initialized
+        import uuid
+        return {
+            "id": uuid.uuid4(),
+            "embedding_model_id": None,
+            "indexing_enabled": True,
+            "realtime_sync_enabled": True
+        }
+    return settings
+
+@router.put("/awareness", response_model=SystemAwarenessSettingsResponse, dependencies=[Depends(get_current_user)])
+async def upsert_awareness_settings(
+    request: UpdateSystemAwarenessSettingsRequest,
+    service: SystemService = Depends(get_system_service)
+):
+    return await service.upsert_awareness_settings(request)
+
+# --- Misc ---
+
 @router.get("/embeddings", response_model=List[Dict[str, Any]], dependencies=[Depends(get_current_user)])
 async def list_system_embeddings(
     limit: int = Query(100, ge=1, le=1000),
@@ -96,29 +123,21 @@ async def list_system_embeddings(
 async def internal_broadcast(
     payload: Dict[str, Any] = Body(...)
 ):
-    """
-    Internal bridge that uses DB NOTIFY to reach all FastAPI worker processes.
-    """
     message = payload.get("message", {})
-    
     async with AsyncSessionLocal() as session:
-        # Use simple execute for NOTIFY
         payload_json = json.dumps(message)
-        # Note: NOTIFY payload must be a string literal or escaped
         await session.execute(text("SELECT pg_notify('awareness_channel', :p)"), {"p": payload_json})
         await session.commit()
-        
     return {"status": "ok", "method": "pg_notify"}
 
 @router.websocket("/ws/awareness")
 async def awareness_websocket(websocket: WebSocket):
     try:
         await websocket.accept()
-        print(f"[PID:{os.getpid()}] [WebSocket] Connected: {websocket.client}")
         await manager.connect(websocket, "awareness")
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket, "awareness")
-    except Exception as e:
+    except Exception:
         manager.disconnect(websocket, "awareness")

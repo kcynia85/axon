@@ -7,6 +7,12 @@ from app.shared.infrastructure.database import AsyncSessionLocal
 from app.modules.knowledge.infrastructure.tables import KnowledgeResourceTable
 from sqlalchemy import select
 
+# Inbox & Broadcast imports
+from app.modules.inbox.infrastructure.repo import InboxRepository
+from app.modules.inbox.domain.models import InboxItem
+from app.modules.inbox.domain.enums import InboxItemType, InboxItemPriority
+from app.shared.infrastructure.inngest_utils import broadcast_via_bridge
+
 @inngest_client.create_function(
     fn_id="knowledge-indexing",
     trigger=inngest.TriggerEvent(event="knowledge/source.uploaded"),
@@ -29,12 +35,9 @@ async def knowledge_indexing_workflow(ctx: inngest.Context, step: inngest.Step):
                     resource_obj = result.scalar_one_or_none()
                     if not resource_obj:
                         raise Exception(f"Resource {resource_id} not found in DB")
-                    # Mode='json' ensures UUIDs and datetimes are serialized for Inngest
                     return map_resource_to_domain(resource_obj).model_dump(mode="json")
             except Exception as e:
-                import traceback
                 print(f"ERROR IN GET_RESOURCE: {e}")
-                traceback.print_exc()
                 raise e
 
         resource_dict = await step.run("fetch-resource", get_resource)
@@ -42,39 +45,45 @@ async def knowledge_indexing_workflow(ctx: inngest.Context, step: inngest.Step):
         async def do_index():
             try:
                 from app.modules.knowledge.domain.models import KnowledgeResource
-                # Reconstruct domain model from JSON dict
                 resource = KnowledgeResource(**resource_dict)
                 await process_and_index_resource(resource, file_path)
                 return True
             except Exception as e:
-                import traceback
                 print(f"ERROR IN DO_INDEX: {e}")
-                traceback.print_exc()
                 raise e
 
         try:
             await step.run("index-content", do_index)
             
-            async def trigger_toast():
-                from app.modules.knowledge.domain.models import KnowledgeResource
-                resource = KnowledgeResource(**resource_dict)
-                await inngest_client.send(
-                    inngest.Event(
-                        name="notification/toast.trigger",
-                        data={
-                            "type": "success",
-                            "title": "Indeksowanie zakończone",
-                            "message": f"Dokument '{resource.resource_file_name}' został pomyślnie zaindeksowany.",
-                            "duration": 5000
-                        }
+            async def create_inbox_notification():
+                async with AsyncSessionLocal() as session:
+                    inbox_repo = InboxRepository(session)
+                    
+                    file_name = resource_dict.get("resource_file_name", "Unknown document")
+                    
+                    item = InboxItem(
+                        item_type=InboxItemType.SYSTEM_MESSAGE,
+                        item_priority=InboxItemPriority.NORMAL,
+                        item_title="Knowledge Indexed",
+                        item_content=f"Resource '{file_name}' has been successfully indexed in RAG#1 knowledge engine.",
+                        item_source="Knowledge Engine"
                     )
-                )
+                    await inbox_repo.create_item(item)
+                    return True
+            
+            await step.run("create-inbox-notification", create_inbox_notification)
+
+            async def broadcast_sync():
+                await broadcast_via_bridge("awareness", {
+                    "event": "awareness_synchronized", 
+                    "entity_id": resource_id, 
+                    "entity_type": "knowledge_resource"
+                })
                 return True
                 
-            await step.run("trigger-toast", trigger_toast)
+            await step.run("broadcast-sync", broadcast_sync)
             
         finally:
-            # Cleanup temporary file from data/uploads
             async def cleanup_file():
                 if os.path.exists(file_path):
                     os.remove(file_path)
@@ -90,7 +99,5 @@ async def knowledge_indexing_workflow(ctx: inngest.Context, step: inngest.Step):
         }
     except Exception as main_e:
         import traceback
-        print(f"FATAL ERROR IN WORKFLOW: {main_e}")
         traceback.print_exc()
         raise main_e
-

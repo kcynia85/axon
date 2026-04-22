@@ -1,4 +1,4 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
@@ -33,6 +33,23 @@ class InboxRepository:
         
         result = await self.session.execute(stmt)
         return [self._to_domain(row) for row in result.scalars().all()]
+
+    async def create_item(self, item: InboxItem) -> InboxItem:
+        row = InboxItemTable(
+            id=item.id or uuid4(),
+            item_status=item.item_status,
+            item_type=item.item_type,
+            item_priority=item.item_priority,
+            item_title=item.item_title,
+            item_content=item.item_content,
+            item_source=item.item_source,
+            artifact_id=item.artifact_id,
+            project_id=item.project_id,
+            created_at=item.created_at or now_utc()
+        )
+        self.session.add(row)
+        await self.session.commit()
+        return self._to_domain(row)
 
     async def resolve_item(self, item_id: UUID) -> Optional[InboxItem]:
         stmt = (

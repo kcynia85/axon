@@ -40,6 +40,14 @@ class VoiceMetaAgentTable(Base):
     voice_id = Column(String, nullable=False)
     meta_agent_system_prompt = Column(String, nullable=False)
 
+class SystemAwarenessSettingsTable(Base):
+    __tablename__ = "system_awareness_settings"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    embedding_model_id = Column(UUID(as_uuid=True), ForeignKey("embedding_models.id"), nullable=True)
+    indexing_enabled = Column(Boolean, default=True)
+    realtime_sync_enabled = Column(Boolean, default=True)
+
 class SystemEmbeddingTable(Base):
     __tablename__ = "system_embeddings"
 

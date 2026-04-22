@@ -21,3 +21,12 @@ export const MetaAgentSchema = z.object({
 
 export type MetaAgent = z.infer<typeof MetaAgentSchema>;
 
+export const SystemAwarenessSettingsSchema = z.object({
+    id: z.string().uuid(),
+    embedding_model_id: z.string().uuid().optional().nullable(),
+    indexing_enabled: z.boolean().default(true),
+    realtime_sync_enabled: z.boolean().default(true),
+});
+
+export type SystemAwarenessSettings = z.infer<typeof SystemAwarenessSettingsSchema>;
+

@@ -37,17 +37,18 @@ const connect = () => {
       try {
         const url = new URL(API_BASE_URL);
         wsHost = url.host;
+        if (wsHost.startsWith("localhost")) {
+            wsHost = wsHost.replace("localhost", "127.0.0.1");
+        }
       } catch (e) {}
   }
   
   const wsUrl = `${wsProtocol}//${wsHost}/system/ws/awareness`;
-  console.log(`[System Awareness] Connecting: ${wsUrl}`);
   
   try {
     ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log(`[System Awareness] Connected successfully to ${wsUrl}`);
       if (reconnectTimer) {
         clearTimeout(reconnectTimer);
         reconnectTimer = null;
@@ -55,11 +56,9 @@ const connect = () => {
     };
 
     ws.onmessage = (event) => {
-      console.log("[System Awareness] Message received:", event.data);
       try {
         const data = JSON.parse(event.data);
         if (data.event === "awareness_synchronized") {
-          console.log("[System Awareness] SYNC TRIGGERED");
           state = { ...state, isSyncing: true, lastSyncTime: new Date() };
           emitChange();
           
@@ -73,14 +72,11 @@ const connect = () => {
 
     ws.onclose = (event) => {
       if (!event.wasClean) {
-          console.warn(`[System Awareness] Disconnected (${event.code}). Retrying...`);
           if (!reconnectTimer) {
             reconnectTimer = setTimeout(connect, 5000);
           }
       }
     };
-    
-    ws.onerror = () => {};
   } catch (e) {
     if (!reconnectTimer) {
         reconnectTimer = setTimeout(connect, 5000);

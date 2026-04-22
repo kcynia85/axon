@@ -33,6 +33,12 @@ class VoiceMetaAgent(BaseModel):
     meta_agent_system_prompt: str
     meta_agent_temperature: float = 0.7
 
+class SystemAwarenessSettings(BaseModel):
+    id: UUID = Field(default_factory=uuid4)
+    embedding_model_id: Optional[UUID] = None
+    indexing_enabled: bool = True
+    realtime_sync_enabled: bool = True
+
 class SystemAwarenessSearchResult(BaseModel):
     """
     Result returned by the SystemAwarenessRetrieverService.
