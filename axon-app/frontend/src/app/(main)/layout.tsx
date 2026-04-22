@@ -81,7 +81,7 @@ const MainLayout = ({ children }: MainLayoutProps): React.ReactNode => {
           >
             <Bell className="w-[18px] h-[18px] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 flex h-2 w-2 items-center justify-center rounded-full bg-blue-500 border border-white dark:border-black" />
+              <span className="absolute top-2.5 right-2.5 flex h-2 w-2 items-center justify-center rounded-full bg-blue-500 border border-white dark:border-black animate-pulse-fast" />
             )}
           </Button>
 

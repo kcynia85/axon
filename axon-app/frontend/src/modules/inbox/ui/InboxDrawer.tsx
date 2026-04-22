@@ -133,7 +133,7 @@ export const InboxDrawer = () => {
                             Notifications
                         </SheetTitle>
                         {unreadCount > 0 && (
-                            <span className="px-2 py-0.5 rounded-full bg-blue-500 text-white text-[10px] font-black leading-none shadow-lg shadow-blue-500/20">
+                            <span className="w-5 h-5 flex items-center justify-center rounded-full bg-blue-500 text-white text-[10px] font-black leading-none shadow-lg shadow-blue-500/20">
                                 {unreadCount}
                             </span>
                         )}

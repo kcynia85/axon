@@ -36,7 +36,6 @@ const settingsNavGroups = [
         href: "/settings/system",
         items: [
             { name: "System", href: "/settings/system/awareness", queryKey: ["system-awareness"], queryFn: settingsApi.getSystemEmbeddings },
-            { name: "Meta Agent", href: "/settings/system/meta-agent", queryKey: ["system-meta-agent"], queryFn: () => Promise.resolve([]) },
         ],
     },
 ];
