@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, SquarePen, Maximize2, Minus, FileText, AlignLeft, Languages, Search, CheckCircle, Plus, SlidersHorizontal, ArrowUp, Sparkles, Check, XCircle, HelpCircle, X, File, Image as ImageIcon } from 'lucide-react';
 import { MetaAgentDraftEntity, MetaAgentProposalConnection } from '../../infrastructure/metaAgentApi';
@@ -12,6 +12,7 @@ import {
 } from "@/shared/ui/ui/DropdownMenu";
 import { Tooltip } from "@/shared/ui/ui/Tooltip";
 import { MagicSphere } from "@/shared/ui/complex/MagicSphere";
+import { useSystemAwareness } from "@/shared/lib/hooks/useSystemAwareness";
 
 interface MetaAgentPanelProps {
     isOpen: boolean;
@@ -57,12 +58,8 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
     const [query, setQuery] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const [isMaximized, setIsMaximized] = useState(false);
-    const [mounted, setMounted] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const { isSyncing, lastSyncTime } = useSystemAwareness();
 
     const handleSubmit = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -110,8 +107,6 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
         fileInputRef.current?.click();
     };
 
-    if (!mounted) return null;
-
     return (
         <AnimatePresence>
             {isOpen && (
@@ -135,10 +130,20 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                         <button className="flex items-center gap-1.5 text-zinc-200 hover:bg-white/10 px-2 py-1 rounded-md transition-colors text-sm font-medium">
                             New Draft Flow <ChevronDown size={14} className="text-zinc-500" />
                         </button>
-                        <div className="flex items-center gap-1 text-zinc-400">
-                            <button onClick={onNewChat} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="New Draft"><SquarePen size={16} /></button>
-                            <button onClick={() => setIsMaximized(!isMaximized)} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title={isMaximized ? "Restore" : "Maximize"}><Maximize2 size={16} /></button>
-                            <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="Close"><Minus size={16} /></button>
+                        <div className="flex items-center gap-4">
+                            {lastSyncTime && (
+                                <div className="flex items-center gap-1.5 text-xs text-zinc-500 bg-zinc-900/50 px-2 py-1 rounded-full border border-white/5">
+                                    <div className={cn("w-1.5 h-1.5 rounded-full", isSyncing ? "bg-blue-400 animate-pulse" : "bg-green-500")}></div>
+                                    <span className={cn("transition-colors", isSyncing ? "text-blue-400" : "")}>
+                                        {isSyncing ? "Syncing..." : `System Synchronized at ${lastSyncTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`}
+                                    </span>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-1 text-zinc-400">
+                                <button onClick={onNewChat} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="New Draft"><SquarePen size={16} /></button>
+                                <button onClick={() => setIsMaximized(!isMaximized)} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title={isMaximized ? "Restore" : "Maximize"}><Maximize2 size={16} /></button>
+                                <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="Close"><Minus size={16} /></button>
+                            </div>
                         </div>
                     </div>
 
@@ -147,7 +152,7 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                         <div className="flex flex-col mb-8">
                             <div className="w-12 h-12 flex items-center justify-center mb-4 shrink-0 relative">
                                 <div className="absolute inset-0 scale-[0.35] origin-center">
-                                    <MagicSphere />
+                                    <MagicSphere isSyncing={isSyncing} />
                                 </div>
                             </div>
                             <h2 className="text-xl font-bold text-white mb-6">What kind of flow should I draft?</h2>

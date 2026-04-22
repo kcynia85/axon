@@ -2,6 +2,9 @@ from uuid import UUID
 from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+import inngest
+
+from app.shared.infrastructure.inngest_client import inngest_client
 from app.modules.spaces.domain.models import Space
 from app.modules.spaces.infrastructure.repo import SpaceRepository
 from app.modules.spaces.application.schemas import (
@@ -31,8 +34,27 @@ class SpaceService:
         self.agent_repo = agent_repo
         self.project_repo = project_repo
 
+    async def _trigger_indexing(self, space: Space) -> None:
+        payload = {
+            "name": getattr(space, "space_name", "") or str(space.id),
+            "description": getattr(space, "space_description", ""),
+            "canvas_data": getattr(space, "canvas_data", {})
+        }
+        await inngest_client.send(
+            inngest.Event(
+                name="system.entity.upserted",
+                data={
+                    "entity_id": str(space.id),
+                    "entity_type": "space",
+                    "payload": payload,
+                }
+            )
+        )
+
     async def create_space(self, space: Space) -> Space:
-        return await self.repo.create_space(space)
+        created_space = await self.repo.create_space(space)
+        await self._trigger_indexing(created_space)
+        return created_space
 
     async def list_spaces(self) -> List[Space]:
         """Returns all available spaces."""
@@ -160,12 +182,18 @@ class SpaceService:
         viewport = config.get("viewport", {"x": 0, "y": 0, "zoom": 1})
         await self.repo.update_canvas(space_id, canvas_data, viewport)
 
+        updated_space = await self.repo.get_space(space_id)
+        if updated_space:
+            await self._trigger_indexing(updated_space)
+
     async def update_space_metadata(self, space_id: str, updates: dict) -> Space:
         """Updates space name, description or status."""
         await self.repo.update_space(space_id, updates)
         updated_space = await self.repo.get_space(space_id)
         if not updated_space:
             raise HTTPException(status_code=404, detail="Space not found after update")
+        
+        await self._trigger_indexing(updated_space)
         return updated_space
 
     # ... existing methods ...

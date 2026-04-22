@@ -1,10 +1,13 @@
 from typing import List, Optional
 from uuid import UUID, uuid4
 from fastapi import Depends, HTTPException, status
+import inngest
+
 from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
 from app.modules.workspaces.domain.models import Pattern, Template, Crew, ExternalService, Automation, ServiceCapability, TrashItem
 from app.modules.workspaces.dependencies import get_workspace_repo
 from app.shared.utils.time import now_utc
+from app.shared.infrastructure.inngest_client import inngest_client
 from app.modules.workspaces.application.schemas import (
     CreatePatternRequest, UpdatePatternRequest,
     CreateTemplateRequest, UpdateTemplateRequest,
@@ -14,6 +17,29 @@ from app.modules.workspaces.application.schemas import (
 )
 
 # Function-First Use Cases (Standard-compliant)
+
+async def _trigger_indexing(entity_id: UUID, entity_type: str, payload: dict):
+    await inngest_client.send(
+        inngest.Event(
+            name="system.entity.upserted",
+            data={
+                "entity_id": str(entity_id),
+                "entity_type": entity_type,
+                "payload": payload
+            }
+        )
+    )
+
+async def _trigger_deletion(entity_id: UUID, entity_type: str):
+    await inngest_client.send(
+        inngest.Event(
+            name="system.entity.deleted",
+            data={
+                "entity_id": str(entity_id),
+                "entity_type": entity_type
+            }
+        )
+    )
 
 async def get_unique_workspaces_use_case(
     limit: int = 100, 
@@ -44,7 +70,9 @@ async def create_pattern_use_case(
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> Pattern:
     pattern = Pattern(**request.model_dump())
-    return await repo.create_pattern(pattern)
+    created = await repo.create_pattern(pattern)
+    await _trigger_indexing(created.id, "pattern", created.model_dump(mode="json"))
+    return created
 
 async def update_pattern_use_case(
     pattern_id: UUID, 
@@ -52,13 +80,19 @@ async def update_pattern_use_case(
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> Optional[Pattern]:
     data = request.model_dump(exclude_unset=True)
-    return await repo.update_pattern(pattern_id, data)
+    updated = await repo.update_pattern(pattern_id, data)
+    if updated:
+        await _trigger_indexing(updated.id, "pattern", updated.model_dump(mode="json"))
+    return updated
 
 async def delete_pattern_use_case(
     pattern_id: UUID,
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> bool:
-    return await repo.delete_pattern(pattern_id)
+    success = await repo.delete_pattern(pattern_id)
+    if success:
+        await _trigger_deletion(pattern_id, "pattern")
+    return success
 
 # --- Templates ---
 
@@ -81,7 +115,9 @@ async def create_template_use_case(
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> Template:
     template = Template(**request.model_dump())
-    return await repo.create_template(template)
+    created = await repo.create_template(template)
+    await _trigger_indexing(created.id, "template", created.model_dump(mode="json"))
+    return created
 
 async def update_template_use_case(
     template_id: UUID, 
@@ -89,7 +125,10 @@ async def update_template_use_case(
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> Optional[Template]:
     data = request.model_dump(exclude_unset=True)
-    return await repo.update_template(template_id, data)
+    updated = await repo.update_template(template_id, data)
+    if updated:
+        await _trigger_indexing(updated.id, "template", updated.model_dump(mode="json"))
+    return updated
 
 async def delete_template_use_case(
     template_id: UUID,
@@ -101,7 +140,10 @@ async def delete_template_use_case(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Cannot delete template. It is used in the following patterns: {', '.join(usage)}"
         )
-    return await repo.delete_template(template_id)
+    success = await repo.delete_template(template_id)
+    if success:
+        await _trigger_deletion(template_id, "template")
+    return success
 
 # --- Crews ---
 
@@ -124,7 +166,9 @@ async def create_crew_use_case(
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> Crew:
     crew = Crew(**request.model_dump(exclude={"agent_member_ids"}))
-    return await repo.create_crew(crew, request.agent_member_ids)
+    created = await repo.create_crew(crew, request.agent_member_ids)
+    await _trigger_indexing(created.id, "crew", created.model_dump(mode="json"))
+    return created
 
 async def update_crew_use_case(
     crew_id: UUID, 
@@ -133,13 +177,22 @@ async def update_crew_use_case(
 ) -> Optional[Crew]:
     data = request.model_dump(exclude_unset=True, exclude={"agent_member_ids"})
     agent_ids = request.agent_member_ids
-    return await repo.update_crew(crew_id, data, agent_ids)
+    updated = await repo.update_crew(crew_id, data, agent_ids)
+    if updated:
+        await _trigger_indexing(updated.id, "crew", updated.model_dump(mode="json"))
+    return updated
 
 async def delete_crew_use_case(
     crew_id: UUID,
     repo: WorkspaceRepository = Depends(get_workspace_repo)
 ) -> bool:
-    return await repo.delete_crew(crew_id)
+    success = await repo.delete_crew(crew_id)
+    if success:
+        await _trigger_deletion(crew_id, "crew")
+    return success
+
+# --- External Services ---
+# ... rest of the file ...
 
 # --- External Services ---
 

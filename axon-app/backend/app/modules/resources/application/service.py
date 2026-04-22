@@ -1,6 +1,8 @@
 import logging
 from uuid import UUID, uuid4
 from typing import List, Optional, Any
+import inngest
+
 from app.modules.resources.infrastructure.repo import ResourcesRepository
 from app.modules.resources.domain.models import (
     PromptArchetype, ExternalService, ServiceCapability, InternalTool, Automation
@@ -13,6 +15,7 @@ from app.modules.resources.application.schemas import (
 from app.modules.resources.application.tools_scanner import ToolsScannerService
 from app.modules.resources.domain.enums import ValidationStatus, ToolCategory
 from app.shared.utils.time import now_utc
+from app.shared.infrastructure.inngest_client import inngest_client
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +23,29 @@ class ResourcesService:
     def __init__(self, repo: ResourcesRepository):
         self.repo = repo
         self.scanner = ToolsScannerService()
+
+    async def _trigger_indexing(self, entity_id: UUID, entity_type: str, payload: dict):
+        await inngest_client.send(
+            inngest.Event(
+                name="system.entity.upserted",
+                data={
+                    "entity_id": str(entity_id),
+                    "entity_type": entity_type,
+                    "payload": payload
+                }
+            )
+        )
+
+    async def _trigger_deletion(self, entity_id: UUID, entity_type: str):
+        await inngest_client.send(
+            inngest.Event(
+                name="system.entity.deleted",
+                data={
+                    "entity_id": str(entity_id),
+                    "entity_type": entity_type
+                }
+            )
+        )
 
     # --- Prompt Archetypes ---
 
@@ -38,7 +64,9 @@ class ResourcesService:
             created_at=now_utc(),
             updated_at=now_utc()
         )
-        return await self.repo.create_prompt_archetype(archetype)
+        created = await self.repo.create_prompt_archetype(archetype)
+        await self._trigger_indexing(created.id, "prompt_archetype", created.model_dump(mode="json"))
+        return created
 
     async def list_prompt_archetypes(self) -> List[PromptArchetype]:
         return await self.repo.list_prompt_archetypes()
@@ -48,10 +76,16 @@ class ResourcesService:
 
     async def update_prompt_archetype(self, id: UUID, request: UpdatePromptArchetypeRequest) -> Optional[PromptArchetype]:
         update_data = request.model_dump(exclude_unset=True)
-        return await self.repo.update_prompt_archetype(id, update_data)
+        updated = await self.repo.update_prompt_archetype(id, update_data)
+        if updated:
+            await self._trigger_indexing(updated.id, "prompt_archetype", updated.model_dump(mode="json"))
+        return updated
 
     async def delete_prompt_archetype(self, id: UUID) -> bool:
-        return await self.repo.delete_prompt_archetype(id)
+        success = await self.repo.delete_prompt_archetype(id)
+        if success:
+            await self._trigger_deletion(id, "prompt_archetype")
+        return success
 
     # --- External Services ---
 
@@ -80,7 +114,10 @@ class ResourcesService:
             created_at=now_utc(),
             updated_at=now_utc()
         )
-        return await self.repo.create_external_service(service)
+        created = await self.repo.create_external_service(service)
+        # External services can also be indexed
+        await self._trigger_indexing(created.id, "external_service", created.model_dump(mode="json"))
+        return created
 
     async def list_external_services(self) -> List[ExternalService]:
         return await self.repo.list_external_services()
@@ -107,10 +144,16 @@ class ResourcesService:
             ]
             await self.repo.sync_service_capabilities(id, new_capabilities)
             
-        return await self.repo.update_external_service(id, update_data)
+        updated = await self.repo.update_external_service(id, update_data)
+        if updated:
+            await self._trigger_indexing(updated.id, "external_service", updated.model_dump(mode="json"))
+        return updated
 
     async def delete_external_service(self, id: UUID) -> bool:
-        return await self.repo.delete_external_service(id)
+        success = await self.repo.delete_external_service(id)
+        if success:
+            await self._trigger_deletion(id, "external_service")
+        return success
 
     async def add_service_capability(self, service_id: UUID, request: CreateCapabilityRequest) -> ServiceCapability:
         capability = ServiceCapability(
@@ -221,7 +264,10 @@ class ResourcesService:
                         created_at=now_utc(),
                         updated_at=now_utc()
                     )
-                    await self.repo.upsert_internal_tool(tool)
+                    upserted = await self.repo.upsert_internal_tool(tool)
+                    
+                    # Trigger indexing for the tool
+                    await self._trigger_indexing(upserted.id, "tool", upserted.model_dump(mode="json"))
                     
                     if is_new:
                         added += 1
@@ -244,6 +290,8 @@ class ResourcesService:
                 for db_tool in db_tools:
                     if db_tool.tool_function_name not in discovered_func_names and db_tool.tool_is_active:
                         await self.repo.deactivate_internal_tool(db_tool.tool_function_name)
+                        # Trigger deletion for deactivated tool
+                        await self._trigger_deletion(db_tool.id, "tool")
                         removed += 1
                         logger.info(f"Deactivated tool: {db_tool.tool_display_name}")
             except Exception as e:
@@ -276,7 +324,9 @@ class ResourcesService:
             created_at=now_utc(),
             updated_at=now_utc()
         )
-        return await self.repo.create_automation(automation)
+        created = await self.repo.create_automation(automation)
+        await self._trigger_indexing(created.id, "automation", created.model_dump(mode="json"))
+        return created
 
     async def list_automations(self, workspace_id: Optional[str] = None) -> List[Automation]:
         return await self.repo.list_automations(workspace_id)
@@ -286,10 +336,16 @@ class ResourcesService:
 
     async def update_automation(self, id: UUID, request: Any) -> Optional[Automation]:
         update_data = request.model_dump(exclude_unset=True) if hasattr(request, 'model_dump') else request
-        return await self.repo.update_automation(id, update_data)
+        updated = await self.repo.update_automation(id, update_data)
+        if updated:
+            await self._trigger_indexing(updated.id, "automation", updated.model_dump(mode="json"))
+        return updated
 
     async def delete_automation(self, id: UUID) -> bool:
-        return await self.repo.delete_automation(id)
+        success = await self.repo.delete_automation(id)
+        if success:
+            await self._trigger_deletion(id, "automation")
+        return success
 
     async def test_automation(self, id: UUID, payload: TestPayload) -> SimulatorResultResponse:
         # TODO: Implement real HTTP call using httpx

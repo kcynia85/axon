@@ -57,16 +57,21 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
 
   const handleApproveDrafts = async (drafts: any[], connections: any[]) => {
       try {
+          console.log("[MetaAgent] Starting approval of drafts:", drafts);
           const draftNameToNodeIdMap = new Map<string, string>();
-          const nodesToAddToCanvas: Array<{ type: string; data: Record<string, unknown>; workspaceId: string }> = [];
+          const draftNameToPersistedIdMap = new Map<string, string>();
           const persistedEntities: any[] = [];
 
-          // 1. Persist all entities to the backend/workspace FIRST
+          // 1. First Pass: Create all entities EXCEPT crews to get their UUIDs
           for (const draft of drafts) {
+              if (draft.entity === 'crew') continue;
+
               const type = draft.entity;
               let persistedEntity: any = null;
               const p = draft.payload || {};
               const targetWorkspace = draft.target_workspace || "ws-discovery";
+
+              console.log(`[MetaAgent] Creating ${type}: ${draft.name}`, p);
 
               switch (type) {
                   case 'agent':
@@ -80,16 +85,6 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
                           temperature: p.temperature ?? 0.7,
                           native_skills: Array.from(new Set(p.native_skills || [])),
                           tools: Array.from(new Set(p.tools || [])),
-                          availability_workspace: [targetWorkspace],
-                          ...p
-                      });
-                      break;
-                  case 'crew':
-                      persistedEntity = await createCrew({
-                          crew_name: p.crew_name || draft.name,
-                          crew_description: p.crew_description || draft.description,
-                          crew_process_type: p.crew_process_type || 'Sequential',
-                          agent_member_ids: p.agent_member_ids || [],
                           availability_workspace: [targetWorkspace],
                           ...p
                       });
@@ -117,13 +112,15 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
                           ...p
                       } as any);
                       break;
-                  default:
-                      console.warn(`Attempted to persist unknown entity type: ${type}`);
               }
 
               if (persistedEntity?.id) {
-                  const finalName = persistedEntity.agent_name || persistedEntity.crew_name || persistedEntity.template_name || persistedEntity.service_name || draft.name;
-                  const finalDescription = persistedEntity.agent_role_text || persistedEntity.crew_description || persistedEntity.template_description || persistedEntity.service_description || draft.description;
+                  draftNameToPersistedIdMap.set(draft.name, persistedEntity.id);
+                  // Also set common variations for better matching
+                  draftNameToPersistedIdMap.set(p.agent_name || draft.name, persistedEntity.id);
+                  
+                  const finalName = persistedEntity.agent_name || persistedEntity.template_name || persistedEntity.service_name || draft.name;
+                  const finalDescription = persistedEntity.agent_role_text || persistedEntity.template_description || persistedEntity.service_description || draft.description;
 
                   persistedEntities.push({
                       draftName: draft.name,
@@ -142,17 +139,92 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
               }
           }
 
-          // 2. Add all nodes to canvas in a SINGLE BATCH to avoid race conditions and misparenting
+          // 2. Second Pass: Create crews using the mapped UUIDs for agents
+          console.log("[MetaAgent] Persisted ID Map for members:", Object.fromEntries(draftNameToPersistedIdMap));
+          
+          for (const draft of drafts) {
+              if (draft.entity !== 'crew') continue;
+
+              const p = draft.payload || {};
+              const targetWorkspace = draft.target_workspace || "ws-discovery";
+              
+              // Meta-Agent sometimes uses 'members' instead of 'agent_member_ids' or just names in payload
+              const rawMembers = p.agent_member_ids || p.members || [];
+              console.log(`[MetaAgent] Resolving members for ${draft.name} from raw data:`, rawMembers);
+
+              // Map names to persisted UUIDs with enhanced fuzzy matching
+              const resolvedMemberIds = rawMembers.map((nameOrId: string) => {
+                  const resolved = draftNameToPersistedIdMap.get(nameOrId);
+                  if (resolved) return resolved;
+
+                  // Super-Fuzzy Match: Remove special chars and check inclusion
+                  const clean = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+                  const searchClean = clean(nameOrId);
+                  
+                  for (const [dName, id] of draftNameToPersistedIdMap.entries()) {
+                      const dClean = clean(dName);
+                      if (dClean === searchClean || dClean.includes(searchClean) || searchClean.includes(dClean)) {
+                          console.log(`[MetaAgent] Super-Fuzzy matched ${nameOrId} -> ${dName} (${id})`);
+                          return id;
+                      }
+                  }
+
+                  return nameOrId;
+              }).filter((id: string) => {
+                  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+                  return isUuid;
+              });
+
+              console.log(`[MetaAgent] Final member UUIDs for ${draft.name}:`, resolvedMemberIds);
+
+              // CLEAN PAYLOAD: Remove raw names/IDs before spread to prevent overwriting our resolved UUIDs
+              const cleanPayload = { ...p };
+              delete cleanPayload.agent_member_ids;
+              delete cleanPayload.members;
+
+              const persistedEntity = await createCrew({
+                  ...cleanPayload,
+                  crew_name: p.crew_name || draft.name,
+                  crew_description: p.crew_description || draft.description,
+                  crew_process_type: p.crew_process_type || 'Sequential',
+                  agent_member_ids: resolvedMemberIds,
+                  data_interface: p.data_interface || { inputs: [], outputs: [], artifacts: [] },
+                  availability_workspace: [targetWorkspace]
+              });
+
+              if (persistedEntity?.id) {
+                  draftNameToPersistedIdMap.set(draft.name, persistedEntity.id);
+                  
+                  const finalName = persistedEntity.crew_name || draft.name;
+                  const finalDescription = persistedEntity.crew_description || draft.description;
+
+                  persistedEntities.push({
+                      draftName: draft.name,
+                      type: 'crew',
+                      workspaceId: targetWorkspace,
+                      data: {
+                          ...persistedEntity,
+                          label: finalName,
+                          name: finalName,
+                          description: finalDescription,
+                          is_persisted: true,
+                          artefacts: p.artefacts || persistedEntity.artefacts || [],
+                          context_requirements: p.context_requirements || persistedEntity.context_requirements || []
+                      }
+                  });
+              }
+          }
+
+          // 3. Add all nodes to canvas
           const createdIds = orchestrator.addMultipleNodesToCanvas(
               persistedEntities.map(pe => ({ type: pe.type, data: pe.data, workspaceId: pe.workspaceId }))
           );
 
-          // Map draft names to newly created node IDs
           persistedEntities.forEach((pe, index) => {
               draftNameToNodeIdMap.set(pe.draftName, createdIds[index]);
           });
 
-          // 3. Create connections/edges between the new nodes based on SAME-ZONE connections
+          // 4. Create connections
           for (const conn of connections) {
               const sourceNodeId = draftNameToNodeIdMap.get(conn.source_draft_name);
               const targetNodeId = draftNameToNodeIdMap.get(conn.target_draft_name);
@@ -172,7 +244,7 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
           metaAgent.closePanel();
       } catch (error) {
           console.error("Failed to approve Meta-Agent flow drafts:", error);
-          toast.error("Failed to create flow. Please try again.");
+          toast.error("Failed to create flow. Check console for details.");
       }
   };
 

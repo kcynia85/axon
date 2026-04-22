@@ -1,6 +1,7 @@
 from uuid import UUID
 from typing import List
 from fastapi import HTTPException
+import inngest
 
 from app.modules.projects.infrastructure.repo import ProjectRepository
 from app.modules.projects.domain.models import Project, KeyResource, Artifact
@@ -13,8 +14,32 @@ from app.modules.projects.application.schemas import (
 from app.shared.security.schemas import UserPayload
 from app.modules.spaces.infrastructure.repo import SpaceRepository
 from app.modules.projects.domain.enums import ApprovalStatus
+from app.shared.infrastructure.inngest_client import inngest_client
 
 # Function-First Service Layer (Decoupled from FastAPI Depends)
+
+async def _trigger_indexing(entity_id: UUID, entity_type: str, payload: dict):
+    await inngest_client.send(
+        inngest.Event(
+            name="system.entity.upserted",
+            data={
+                "entity_id": str(entity_id),
+                "entity_type": entity_type,
+                "payload": payload
+            }
+        )
+    )
+
+async def _trigger_deletion(entity_id: UUID, entity_type: str):
+    await inngest_client.send(
+        inngest.Event(
+            name="system.entity.deleted",
+            data={
+                "entity_id": str(entity_id),
+                "entity_type": entity_type
+            }
+        )
+    )
 
 async def create_project_use_case(
     command: ProjectCreateDTO,
@@ -30,7 +55,9 @@ async def create_project_use_case(
         space_ids=command.space_ids,
         owner_id=user.sub
     )
-    return await repository.create(new_project)
+    created = await repository.create(new_project)
+    await _trigger_indexing(created.id, "project", created.model_dump(mode="json"))
+    return created
 
 async def list_projects_use_case(
     limit: int,
@@ -90,7 +117,10 @@ async def update_project_use_case(
     # Check existence & auth
     await get_project_use_case(project_id, user, repository)
     
-    return await repository.update(project_id, command.model_dump(exclude_unset=True))
+    updated = await repository.update(project_id, command.model_dump(exclude_unset=True))
+    if updated:
+        await _trigger_indexing(updated.id, "project", updated.model_dump(mode="json"))
+    return updated
 
 async def delete_project_use_case(
     project_id: UUID,
@@ -99,6 +129,7 @@ async def delete_project_use_case(
 ) -> dict:
     await get_project_use_case(project_id, user, repository)
     await repository.delete(project_id)
+    await _trigger_deletion(project_id, "project")
     return {"message": "Project deleted"}
 
 async def add_key_resource_use_case(

@@ -7,10 +7,14 @@ import { useRouter } from "next/navigation";
 import { TooltipProvider } from "@/shared/ui/ui/Tooltip";
 import { ThemeProvider } from "@/shared/infrastructure/ThemeProvider";
 import { useGlobalNotifications } from "@/shared/lib/hooks/useGlobalNotifications";
+import { useSystemAwareness } from "@/shared/lib/hooks/useSystemAwareness";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
     const router = useRouter();
     useGlobalNotifications();
+    
+    // Globally activate system awareness WebSocket
+    useSystemAwareness();
     
     const [queryClient] = useState(() => new QueryClient({
         defaultOptions: {

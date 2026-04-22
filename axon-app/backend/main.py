@@ -40,7 +40,6 @@ origins = [
     "http://localhost:8290",
     "http://127.0.0.1:8288",
     "http://127.0.0.1:8290",
-    "http://192.168.0.100:8290",
 ]
 
 app.add_middleware(
@@ -81,10 +80,22 @@ async def debug_exception_handler(request: Request, exc: Exception):
         f.write(f"API CRASH: {request.url}\n")
         f.write(traceback.format_exc())
         f.write("\n----------------\n")
+    
+    content = {"message": "Internal Server Error", "detail": str(exc), "traceback": traceback.format_exc()}
+    
+    # Manually add CORS headers for exception responses
+    origin = request.headers.get("origin")
+    headers = {
+        "Access-Control-Allow-Origin": origin if origin in origins else (origins[0] if origins else "*"),
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Headers": "*",
+    }
         
     return JSONResponse(
         status_code=500,
-        content={"message": "Internal Server Error", "detail": str(exc), "traceback": traceback.format_exc()},
+        content=content,
+        headers=headers
     )
 
 app.include_router(projects_router)

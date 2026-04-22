@@ -70,8 +70,9 @@ async def index_all():
         spaces = (await session.execute(select(SpaceTable))).scalars().all()
         for space in spaces:
             payload = {
-                "name": getattr(space, "name", "") or str(space.id),
-                "description": getattr(space, "description", ""),
+                "name": getattr(space, "name", "") or getattr(space, "space_name", "") or str(space.id),
+                "description": getattr(space, "description", "") or getattr(space, "space_description", ""),
+                "canvas_data": getattr(space, "canvas_data", {})
             }
             print(f"Indexing Space: {payload['name']}")
             await service.index_entity(space.id, "space", payload)
