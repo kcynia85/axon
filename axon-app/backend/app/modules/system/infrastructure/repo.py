@@ -54,7 +54,7 @@ class SystemRepository:
             return VoiceMetaAgent(
                 id=row.id,
                 voice_provider=row.voice_provider,
-                voice_id=row.voice_id,
+                provider_config=row.provider_config or {},
                 meta_agent_system_prompt=row.meta_agent_system_prompt
             )
         return None
@@ -69,7 +69,7 @@ class SystemRepository:
              new_voice = VoiceMetaAgentTable(
                  id=uuid4(),
                  voice_provider=data.get("voice_provider"),
-                 voice_id=data.get("voice_id"),
+                 provider_config=data.get("provider_config", {}),
                  meta_agent_system_prompt=data.get("meta_agent_system_prompt", "")
              )
              self.session.add(new_voice)

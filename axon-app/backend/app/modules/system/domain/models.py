@@ -29,7 +29,7 @@ class MetaAgent(BaseModel):
 class VoiceMetaAgent(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     voice_provider: VoiceProvider
-    voice_id: str
+    provider_config: Dict[str, Any] = Field(default_factory=dict)
     meta_agent_system_prompt: str
     meta_agent_temperature: float = 0.7
 

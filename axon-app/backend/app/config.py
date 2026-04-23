@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     # AI
     GOOGLE_API_KEY: str
     OPENAI_API_KEY: Optional[str] = None
+    ELEVENLABS_API_KEY: Optional[str] = None
 
     # Feature Flags (Phase 11.T Transitional Bridge)
     FEATURE_LANGCHAIN_ADAPTER: bool = True  # T3: LangChainAdapter - default ON

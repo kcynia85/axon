@@ -10,6 +10,8 @@ export const useMetaAgentForm = (initialData?: Partial<MetaAgentStudioData>) => 
             meta_agent_temperature: initialData?.meta_agent_temperature ?? 0.7,
             meta_agent_rag_enabled: initialData?.meta_agent_rag_enabled ?? true,
             llm_model_id: initialData?.llm_model_id ?? "",
+            voice_provider: initialData?.voice_provider ?? "ElevenLabs",
+            voice_id: initialData?.voice_id ?? "",
         },
     });
 };

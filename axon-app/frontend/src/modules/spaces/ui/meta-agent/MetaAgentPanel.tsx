@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, SquarePen, Maximize2, Minus, FileText, AlignLeft, Languages, Search, CheckCircle, Plus, SlidersHorizontal, ArrowUp, Sparkles, Check, XCircle, HelpCircle, X, File, Image as ImageIcon } from 'lucide-react';
+import { ChevronDown, SquarePen, Maximize2, Minus, FileText, AlignLeft, Languages, Search, CheckCircle, Plus, SlidersHorizontal, ArrowUp, Sparkles, Check, XCircle, HelpCircle, X, File, Image as ImageIcon, Mic } from 'lucide-react';
 import { MetaAgentDraftEntity, MetaAgentProposalConnection } from '../../infrastructure/metaAgentApi';
 import { cn } from "@/shared/lib/utils";
 import { Switch } from "@heroui/react";
@@ -12,6 +12,7 @@ import {
 } from "@/shared/ui/ui/DropdownMenu";
 import { Tooltip } from "@/shared/ui/ui/Tooltip";
 import { MagicSphere } from "@/shared/ui/complex/MagicSphere";
+import { useVoiceInteraction } from '../../application/useVoiceInteraction';
 
 interface MetaAgentPanelProps {
     isOpen: boolean;
@@ -104,6 +105,14 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
     const triggerFileUpload = () => {
         fileInputRef.current?.click();
     };
+
+    const {
+        isRecording,
+        isProcessing,
+        toggleRecording
+    } = useVoiceInteraction((transcribedText) => {
+        setQuery((prev) => prev ? `${prev} ${transcribedText}` : transcribedText);
+    });
 
     return (
         <AnimatePresence>
@@ -253,7 +262,7 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                     <div className="p-4 shrink-0 bg-transparent">
                         <div className={cn(
                             "relative flex flex-col bg-white/5 backdrop-blur-md rounded-[20px] border transition-colors shadow-sm",
-                            isFocused ? "border-blue-500/50" : "border-white/10",
+                            isFocused ? "border-white" : "border-white/10",
                             isProposing && "opacity-60 pointer-events-none"
                         )}>
                             <div className="flex flex-wrap items-center gap-1.5 px-3 pt-3 pb-1">
@@ -306,8 +315,24 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                     </DropdownMenu>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium text-zinc-400">Auto</span>
-                                    <button onClick={() => handleSubmit()} disabled={(!query.trim() && attachedFiles.length === 0) || isProposing} className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", (query.trim() || attachedFiles.length > 0) ? "bg-zinc-200 text-black hover:scale-105 active:scale-95" : "bg-white/10 text-zinc-600 cursor-not-allowed")}>
+                                    <button 
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            toggleRecording();
+                                        }}
+                                        className={cn(
+                                            "w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-95 border",
+                                            isRecording
+                                                ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
+                                                : "bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10 hover:text-zinc-300",
+                                            isProcessing && "opacity-50 cursor-wait pointer-events-none"
+                                        )}
+                                        title={isRecording ? "Stop Recording" : "Voice Input"}
+                                    >
+                                        <Mic size={16} strokeWidth={2.5} />
+                                    </button>
+                                    <button onClick={() => handleSubmit()} disabled={(!query.trim() && attachedFiles.length === 0) || isProposing} className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all border", (query.trim() || attachedFiles.length > 0) ? "bg-white text-black border-white hover:scale-105 active:scale-95" : "bg-white/5 border-white/10 text-zinc-600 cursor-not-allowed")}>
                                         <ArrowUp size={16} strokeWidth={2.5} />
                                     </button>
                                 </div>

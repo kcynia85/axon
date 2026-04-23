@@ -12,7 +12,14 @@ import { Skeleton } from "@/shared/ui/ui/Skeleton";
 
 export const MetaAgentStudioContainer = () => {
     const router = useRouter();
-    const { metaAgent, isLoading, updateMetaAgent, isUpdating } = useMetaAgent();
+    const { 
+        metaAgent, 
+        voiceMetaAgent,
+        isLoading, 
+        updateMetaAgent, 
+        updateVoice,
+        isUpdating 
+    } = useMetaAgent();
     
     const { data: llmModels, isLoading: isLoadingModels } = useQuery({
         queryKey: ["llm-models"],
@@ -21,8 +28,27 @@ export const MetaAgentStudioContainer = () => {
 
     const handleSave = async (data: MetaAgentStudioData) => {
         try {
-            await updateMetaAgent(data);
-            toast.success("Meta-Agent configuration updated successfully");
+            // Split data into meta-agent and voice-agent updates
+            const metaAgentData = {
+                meta_agent_system_prompt: data.meta_agent_system_prompt,
+                meta_agent_temperature: data.meta_agent_temperature,
+                meta_agent_rag_enabled: data.meta_agent_rag_enabled,
+                llm_model_id: data.llm_model_id,
+            };
+
+            const voiceData = {
+                voice_provider: data.voice_provider,
+                provider_config: data.provider_config,
+                // Optionally keep the system prompt synced if desired, 
+                // but the UI currently only exposes it for the core meta-agent
+            };
+
+            await Promise.all([
+                updateMetaAgent(metaAgentData),
+                updateVoice(voiceData)
+            ]);
+
+            toast.success("Meta-Agent and Voice configuration updated successfully");
             
             // Wait a bit and go back to awareness view
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -30,7 +56,7 @@ export const MetaAgentStudioContainer = () => {
             router.refresh();
         } catch (error) {
             console.error("Failed to update meta-agent:", error);
-            toast.error("Failed to update Meta-Agent configuration");
+            toast.error("Failed to update configuration");
         }
     };
 
@@ -49,9 +75,15 @@ export const MetaAgentStudioContainer = () => {
         );
     }
 
+    // Combine data for the form
+    const combinedData = {
+        ...metaAgent,
+        ...voiceMetaAgent
+    };
+
     return (
         <MetaAgentStudio 
-            initialData={metaAgent as any}
+            initialData={combinedData as any}
             onSave={handleSave}
             onCancel={handleCancel}
             isSaving={isUpdating}

@@ -37,7 +37,7 @@ class VoiceMetaAgentTable(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True)
     voice_provider = Column(SAEnum(VoiceProvider), nullable=False)
-    voice_id = Column(String, nullable=False)
+    provider_config = Column(JSONB, nullable=True)
     meta_agent_system_prompt = Column(String, nullable=False)
 
 class SystemAwarenessSettingsTable(Base):

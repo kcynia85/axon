@@ -13,7 +13,14 @@ import {
     ChunkingStrategySchema,
     VectorDatabaseSchema
 } from "@/shared/domain/settings";
-import { SystemEmbeddingSchema, SystemEmbedding, MetaAgent, MetaAgentSchema } from "@/shared/domain/system";
+import { 
+    SystemEmbeddingSchema, 
+    SystemEmbedding, 
+    MetaAgent, 
+    MetaAgentSchema, 
+    VoiceMetaAgent, 
+    VoiceMetaAgentSchema 
+} from "@/shared/domain/system";
 
 export type AvailableModelResponse = {
     id: string;
@@ -271,5 +278,17 @@ export const settingsApi = {
         const res = await apiClient.put("/system/awareness", data);
         const raw = await res.json() as unknown;
         return SystemAwarenessSettingsSchema.parse(raw);
+    },
+
+    getVoiceMetaAgent: async (): Promise<VoiceMetaAgent> => {
+        const res = await apiClient.get("/system/voice");
+        const data = await res.json() as unknown;
+        return VoiceMetaAgentSchema.parse(data);
+    },
+
+    updateVoiceMetaAgent: async (data: Partial<VoiceMetaAgent>): Promise<VoiceMetaAgent> => {
+        const res = await apiClient.put("/system/voice", data);
+        const raw = await res.json() as unknown;
+        return VoiceMetaAgentSchema.parse(raw);
     }
 };

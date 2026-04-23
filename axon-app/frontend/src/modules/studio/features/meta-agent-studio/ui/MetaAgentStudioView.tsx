@@ -13,6 +13,7 @@ import { LLMModel } from "@/shared/domain/settings";
 import { MetaAgentIdentitySection } from "./sections/MetaAgentIdentitySection";
 import { MetaAgentEngineSection } from "./sections/MetaAgentEngineSection";
 import { MetaAgentAwarenessSection } from "./sections/MetaAgentAwarenessSection";
+import { MetaAgentVoiceSection } from "./sections/MetaAgentVoiceSection";
 
 interface Props {
     form: UseFormReturn<MetaAgentStudioData>;
@@ -66,6 +67,7 @@ export const MetaAgentStudioView = ({
                                 <MetaAgentIdentitySection />
                                 <MetaAgentEngineSection llmModels={llmModels} />
                                 <MetaAgentAwarenessSection />
+                                <MetaAgentVoiceSection />
                             </form>
                         </div>
                     }

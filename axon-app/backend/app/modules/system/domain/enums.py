@@ -6,5 +6,8 @@ class UserRole(str, Enum):
 
 class VoiceProvider(str, Enum):
     ELEVENLABS = "ElevenLabs"
-    AZURE_TTS = "Azure_TTS"
-    GOOGLE_TTS = "Google_TTS"
+    INWORLD_AI = "Inworld_AI"
+    CARTESIA = "Cartesia"
+    GOOGLE_CLOUD = "Google_Cloud"
+    MICROSOFT_AZURE = "Microsoft_Azure"
+    AMAZON_POLLY = "Amazon_Polly"

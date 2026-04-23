@@ -21,6 +21,7 @@ const NAVIGATION_ITEMS = [
     { id: "identity", label: "Core Identity" },
     { id: "reasoning", label: "Cognitive Engine" },
     { id: "awareness", label: "System Awareness" },
+    { id: "voice", label: "Voice & Speech" },
 ] as const;
 
 export const MetaAgentStudio = ({

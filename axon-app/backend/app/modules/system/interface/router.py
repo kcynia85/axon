@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect, Body
+from fastapi import APIRouter, Depends, Query, WebSocket, WebSocketDisconnect, Body, UploadFile, File
+from fastapi.responses import StreamingResponse
 from typing import List, Dict, Any
 import os
 import json
@@ -7,7 +8,8 @@ from sqlalchemy import text
 
 from app.api.deps import get_current_user
 from app.modules.system.application.service import SystemService
-from app.modules.system.dependencies import get_system_service
+from app.modules.system.application.voice_service import VoiceInteractionService
+from app.modules.system.dependencies import get_system_service, get_voice_interaction_service
 from app.shared.infrastructure.websocket_manager import manager
 from app.shared.infrastructure.database import AsyncSessionLocal
 from app.modules.system.application.schemas import (
@@ -83,6 +85,26 @@ async def upsert_voice_meta_agent(
     service: SystemService = Depends(get_system_service)
 ):
     return await service.upsert_voice_meta_agent(request)
+
+@router.post("/voice/tts", dependencies=[Depends(get_current_user)])
+async def generate_speech(
+    payload: Dict[str, Any] = Body(...),
+    service: VoiceInteractionService = Depends(get_voice_interaction_service)
+):
+    text = payload.get("text", "")
+    return StreamingResponse(
+        service.handle_tts(text),
+        media_type="audio/mpeg"
+    )
+
+@router.post("/voice/stt", dependencies=[Depends(get_current_user)])
+async def transcribe_audio(
+    file: UploadFile = File(...),
+    service: VoiceInteractionService = Depends(get_voice_interaction_service)
+):
+    audio_data = await file.read()
+    text = await service.handle_stt(audio_data)
+    return {"text": text}
 
 # --- Awareness Settings ---
 
