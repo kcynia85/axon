@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID, JSONB
 from pgvector.sqlalchemy import Vector
 from app.shared.infrastructure.base import Base
 from app.shared.utils.time import now_utc
-from app.modules.system.domain.enums import UserRole, VoiceProvider
+from app.modules.system.domain.enums import UserRole, VoiceProvider, VoiceInteractionMode
 import uuid
 
 class UserTable(Base):
@@ -37,6 +37,7 @@ class VoiceMetaAgentTable(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True)
     voice_provider = Column(SAEnum(VoiceProvider), nullable=False)
+    interaction_mode = Column(SAEnum(VoiceInteractionMode), default=VoiceInteractionMode.LIVE_CONVERSATION, nullable=False)
     provider_config = Column(JSONB, nullable=True)
     meta_agent_system_prompt = Column(String, nullable=False)
 

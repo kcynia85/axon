@@ -5,9 +5,11 @@ import { FormTextField } from "@/shared/ui/form/FormTextField";
 import { FormSlider } from "@/shared/ui/form/FormSlider";
 import { FormSelect } from "@/shared/ui/form/FormSelect";
 import { Switch, Spinner } from "@heroui/react";
-import { ChevronDown, Zap } from "lucide-react";
+import { ChevronDown, Zap, Settings2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useVoiceModels } from "@/modules/system/application/meta-agent.hooks";
+import { NativeAccordion } from "@/shared/ui/ui/NativeAccordion";
+import { FormSubheading } from "@/shared/ui/form/FormSubheading";
 import type { MetaAgentStudioData } from "../../../types/meta-agent-schema";
 
 export const ElevenLabsSettingsView = () => {
@@ -18,7 +20,7 @@ export const ElevenLabsSettingsView = () => {
     const configErrors = errors.provider_config as Record<string, any> | undefined;
 
     return (
-        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="space-y-12 animate-in fade-in slide-in-from-top-2 duration-300 relative z-10">
             <div className="flex flex-col gap-8">
                 <FormItemField 
                     label="Voice ID" 
@@ -73,111 +75,127 @@ export const ElevenLabsSettingsView = () => {
                 </FormItemField>
             </div>
 
-            <div className="flex flex-col gap-10 p-8 bg-white/5 border border-white/5 rounded-3xl">
-                <FormItemField 
-                    label="Stability" 
-                    error={configErrors?.stability?.message}
-                    hint="Lower: expressive | Higher: consistent."
+            <div className="pt-8 border-t border-white/10 mt-4">
+                <NativeAccordion 
+                    title="Opcje Zaawansowane"
+                    icon={<Settings2 size={18} className="text-zinc-400" />}
                 >
-                    <Controller
-                        control={control}
-                        name="provider_config.stability"
-                        render={({ field }) => (
-                            <FormSlider
-                                value={field.value ?? 0.5}
-                                onChange={field.onChange}
-                                min={0}
-                                max={1}
-                                step={0.01}
-                                label="Stability"
-                            />
-                        )}
-                    />
-                </FormItemField>
+                    <div className="mt-8 space-y-16 pb-8">
+                        <div className="space-y-0">
+                            <FormSubheading className="font-bold mb-2">
+                                Parametry Syntezy
+                            </FormSubheading>
+                            <div className="h-px bg-white/10 w-full mb-12" />
 
-                <FormItemField 
-                    label="Similarity Boost" 
-                    error={configErrors?.similarity_boost?.message}
-                    hint="Higher: adheres closer to original voice."
-                >
-                    <Controller
-                        control={control}
-                        name="provider_config.similarity_boost"
-                        render={({ field }) => (
-                            <FormSlider
-                                value={field.value ?? 0.75}
-                                onChange={field.onChange}
-                                min={0}
-                                max={1}
-                                step={0.01}
-                                label="Similarity"
-                            />
-                        )}
-                    />
-                </FormItemField>
+                            <div className="grid grid-cols-1 gap-12">
+                                <FormItemField 
+                                    label="Stability" 
+                                    error={configErrors?.stability?.message}
+                                    hint="Lower: expressive | Higher: consistent."
+                                >
+                                    <Controller
+                                        control={control}
+                                        name="provider_config.stability"
+                                        render={({ field }) => (
+                                            <FormSlider
+                                                value={field.value ?? 0.5}
+                                                onChange={field.onChange}
+                                                min={0}
+                                                max={1}
+                                                step={0.01}
+                                                label="Stability"
+                                            />
+                                        )}
+                                    />
+                                </FormItemField>
 
-                <FormItemField 
-                    label="Style Exaggeration" 
-                    error={configErrors?.style?.message}
-                    hint="Amplifies original speaker's style."
-                >
-                    <Controller
-                        control={control}
-                        name="provider_config.style"
-                        render={({ field }) => (
-                            <FormSlider
-                                value={field.value ?? 0.0}
-                                onChange={field.onChange}
-                                min={0}
-                                max={1}
-                                step={0.01}
-                                label="Style"
-                            />
-                        )}
-                    />
-                </FormItemField>
+                                <FormItemField 
+                                    label="Similarity Boost" 
+                                    error={configErrors?.similarity_boost?.message}
+                                    hint="Higher: adheres closer to original voice."
+                                >
+                                    <Controller
+                                        control={control}
+                                        name="provider_config.similarity_boost"
+                                        render={({ field }) => (
+                                            <FormSlider
+                                                value={field.value ?? 0.75}
+                                                onChange={field.onChange}
+                                                min={0}
+                                                max={1}
+                                                step={0.01}
+                                                label="Similarity"
+                                            />
+                                        )}
+                                    />
+                                </FormItemField>
 
-                <FormItemField 
-                    label="Speaking Speed" 
-                    error={configErrors?.speed?.message}
-                    hint="0.7 (Slow) to 1.2 (Fast)."
-                >
-                    <Controller
-                        control={control}
-                        name="provider_config.speed"
-                        render={({ field }) => (
-                            <FormSlider
-                                value={field.value ?? 1.0}
-                                onChange={field.onChange}
-                                min={0.7}
-                                max={1.2}
-                                step={0.01}
-                                label="Speed"
-                            />
-                        )}
-                    />
-                </FormItemField>
+                                <FormItemField 
+                                    label="Style Exaggeration" 
+                                    error={configErrors?.style?.message}
+                                    hint="Amplifies original speaker's style."
+                                >
+                                    <Controller
+                                        control={control}
+                                        name="provider_config.style"
+                                        render={({ field }) => (
+                                            <FormSlider
+                                                value={field.value ?? 0.0}
+                                                onChange={field.onChange}
+                                                min={0}
+                                                max={1}
+                                                step={0.01}
+                                                label="Style"
+                                            />
+                                        )}
+                                    />
+                                </FormItemField>
 
-                <div className="flex flex-col justify-center pt-4 border-t border-white/5">
-                    <Controller
-                        control={control}
-                        name="provider_config.use_speaker_boost"
-                        render={({ field }) => (
-                            <div className="flex items-center justify-between p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl">
-                                <div className="space-y-1">
-                                    <span className="text-sm font-medium text-white">Speaker Boost</span>
-                                    <p className="text-xs text-zinc-500">Improves similarity to the original speaker (slight latency increase).</p>
+                                <FormItemField 
+                                    label="Speaking Speed" 
+                                    error={configErrors?.speed?.message}
+                                    hint="0.7 (Slow) to 1.2 (Fast)."
+                                >
+                                    <Controller
+                                        control={control}
+                                        name="provider_config.speed"
+                                        render={({ field }) => (
+                                            <FormSlider
+                                                value={field.value ?? 1.0}
+                                                onChange={field.onChange}
+                                                min={0.7}
+                                                max={1.2}
+                                                step={0.01}
+                                                label="Speed"
+                                            />
+                                        )}
+                                    />
+                                </FormItemField>
+
+                                <div className="flex flex-col justify-center pt-8 border-t border-white/5">
+                                    <Controller
+                                        control={control}
+                                        name="provider_config.use_speaker_boost"
+                                        render={({ field }) => (
+                                            <div className="flex items-center justify-between p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl">
+                                                <div className="space-y-1">
+                                                    <span className="text-base font-bold text-white">Speaker Boost</span>
+                                                    <p className="text-sm text-zinc-500">Improves similarity to the original speaker (slight latency increase).</p>
+                                                </div>
+                                                <Switch
+                                                    isSelected={field.value ?? true}
+                                                    onValueChange={field.onChange}
+                                                    size="md"
+                                                    color="primary"
+                                                />
+                                            </div>
+                                        )}
+                                    />
                                 </div>
-                                <Switch
-                                    isSelected={field.value ?? true}
-                                    onValueChange={field.onChange}
-                                    size="sm"
-                                    color="primary"
-                                />
                             </div>
-                        )}
-                    />
-                </div>
+                        </div>
+                    </div>
+                </NativeAccordion>
             </div>
         </div>
     );

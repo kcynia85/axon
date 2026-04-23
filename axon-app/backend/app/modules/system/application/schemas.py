@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from uuid import UUID
-from app.modules.system.domain.enums import VoiceProvider
+from app.modules.system.domain.enums import VoiceProvider, VoiceInteractionMode
 
 class MetaAgentResponse(BaseModel):
     id: UUID
@@ -21,11 +21,13 @@ class UpdateMetaAgentRequest(BaseModel):
 class VoiceMetaAgentResponse(BaseModel):
     id: UUID
     voice_provider: VoiceProvider
+    interaction_mode: VoiceInteractionMode
     provider_config: Dict[str, Any]
     meta_agent_system_prompt: str
 
 class UpdateVoiceMetaAgentRequest(BaseModel):
     voice_provider: Optional[VoiceProvider] = None
+    interaction_mode: Optional[VoiceInteractionMode] = None
     provider_config: Optional[Dict[str, Any]] = None
     meta_agent_system_prompt: Optional[str] = None
 

@@ -3,6 +3,7 @@ from typing import Optional, List, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 from app.modules.system.domain.models import MetaAgent, VoiceMetaAgent, SystemAwarenessSearchResult, SystemAwarenessSettings
+from app.modules.system.domain.enums import VoiceInteractionMode
 from app.modules.system.infrastructure.tables import MetaAgentTable, VoiceMetaAgentTable, SystemEmbeddingTable, SystemAwarenessSettingsTable
 
 class SystemRepository:
@@ -54,6 +55,7 @@ class SystemRepository:
             return VoiceMetaAgent(
                 id=row.id,
                 voice_provider=row.voice_provider,
+                interaction_mode=row.interaction_mode,
                 provider_config=row.provider_config or {},
                 meta_agent_system_prompt=row.meta_agent_system_prompt
             )
@@ -69,6 +71,7 @@ class SystemRepository:
              new_voice = VoiceMetaAgentTable(
                  id=uuid4(),
                  voice_provider=data.get("voice_provider"),
+                 interaction_mode=data.get("interaction_mode", VoiceInteractionMode.LIVE_CONVERSATION),
                  provider_config=data.get("provider_config", {}),
                  meta_agent_system_prompt=data.get("meta_agent_system_prompt", "")
              )

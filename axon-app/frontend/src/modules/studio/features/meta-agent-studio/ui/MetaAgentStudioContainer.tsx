@@ -43,6 +43,7 @@ export const MetaAgentStudioContainer = () => {
 
             const voiceData = {
                 voice_provider: data.voice_provider,
+                interaction_mode: data.interaction_mode,
                 provider_config: data.provider_config,
                 // Optionally keep the system prompt synced if desired, 
                 // but the UI currently only exposes it for the core meta-agent

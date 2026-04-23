@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, Dict, List, Any
 from pydantic import BaseModel, Field
 from app.shared.utils.time import now_utc
-from app.modules.system.domain.enums import UserRole, VoiceProvider
+from app.modules.system.domain.enums import UserRole, VoiceProvider, VoiceInteractionMode
 
 class User(BaseModel):
     id: UUID
@@ -29,6 +29,7 @@ class MetaAgent(BaseModel):
 class VoiceMetaAgent(BaseModel):
     id: UUID = Field(default_factory=uuid4)
     voice_provider: VoiceProvider
+    interaction_mode: VoiceInteractionMode = VoiceInteractionMode.LIVE_CONVERSATION
     provider_config: Dict[str, Any] = Field(default_factory=dict)
     meta_agent_system_prompt: str
     meta_agent_temperature: float = 0.7

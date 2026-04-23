@@ -191,7 +191,7 @@ export const ProviderAuthSection = ({ providerId }: ProviderAuthSectionProps) =>
 
 				{/* Advanced Configuration Combined */}
 				<div className="pt-4">
-					<NativeAccordion title="Zaawansowane">
+					<NativeAccordion title="Opcje Zaawansowane">
 						<div className="mt-8 space-y-20 pb-12">
 							{/* Advanced Auth Group - Flat style */}
 							<div className="space-y-0">

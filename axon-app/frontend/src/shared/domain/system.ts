@@ -30,6 +30,9 @@ export const SystemAwarenessSettingsSchema = z.object({
 
 export type SystemAwarenessSettings = z.infer<typeof SystemAwarenessSettingsSchema>;
 
+export const VoiceInteractionModeSchema = z.enum(["STT_ONLY", "LIVE_CONVERSATION"]);
+export type VoiceInteractionMode = z.infer<typeof VoiceInteractionModeSchema>;
+
 export const VoiceProviderSchema = z.enum(["ElevenLabs", "Inworld_AI", "Cartesia", "Google_Cloud", "Microsoft_Azure", "Amazon_Polly"]);
 export type VoiceProvider = z.infer<typeof VoiceProviderSchema>;
 
@@ -78,36 +81,42 @@ export const VoiceMetaAgentSchema = z.discriminatedUnion("voice_provider", [
     z.object({
         id: z.string().uuid(),
         voice_provider: z.literal("ElevenLabs"),
+        interaction_mode: VoiceInteractionModeSchema.default("Live_Conversation"),
         provider_config: ElevenLabsConfigSchema,
         meta_agent_system_prompt: z.string().optional().nullable(),
     }),
     z.object({
         id: z.string().uuid(),
         voice_provider: z.literal("Inworld_AI"),
+        interaction_mode: VoiceInteractionModeSchema.default("Live_Conversation"),
         provider_config: InworldAIConfigSchema,
         meta_agent_system_prompt: z.string().optional().nullable(),
     }),
     z.object({
         id: z.string().uuid(),
         voice_provider: z.literal("Cartesia"),
+        interaction_mode: VoiceInteractionModeSchema.default("Live_Conversation"),
         provider_config: CartesiaConfigSchema,
         meta_agent_system_prompt: z.string().optional().nullable(),
     }),
     z.object({
         id: z.string().uuid(),
         voice_provider: z.literal("Google_Cloud"),
+        interaction_mode: VoiceInteractionModeSchema.default("Live_Conversation"),
         provider_config: GoogleCloudConfigSchema,
         meta_agent_system_prompt: z.string().optional().nullable(),
     }),
     z.object({
         id: z.string().uuid(),
         voice_provider: z.literal("Microsoft_Azure"),
+        interaction_mode: VoiceInteractionModeSchema.default("Live_Conversation"),
         provider_config: MicrosoftAzureConfigSchema,
         meta_agent_system_prompt: z.string().optional().nullable(),
     }),
     z.object({
         id: z.string().uuid(),
         voice_provider: z.literal("Amazon_Polly"),
+        interaction_mode: VoiceInteractionModeSchema.default("Live_Conversation"),
         provider_config: AmazonPollyConfigSchema,
         meta_agent_system_prompt: z.string().optional().nullable(),
     })

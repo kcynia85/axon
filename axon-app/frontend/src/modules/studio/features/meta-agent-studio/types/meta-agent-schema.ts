@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { VoiceProviderSchema } from "@/shared/domain/system";
+import { VoiceProviderSchema, VoiceInteractionModeSchema } from "@/shared/domain/system";
 
 export const MetaAgentStudioSchema = z.object({
     // Core settings
@@ -10,6 +10,7 @@ export const MetaAgentStudioSchema = z.object({
     
     // Voice settings
     voice_provider: VoiceProviderSchema,
+    interaction_mode: VoiceInteractionModeSchema.default("LIVE_CONVERSATION"),
     provider_config: z.record(z.any()).default({}), // The actual validation happens in the domain schema during submission
 });
 
