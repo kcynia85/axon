@@ -5,6 +5,7 @@ from typing import Optional, List
 from app.modules.spaces.domain.meta_agent_models import MetaAgentProposalRequest, MetaAgentProposalResponse
 from app.modules.system.application.retriever import SystemAwarenessRetrieverService
 from app.modules.system.infrastructure.repo import SystemRepository
+from app.modules.settings.infrastructure.repo import SettingsRepository
 from app.modules.knowledge.application.rag import RAGService
 from app.shared.infrastructure.adapters.langchain_adapter import get_llm_adapter
 
@@ -15,10 +16,11 @@ class MetaAgentService:
     Service responsible for interacting with the Meta-Agent logic, retrieving system context
     via RAG#2 and Knowledge context via RAG#1, enforcing strict Pydantic output from the LLM.
     """
-    def __init__(self, system_retriever: SystemAwarenessRetrieverService, rag_service: RAGService, system_repo: SystemRepository):
+    def __init__(self, system_retriever: SystemAwarenessRetrieverService, rag_service: RAGService, system_repo: SystemRepository, settings_repo: SettingsRepository):
         self.system_retriever = system_retriever
         self.rag_service = rag_service
         self.system_repo = system_repo
+        self.settings_repo = settings_repo
         self.llm_adapter = get_llm_adapter()
 
     async def propose_draft(self, request: MetaAgentProposalRequest) -> MetaAgentProposalResponse:
@@ -135,7 +137,23 @@ JSON Schema:
         for attempt in range(max_retries):
             try:
                 # Use custom chat model configuration from Settings
+                model_name = "gpt-4o"
+                provider_name = "openai"
+                
+                if meta_agent_config and meta_agent_config.llm_model_id:
+                    try:
+                        model = await self.settings_repo.get_llm_model(meta_agent_config.llm_model_id)
+                        if model:
+                            model_name = model.model_id
+                            provider = await self.settings_repo.get_llm_provider(model.llm_provider_id)
+                            if provider:
+                                provider_name = provider.provider_technical_id
+                    except Exception as me:
+                        logger.warning(f"Failed to fetch model configuration: {me}")
+
                 chat_model = self.llm_adapter.get_chat_model(
+                    model_name=model_name,
+                    provider_name=provider_name,
                     temperature=llm_temperature
                 )
                 

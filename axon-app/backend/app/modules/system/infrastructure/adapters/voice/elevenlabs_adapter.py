@@ -27,12 +27,13 @@ class ElevenLabsAdapter(VoiceProviderPort):
         }
         payload = {
             "text": text,
-            "model_id": "eleven_multilingual_v2", # Default, could be extracted from config
+            "model_id": config.get("model_id", "eleven_multilingual_v2"),
             "voice_settings": {
                 "stability": config.get("stability", 0.5),
                 "similarity_boost": config.get("similarity_boost", 0.75),
                 "style": config.get("style", 0.0),
-                "use_speaker_boost": config.get("use_speaker_boost", True)
+                "use_speaker_boost": config.get("use_speaker_boost", True),
+                "speed": config.get("speed", 1.0)
             }
         }
         

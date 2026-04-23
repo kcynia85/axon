@@ -12,6 +12,7 @@ from app.modules.system.application.voice_service import VoiceInteractionService
 from app.modules.system.dependencies import get_system_service, get_voice_interaction_service
 from app.shared.infrastructure.websocket_manager import manager
 from app.shared.infrastructure.database import AsyncSessionLocal
+from app.modules.system.domain.enums import VoiceProvider
 from app.modules.system.application.schemas import (
     MetaAgentResponse, UpdateMetaAgentRequest,
     VoiceMetaAgentResponse, UpdateVoiceMetaAgentRequest,
@@ -105,6 +106,13 @@ async def transcribe_audio(
     audio_data = await file.read()
     text = await service.handle_stt(audio_data)
     return {"text": text}
+
+@router.get("/voice/providers/{provider}/models", dependencies=[Depends(get_current_user)])
+async def get_voice_provider_models(
+    provider: VoiceProvider,
+    service: VoiceInteractionService = Depends(get_voice_interaction_service)
+):
+    return await service.get_supported_models(provider)
 
 # --- Awareness Settings ---
 

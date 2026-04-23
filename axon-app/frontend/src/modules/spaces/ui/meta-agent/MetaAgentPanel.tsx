@@ -240,16 +240,16 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
 
                                         <div className="flex items-center gap-2 mt-6 pt-3 border-t border-white/5">
                                             <button 
-                                                onClick={() => onApproveDrafts(drafts, connections)}
-                                                className="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-2 rounded-lg transition-colors shadow-lg shadow-blue-500/20"
-                                            >
-                                                <Check size={16} /> Apply Flow
-                                            </button>
-                                            <button 
                                                 onClick={onRejectDraft}
-                                                className="flex-1 flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-white text-sm font-medium py-2 rounded-lg transition-colors border border-white/5"
+                                                className="flex-1 flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-zinc-100 text-sm font-medium py-2 rounded-lg transition-colors border border-white/5"
                                             >
                                                 <XCircle size={16} /> Discard
+                                            </button>
+                                            <button 
+                                                onClick={() => onApproveDrafts(drafts, connections)}
+                                                className="flex-1 flex items-center justify-center gap-1.5 bg-white text-black hover:bg-zinc-200 text-sm font-bold py-2 rounded-lg transition-colors shadow-lg shadow-white/10"
+                                            >
+                                                <Check size={16} /> Apply Flow
                                             </button>
                                         </div>
                                     </div>

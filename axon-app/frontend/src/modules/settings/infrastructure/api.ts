@@ -290,5 +290,10 @@ export const settingsApi = {
         const res = await apiClient.put("/system/voice", data);
         const raw = await res.json() as unknown;
         return VoiceMetaAgentSchema.parse(raw);
+    },
+
+    getVoiceProviderModels: async (provider: string): Promise<{ id: string, name: string, description: string }[]> => {
+        const res = await apiClient.get(`/system/voice/providers/${provider}/models`);
+        return await res.json() as { id: string, name: string, description: string }[];
     }
 };

@@ -1,4 +1,4 @@
-from typing import AsyncGenerator, Dict, Any
+from typing import AsyncGenerator, Dict, Any, List
 from fastapi import UploadFile
 from app.modules.system.infrastructure.repo import SystemRepository
 from app.modules.system.infrastructure.adapters.voice_adapter_factory import VoiceAdapterFactory
@@ -41,3 +41,16 @@ class VoiceInteractionService:
         adapter = VoiceAdapterFactory.get_adapter(voice_agent.voice_provider)
         
         return await adapter.transcribe_audio(audio_data, voice_agent.provider_config)
+
+    async def get_supported_models(self, provider: VoiceProvider) -> List[Dict[str, str]]:
+        """
+        Returns a list of supported models for a given voice provider.
+        """
+        if provider == VoiceProvider.ELEVENLABS:
+            return [
+                { "id": "eleven_multilingual_v2", "name": "Multilingual v2", "description": "Highest quality, support for 29 languages." },
+                { "id": "eleven_turbo_v2_5", "name": "Turbo v2.5", "description": "Low latency, great for real-time applications." },
+                { "id": "eleven_flash_v2_5", "name": "Flash v2.5", "description": "Lowest latency and cost." },
+                { "id": "eleven_monolingual_v1", "name": "Monolingual v1", "description": "Legacy English-only model." },
+            ]
+        return []

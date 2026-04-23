@@ -26,6 +26,11 @@ export const MetaAgentStudioContainer = () => {
         queryFn: settingsApi.getLLMModels,
     });
 
+    const { data: llmRouters, isLoading: isLoadingRouters } = useQuery({
+        queryKey: ["llm-routers"],
+        queryFn: settingsApi.getLLMRouters,
+    });
+
     const handleSave = async (data: MetaAgentStudioData) => {
         try {
             // Split data into meta-agent and voice-agent updates
@@ -64,7 +69,7 @@ export const MetaAgentStudioContainer = () => {
         router.back();
     };
 
-    if (isLoading || isLoadingModels) {
+    if (isLoading || isLoadingModels || isLoadingRouters) {
         return (
             <div className="h-screen w-screen bg-black flex items-center justify-center">
                 <div className="space-y-4 w-64">
@@ -88,7 +93,8 @@ export const MetaAgentStudioContainer = () => {
             onCancel={handleCancel}
             isSaving={isUpdating}
             llmModels={llmModels}
-            isLoadingModels={isLoadingModels}
+            isLoadingModels={isLoadingModels || isLoadingRouters}
+            llmRouters={llmRouters}
         />
     );
 };

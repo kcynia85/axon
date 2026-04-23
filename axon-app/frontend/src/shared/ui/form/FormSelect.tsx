@@ -90,6 +90,11 @@ export const FormSelect = (props: FormSelectProps) => {
 									/>
 								</div>
 							)}
+							{selectedOptions[0]?.icon && (
+								<div className="p-2 rounded-lg bg-zinc-800 text-zinc-400 shrink-0">
+									{selectedOptions[0].icon}
+								</div>
+							)}
 							<div className="flex flex-col">
 								{selectedOptions[0]?.variant ? (
 									<StatusBadge 
@@ -211,6 +216,14 @@ export const FormSelect = (props: FormSelectProps) => {
 											fill 
 											className="object-cover object-top scale-110" 
 										/>
+									</div>
+								)}
+								{opt.icon && (
+									<div className={cn(
+										"p-1.5 rounded-md text-zinc-400 shrink-0",
+										opt.disabled ? "bg-zinc-900/50" : "bg-white/5 group-hover:bg-white/10 group-hover:text-zinc-200 transition-colors"
+									)}>
+										{opt.icon}
 									</div>
 								)}
 								<div className="flex flex-col">

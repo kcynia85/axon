@@ -21,12 +21,12 @@ class UpdateMetaAgentRequest(BaseModel):
 class VoiceMetaAgentResponse(BaseModel):
     id: UUID
     voice_provider: VoiceProvider
-    voice_id: str
+    provider_config: Dict[str, Any]
     meta_agent_system_prompt: str
 
 class UpdateVoiceMetaAgentRequest(BaseModel):
     voice_provider: Optional[VoiceProvider] = None
-    voice_id: Optional[str] = None
+    provider_config: Optional[Dict[str, Any]] = None
     meta_agent_system_prompt: Optional[str] = None
 
 class SystemAwarenessSettingsResponse(BaseModel):

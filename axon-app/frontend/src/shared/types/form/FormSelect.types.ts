@@ -5,6 +5,7 @@ export type FormSelectOption = {
         readonly name: string;
         readonly subtitle?: string;
         readonly avatarUrl?: string;
+        readonly icon?: React.ReactNode;
         readonly variant?: "default" | "success" | "warning" | "error" | "info";
         readonly disabled?: boolean;
         readonly badgeLabel?: string;

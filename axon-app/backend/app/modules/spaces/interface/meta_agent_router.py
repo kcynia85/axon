@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from app.modules.spaces.domain.meta_agent_models import MetaAgentProposalRequest, MetaAgentProposalResponse
 from app.modules.spaces.application.meta_agent_service import MetaAgentService
 from app.modules.system.dependencies import get_system_awareness_retriever, get_system_repo
+from app.modules.settings.dependencies import get_settings_repo
+from app.modules.settings.infrastructure.repo import SettingsRepository
 from app.modules.system.application.retriever import SystemAwarenessRetrieverService
 from app.modules.system.infrastructure.repo import SystemRepository
 from app.modules.knowledge.application.rag import RAGService
@@ -12,9 +14,10 @@ router = APIRouter(prefix="/meta-agent", tags=["Meta-Agent"])
 async def get_meta_agent_service(
     system_retriever: SystemAwarenessRetrieverService = Depends(get_system_awareness_retriever),
     rag_service: RAGService = Depends(get_rag_service),
-    system_repo: SystemRepository = Depends(get_system_repo)
+    system_repo: SystemRepository = Depends(get_system_repo),
+    settings_repo: SettingsRepository = Depends(get_settings_repo)
 ) -> MetaAgentService:
-    return MetaAgentService(system_retriever, rag_service, system_repo)
+    return MetaAgentService(system_retriever, rag_service, system_repo, settings_repo)
 
 @router.post("/propose", response_model=MetaAgentProposalResponse)
 async def propose_draft(

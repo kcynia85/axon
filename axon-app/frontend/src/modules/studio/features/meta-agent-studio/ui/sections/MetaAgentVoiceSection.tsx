@@ -5,7 +5,9 @@ import { useFormContext, Controller, useWatch } from "react-hook-form";
 import { FormSection } from "@/shared/ui/form/FormSection";
 import { FormSelect } from "@/shared/ui/form/FormSelect";
 import { FormItemField } from "@/shared/ui/form/FormItemField";
-import { ChevronDown, Mic } from "lucide-react";
+import { ChevronDown, Mic, UserCircle, Zap, AudioLines } from "lucide-react";
+import { SiGooglecloud } from "react-icons/si";
+import { TbBrandAzure, TbBrandAws } from "react-icons/tb";
 import { cn } from "@/shared/lib/utils";
 import type { MetaAgentStudioData } from "../../types/meta-agent-schema";
 import type { VoiceProvider } from "@/shared/domain/system";
@@ -37,12 +39,12 @@ export const MetaAgentVoiceSection = () => {
     const currentProvider = useWatch({ control, name: "voice_provider" });
 
     const voiceProviders = [
-        { id: "ElevenLabs", name: "ElevenLabs" },
-        { id: "Inworld_AI", name: "Inworld AI" },
-        { id: "Cartesia", name: "Cartesia" },
-        { id: "Google_Cloud", name: "Google Cloud TTS" },
-        { id: "Microsoft_Azure", name: "Microsoft Azure TTS" },
-        { id: "Amazon_Polly", name: "Amazon Polly" },
+        { id: "ElevenLabs", name: "ElevenLabs", icon: <Mic size={18} /> },
+        { id: "Inworld_AI", name: "Inworld AI", icon: <UserCircle size={18} /> },
+        { id: "Cartesia", name: "Cartesia", icon: <AudioLines size={18} /> },
+        { id: "Google_Cloud", name: "Google Cloud TTS", icon: <SiGooglecloud size={18} /> },
+        { id: "Microsoft_Azure", name: "Microsoft Azure TTS", icon: <TbBrandAzure size={18} /> },
+        { id: "Amazon_Polly", name: "Amazon Polly", icon: <TbBrandAws size={18} /> },
     ];
 
     const handleProviderChange = (newProvider: VoiceProvider, onChange: (val: any) => void) => {
@@ -77,16 +79,23 @@ export const MetaAgentVoiceSection = () => {
                                 onChange={(val) => handleProviderChange(val as VoiceProvider, field.onChange)}
                                 placeholder="Select provider..."
                                 renderTrigger={(selectedItems) => (
-                                    <div className="flex items-center gap-3 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 rounded-xl hover:border-zinc-700 transition-colors">
-                                        <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400 group-hover/trigger:bg-zinc-700 transition-colors">
-                                            <Mic size={18} />
+                                    <div className="flex items-center gap-4 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 h-16 rounded-2xl hover:border-zinc-700 transition-colors">
+                                        <div className="p-2.5 rounded-xl bg-zinc-800 text-zinc-400 group-hover/trigger:bg-zinc-700 transition-colors shadow-inner border border-white/5">
+                                            {selectedItems.length > 0 ? selectedItems[0].icon : <Mic size={20} />}
                                         </div>
-                                        <span className={cn(
-                                            "text-lg font-bold transition-colors flex-1 text-left",
-                                            selectedItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
-                                        )}>
-                                            {selectedItems.length > 0 ? selectedItems[0].name : "Select provider..."}
-                                        </span>
+                                        <div className="flex flex-col flex-1 text-left">
+                                            <span className={cn(
+                                                "text-[15px] font-black transition-colors tracking-tight",
+                                                selectedItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+                                            )}>
+                                                {selectedItems.length > 0 ? selectedItems[0].name : "Select provider..."}
+                                            </span>
+                                            {selectedItems.length > 0 && (
+                                                <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest leading-none mt-0.5">
+                                                    Active Engine
+                                                </span>
+                                            )}
+                                        </div>
                                         <ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
                                     </div>
                                 )}

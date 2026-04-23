@@ -9,7 +9,7 @@ export const InworldAISettingsView = () => {
     const configErrors = errors.provider_config as Record<string, any> | undefined;
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="flex flex-col gap-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <FormItemField 
                 label="Character ID" 
                 error={configErrors?.character_id?.message}
@@ -23,7 +23,7 @@ export const InworldAISettingsView = () => {
                             {...field}
                             value={field.value || ""}
                             placeholder="Enter Character ID"
-                            className="bg-zinc-900/50 border-zinc-800 text-lg rounded-xl h-12 px-4"
+                            className="bg-zinc-900/50 border-zinc-800 text-lg rounded-xl h-14 px-4"
                         />
                     )}
                 />
@@ -42,7 +42,7 @@ export const InworldAISettingsView = () => {
                             {...field}
                             value={field.value || ""}
                             placeholder="Enter Scene ID (Optional)"
-                            className="bg-zinc-900/50 border-zinc-800 text-lg rounded-xl h-12 px-4"
+                            className="bg-zinc-900/50 border-zinc-800 text-lg rounded-xl h-14 px-4"
                         />
                     )}
                 />

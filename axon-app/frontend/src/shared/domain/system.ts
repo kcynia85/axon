@@ -35,10 +35,12 @@ export type VoiceProvider = z.infer<typeof VoiceProviderSchema>;
 
 export const ElevenLabsConfigSchema = z.object({
     voice_id: z.string(),
+    model_id: z.string().default("eleven_multilingual_v2"),
     stability: z.number().min(0).max(1).default(0.5),
     similarity_boost: z.number().min(0).max(1).default(0.75),
     style: z.number().min(0).max(1).default(0.0),
-    use_speaker_boost: z.boolean().default(true)
+    use_speaker_boost: z.boolean().default(true),
+    speed: z.number().min(0.7).max(1.2).default(1.0)
 });
 
 export const InworldAIConfigSchema = z.object({

@@ -3,10 +3,12 @@ from pydantic import BaseModel, Field
 
 class ElevenLabsConfig(BaseModel):
     voice_id: str
+    model_id: str = "eleven_multilingual_v2"
     stability: float = Field(default=0.5, ge=0.0, le=1.0)
     similarity_boost: float = Field(default=0.75, ge=0.0, le=1.0)
     style: float = Field(default=0.0, ge=0.0, le=1.0)
     use_speaker_boost: bool = True
+    speed: float = Field(default=1.0, ge=0.7, le=1.2)
 
 class InworldAIConfig(BaseModel):
     character_id: str

@@ -41,3 +41,11 @@ export const useMetaAgent = () => {
         isUpdating: updateMetaAgentMutation.isPending || updateVoiceMutation.isPending,
     };
 };
+
+export const useVoiceModels = (provider?: string) => {
+    return useQuery({
+        queryKey: ["voice-models", provider],
+        queryFn: () => settingsApi.getVoiceProviderModels(provider!),
+        enabled: !!provider,
+    });
+};
