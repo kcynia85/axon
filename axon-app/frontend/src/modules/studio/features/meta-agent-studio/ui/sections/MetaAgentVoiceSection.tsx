@@ -40,11 +40,11 @@ export const MetaAgentVoiceSection = () => {
 
     const voiceProviders = [
         { id: "ElevenLabs", name: "ElevenLabs", icon: <Mic size={18} /> },
-        { id: "Inworld_AI", name: "Inworld AI", icon: <UserCircle size={18} /> },
-        { id: "Cartesia", name: "Cartesia", icon: <AudioLines size={18} /> },
-        { id: "Google_Cloud", name: "Google Cloud TTS", icon: <SiGooglecloud size={18} /> },
-        { id: "Microsoft_Azure", name: "Microsoft Azure TTS", icon: <TbBrandAzure size={18} /> },
-        { id: "Amazon_Polly", name: "Amazon Polly", icon: <TbBrandAws size={18} /> },
+        { id: "Inworld_AI", name: "Inworld AI", icon: <UserCircle size={18} />, disabled: true },
+        { id: "Cartesia", name: "Cartesia", icon: <AudioLines size={18} />, disabled: true },
+        { id: "Google_Cloud", name: "Google Cloud TTS", icon: <SiGooglecloud size={18} />, disabled: true },
+        { id: "Microsoft_Azure", name: "Microsoft Azure TTS", icon: <TbBrandAzure size={18} />, disabled: true },
+        { id: "Amazon_Polly", name: "Amazon Polly", icon: <TbBrandAws size={18} />, disabled: true },
     ];
 
     const interactionModes = [

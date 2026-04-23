@@ -1,0 +1,170 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - main [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - link "Spaces" [ref=e8] [cursor=pointer]:
+              - /url: /spaces
+            - generic [ref=e9]: /
+            - generic [ref=e10]: Demo Space
+          - generic [ref=e13]:
+            - heading "Demo Space" [level=1] [ref=e15]
+            - generic [ref=e17]:
+              - text: "Linked:"
+              - link "Final Test Project" [ref=e18] [cursor=pointer]:
+                - /url: /projects/cce17853-6e23-4037-b989-eac40a733bce
+        - generic [ref=e19]:
+          - generic [ref=e21]:
+            - img [ref=e22]
+            - generic [ref=e24]: Saved
+          - button [ref=e26]:
+            - generic [ref=e27]:
+              - img
+        - application [ref=e28]:
+          - generic [ref=e30]:
+            - generic:
+              - generic:
+                - group [ref=e31]:
+                  - generic [ref=e36]: DISCOVERY
+                - group [ref=e39]:
+                  - generic [ref=e44]: DELIVERY
+                - group [ref=e47]:
+                  - generic [ref=e51]:
+                    - generic [ref=e52]:
+                      - img [ref=e54]
+                      - generic [ref=e57]:
+                        - generic [ref=e59]: EfficiencyBot
+                        - generic [ref=e60]: MISSING CONTEXT
+                    - generic [ref=e62]:
+                      - img [ref=e63]
+                      - generic [ref=e65]: Fill in context to start...
+                - group [ref=e67]:
+                  - generic [ref=e71]:
+                    - generic [ref=e72]:
+                      - img [ref=e74]
+                      - generic [ref=e77]:
+                        - generic [ref=e79]: Lead Researcher Bot
+                        - generic [ref=e80]: MISSING CONTEXT
+                    - generic [ref=e82]:
+                      - img [ref=e83]
+                      - generic [ref=e85]: Fill in context to start...
+                - group [ref=e87]:
+                  - generic [ref=e91]:
+                    - generic [ref=e92]:
+                      - img [ref=e94]
+                      - generic [ref=e97]:
+                        - generic [ref=e99]: Lead Researcher
+                        - generic [ref=e100]: MISSING CONTEXT
+                    - generic [ref=e102]:
+                      - img [ref=e103]
+                      - generic [ref=e105]: Fill in context to start...
+                - group [ref=e107]:
+                  - generic [ref=e112]: PRODUCT
+                - group [ref=e115]:
+                  - generic [ref=e119]:
+                    - generic [ref=e121]: Sequential
+                    - generic [ref=e122]:
+                      - generic [ref=e124]:
+                        - img [ref=e126]
+                        - img [ref=e132]
+                      - generic [ref=e137]:
+                        - generic [ref=e139]: Web Research Crew
+                        - generic [ref=e140]: Context Missing
+                    - generic [ref=e142]:
+                      - heading "Team" [level=4] [ref=e143]
+                      - generic [ref=e144]:
+                        - generic [ref=e148]: Conducts in-depth web research and synthesizes information into comprehensive reports.
+                        - generic [ref=e152]: Processes and inputs data from research reports into the designated systems.
+          - img
+          - generic "Control Panel" [ref=e154]:
+            - button "Zoom In" [ref=e155] [cursor=pointer]:
+              - img [ref=e156]
+            - button "Zoom Out" [ref=e158] [cursor=pointer]:
+              - img [ref=e159]
+            - button "Fit View" [ref=e161] [cursor=pointer]:
+              - img [ref=e162]
+            - button "Toggle Interactivity" [ref=e164] [cursor=pointer]:
+              - img [ref=e165]
+          - generic [ref=e169]:
+            - heading "Workspaces" [level=2] [ref=e171]
+            - generic [ref=e173]:
+              - button "Discovery" [ref=e174] [cursor=pointer]
+              - button "Design" [ref=e175] [cursor=pointer]
+              - button "Delivery" [ref=e176] [cursor=pointer]
+              - button "Product Management" [ref=e177] [cursor=pointer]
+              - button "Growth & Market" [ref=e178] [cursor=pointer]
+          - link "React Flow attribution" [ref=e180] [cursor=pointer]:
+            - /url: https://reactflow.dev
+            - text: React Flow
+        - generic:
+          - generic: "N"
+        - button
+        - generic [ref=e182]:
+          - generic [ref=e183]:
+            - button "New Draft Flow" [ref=e184]:
+              - text: New Draft Flow
+              - img [ref=e185]
+            - generic [ref=e188]:
+              - button "New Draft" [ref=e189]:
+                - img [ref=e190]
+              - button "Maximize" [ref=e193]:
+                - img [ref=e194]
+              - button "Close" [ref=e199]:
+                - img [ref=e200]
+          - generic [ref=e202]:
+            - heading "What kind of flow should I draft?" [level=2] [ref=e210]
+            - generic [ref=e211]:
+              - button "Draft a Data Analyst Agent" [ref=e212]:
+                - img [ref=e214]
+                - generic [ref=e215]: Draft a Data Analyst Agent
+              - button "Draft a Web Research Crew" [ref=e216]:
+                - img [ref=e218]
+                - generic [ref=e222]: Draft a Web Research Crew
+              - button "Draft a Python Code Executor Tool" [ref=e223]:
+                - img [ref=e225]
+                - generic [ref=e228]: Draft a Python Code Executor Tool
+              - button "Draft a Content Writing Process" [ref=e229]:
+                - img [ref=e231]
+                - generic [ref=e234]: Draft a Content Writing Process
+          - generic [ref=e236]:
+            - generic [ref=e238]:
+              - img [ref=e239]
+              - generic [ref=e242]: Space Canvas
+            - textbox "Describe the flow, agent, or crew..." [ref=e243]
+            - generic [ref=e244]:
+              - generic [ref=e245]:
+                - button "Attach context" [ref=e246]:
+                  - img [ref=e247]
+                - button "Meta-Agent Settings" [ref=e248]:
+                  - img [ref=e249]
+              - generic [ref=e250]:
+                - button "Voice Input" [active] [ref=e251]:
+                  - img [ref=e252]
+                - button [disabled] [ref=e255]:
+                  - img [ref=e256]
+    - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e263] [cursor=pointer]:
+    - img [ref=e264]
+  - generic [ref=e268]:
+    - generic [ref=e270]:
+      - generic [ref=e271]:
+        - button "Select element" [ref=e274] [cursor=pointer]:
+          - img [ref=e275]
+        - generic:
+          - generic:
+            - button "Open comments":
+              - generic:
+                - img
+        - generic:
+          - generic:
+            - button "Copy all comments":
+              - img
+      - button "Disable React Grab" [pressed] [ref=e279] [cursor=pointer]
+    - button "Collapse toolbar" [ref=e282] [cursor=pointer]:
+      - img [ref=e283]
+  - alert [ref=e285]
+```

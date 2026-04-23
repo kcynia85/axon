@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Clock, Search, X } from "lucide-react";
+import { Check, ChevronDown, Search, X } from "lucide-react";
 import type React from "react";
 import Image from "next/image";
 import { cn } from "@/shared/lib/utils";
@@ -9,7 +9,6 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/shared/ui/ui/DropdownMenu";
 import type { FormSelectProps } from "@/shared/types/form/FormSelect.types";
@@ -22,7 +21,6 @@ export const FormSelect = (props: FormSelectProps) => {
 		selectedIds,
 		selectedOptions,
 		filteredOptions,
-		recentOptions,
 		handleSelect,
 		handleOpenChange,
 	} = useFormSelect(props);
@@ -32,7 +30,6 @@ export const FormSelect = (props: FormSelectProps) => {
 		placeholder = "Select option...",
 		searchPlaceholder = "Search...",
 		className,
-		hideRecent = false,
 		renderTrigger,
 	} = props;
 
@@ -81,7 +78,7 @@ export const FormSelect = (props: FormSelectProps) => {
 					) : (
 						<div className="flex items-center gap-4">
 							{selectedOptions[0]?.avatarUrl && (
-								<div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20 shrink-0 bg-black">
+								<div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10 shrink-0 bg-black">
 									<Image 
 										src={selectedOptions[0].avatarUrl} 
 										alt={selectedOptions[0].name} 
@@ -143,52 +140,6 @@ export const FormSelect = (props: FormSelectProps) => {
 				</div>
 
 				<div className="max-h-[400px] overflow-y-auto custom-scrollbar p-1">
-					{recentOptions.length > 0 && !search && !hideRecent && (
-						<>
-							<DropdownMenuLabel className="px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-400 flex items-center gap-2">
-								<Clock size={12} /> Recently Used
-							</DropdownMenuLabel>
-							{recentOptions.map((opt) => (
-								<DropdownMenuItem
-									key={`recent-${opt.id}`}
-									onClick={() => handleSelect(opt.id)}
-									className="px-4 py-4 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer flex items-center justify-between group transition-colors"
-								>
-									<div className="flex items-center gap-4">
-										{opt.avatarUrl && (
-											<div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary/10 shrink-0 bg-black">
-												<Image 
-													src={opt.avatarUrl} 
-													alt={opt.name} 
-													fill 
-													className="object-cover object-top scale-110" 
-												/>
-											</div>
-										)}
-										<div className="flex flex-col">
-											{opt.variant ? (
-												<StatusBadge status={opt.name} variant={opt.variant as any} />
-											) : (
-												<span className="text-[16px] font-bold text-zinc-900 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white">
-													{opt.name}
-												</span>
-											)}
-											{opt.subtitle && (
-												<span className="text-[14px] text-zinc-400 font-mono">
-													{opt.subtitle}
-												</span>
-											)}
-										</div>
-									</div>
-									{selectedIds.includes(opt.id) && (
-										<Check className="w-4 h-4 text-primary" />
-									)}
-								</DropdownMenuItem>
-							))}
-							<DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-800 my-2" />
-						</>
-					)}
-
 					<DropdownMenuLabel className="px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-400">
 						All Options
 					</DropdownMenuLabel>
@@ -279,4 +230,3 @@ export const FormSelect = (props: FormSelectProps) => {
 		</DropdownMenu>
 	);
 };
-

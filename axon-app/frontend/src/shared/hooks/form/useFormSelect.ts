@@ -8,7 +8,6 @@ export const useFormSelect = ({
 	multiple,
 }: FormSelectProps) => {
 	const [search, setSearch] = useState("");
-	const [recent, setRecent] = useState<string[]>([]);
 
 	const selectedIds = useMemo(() => {
 		if (!value) return [];
@@ -25,10 +24,6 @@ export const useFormSelect = ({
 		);
 	}, [options, search]);
 
-	const recentOptions = useMemo(() => {
-		return options.filter((opt) => recent.includes(opt.id));
-	}, [options, recent]);
-
 	const handleSelect = (id: string) => {
 		if (multiple) {
 			const nextValue = selectedIds.includes(id)
@@ -38,11 +33,6 @@ export const useFormSelect = ({
 		} else {
 			onChange(id);
 		}
-
-		setRecent((prev) => {
-			const next = [id, ...prev.filter((p) => p !== id)].slice(0, 3);
-			return next;
-		});
 	};
 
 	const handleOpenChange = (open: boolean) => {
@@ -57,7 +47,6 @@ export const useFormSelect = ({
 		selectedIds,
 		selectedOptions,
 		filteredOptions,
-		recentOptions,
 		handleSelect,
 		handleOpenChange,
 	};

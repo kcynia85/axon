@@ -18,7 +18,6 @@ export type FormSelectProps = {
 	readonly placeholder?: string;
 	readonly searchPlaceholder?: string;
 	readonly className?: string;
-	readonly hideRecent?: boolean;
 	readonly renderTrigger?: (
 		selectedOptions: FormSelectOption[],
 	) => React.ReactNode;
