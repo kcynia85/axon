@@ -152,7 +152,7 @@ export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogi
     readonly isSaving: boolean;
     readonly availableAgents: any[];
     readonly availableCrews: any[];
-    readonly metaAgent?: {
+    metaAgent?: {
         isPanelOpen: boolean;
         togglePanel: () => void;
         closePanel: () => void;
@@ -172,6 +172,8 @@ export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogi
         attachedFiles: any[];
         addFiles: (files: any[]) => void;
         removeFile: (name: string) => void;
+        hasProjectContext?: boolean;
+        hasNotionContext?: boolean;
     };
 };
 

@@ -14,7 +14,7 @@ class MetaAgentProposalRequest(BaseModel):
     attachments: Optional[List[MetaAgentAttachment]] = Field(default_factory=list)
 
 class MetaAgentDraftEntity(BaseModel):
-    entity: Literal["agent", "crew", "task", "tool", "knowledge", "unknown"] = Field(
+    entity: Literal["agent", "crew", "knowledge", "unknown"] = Field(
         ..., description="The type of entity the user wants to create or modify."
     )
     status: Literal["draft"] = Field("draft", description="Always set to 'draft'.")

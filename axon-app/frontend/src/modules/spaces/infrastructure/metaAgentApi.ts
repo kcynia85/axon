@@ -15,7 +15,7 @@ export interface MetaAgentProposalRequest {
 }
 
 export interface MetaAgentDraftEntity {
-    entity: "agent" | "crew" | "task" | "tool" | "knowledge" | "unknown";
+    entity: "agent" | "crew" | "knowledge" | "unknown";
     status: "draft";
     name: string;
     description: string;

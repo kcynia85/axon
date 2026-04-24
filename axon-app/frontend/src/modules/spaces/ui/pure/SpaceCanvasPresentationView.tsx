@@ -347,6 +347,9 @@ export const SpaceCanvasPresentationView = ({
                 attachedFiles={metaAgent.attachedFiles}
                 addFiles={metaAgent.addFiles}
                 removeFile={metaAgent.removeFile}
+                hasProjectContext={metaAgent.hasProjectContext}
+                hasNotionContext={metaAgent.hasNotionContext}
+                systemAwarenessEnabled={metaAgent.systemAwarenessEnabled}
             />
         </>
       )}

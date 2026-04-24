@@ -1,174 +1,132 @@
-import json
 import logging
-import re
-from typing import Optional, List
+from typing import Optional
+
 from app.modules.spaces.domain.meta_agent_models import MetaAgentProposalRequest, MetaAgentProposalResponse
+from app.modules.spaces.infrastructure.repo import SpaceRepository
+from app.modules.projects.infrastructure.repo import ProjectRepository
 from app.modules.system.application.retriever import SystemAwarenessRetrieverService
 from app.modules.system.infrastructure.repo import SystemRepository
 from app.modules.settings.infrastructure.repo import SettingsRepository
 from app.modules.knowledge.application.rag import RAGService
 from app.shared.infrastructure.adapters.langchain_adapter import get_llm_adapter
+from app.shared.domain.ports.external_docs import ExternalDocumentationPort
+from app.shared.infrastructure.adapters.notion_adapter import get_external_docs_adapter
+from app.modules.spaces.application.meta_agent_workflow import MetaAgentGraphBuilder
 
 logger = logging.getLogger(__name__)
 
 class MetaAgentService:
     """
-    Service responsible for interacting with the Meta-Agent logic, retrieving system context
-    via RAG#2 and Knowledge context via RAG#1, enforcing strict Pydantic output from the LLM.
+    Service responsible for interacting with the Meta-Agent logic via an Agentic Workflow (LangGraph).
     """
-    def __init__(self, system_retriever: SystemAwarenessRetrieverService, rag_service: RAGService, system_repo: SystemRepository, settings_repo: SettingsRepository):
+    def __init__(
+        self, 
+        system_retriever: SystemAwarenessRetrieverService, 
+        rag_service: RAGService, 
+        system_repo: SystemRepository, 
+        settings_repo: SettingsRepository, 
+        space_repo: SpaceRepository,
+        project_repo: ProjectRepository,
+        external_docs_port: ExternalDocumentationPort = get_external_docs_adapter()
+    ):
         self.system_retriever = system_retriever
         self.rag_service = rag_service
         self.system_repo = system_repo
         self.settings_repo = settings_repo
+        self.space_repo = space_repo
+        self.project_repo = project_repo
+        self.external_docs_port = external_docs_port
         self.llm_adapter = get_llm_adapter()
 
     async def propose_draft(self, request: MetaAgentProposalRequest) -> MetaAgentProposalResponse:
         """
-        Uses RAG#1 (Knowledge) and RAG#2 (System Awareness) to get context based on user query, 
-        then asks the LLM for a structured proposal of a complete flow (multiple entities).
+        Uses LangGraph workflow to plan, retrieve context, draft JSON and validate it.
         """
         # Fetch global Meta-Agent configuration from Settings
         meta_agent_config = await self.system_repo.get_meta_agent()
-        custom_system_instruction = meta_agent_config.meta_agent_system_prompt if meta_agent_config else "You are the Axon Meta-Agent, a senior AI architect."
-        llm_temperature = meta_agent_config.meta_agent_temperature if meta_agent_config else 0.7
 
-        context_data = request.context or {}
-        knowledge_enabled = context_data.get("knowledge_enabled", True)
-        system_awareness_enabled = context_data.get("system_awareness_enabled", True)
-        
-        system_context_str = ""
-        knowledge_context_str = ""
-
-        # 1. Retrieve system context via RAG#2 (System Awareness)
-        if system_awareness_enabled:
-            try:
-                system_context_results = await self.system_retriever.search(query=request.query, limit=5)
-                system_context_str = "\n".join([
-                    f"- Existing Entity: {r.entity_type}, Name: {r.payload.get('name', 'Unknown')}, Description: {r.payload.get('description', '')}"
-                    for r in system_context_results
-                ])
-            except Exception as e:
-                logger.warning(f"RAG#2 (System Awareness) failed: {e}")
-                system_context_str = "Error retrieving system context."
-
-        # 2. Retrieve knowledge context via RAG#1 (Knowledge)
-        if knowledge_enabled:
-            try:
-                knowledge_results = await self.rag_service.search_knowledge(query=request.query, limit=5)
-                knowledge_context_str = "\n".join([
-                    f"- Doc Fragment: {r.get('metadata', {}).get('text', '')[:300]}..."
-                    for r in knowledge_results
-                ])
-            except Exception as e:
-                logger.warning(f"RAG#1 (Knowledge) failed: {e}")
-                knowledge_context_str = "Error retrieving knowledge context."
-
-        # 3. Handle Attachments
-        attachments_str = ""
-        if request.attachments:
-            attachments_str = "\n".join([
-                f"- User Attachment: {a.name} ({a.content_type})"
-                for a in request.attachments
-            ])
-
-        # 4. Build the prompt for Flow Generation
-        schema_str = MetaAgentProposalResponse.model_json_schema()
-        
-        prompt = f"""
-{custom_system_instruction}
-Your task is to design a functional AI flow (Space Canvas) based on the user's requirements and available context.
-
-User Requirement: "{request.query}"
-
-Context Sources:
----
-SYSTEM AWARENESS (Existing system entities):
-{system_context_str if system_context_str else "No relevant system entities found."}
-
-KNOWLEDGE BASE (Information from documents):
-{knowledge_context_str if knowledge_context_str else "No relevant documents found."}
-
-USER ATTACHMENTS:
-{attachments_str if attachments_str else "No files attached."}
----
-
-Your Goal:
-Propose a COMPLETE FLOW of entities (agents, crews, tasks, tools, etc.) that fulfills the user requirement. 
-Each proposed entity must be "Studio-Ready", meaning it should have all configuration fields required to function perfectly in the system.
-
-ENTITY SCHEMAS & GUIDELINES:
-- AGENT: Requires 'agent_name', 'agent_role_text', 'agent_goal', 'agent_backstory', 'system_instruction'. Can include 'tools' (list of strings), 'model_tier' (TIER_1_FAST, TIER_2_EXPERT), 'temperature', 'native_skills' (WEB_SEARCH, CODE_INTERPRETER). Important: Do NOT repeat skills or tools.
-- CREW: Requires 'crew_name', 'crew_description', 'crew_process_type' (Sequential, Hierarchical, Parallel). Can include 'agent_member_ids' (if referencing existing agents).
-- TEMPLATE: Requires 'template_name', 'template_description', 'template_markdown_content'. Can include 'template_checklist_items', 'template_inputs', 'template_outputs'.
-- SERVICE: Requires 'service_name', 'service_description', 'service_category', 'service_url'. Can include 'capabilities' (list of {'capability_name', 'capability_description'}).
-
-WORKSPACE ZONES (Mandatory field 'target_workspace'):
-- 'ws-discovery': For research, data gathering, discovery agents and resources.
-- 'ws-design': For architecture, design, and prototyping entities.
-- 'ws-delivery': For automation, execution, code generation, and delivery tasks.
-- 'ws-product': For product management, backlog, and requirements.
-- 'ws-growth': For marketing, growth hacking, and external outreach.
-
-CROSS-ZONE COMMUNICATION:
-- Direct connections (edges) between nodes in DIFFERENT zones are FORBIDDEN by the canvas logic.
-- To pass data from a source node in Zone A to a target node in Zone B:
-    1. The source node MUST include an artifact in its 'payload' under 'artefacts' with 'isOutput: true'.
-       Example: "payload": {{ "artefacts": [{{ "id": "output-1", "label": "Result Report", "isOutput": true, "status": "approved" }}] }}
-    2. The target node MUST include a context requirement in its 'payload' under 'context_requirements' that references the source node's label and artifact label.
-       Example: "payload": {{ "context_requirements": [{{ "id": "ctx-1", "label": "Input Data", "sourceNodeLabel": "Researcher Bot", "sourceArtifactLabel": "Result Report" }}] }}
-- Only use 'connections' in the JSON response for nodes within the SAME zone.
-
-Instructions:
-1. Synthesize information from the Knowledge Base and System Awareness.
-2. Design a sequence of entities. Reuse existing system entities if they fit perfectly by referencing their IDs in the payload.
-3. Categorize each entity into the most appropriate 'target_workspace'.
-4. Handle cross-zone data flow via 'isOutput: true' artifacts and 'context_requirements' instead of direct connections.
-5. Generate a structured JSON response matching the provided schema.
-6. Each entity must have 'status' set to 'draft'.
-7. Important: The 'payload' field of each draft must contain the detailed configuration fields mentioned above.
-8. Do NOT wrap in Markdown. Output raw JSON only.
-
-JSON Schema:
-{json.dumps(schema_str, indent=2)}
-"""
-
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                # Use custom chat model configuration from Settings
-                model_name = "gpt-4o"
-                provider_name = "openai"
+        # Fetch Current Space (Canvas) State and Project Context
+        canvas_state = {}
+        project_context_str = "No project context available."
+        project_strategy_url = None
+        try:
+            space = await self.space_repo.get_space(request.space_id)
+            if space:
+                canvas_data = getattr(space, "canvas_data", {})
+                canvas_state = canvas_data if isinstance(canvas_data, dict) else {}
                 
-                if meta_agent_config and meta_agent_config.llm_model_id:
-                    try:
-                        model = await self.settings_repo.get_llm_model(meta_agent_config.llm_model_id)
-                        if model:
-                            model_name = model.model_id
-                            provider = await self.settings_repo.get_llm_provider(model.llm_provider_id)
-                            if provider:
-                                provider_name = provider.provider_technical_id
-                    except Exception as me:
-                        logger.warning(f"Failed to fetch model configuration: {me}")
+                # Fetch Project Context
+                if space.project_id:
+                    project = await self.project_repo.get(space.project_id)
+                    if project:
+                        project_strategy_url = project.project_strategy_url
+                        proj_lines = [f"Project Name: {project.project_name}"]
+                        if project.project_summary:
+                            proj_lines.append(f"Summary: {project.project_summary}")
+                        if project.project_strategy_url:
+                            proj_lines.append(f"Strategy Document (Notion/Doc): {project.project_strategy_url}")
+                        
+                        if getattr(project, "key_resources", None):
+                            proj_lines.append("\nKey Resources:")
+                            for res in project.key_resources:
+                                proj_lines.append(f"- [{res.resource_provider_type.value}] {res.resource_url}")
+                                
+                        project_context_str = "\n".join(proj_lines)
+                        
+        except Exception as e:
+            logger.warning(f"Failed to fetch space canvas state or project context: {e}")
 
-                chat_model = self.llm_adapter.get_chat_model(
-                    model_name=model_name,
-                    provider_name=provider_name,
-                    temperature=llm_temperature
-                )
-                
-                from langchain_core.messages import HumanMessage
-                messages = [HumanMessage(content=prompt)]
-                response = await chat_model.ainvoke(messages)
-                response_text = str(response.content)
-                
-                # Robust JSON extraction
-                json_match = re.search(r"(\{.*\})", response_text, re.DOTALL)
-                cleaned_text = json_match.group(1) if json_match else response_text.strip()
+        # Initialize Graph Builder
+        builder = MetaAgentGraphBuilder(
+            system_retriever=self.system_retriever,
+            rag_service=self.rag_service,
+            llm_adapter=self.llm_adapter,
+            external_docs_port=self.external_docs_port,
+            meta_agent_config=meta_agent_config
+        )
 
-                return MetaAgentProposalResponse.model_validate_json(cleaned_text)
+        # Configure LLM provider / model from settings
+        if meta_agent_config and meta_agent_config.llm_model_id:
+            try:
+                model = await self.settings_repo.get_llm_model(meta_agent_config.llm_model_id)
+                if model:
+                    provider = await self.settings_repo.get_llm_provider(model.llm_provider_id)
+                    if provider:
+                        builder.set_model_config(model.model_id, provider.provider_technical_id)
+            except Exception as me:
+                logger.warning(f"Failed to fetch model configuration: {me}")
+
+        # Compile graph
+        graph = builder.build_graph()
+
+        # Initialize State
+        initial_state = {
+            "messages": [],
+            "request": request,
+            "canvas_state": canvas_state,
+            "project_context": project_context_str,
+            "project_strategy_url": project_strategy_url,
+            "plan": "",
+            "search_queries": [],
+            "rag_context": "",
+            "draft_response": None,
+            "validation_errors": [],
+            "iteration_count": 0
+        }
+
+        # Execute Graph
+        try:
+            logger.info(f"Starting Meta-Agent Graph Execution for query: {request.query}")
+            final_state = await graph.ainvoke(initial_state)
             
-            except Exception as e:
-                logger.warning(f"Meta-Agent generation failed (attempt {attempt + 1}/{max_retries}): {e}")
-                if attempt == max_retries - 1:
-                    raise ValueError(f"Failed to generate Meta-Agent flow. Last error: {str(e)}") from e
+            if final_state.get("validation_errors"):
+                logger.warning(f"Meta-Agent returned result with errors (reached limit): {final_state['validation_errors']}")
+            
+            if not final_state.get("draft_response"):
+                raise ValueError("Graph failed to generate a draft response.")
+                
+            return final_state["draft_response"]
+            
+        except Exception as e:
+            logger.error(f"Meta-Agent Graph execution failed: {e}")
+            raise ValueError(f"Failed to generate Meta-Agent flow. Last error: {str(e)}") from e

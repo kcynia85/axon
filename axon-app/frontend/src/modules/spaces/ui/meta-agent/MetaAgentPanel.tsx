@@ -1,6 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, SquarePen, Maximize2, Minus, FileText, AlignLeft, Languages, Search, CheckCircle, Plus, SlidersHorizontal, ArrowUp, Sparkles, Check, XCircle, HelpCircle, X, File, Image as ImageIcon, Mic } from 'lucide-react';
+import { 
+    ChevronDown, SquarePen, Maximize2, Minus, FileText, AlignLeft, 
+    Languages, Search, CheckCircle, Plus, SlidersHorizontal, 
+    ArrowUp, Sparkles, Check, XCircle, HelpCircle, X, File, 
+    Image as ImageIcon, Mic, Database, Layout, Briefcase, ExternalLink 
+} from 'lucide-react';
 import { MetaAgentDraftEntity, MetaAgentProposalConnection } from '../../infrastructure/metaAgentApi';
 import { cn } from "@/shared/lib/utils";
 import { Switch } from "@heroui/react";
@@ -32,6 +37,10 @@ interface MetaAgentPanelProps {
     attachedFiles: any[];
     addFiles: (files: any[]) => void;
     removeFile: (name: string) => void;
+    // New context props
+    hasProjectContext?: boolean;
+    hasNotionContext?: boolean;
+    systemAwarenessEnabled?: boolean;
 }
 
 const SUPPORTED_FORMATS = ".jpg,.jpeg,.png,.pdf,.md,.doc,.docx";
@@ -53,7 +62,10 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
     setKnowledgeEnabled,
     attachedFiles,
     addFiles,
-    removeFile
+    removeFile,
+    hasProjectContext = false,
+    hasNotionContext = false,
+    systemAwarenessEnabled = true
 }) => {
     const [query, setQuery] = useState('');
     const [isFocused, setIsFocused] = useState(false);
@@ -135,7 +147,7 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-white/5 bg-white/5">
                         <button className="flex items-center gap-1.5 text-zinc-200 hover:bg-white/10 px-2 py-1 rounded-md transition-colors text-sm font-medium">
-                            New Draft Flow <ChevronDown size={14} className="text-zinc-500" />
+                            Meta-Agent <ChevronDown size={14} className="text-zinc-500" />
                         </button>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1 text-zinc-400">
@@ -266,16 +278,19 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                             isProposing && "opacity-60 pointer-events-none"
                         )}>
                             <div className="flex flex-wrap items-center gap-1.5 px-3 pt-3 pb-1">
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-xs text-zinc-300 cursor-default transition-colors max-w-full">
-                                    <FileText size={12} className="text-zinc-400 shrink-0" />
-                                    <span className="truncate">{contextLabel}</span>
-                                </div>
+                                {/* Context Pills - Monochromatic Style */}
+                                <ContextPill icon={<Layout size={10} />} label={contextLabel} active />
+                                {systemAwarenessEnabled && <ContextPill icon={<Database size={10} />} label="System" active />}
+                                {knowledgeEnabled && <ContextPill icon={<Sparkles size={10} />} label="Knowledge" active />}
+                                {hasProjectContext && <ContextPill icon={<Briefcase size={10} />} label="Project" active />}
+                                {hasNotionContext && <ContextPill icon={<ExternalLink size={10} />} label="Notion" active />}
+
                                 <AnimatePresence>
                                     {attachedFiles.map((file) => (
-                                        <motion.div key={file.name} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/10 border border-blue-500/20 rounded-lg text-xs text-blue-300">
+                                        <motion.div key={file.name} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 border border-white/10 rounded-lg text-xs text-white">
                                             {file.content_type.includes('image') ? <ImageIcon size={12} /> : <File size={12} />}
                                             <span className="truncate max-w-[100px]">{file.name}</span>
-                                            <button onClick={() => removeFile(file.name)} className="hover:text-white transition-colors"><X size={12} /></button>
+                                            <button onClick={() => removeFile(file.name)} className="hover:text-red-400 transition-colors"><X size={12} /></button>
                                         </motion.div>
                                     ))}
                                 </AnimatePresence>
@@ -350,4 +365,16 @@ const SuggestionItem = ({ icon, text, onClick }: { icon: React.ReactNode, text: 
         <div className="text-zinc-500 flex shrink-0">{icon}</div>
         <span className="text-[15px] font-medium">{text}</span>
     </button>
+);
+
+const ContextPill = ({ icon, label, active }: { icon: React.ReactNode, label: string, active?: boolean }) => (
+    <div className={cn(
+        "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-tight border transition-all cursor-default",
+        active 
+            ? "bg-white/10 border-white/20 text-white shadow-sm" 
+            : "bg-transparent border-white/5 text-zinc-500 opacity-40"
+    )}>
+        <div className="shrink-0 opacity-80">{icon}</div>
+        <span className="truncate max-w-[100px]">{label}</span>
+    </div>
 );

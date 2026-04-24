@@ -15,12 +15,14 @@ import { useSpaceCanvasView } from './pure/useSpaceCanvasView';
 import { SpaceCanvasViewProperties } from './types';
 import { useSpaceQuery } from '../application/hooks';
 import { useMetaAgent } from '../application/hooks/useMetaAgent';
+import { useProjectDetailsQuery } from "@/modules/projects/application/hooks";
 import { toast } from "sonner";
 
 export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanvasViewProperties) => {
   const orchestrator = useSpaceCanvasOrchestrator(workspaceId, initialConfiguration);
   const canvasViewProperties = useSpaceCanvasView({ ...orchestrator, workspaceId });
   const { data: spaceData } = useSpaceQuery(workspaceId);
+  const { data: projectData } = useProjectDetailsQuery(spaceData?.projectId || "");
   const searchParams = useSearchParams();
   const { setCenter } = useReactFlow();
   
@@ -265,7 +267,9 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
             onNewChat: metaAgent.clearDraft,
             contextLabel: orchestrator.currentlySelectedNode 
                 ? `${orchestrator.currentlySelectedNode.type}: ${orchestrator.currentlySelectedNode.data?.name || orchestrator.currentlySelectedNode.id}`
-                : `Space Canvas`
+                : `Space Canvas`,
+            hasProjectContext: !!spaceData?.projectId,
+            hasNotionContext: !!projectData?.project_strategy_url
         }}
     />
   );
