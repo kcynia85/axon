@@ -350,6 +350,7 @@ export const SpaceCanvasPresentationView = ({
                 hasProjectContext={metaAgent.hasProjectContext}
                 hasNotionContext={metaAgent.hasNotionContext}
                 systemAwarenessEnabled={metaAgent.systemAwarenessEnabled}
+                activeStep={metaAgent.activeStep}
             />
         </>
       )}

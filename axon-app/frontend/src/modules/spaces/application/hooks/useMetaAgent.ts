@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { metaAgentApi, MetaAgentDraftEntity, MetaAgentAttachment, MetaAgentProposalConnection } from '../../infrastructure/metaAgentApi';
 import { useMutation } from '@tanstack/react-query';
 
+export type MetaAgentStep = 'idle' | 'planner' | 'retriever' | 'drafter' | 'validator';
+
 export const useMetaAgent = (spaceId: string) => {
     const [isPanelOpen, setIsPanelOpen] = useState(false);
     const [drafts, setDrafts] = useState<MetaAgentDraftEntity[]>([]);
     const [connections, setConnections] = useState<MetaAgentProposalConnection[]>([]);
     const [reasoning, setReasoning] = useState<string | null>(null);
+    const [activeStep, setActiveStep] = useState<MetaAgentStep>('idle');
     
     // Settings state
     const [knowledgeEnabled, setKnowledgeEnabled] = useState(false);
@@ -20,20 +23,41 @@ export const useMetaAgent = (spaceId: string) => {
 
     const proposeMutation = useMutation({
         mutationFn: async (query: string) => {
-            return await metaAgentApi.proposeDraft({ 
-                space_id: spaceId, 
-                query,
-                context: {
-                    knowledge_enabled: knowledgeEnabled,
-                    system_awareness_enabled: systemAwarenessEnabled
-                },
-                attachments: attachedFiles
-            });
+            setActiveStep('planner');
+            
+            // Advance steps automatically for a "pro" feel during wait time
+            const stepInterval = setInterval(() => {
+                setActiveStep(curr => {
+                    if (curr === 'planner') return 'retriever';
+                    if (curr === 'retriever') return 'drafter';
+                    if (curr === 'drafter') return 'validator';
+                    return curr;
+                });
+            }, 2500);
+
+            try {
+                const result = await metaAgentApi.proposeDraft({ 
+                    space_id: spaceId, 
+                    query,
+                    context: {
+                        knowledge_enabled: knowledgeEnabled,
+                        system_awareness_enabled: systemAwarenessEnabled
+                    },
+                    attachments: attachedFiles
+                });
+                return result;
+            } finally {
+                clearInterval(stepInterval);
+            }
         },
         onSuccess: (data) => {
             setDrafts(data.drafts);
             setConnections(data.connections);
             setReasoning(data.reasoning);
+            setActiveStep('idle');
+        },
+        onError: () => {
+            setActiveStep('idle');
         }
     });
 
@@ -42,6 +66,7 @@ export const useMetaAgent = (spaceId: string) => {
         setConnections([]);
         setReasoning(null);
         setAttachedFiles([]);
+        setActiveStep('idle');
     };
 
     const addFiles = (newFiles: MetaAgentAttachment[]) => {
@@ -66,6 +91,7 @@ export const useMetaAgent = (spaceId: string) => {
         attachedFiles,
         addFiles,
         removeFile,
+        activeStep,
         propose: proposeMutation.mutate,
         isProposing: proposeMutation.isPending,
         error: proposeMutation.error

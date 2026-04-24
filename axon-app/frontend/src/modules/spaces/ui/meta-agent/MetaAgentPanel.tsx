@@ -41,6 +41,7 @@ interface MetaAgentPanelProps {
     hasProjectContext?: boolean;
     hasNotionContext?: boolean;
     systemAwarenessEnabled?: boolean;
+    activeStep: 'idle' | 'planner' | 'retriever' | 'drafter' | 'validator';
 }
 
 const SUPPORTED_FORMATS = ".jpg,.jpeg,.png,.pdf,.md,.doc,.docx";
@@ -65,7 +66,8 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
     removeFile,
     hasProjectContext = false,
     hasNotionContext = false,
-    systemAwarenessEnabled = true
+    systemAwarenessEnabled = true,
+    activeStep
 }) => {
     const [query, setQuery] = useState('');
     const [isFocused, setIsFocused] = useState(false);
@@ -185,10 +187,38 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                             )}
 
                             {isProposing && (
-                                <div className="mt-8 flex flex-col items-center justify-center gap-4 text-zinc-400">
-                                    <Sparkles className="animate-pulse text-blue-400" size={24} />
-                                    <span className="text-sm animate-pulse">Generating draft flow...</span>
-                                </div>
+                                <motion.div 
+                                    initial={{ opacity: 0 }} 
+                                    animate={{ opacity: 1 }} 
+                                    className="mt-12 mb-8 flex flex-col items-center justify-center gap-6"
+                                >
+                                    <div className="relative w-20 h-20 flex items-center justify-center">
+                                        <div className="absolute inset-0 bg-white/5 rounded-full animate-ping duration-1000" />
+                                        <div className="absolute inset-2 bg-white/10 rounded-full animate-pulse" />
+                                        <Sparkles className="text-white relative z-10" size={32} />
+                                    </div>
+                                    
+                                    <div className="flex flex-col items-center gap-2">
+                                        <div className="flex items-center gap-2 text-lg font-mono font-bold tracking-tight text-white">
+                                            <span className="text-zinc-500">$</span>
+                                            <TypewriterText text={
+                                                activeStep === 'planner' ? "analyzing_requirements..." :
+                                                activeStep === 'retriever' ? "fetching_system_context..." :
+                                                activeStep === 'drafter' ? "synthesizing_architecture..." :
+                                                activeStep === 'validator' ? "verifying_graph_topology..." :
+                                                "processing..."
+                                            } />
+                                            <motion.span 
+                                                animate={{ opacity: [1, 0] }}
+                                                transition={{ duration: 0.8, repeat: Infinity, ease: "steps(2)" }}
+                                                className="w-2 h-5 bg-white inline-block ml-1"
+                                            />
+                                        </div>
+                                        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black shimmer-text">
+                                            Agentic Workflow in progress
+                                        </p>
+                                    </div>
+                                </motion.div>
                             )}
 
                             {drafts.length > 0 && !isProposing && (
@@ -281,16 +311,32 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                 {/* Context Pills - Monochromatic Style */}
                                 <ContextPill icon={<Layout size={10} />} label={contextLabel} active />
                                 {systemAwarenessEnabled && <ContextPill icon={<Database size={10} />} label="System" active />}
-                                {knowledgeEnabled && <ContextPill icon={<Sparkles size={10} />} label="Knowledge" active />}
                                 {hasProjectContext && <ContextPill icon={<Briefcase size={10} />} label="Project" active />}
                                 {hasNotionContext && <ContextPill icon={<ExternalLink size={10} />} label="Notion" active />}
+                                
+                                {knowledgeEnabled && (
+                                    <ContextPill 
+                                        icon={<Sparkles size={10} />} 
+                                        label="Knowledge" 
+                                        active 
+                                        onRemove={() => setKnowledgeEnabled(false)}
+                                    />
+                                )}
 
                                 <AnimatePresence>
                                     {attachedFiles.map((file) => (
-                                        <motion.div key={file.name} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 border border-white/10 rounded-lg text-xs text-white">
-                                            {file.content_type.includes('image') ? <ImageIcon size={12} /> : <File size={12} />}
-                                            <span className="truncate max-w-[100px]">{file.name}</span>
-                                            <button onClick={() => removeFile(file.name)} className="hover:text-red-400 transition-colors"><X size={12} /></button>
+                                        <motion.div 
+                                            key={file.name} 
+                                            initial={{ scale: 0.8, opacity: 0 }} 
+                                            animate={{ scale: 1, opacity: 1 }} 
+                                            exit={{ scale: 0.8, opacity: 0 }}
+                                        >
+                                            <ContextPill 
+                                                icon={file.content_type.includes('image') ? <ImageIcon size={10} /> : <File size={10} />}
+                                                label={file.name}
+                                                active
+                                                onRemove={() => removeFile(file.name)}
+                                            />
                                         </motion.div>
                                     ))}
                                 </AnimatePresence>
@@ -367,14 +413,43 @@ const SuggestionItem = ({ icon, text, onClick }: { icon: React.ReactNode, text: 
     </button>
 );
 
-const ContextPill = ({ icon, label, active }: { icon: React.ReactNode, label: string, active?: boolean }) => (
+const TypewriterText = ({ text }: { text: string }) => {
+    const [displayedText, setDisplayedText] = useState('');
+    
+    React.useEffect(() => {
+        setDisplayedText('');
+        let i = 0;
+        const timer = setInterval(() => {
+            setDisplayedText((prev) => text.slice(0, i + 1));
+            i++;
+            if (i >= text.length) clearInterval(timer);
+        }, 30, [text]);
+        return () => clearInterval(timer);
+    }, [text]);
+
+    return <span>{displayedText}</span>;
+};
+
+const ContextPill = ({ icon, label, active, onRemove }: { icon: React.ReactNode, label: string, active?: boolean, onRemove?: () => void }) => (
     <div className={cn(
         "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-tight border transition-all cursor-default",
         active 
-            ? "bg-white/10 border-white/20 text-white shadow-sm" 
+            ? (onRemove 
+                ? "bg-white text-black border-white shadow-lg shadow-white/10" 
+                : "bg-white/10 border-white/20 text-white shadow-sm") 
             : "bg-transparent border-white/5 text-zinc-500 opacity-40"
     )}>
-        <div className="shrink-0 opacity-80">{icon}</div>
+        <div className={cn("shrink-0", active ? "opacity-100" : "opacity-80")}>{icon}</div>
         <span className="truncate max-w-[100px]">{label}</span>
+        {onRemove && (
+            <button 
+                onClick={(e) => { e.stopPropagation(); onRemove(); }} 
+                className="ml-1 -mr-1 p-0.5 hover:bg-black/10 rounded-md transition-colors text-black/40 hover:text-black"
+            >
+                <X size={10} strokeWidth={3} />
+            </button>
+        )}
     </div>
 );
+
+

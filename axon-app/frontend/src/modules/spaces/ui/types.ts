@@ -174,6 +174,7 @@ export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogi
         removeFile: (name: string) => void;
         hasProjectContext?: boolean;
         hasNotionContext?: boolean;
+        activeStep: 'idle' | 'planner' | 'retriever' | 'drafter' | 'validator';
     };
 };
 
