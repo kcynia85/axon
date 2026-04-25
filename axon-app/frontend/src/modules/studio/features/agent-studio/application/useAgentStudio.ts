@@ -44,7 +44,7 @@ export const useAgentStudio = (initialData?: Partial<CreateAgentFormData>, agent
 			grounded_mode: base.grounded_mode ?? false,
 			data_interface: base.data_interface || { context: [], artefacts: [] },
 			agent_visual_url: base.agent_visual_url || null,
-			llm_model_id: base.llm_model_id || null,
+			llm_model_id: base.llm_model_id || "123e4567-e89b-12d3-a456-426614175000",
 			knowledge_hub_ids: base.knowledge_hub_ids || [],
 		} as CreateAgentFormData;
 	}, [initialData, draft, workspaceId]);
@@ -67,6 +67,7 @@ export const useAgentStudio = (initialData?: Partial<CreateAgentFormData>, agent
 			auto_start: false,
 			grounded_mode: false,
 			data_interface: { context: [], artefacts: [] },
+			llm_model_id: "123e4567-e89b-12d3-a456-426614175000",
 		},
 	});
 

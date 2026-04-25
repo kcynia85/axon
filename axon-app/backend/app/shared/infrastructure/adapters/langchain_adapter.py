@@ -39,7 +39,7 @@ class LangChainAdapter(LLMGateway):
 
     def get_chat_model(
         self, 
-        model_name: str | None = "gpt-4o", 
+        model_name: str | None = "gpt-5-nano", 
         provider_name: str | None = "openai",
         api_key: str | None = None,
         streaming: bool = False,
@@ -55,7 +55,7 @@ class LangChainAdapter(LLMGateway):
         if provider == "openai":
             from langchain_openai import ChatOpenAI
             return ChatOpenAI(
-                model=model_name or "gpt-4o",
+                model=model_name or "gpt-5-nano",
                 api_key=api_key or settings.OPENAI_API_KEY or os.getenv("OPENAI_API_KEY"),
                 temperature=temperature,
                 streaming=streaming

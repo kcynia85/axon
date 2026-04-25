@@ -16,6 +16,7 @@ import { MetaAgentIdentitySection } from "./sections/MetaAgentIdentitySection";
 import { MetaAgentEngineSection } from "./sections/MetaAgentEngineSection";
 import { MetaAgentAwarenessSection } from "./sections/MetaAgentAwarenessSection";
 import { MetaAgentVoiceSection } from "./sections/MetaAgentVoiceSection";
+import { MetaAgentLivePoster } from "./components/MetaAgentLivePoster";
 
 interface Props {
     form: UseFormReturn<MetaAgentStudioData>;
@@ -40,16 +41,6 @@ export const MetaAgentStudioView = ({
     setCanvasContainerReference,
     llmModels,
 }: Props) => {
-    const [testTranscription, setTestTranscription] = useState("");
-
-    const {
-        isRecording,
-        isProcessing,
-        toggleRecording
-    } = useVoiceInteraction((text) => {
-        setTestTranscription(text);
-    });
-
     return (
         <FormProvider {...form}>
             <div className="h-full w-full outline-none" tabIndex={0}>
@@ -83,53 +74,7 @@ export const MetaAgentStudioView = ({
                             </form>
                         </div>
                     }
-                    poster={
-                        <div className="p-8 space-y-8">
-                            <div className="space-y-4">
-                                <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-widest px-2">Voice Sandbox</h4>
-                                <div className="p-4 bg-zinc-950/40 border border-white/5 rounded-3xl space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                toggleRecording();
-                                            }}
-                                            className={cn(
-                                                "w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95 border shadow-sm",
-                                                isRecording
-                                                    ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]"
-                                                    : "bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10 hover:text-zinc-300",
-                                                isProcessing && "opacity-50 cursor-wait pointer-events-none"
-                                            )}
-                                            title={isRecording ? "Stop Recording" : "Voice Input"}
-                                        >
-                                            {isProcessing ? (
-                                                <div className="w-4 h-4 border-2 border-zinc-500 border-t-zinc-300 rounded-full animate-spin" />
-                                            ) : (
-                                                <Mic size={20} />
-                                            )}
-                                        </button>
-                                        <div className="flex-1 overflow-hidden">
-                                            <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest leading-none mb-1">
-                                                {isRecording ? "Listening..." : isProcessing ? "Processing..." : "STT Connection"}
-                                            </p>
-                                            <p className="text-xs text-zinc-500 truncate">
-                                                {isRecording ? "Speak now..." : "Test speech-to-text"}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    {testTranscription && (
-                                        <div className="p-3 bg-white/5 rounded-xl border border-white/5 animate-in fade-in slide-in-from-top-2 duration-300">
-                                            <p className="text-xs text-zinc-300 font-mono italic leading-relaxed">
-                                                "{testTranscription}"
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    }
+                    poster={<MetaAgentLivePoster />}
                     footer={
                         <div className="flex items-center justify-end w-full px-8">
                             <div className="flex items-center gap-6">

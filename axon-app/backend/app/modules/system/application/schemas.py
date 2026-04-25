@@ -24,12 +24,14 @@ class VoiceMetaAgentResponse(BaseModel):
     interaction_mode: VoiceInteractionMode
     provider_config: Dict[str, Any]
     meta_agent_system_prompt: str
+    meta_agent_temperature: float
 
 class UpdateVoiceMetaAgentRequest(BaseModel):
     voice_provider: Optional[VoiceProvider] = None
     interaction_mode: Optional[VoiceInteractionMode] = None
     provider_config: Optional[Dict[str, Any]] = None
     meta_agent_system_prompt: Optional[str] = None
+    meta_agent_temperature: Optional[float] = None
 
 class SystemAwarenessSettingsResponse(BaseModel):
     id: UUID

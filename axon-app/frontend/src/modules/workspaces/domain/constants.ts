@@ -23,8 +23,10 @@ export const LLM_MODEL_NAMES: Record<string, string> = {
   "123e4567-e89b-12d3-a456-426614174003": "GPT-4-turbo",
   "123e4567-e89b-12d3-a456-426614174004": "Claude 3.5 Sonnet",
   "123e4567-e89b-12d3-a456-426614174005": "Claude 3 Opus",
+  "123e4567-e89b-12d3-a456-426614175000": "GPT-5 Nano",
   "model-gpt4o": "GPT-4o",
   "model-gpt4o-mini": "GPT-4o Mini",
+  "model-gpt5nano": "GPT-5 Nano",
   "model-claude-sonnet": "Claude 3.5 Sonnet",
 };
 

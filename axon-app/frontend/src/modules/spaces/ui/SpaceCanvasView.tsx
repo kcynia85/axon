@@ -106,6 +106,7 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
                           agent_backstory: p.agent_backstory || "",
                           system_instruction: draft.system_instruction || p.system_instruction || "",
                           model_tier: p.model_tier || "TIER_2_EXPERT",
+                          llm_model_id: p.llm_model_id || "123e4567-e89b-12d3-a456-426614175000",
                           temperature: p.temperature ?? 0.7,
                           native_skills: Array.from(new Set(p.native_skills || [])),
                           tools: Array.from(new Set(p.tools || [])),

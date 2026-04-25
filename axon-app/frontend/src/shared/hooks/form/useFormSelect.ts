@@ -19,10 +19,18 @@ export const useFormSelect = ({
 	}, [options, selectedIds]);
 
 	const filteredOptions = useMemo(() => {
-		return options.filter((opt) =>
+		const filtered = options.filter((opt) =>
 			opt.name.toLowerCase().includes(search.toLowerCase()),
 		);
-	}, [options, search]);
+
+		return [...filtered].sort((a, b) => {
+			const aSelected = selectedIds.includes(a.id);
+			const bSelected = selectedIds.includes(b.id);
+			if (aSelected && !bSelected) return -1;
+			if (!aSelected && bSelected) return 1;
+			return 0;
+		});
+	}, [options, search, selectedIds]);
 
 	const handleSelect = (id: string) => {
 		if (multiple) {

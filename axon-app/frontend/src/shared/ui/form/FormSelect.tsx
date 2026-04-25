@@ -29,6 +29,7 @@ export const FormSelect = (props: FormSelectProps) => {
 		multiple = false,
 		placeholder = "Select option...",
 		searchPlaceholder = "Search...",
+		showSearch = true,
 		className,
 		renderTrigger,
 	} = props;
@@ -129,15 +130,17 @@ export const FormSelect = (props: FormSelectProps) => {
 				align="start"
 				sideOffset={8}
 			>
-				<div className="p-2 relative flex items-center">
-					<Search className="absolute left-4 w-4 h-4 text-zinc-400" />
-					<input
-						placeholder={searchPlaceholder}
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						className="w-full bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/10 rounded-xl h-12 pl-12 pr-4 text-sm font-bold text-zinc-900 dark:text-white focus:border-primary outline-none transition-all"
-					/>
-				</div>
+				{showSearch && (
+					<div className="p-2 relative flex items-center">
+						<Search className="absolute left-4 w-4 h-4 text-zinc-400" />
+						<input
+							placeholder={searchPlaceholder}
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+							className="w-full bg-zinc-100 dark:bg-zinc-900/60 border border-zinc-200 dark:border-white/10 rounded-xl h-12 pl-12 pr-4 text-sm font-bold text-zinc-900 dark:text-white focus:border-primary outline-none transition-all"
+						/>
+					</div>
+				)}
 
 				<div className="max-h-[400px] overflow-y-auto custom-scrollbar p-1">
 					<DropdownMenuLabel className="px-4 py-3 text-[10px] font-mono uppercase tracking-widest text-zinc-400">

@@ -171,7 +171,7 @@ class RAGService:
         query: str, 
         chat_history: List[Any] = None,
         hub_id: str = None,
-        model_name: str = "gpt-4o",
+        model_name: str = "gpt-5-nano",
         provider_name: str = "openai",
         embedding_model_name: str = "text-embedding-3-small"
     ) -> Dict[str, Any]:

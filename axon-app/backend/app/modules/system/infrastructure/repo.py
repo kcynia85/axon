@@ -57,7 +57,8 @@ class SystemRepository:
                 voice_provider=row.voice_provider,
                 interaction_mode=row.interaction_mode,
                 provider_config=row.provider_config or {},
-                meta_agent_system_prompt=row.meta_agent_system_prompt
+                meta_agent_system_prompt=row.meta_agent_system_prompt,
+                meta_agent_temperature=row.meta_agent_temperature
             )
         return None
 
@@ -73,7 +74,8 @@ class SystemRepository:
                  voice_provider=data.get("voice_provider"),
                  interaction_mode=data.get("interaction_mode", VoiceInteractionMode.LIVE_CONVERSATION),
                  provider_config=data.get("provider_config", {}),
-                 meta_agent_system_prompt=data.get("meta_agent_system_prompt", "")
+                 meta_agent_system_prompt=data.get("meta_agent_system_prompt", ""),
+                 meta_agent_temperature=data.get("meta_agent_temperature", 0.7)
              )
              self.session.add(new_voice)
         

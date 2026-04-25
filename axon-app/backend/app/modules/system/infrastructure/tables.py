@@ -40,6 +40,7 @@ class VoiceMetaAgentTable(Base):
     interaction_mode = Column(SAEnum(VoiceInteractionMode), default=VoiceInteractionMode.LIVE_CONVERSATION, nullable=False)
     provider_config = Column(JSONB, nullable=True)
     meta_agent_system_prompt = Column(String, nullable=False)
+    meta_agent_temperature = Column(Float, default=0.7)
 
 class SystemAwarenessSettingsTable(Base):
     __tablename__ = "system_awareness_settings"

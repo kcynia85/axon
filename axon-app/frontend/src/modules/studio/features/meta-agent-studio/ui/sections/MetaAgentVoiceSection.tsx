@@ -9,6 +9,7 @@ import { ChevronDown, Mic, UserCircle, Zap, AudioLines, MessageSquare, Radio } f
 import { SiGooglecloud } from "react-icons/si";
 import { TbBrandAzure, TbBrandAws } from "react-icons/tb";
 import { cn } from "@/shared/lib/utils";
+import { Badge } from "@/shared/ui/ui/Badge";
 import type { MetaAgentStudioData } from "../../types/meta-agent-schema";
 import type { VoiceProvider } from "@/shared/domain/system";
 
@@ -16,6 +17,13 @@ import { ElevenLabsSettingsView } from "./providers/ElevenLabsSettingsView";
 import { InworldAISettingsView } from "./providers/InworldAISettingsView";
 import { CartesiaSettingsView } from "./providers/CartesiaSettingsView";
 import { HyperscalerSettingsView } from "./providers/HyperscalerSettingsView";
+
+const ElevenLabsIcon = ({ size = 18 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <rect x="7" y="4" width="3" height="16" rx="1.5" />
+        <rect x="14" y="4" width="3" height="16" rx="1.5" />
+    </svg>
+);
 
 const VoiceProviderSettingsRenderer = ({ provider }: { provider: VoiceProvider }) => {
     switch (provider) {
@@ -39,16 +47,16 @@ export const MetaAgentVoiceSection = () => {
     const currentProvider = useWatch({ control, name: "voice_provider" });
 
     const voiceProviders = [
-        { id: "ElevenLabs", name: "ElevenLabs", icon: <Mic size={18} /> },
-        { id: "Inworld_AI", name: "Inworld AI", icon: <UserCircle size={18} />, disabled: true },
-        { id: "Cartesia", name: "Cartesia", icon: <AudioLines size={18} />, disabled: true },
-        { id: "Google_Cloud", name: "Google Cloud TTS", icon: <SiGooglecloud size={18} />, disabled: true },
-        { id: "Microsoft_Azure", name: "Microsoft Azure TTS", icon: <TbBrandAzure size={18} />, disabled: true },
-        { id: "Amazon_Polly", name: "Amazon Polly", icon: <TbBrandAws size={18} />, disabled: true },
+        { id: "ElevenLabs", name: "ElevenLabs", icon: <ElevenLabsIcon size={18} /> },
+        { id: "Inworld_AI", name: "Inworld AI", disabled: true, badgeLabel: "soon" },
+        { id: "Cartesia", name: "Cartesia", disabled: true, badgeLabel: "soon" },
+        { id: "Google_Cloud", name: "Google Cloud TTS", disabled: true, badgeLabel: "soon" },
+        { id: "Microsoft_Azure", name: "Microsoft Azure TTS", disabled: true, badgeLabel: "soon" },
+        { id: "Amazon_Polly", name: "Amazon Polly", disabled: true, badgeLabel: "soon" },
     ];
 
     const interactionModes = [
-        { id: "LIVE_CONVERSATION", name: "Live Conversation", description: "Full bidirectional voice chat with the Meta-Agent.", icon: <MessageSquare size={18} /> },
+        { id: "LIVE_CONVERSATION", name: "Live Conversation", description: "Full bidirectional voice chat with the Meta-Agent.", icon: <MessageSquare size={18} />, disabled: true, badgeLabel: "soon" },
         { id: "STT_ONLY", name: "Speech-to-Text Only", description: "Meta-Agent only transcribes your speech into the chat input.", icon: <Radio size={18} /> },
     ];
 
@@ -63,6 +71,7 @@ export const MetaAgentVoiceSection = () => {
     return (
         <FormSection
             id="voice"
+            number={4}
             title="Voice & Speech"
             description="Configure speech-to-text and voice synthesis capabilities for the Meta-Agent."
         >
@@ -81,24 +90,27 @@ export const MetaAgentVoiceSection = () => {
                                         options={voiceProviders}
                                         value={field.value}
                                         onChange={(val) => handleProviderChange(val as VoiceProvider, field.onChange)}
+                                        showSearch={false}
                                         placeholder="Select provider..."
                                         renderTrigger={(selectedItems) => (
                                             <div className="flex items-center gap-4 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 h-16 rounded-2xl hover:border-zinc-700 transition-colors">
-                                                <div className="p-2.5 rounded-xl bg-zinc-800 text-zinc-400 group-hover/trigger:bg-zinc-700 transition-colors shadow-inner border border-white/5">
-                                                    {selectedItems.length > 0 ? selectedItems[0].icon : <Mic size={20} />}
+                                                <div className="p-2.5 rounded-xl bg-zinc-800 group-hover/trigger:bg-zinc-700 transition-colors shadow-inner border border-white/5">
+                                                    {selectedItems.length > 0 ? selectedItems[0].icon : <Mic size={20} className="text-zinc-400" />}
                                                 </div>
                                                 <div className="flex flex-col flex-1 text-left">
-                                                    <span className={cn(
-                                                        "text-[15px] font-black transition-colors tracking-tight",
-                                                        selectedItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
-                                                    )}>
-                                                        {selectedItems.length > 0 ? selectedItems[0].name : "Select provider..."}
-                                                    </span>
-                                                    {selectedItems.length > 0 && (
-                                                        <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest leading-none mt-0.5">
-                                                            Active Engine
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={cn(
+                                                            "text-[15px] font-black transition-colors tracking-tight",
+                                                            selectedItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+                                                        )}>
+                                                            {selectedItems.length > 0 ? selectedItems[0].name : "Select provider..."}
                                                         </span>
-                                                    )}
+                                                        {selectedItems[0]?.badgeLabel && (
+                                                            <Badge variant="outline" className="text-[10px] py-0 h-4 border-zinc-700 text-zinc-500 uppercase font-black">
+                                                                {selectedItems[0].badgeLabel}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
                                             </div>
@@ -118,26 +130,29 @@ export const MetaAgentVoiceSection = () => {
                                 render={({ field }) => (
                                     <FormSelect
                                         options={interactionModes}
-                                        value={field.value || "LIVE_CONVERSATION"}
+                                        value={field.value || "STT_ONLY"}
                                         onChange={field.onChange}
+                                        showSearch={false}
                                         placeholder="Select mode..."
                                         renderTrigger={(selectedItems) => (
                                             <div className="flex items-center gap-4 cursor-pointer group/trigger w-full border border-zinc-800 bg-zinc-900/50 p-4 h-16 rounded-2xl hover:border-zinc-700 transition-colors">
-                                                <div className="p-2.5 rounded-xl bg-zinc-800 text-zinc-400 group-hover/trigger:bg-zinc-700 transition-colors shadow-inner border border-white/5">
-                                                    {selectedItems.length > 0 ? selectedItems[0].icon : <MessageSquare size={20} />}
+                                                <div className="p-2.5 rounded-xl bg-zinc-800 group-hover/trigger:bg-zinc-700 transition-colors shadow-inner border border-white/5">
+                                                    {selectedItems.length > 0 ? selectedItems[0].icon : <MessageSquare size={20} className="text-zinc-400" />}
                                                 </div>
                                                 <div className="flex flex-col flex-1 text-left">
-                                                    <span className={cn(
-                                                        "text-[15px] font-black transition-colors tracking-tight",
-                                                        selectedItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
-                                                    )}>
-                                                        {selectedItems.length > 0 ? selectedItems[0].name : "Select mode..."}
-                                                    </span>
-                                                    {selectedItems.length > 0 && (
-                                                        <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest leading-none mt-0.5">
-                                                            Workflow
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={cn(
+                                                            "text-[15px] font-black transition-colors tracking-tight",
+                                                            selectedItems.length > 0 ? "text-white" : "text-zinc-600 group-hover/trigger:text-zinc-400"
+                                                        )}>
+                                                            {selectedItems.length > 0 ? selectedItems[0].name : "Select mode..."}
                                                         </span>
-                                                    )}
+                                                        {selectedItems[0]?.badgeLabel && (
+                                                            <Badge variant="outline" className="text-[10px] py-0 h-4 border-zinc-700 text-zinc-500 uppercase font-black">
+                                                                {selectedItems[0].badgeLabel}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <ChevronDown className="w-5 h-5 text-zinc-600 group-hover/trigger:text-zinc-400" />
                                             </div>

@@ -10,7 +10,7 @@ export const MetaAgentStudioSchema = z.object({
     
     // Voice settings
     voice_provider: VoiceProviderSchema,
-    interaction_mode: VoiceInteractionModeSchema.default("LIVE_CONVERSATION"),
+    interaction_mode: VoiceInteractionModeSchema.default("STT_ONLY"),
     provider_config: z.record(z.any()).default({}), // The actual validation happens in the domain schema during submission
 });
 

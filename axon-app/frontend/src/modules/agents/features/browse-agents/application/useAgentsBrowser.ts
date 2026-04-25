@@ -20,6 +20,7 @@ export function useAgentsBrowser(initialAgents: Agent[] = []) {
         options: [
           { id: "model-gpt4o", label: "GPT-4o", isChecked: false },
           { id: "model-gpt4o-mini", label: "GPT-4o Mini", isChecked: false },
+          { id: "model-gpt5nano", label: "GPT-5 Nano", isChecked: false },
           { id: "model-claude-sonnet", label: "Claude 3.5 Sonnet", isChecked: false },
         ],
       },

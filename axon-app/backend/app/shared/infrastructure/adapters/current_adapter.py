@@ -22,7 +22,7 @@ class CurrentAdapter(LLMGateway):
              from openai import AsyncOpenAI
              client = AsyncOpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
              response = await client.chat.completions.create(
-                 model=model_name or "gpt-4o",
+                 model=model_name or "gpt-5-nano",
                  messages=[{"role": "user", "content": prompt}]
              )
              return response.choices[0].message.content
@@ -46,7 +46,7 @@ class CurrentAdapter(LLMGateway):
              from openai import AsyncOpenAI
              client = AsyncOpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
              stream = await client.chat.completions.create(
-                 model=model_name or "gpt-4o",
+                 model=model_name or "gpt-5-nano",
                  messages=[{"role": "user", "content": prompt}],
                  stream=True
              )

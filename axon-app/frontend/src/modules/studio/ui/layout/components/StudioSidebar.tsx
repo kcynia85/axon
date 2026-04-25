@@ -10,7 +10,7 @@ export const StudioSidebar = ({
 	const positionClasses =
 		position === "left"
 			? "border-r border-zinc-900 bg-black"
-			: "border-l border-zinc-900 bg-zinc-950/20";
+			: "border-l border-zinc-900 bg-zinc-950";
 
 	return (
 		<aside

@@ -45,8 +45,8 @@ export const MetaAgentStudioContainer = () => {
                 voice_provider: data.voice_provider,
                 interaction_mode: data.interaction_mode,
                 provider_config: data.provider_config,
-                // Optionally keep the system prompt synced if desired, 
-                // but the UI currently only exposes it for the core meta-agent
+                meta_agent_system_prompt: data.meta_agent_system_prompt,
+                meta_agent_temperature: data.meta_agent_temperature,
             };
 
             await Promise.all([

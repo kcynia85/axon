@@ -16,7 +16,7 @@ export const CostEstimator = ({ data, className }: CostEstimatorProps) => {
 
 	return (
 		<Card className={cn("w-full bg-white dark:bg-zinc-950", className)}>
-			<CardHeader className="pb-6">
+			<CardHeader className="pt-8 pb-6">
 				<CardTitle className="text-xl font-bold text-zinc-900 dark:text-white">
 					Estymator Kosztów
 				</CardTitle>

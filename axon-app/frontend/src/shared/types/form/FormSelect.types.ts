@@ -17,6 +17,7 @@ export type FormSelectProps = {
 	readonly multiple?: boolean;
 	readonly placeholder?: string;
 	readonly searchPlaceholder?: string;
+	readonly showSearch?: boolean;
 	readonly className?: string;
 	readonly renderTrigger?: (
 		selectedOptions: FormSelectOption[],

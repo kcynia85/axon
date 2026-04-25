@@ -30,7 +30,7 @@ class MetaAgentGraphBuilder:
         
         self.system_instruction = getattr(meta_agent_config, 'meta_agent_system_prompt', "You are the Axon Meta-Agent, a senior AI architect.") if meta_agent_config else "You are the Axon Meta-Agent, a senior AI architect."
         self.temperature = getattr(meta_agent_config, 'meta_agent_temperature', 0.7) if meta_agent_config else 0.7
-        self.model_name = "gpt-4o"
+        self.model_name = "gpt-5-nano"
         self.provider_name = "openai"
 
     def set_model_config(self, model_name: str, provider_name: str):

@@ -1,10 +1,10 @@
 import tiktoken
 from typing import Optional
 
-def count_tokens(text: str, model_name: str = "gpt-4o") -> int:
+def count_tokens(text: str, model_name: str = "gpt-5-nano") -> int:
     """
     Counts the number of tokens in a string using tiktoken.
-    Defaults to gpt-4o encoding.
+    Defaults to gpt-5-nano encoding.
     """
     if not text:
         return 0
