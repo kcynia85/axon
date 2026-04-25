@@ -42,7 +42,7 @@ export const AttachProjectDialog = ({ spaceId, children }: { spaceId: string, ch
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[95vh] p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black shadow-2xl rounded-2xl flex flex-col">
+      <DialogContent className="sm:max-w-[600px] max-h-[95vh] p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black  rounded-2xl flex flex-col">
           <div className="flex flex-col flex-1 overflow-hidden">
             <CreateProjectFormScrollArea>
                 <div className="space-y-6">
@@ -52,10 +52,10 @@ export const AttachProjectDialog = ({ spaceId, children }: { spaceId: string, ch
                     </div>
 
                     <div className="relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                        <Search className="absolute left-4 top-1 -translate-y-1 h-4 w-4 text-zinc-500" />
                         <Input 
                             placeholder="Wyszukaj projekt..." 
-                            className="h-11 pl-11 bg-zinc-50 dark:bg-zinc-900/50 text-black dark:text-white border-zinc-200 dark:border-zinc-800 rounded-xl"
+                            className="h-11 pl-11 bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white border-zinc-200 dark:border-zinc-800 rounded-xl"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -83,7 +83,7 @@ export const AttachProjectDialog = ({ spaceId, children }: { spaceId: string, ch
                 </div>
             </CreateProjectFormScrollArea>
 
-            <DialogFooter className="p-10 pt-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/80 dark:bg-black/80 backdrop-blur-xl shrink-0 z-20 flex flex-row justify-end items-center gap-6">
+            <DialogFooter className="p-10 pt-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-black  shrink-0 z-20 flex flex-row justify-end items-center gap-6">
               <Button 
                 type="button" 
                 variant="ghost" 
@@ -96,7 +96,7 @@ export const AttachProjectDialog = ({ spaceId, children }: { spaceId: string, ch
               <Button 
                 type="button" 
                 size="sm" 
-                className="bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-black rounded-md shadow-xl transition-all active:scale-[0.98] tracking-normal text-base px-10 h-12"
+                className="bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-black rounded-md  transition-all active:scale-[0.98] tracking-normal text-base px-10 h-12"
                 disabled={!selectedProjectId || isPending}
                 onClick={handleAttach}
               >

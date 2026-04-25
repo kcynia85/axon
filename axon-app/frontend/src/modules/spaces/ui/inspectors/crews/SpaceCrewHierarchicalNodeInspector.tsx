@@ -50,8 +50,8 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                                         {state.manager_title && (
                                             <div className="space-y-3">
                                                 <h5 className="text-[9px] font-black uppercase text-zinc-500 tracking-[0.2em] pl-1">Orchestrator / Manager</h5>
-                                                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 shadow-xl flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden shadow-sm relative shrink-0">
+                                                <div className="p-4 rounded-2xl bg-white border border-white  flex items-center gap-4">
+                                                    <div className="w-10 h-10 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden  relative shrink-0">
                                                         {state.manager_visual_url ? (
                                                             <Image 
                                                                 src={state.manager_visual_url} 
@@ -70,8 +70,8 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                                                     </div>
                                                     <div className="flex gap-1">
                                                         <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                                                        <div className="w-1 h-1 rounded-full bg-green-500/50" />
-                                                        <div className="w-1 h-1 rounded-full bg-green-500/20" />
+                                                        <div className="w-1 h-1 rounded-full bg-green-500" />
+                                                        <div className="w-1 h-1 rounded-full bg-green-500" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -88,11 +88,11 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                                                             className={cn(
                                                                 "p-3 rounded-xl border transition-all flex items-start gap-3",
                                                                 isAgentWorking 
-                                                                    ? "bg-zinc-800/50 border-zinc-600 opacity-100 shadow-lg translate-x-1" 
-                                                                    : "bg-zinc-900/20 border-zinc-800/50 opacity-60"
+                                                                    ? "bg-zinc-800 border-zinc-600 0  translate-x-1" 
+                                                                    : "bg-zinc-900 border-zinc-800 "
                                                             )}
                                                         >
-                                                            <div className="w-8 h-8 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden shadow-sm relative shrink-0">
+                                                            <div className="w-8 h-8 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden  relative shrink-0">
                                                                 {task.visualUrl ? (
                                                                     <Image 
                                                                         src={task.visualUrl} 
@@ -138,7 +138,7 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                 </Tab>
             </Tabs>
             <SpaceInspectorFooter>
-                <button className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 shadow-xl" onClick={actions.submitConsultation}>Update State</button>
+                <button className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 " onClick={actions.submitConsultation}>Update State</button>
             </SpaceInspectorFooter>
         </SpaceInspectorPanel>
     );

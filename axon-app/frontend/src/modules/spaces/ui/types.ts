@@ -204,6 +204,7 @@ export type VisualStyleForZoneColor = {
     readonly hoverBackgroundClassName: string;
     readonly level1HoverBackgroundClassName: string;
     readonly activeOutputClassName: string;
+    readonly labelBorderClassName: string;
 };
 
 export type NodeVisualProperties = {
@@ -213,6 +214,7 @@ export type NodeVisualProperties = {
     readonly titleClassName: string;
     readonly subtitleClassName: string;
     readonly handleClassName: string;
+    readonly borderSelectedClassName: string;
 };
 
 export type SpaceNodeViewModel = {
@@ -246,6 +248,7 @@ export type SpaceNodeViewModel = {
     readonly isSelected?: boolean;
     readonly containerClassName?: string;
     readonly labelClassName?: string;
+    readonly labelBorderClassName?: string;
     readonly resizerLineClassName?: string;
     readonly resizerHandleClassName?: string;
     readonly handleClassName?: string;
@@ -299,6 +302,7 @@ export type SpaceCanvasLeftSidebarProperties = {
     readonly workspaceUnitsForDisplay: readonly WorkspaceUnitDisplayItem[];
     readonly activeWorkspaceDisplayName: string;
     readonly activeWorkspaceHeaderClassName: string;
+    readonly activeWorkspaceColor: string | null;
     readonly filteredComponentCategoriesForDisplay: readonly ComponentCategoryDisplayItem[];
     readonly currentlySelectedWorkspaceIdentifier: string | null;
     readonly onAddComponent: (nodeType: string, initialNodeData: Record<string, unknown>, targetWorkspaceId: string) => void;

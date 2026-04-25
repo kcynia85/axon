@@ -53,11 +53,11 @@ export const SpaceCrewParallelNodeInspector = ({
                                                     className={cn(
                                                         "p-3 rounded-xl border transition-all flex items-start gap-3",
                                                         isAgentWorking 
-                                                            ? "bg-blue-500/5 border-blue-500/20 opacity-100 shadow-lg" 
-                                                            : "bg-zinc-900/20 border-zinc-800/50 opacity-60"
+                                                            ? "bg-blue-500 border-blue-500 0 " 
+                                                            : "bg-zinc-900 border-zinc-800 "
                                                     )}
                                                     >
-                                                    <div className="w-8 h-8 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden shadow-sm relative shrink-0">
+                                                    <div className="w-8 h-8 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden  relative shrink-0">
                                                         {task.visualUrl ? (                                                            <Image 
                                                                 src={task.visualUrl} 
                                                                 alt={task.assignedAgentTitle}
@@ -97,7 +97,7 @@ export const SpaceCrewParallelNodeInspector = ({
                 </Tab>
             </Tabs>
             <SpaceInspectorFooter>
-                <button className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 shadow-xl" onClick={actions.submitConsultation}>Update Parallel States</button>
+                <button className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 " onClick={actions.submitConsultation}>Update Parallel States</button>
             </SpaceInspectorFooter>
         </SpaceInspectorPanel>
     );

@@ -14,6 +14,7 @@ export const SpaceCanvasLeftSidebar: React.FC<SpaceCanvasLeftSidebarProperties> 
         workspaceUnitsForDisplay,
         activeWorkspaceDisplayName,
         activeWorkspaceHeaderClassName,
+        activeWorkspaceColor,
         filteredComponentCategoriesForDisplay,
     } = useSpaceCanvasSidebarManagement();
 
@@ -26,6 +27,7 @@ export const SpaceCanvasLeftSidebar: React.FC<SpaceCanvasLeftSidebarProperties> 
             workspaceUnitsForDisplay={workspaceUnitsForDisplay}
             activeWorkspaceDisplayName={activeWorkspaceDisplayName}
             activeWorkspaceHeaderClassName={activeWorkspaceHeaderClassName}
+            activeWorkspaceColor={activeWorkspaceColor}
             filteredComponentCategoriesForDisplay={filteredComponentCategoriesForDisplay}
             onAddComponent={onAddComponent}
         />

@@ -28,9 +28,9 @@ export const SpaceProjectSelector: React.FC<SpaceProjectSelectorProps> = ({
                 />
                 
                 {projectMode === "existing" && (
-                    <div className="relative animate-in slide-in-from-top-2 duration-300 px-6 pb-6 bg-primary/5 border-x border-b border-primary rounded-b-2xl -mt-5 pt-2 z-0">
+                    <div className="relative animate-in slide-in-from-top-2 duration-300 px-6 pb-6 bg-primary border-x border-b border-primary rounded-b-2xl -mt-5 pt-2 z-0">
                         <div className="relative">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                            <Search className="absolute left-4 top-1 -translate-y-1 h-4 w-4 text-zinc-500" />
                             <Input 
                                 placeholder="Wyszukaj projekt" 
                                 className="h-11 pl-11 bg-white dark:bg-black text-black dark:text-white border-zinc-200 dark:border-zinc-800 rounded-xl"

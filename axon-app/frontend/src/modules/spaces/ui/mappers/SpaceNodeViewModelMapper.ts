@@ -32,12 +32,13 @@ const mapVisualProperties = (
     const handleBackgroundColor = isSelected ? visualStyles.handleBackgroundClassName : '!bg-zinc-700';
 
     return {
-        containerClassName: `w-[280px] bg-black border-2 transition-all rounded-2xl node-container ${isSelected ? `${visualStyles.borderClassName} ${visualStyles.shadowClassName}` : 'border-zinc-700'}`,
+        containerClassName: `w-[280px] bg-black border-2 transition-all rounded-2xl node-container ${isSelected ? `${visualStyles.borderSelectedClassName} ${visualStyles.shadowClassName}` : 'border-zinc-700'}`,
         headerClassName: "p-4 flex items-start gap-3 node-header",
         iconClassName: `p-2 rounded-lg bg-zinc-900 border border-zinc-800 node-icon text-zinc-400`,
         titleClassName: "text-sm font-black text-white tracking-tight node-title",
         subtitleClassName: "text-[9px] font-black text-zinc-500 uppercase tracking-widest node-subtitle",
         handleClassName: `!w-3 !h-3 !border-zinc-800 ${handleBackgroundColor} hover:!bg-zinc-200 transition-colors !z-50 !cursor-pointer`,
+        borderSelectedClassName: visualStyles.borderSelectedClassName,
     };
 };
 
@@ -245,11 +246,12 @@ export const mapZoneToViewModel = (zoneDomainData: SpaceZoneDomainData, isSelect
         visual: mapVisualProperties(colorIdentifier, isSelected),
         isSelected,
         displayName: (zoneDomainData.label || 'Unit').toUpperCase(),
-        containerClassName: `h-full w-full rounded-[2rem] border-2 transition-all p-8 flex flex-col relative group [border-style:dashed] [border-spacing:16px] ${visualStyles.borderClassName?.split(' ')[0]} ${isSelected ? visualStyles.backgroundClassName : 'bg-transparent'}`,
+        containerClassName: `h-full w-full rounded-[2rem] border-2 transition-all p-8 flex flex-col relative group ${visualStyles.borderClassName} ${isSelected ? visualStyles.backgroundClassName : 'bg-transparent'}`,
         labelClassName: `text-[10px] font-black uppercase tracking-[0.25em] ${visualStyles.textClassName}`,
+        labelBorderClassName: visualStyles.labelBorderClassName,
         resizerLineClassName: visualStyles.resizerLineClassName || 'border-blue-500',
         resizerHandleClassName: visualStyles.resizerHandleClassName || 'border-blue-500',
-        handleClassName: `!w-6 !h-6 !border-2 !border-zinc-800 ${visualStyles.handleBackgroundClassName?.replace('border-', 'bg-')} !opacity-100 hover:scale-110 transition-all !z-50 !cursor-pointer`,
+        handleClassName: `!w-6 !h-6 !border-2 !border-zinc-800 ${visualStyles.handleBackgroundClassName?.replace('border-', 'bg-')} !0 hover:scale-110 transition-all !z-50 !cursor-pointer`,
         ports: zoneDomainData.ports || [],
         VisualIcon: Box,
     };

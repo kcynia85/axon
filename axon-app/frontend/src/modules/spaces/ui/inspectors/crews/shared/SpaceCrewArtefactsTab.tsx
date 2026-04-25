@@ -95,12 +95,12 @@ export const SpaceCrewArtefactsTab = ({
                     </div>
                 ) : (
                     artefacts.map((artefactItem) => (
-                        <div key={artefactItem.id} className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-3.5">
+                        <div key={artefactItem.id} className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 space-y-3.5">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setEditingArtefactId(artefactItem.id)}>
                                     <h4 className="text-xs font-black text-white tracking-tight group-hover:text-blue-400 transition-colors">{artefactItem.label}</h4>
                                     {artefactItem.isOutput && (
-                                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[8px] font-black text-orange-500 uppercase tracking-widest">
+                                        <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-orange-500 border border-orange-500 text-[8px] font-black text-orange-500 uppercase tracking-widest">
                                             Output <ArrowUpRight size={8} />
                                         </div>
                                     )}
@@ -125,7 +125,7 @@ export const SpaceCrewArtefactsTab = ({
                                         <Button
                                             size="sm"
                                             variant="bordered"
-                                            className="h-10 border-zinc-800 bg-zinc-900/30 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between"
+                                            className="h-10 border-zinc-800 bg-zinc-900 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between"
                                             endContent={<ChevronDown size={12} />}
                                         >
                                             <div className="flex items-center gap-1.5">
@@ -159,7 +159,7 @@ export const SpaceCrewArtefactsTab = ({
                                     variant="bordered"
                                     className={cn(
                                         "h-10 w-10 border-zinc-800 transition-all",
-                                        artefactItem.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
+                                        artefactItem.isOutput ? "bg-orange-500 border-orange-500 text-orange-500" : "bg-zinc-900 text-zinc-600 hover:text-zinc-400"
                                     )}
                                     onPress={() => handleArtefactOutputToggle(artefactItem.id)}
                                     title="Mark as Workflow Output"
@@ -168,7 +168,7 @@ export const SpaceCrewArtefactsTab = ({
                                 </Button>
                             </div>
 
-                            <div className="pt-2 border-t border-zinc-900/50 mt-2">
+                            <div className="pt-2 border-t border-zinc-900 mt-2">
                                 <button 
                                     onClick={() => toggleVersionHistory(artefactItem.id)}
                                     className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-zinc-600 hover:text-zinc-400 transition-colors"
@@ -186,7 +186,7 @@ export const SpaceCrewArtefactsTab = ({
                                         ].map((versionItem, versionIndex) => (
                                             <div 
                                                 key={versionIndex} 
-                                                className="flex items-center justify-between group/ver py-1.5 px-2 hover:bg-zinc-900/50 rounded-lg transition-all cursor-pointer"
+                                                className="flex items-center justify-between group/ver py-1.5 px-2 hover:bg-zinc-900 rounded-lg transition-all cursor-pointer"
                                                 onClick={() => handleRestoreVersion(artefactItem.id, versionItem.version)}
                                             >
                                                 <div className="flex items-center gap-3">
@@ -196,7 +196,7 @@ export const SpaceCrewArtefactsTab = ({
                                                         <span className="text-[8px] font-mono text-zinc-600">{versionItem.tokens} tokens</span>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 opacity-0 group-hover/ver:opacity-100 transition-opacity">
+                                                <div className="flex items-center gap-2  group-hover/ver:0 transition-opacity">
                                                     <div className="p-1 rounded bg-zinc-800 text-blue-400 hover:text-blue-300" title="Restore this version">
                                                         <RotateCcw size={10} />
                                                     </div>
@@ -214,7 +214,7 @@ export const SpaceCrewArtefactsTab = ({
                 )}
 
                 {isWorking && (
-                    <div className="p-4 rounded-xl bg-zinc-900/30 border border-zinc-800 border-dashed opacity-60">
+                    <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 border-dashed ">
                         <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center gap-2">
                                 <div className="p-2 rounded-lg bg-zinc-800 text-zinc-500 animate-pulse">
@@ -228,7 +228,7 @@ export const SpaceCrewArtefactsTab = ({
                 )}
 
                 {(!isWorking && artefacts.length === 0) && (
-                    <div className="text-center py-20 opacity-40">
+                    <div className="text-center py-20 ">
                         <div className="flex justify-center mb-4">
                             <div className="p-4 rounded-full border-2 border-dashed border-zinc-700">
                                 <FileText size={32} className="text-zinc-700" />

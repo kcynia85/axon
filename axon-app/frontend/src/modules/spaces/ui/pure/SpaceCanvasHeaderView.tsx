@@ -40,7 +40,7 @@ export const SpaceCanvasHeaderView = ({
                         <span className="text-zinc-300">{activeSpaceDisplayName}</span>
                      </div>
 
-                    <Card className="bg-black/40 border border-zinc-200 shadow-[0_0_30px_rgba(0,0,0,0.5)] top-2 rounded-2xl py-3 px-8 min-w-[340px] backdrop-blur-xl">
+                    <Card className="bg-black border border-zinc-200 [0_0_30px_rgb(0,0,0)] top-2 rounded-2xl py-3 px-8 min-w-[340px] ">
                         <CardBody className="p-0 flex-row justify-between items-center gap-8 overflow-visible">
                             <div className="flex flex-col gap-0.5 w-full">
                                 <div className="flex items-center gap-3">
@@ -80,7 +80,9 @@ export const SpaceCanvasHeaderView = ({
                                 <div className="flex items-center gap-3">
                                     <span className="text-[12px] font-bold text-zinc-500">
                                         {parentProjectIdentifier ? (
-                                            <>Linked: <Link href={`/projects/${parentProjectIdentifier}`} className="hover:text-white underline decoration-zinc-700 underline-offset-4 transition-colors normal-case">{parentProjectDisplayName}</Link></>
+                                            <>Linked: <Link href={`/projects/${parentProjectIdentifier}`} className="hover:text-white underline decoration-zinc-700 underline-offset-4 transition-colors normal-case">
+                                                {parentProjectDisplayName.length > 20 ? `${parentProjectDisplayName.substring(0, 20)}...` : parentProjectDisplayName}
+                                            </Link></>
                                         ) : (
                                             <AttachProjectDialog spaceId={spaceIdentifier}><button className="text-zinc-500 normal-case underline decoration-zinc-700 underline-offset-4 hover:text-white transition-colors cursor-pointer">Detached</button></AttachProjectDialog>
                                         )}
@@ -93,7 +95,7 @@ export const SpaceCanvasHeaderView = ({
             </div>
 
             <div className="absolute top-8 right-8 z-50 pointer-events-none select-none">
-                <div className="flex items-center gap-6 pointer-events-auto bg-black/40 border border-white/10 backdrop-blur-xl rounded-2xl py-2 px-4 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center gap-6 pointer-events-auto bg-black border border-white  rounded-2xl py-2 px-4 [0_0_30px_rgb(0,0,0)]">
                     <div className="flex items-center gap-1.5">
                         <AnimatePresence mode="wait">
                             {isSaving ? (
@@ -121,7 +123,7 @@ export const SpaceCanvasHeaderView = ({
                         </AnimatePresence>
                     </div>
 
-                    <div className="h-10 w-px bg-zinc-800/50" />
+                    <div className="h-10 w-px bg-zinc-800" />
 
                     <UserNav hideText={true} />
                 </div>

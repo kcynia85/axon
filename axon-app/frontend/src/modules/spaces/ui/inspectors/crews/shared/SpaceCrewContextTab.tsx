@@ -79,14 +79,14 @@ export const SpaceCrewContextTab = ({
                                     </h4>
                                 </div>
                                 {isMissing && (
-                                    <div className="text-[9px] font-black uppercase px-2 py-0.5 rounded tracking-widest bg-red-500/5 text-red-500 border border-red-500/20">
+                                    <div className="text-[9px] font-black uppercase px-2 py-0.5 rounded tracking-widest bg-red-500 text-red-500 border border-red-500">
                                         MISSING
                                     </div>
                                 )}
                             </div>
 
                             {contextItem.sourceNodeLabel ? (
-                                <div className="p-4 bg-zinc-950/50 border-2 border-white rounded-2xl flex items-center gap-3">
+                                <div className="p-4 bg-zinc-950 border-2 border-white rounded-2xl flex items-center gap-3">
                                     <div className="p-2.5 rounded-xl bg-zinc-900 text-white">
                                         <Network size={16} />
                                     </div>
@@ -114,14 +114,14 @@ export const SpaceCrewContextTab = ({
                                         placeholder="Paste link or link from node..."
                                         value={contextItem.link || ""}
                                         onChange={(e) => onContextLinkChange(contextItem.id, e.target.value)}
-                                        startContent={<LinkIcon size={14} className={cn(isMissing ? "text-red-500/40" : "text-white")} />}
+                                        startContent={<LinkIcon size={14} className={cn(isMissing ? "text-red-500" : "text-white")} />}
                                         endContent={!isMissing && <CheckCircle2 size={16} className="text-white" />}
                                         classNames={{
                                             input: "text-[11px] font-bold text-zinc-200",
                                             inputWrapper: cn(
-                                                "h-14 rounded-2xl bg-zinc-950/30 transition-all shadow-none border",
+                                                "h-14 rounded-2xl bg-zinc-950 transition-all  border",
                                                 isMissing 
-                                                    ? "border-red-900/30 hover:border-red-500 focus-within:!border-red-500" 
+                                                    ? "border-red-900 hover:border-red-500 focus-within:!border-red-500" 
                                                     : "border-white border-2"
                                             ),
                                         }}
@@ -148,13 +148,13 @@ export const SpaceCrewContextTab = ({
                                             classNames={{
                                                 base: "w-full",
                                                 trigger: cn(
-                                                    "h-11 font-black uppercase tracking-widest text-[9px] rounded-xl shadow-none transition-all bg-transparent",
+                                                    "h-11 font-black uppercase tracking-widest text-[9px] rounded-xl  transition-all bg-transparent",
                                                     isMissing 
-                                                        ? "text-red-500/60 border-red-900/20 data-[hover=true]:border-red-500 data-[hover=true]:text-red-500 data-[hover=true]:bg-red-500/[0.02]" 
+                                                        ? "text-red-500 border-red-900 data-[hover=true]:border-red-500 data-[hover=true]:text-red-500 data-[hover=true]:bg-red-500/[0.02]" 
                                                         : "text-zinc-500 border-zinc-800 data-[hover=true]:text-zinc-300 data-[hover=true]:bg-white/[0.03] data-[hover=true]:border-zinc-700"
                                                 ),
                                                 value: "text-zinc-500 font-black uppercase tracking-widest text-[9px]",
-                                                popoverContent: "bg-zinc-950 border border-zinc-800 rounded-2xl p-0 shadow-2xl",
+                                                popoverContent: "bg-zinc-950 border border-zinc-800 rounded-2xl p-0 ",
                                                 listbox: "p-2",
                                             }}
                                             renderValue={() => (
@@ -174,7 +174,7 @@ export const SpaceCrewContextTab = ({
                                                             startContent={<Search size={14} className="text-zinc-600" />}
                                                             classNames={{
                                                                 input: "text-zinc-300 text-[11px] font-bold",
-                                                                inputWrapper: "h-10 bg-zinc-900 border-zinc-800 data-[hover=true]:border-zinc-700 transition-colors shadow-none",
+                                                                inputWrapper: "h-10 bg-zinc-900 border-zinc-800 data-[hover=true]:border-zinc-700 transition-colors ",
                                                             }}
                                                         />
                                                     </div>
@@ -224,16 +224,16 @@ export const SpaceCrewContextTab = ({
                                             classNames={{
                                                 base: "w-full",
                                                 trigger: cn(
-                                                    "h-11 font-black uppercase tracking-widest text-[9px] rounded-xl shadow-none transition-all bg-transparent",
-                                                    "text-zinc-500 border-zinc-800 data-[hover=true]:text-blue-400 data-[hover=true]:bg-blue-500/[0.03] data-[hover=true]:border-blue-500/30"
+                                                    "h-11 font-black uppercase tracking-widest text-[9px] rounded-xl  transition-all bg-transparent",
+                                                    "text-zinc-500 border-zinc-800 data-[hover=true]:text-blue-400 data-[hover=true]:bg-blue-500/[0.03] data-[hover=true]:border-blue-500"
                                                 ),
                                                 value: "text-zinc-500 font-black uppercase tracking-widest text-[9px]",
-                                                popoverContent: "bg-zinc-950 border border-zinc-800 rounded-2xl p-0 shadow-2xl",
+                                                popoverContent: "bg-zinc-950 border border-zinc-800 rounded-2xl p-0 ",
                                                 listbox: "p-2",
                                             }}
                                             renderValue={() => (
                                                 <div className="flex items-center gap-2">
-                                                    <Sparkles size={12} className="text-blue-500/50" />
+                                                    <Sparkles size={12} className="text-blue-500" />
                                                     <span>KNOWLEDGE</span>
                                                 </div>
                                             )}
@@ -248,7 +248,7 @@ export const SpaceCrewContextTab = ({
                                                             startContent={<Search size={14} className="text-zinc-600" />}
                                                             classNames={{
                                                                 input: "text-zinc-300 text-[11px] font-bold",
-                                                                inputWrapper: "h-10 bg-zinc-900 border-zinc-800 data-[hover=true]:border-zinc-700 transition-colors shadow-none",
+                                                                inputWrapper: "h-10 bg-zinc-900 border-zinc-800 data-[hover=true]:border-zinc-700 transition-colors ",
                                                             }}
                                                         />
                                                     </div>
@@ -288,7 +288,7 @@ export const SpaceCrewContextTab = ({
                     );
                 })}
                 {(!contextRequirements || contextRequirements.length === 0) && (
-                    <div className="flex flex-col items-center justify-center py-20 opacity-30">
+                    <div className="flex flex-col items-center justify-center py-20 ">
                         <Layers size={40} className="text-zinc-700 mb-4" />
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">No context required</p>
                     </div>

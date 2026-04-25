@@ -11,7 +11,7 @@ export const CreateSpaceFormLayout: React.FC<CreateSpaceFormLayoutProps> = ({
     onClose 
 }) => {
     return (
-        <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-end bg-zinc-50 dark:bg-zinc-900/30">
+        <div className="p-8 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-end bg-zinc-50 dark:bg-zinc-900">
             <button 
                 type="button"
                 onClick={onClose}

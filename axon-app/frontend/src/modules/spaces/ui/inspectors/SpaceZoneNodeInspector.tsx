@@ -51,7 +51,7 @@ export const SpaceZoneNodeInspector = ({
                                 }}
                             />
                         </div>
-                        <div className="p-4 bg-zinc-900/30 border border-zinc-800 rounded-2xl">
+                        <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
                             <p className="text-[10px] text-zinc-500 font-bold leading-relaxed italic">
                                 This context is shared with all agents and automations residing within this zone.
                             </p>
@@ -66,7 +66,7 @@ export const SpaceZoneNodeInspector = ({
                             <Box size={12}/> 
                             Artefacts
                             {state.hasInReview ? (
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse [0_0_8px_rgb(0,0,0)]" />
                             ) : state.childArtefacts.length > 0 ? (
                                 <CheckCircle2 size={10} className="text-green-500" />
                             ) : null}
@@ -83,11 +83,11 @@ export const SpaceZoneNodeInspector = ({
                                 >
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 [0_0_10px_rgb(0,0,0)]" />
                                             <span className="text-[9px] font-black text-zinc-500 uppercase tracking-tighter">{entry.nodeLabel}</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Target size={10} className="text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            <Target size={10} className="text-zinc-600  group-hover:0 transition-opacity" />
                                             {entry.artefact.link && <ExternalLink size={10} className="text-zinc-600 group-hover:text-zinc-200 transition-colors" />}
                                         </div>
                                     </div>
@@ -102,7 +102,7 @@ export const SpaceZoneNodeInspector = ({
                                 </div>
                             ))}
                             {state.childArtefacts.length === 0 && (
-                                <div className="py-16 flex flex-col items-center justify-center border-2 border-dashed border-zinc-900 rounded-[2.5rem] opacity-40">
+                                <div className="py-16 flex flex-col items-center justify-center border-2 border-dashed border-zinc-900 rounded-[2.5rem] ">
                                     <Box size={32} className="text-zinc-700 mb-4" />
                                     <p className="text-[10px] font-black uppercase text-zinc-600 tracking-widest text-center px-8">No active outputs detected in this zone yet</p>
                                 </div>

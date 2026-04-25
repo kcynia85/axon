@@ -80,6 +80,10 @@ export const useSpaceCanvasSidebarManagement = () => {
         (workspace) => workspace.identifier === currentlySelectedWorkspaceIdentifier
     )?.displayName || "";
 
+    const activeWorkspaceColor = LIST_OF_AVAILABLE_WORKSPACES.find(
+        (workspace) => workspace.identifier === currentlySelectedWorkspaceIdentifier
+    )?.visualColor || null;
+
     const activeWorkspaceHeaderClassName = (() => {
         if (!currentlySelectedWorkspaceIdentifier) return "";
         const workspaceUnit = LIST_OF_AVAILABLE_WORKSPACES.find(
@@ -148,6 +152,7 @@ export const useSpaceCanvasSidebarManagement = () => {
         workspaceUnitsForDisplay,
         activeWorkspaceDisplayName,
         activeWorkspaceHeaderClassName,
+        activeWorkspaceColor,
         filteredComponentCategoriesForDisplay,
     };
 };

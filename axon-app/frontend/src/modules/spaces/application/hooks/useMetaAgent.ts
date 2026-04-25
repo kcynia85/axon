@@ -25,7 +25,8 @@ export const useMetaAgent = (spaceId: string, canvasState?: any, projectContext?
         knowledgeEnabled: rawState.knowledgeEnabled || false,
         query: rawState.query || '',
         isFocused: rawState.isFocused || false,
-        isMaximized: rawState.isMaximized || false
+        isMaximized: rawState.isMaximized || false,
+        isPaused: rawState.isPaused || false
     };
 
     const systemAwarenessEnabled = true;
@@ -46,19 +47,19 @@ export const useMetaAgent = (spaceId: string, canvasState?: any, projectContext?
         // 1. Space Canvas Estimate (Essential data only for speed)
         if (canvasState && Array.isArray(canvasState)) {
             const minimalCanvas = canvasState.map((n: any) => ({ id: n.id, type: n.type, label: n.data?.label }));
-            stats.space_canvas_tokens = countTokens(JSON.stringify(minimalCanvas));
+            stats.space_canvas_tokens = countTokens(JSON.stringify(minimalCanvas), "heuristic");
         }
 
         // 2. Project Context Estimate
         if (projectContext) {
             const projectStr = `Project: ${projectContext.project_name || ''}\nSummary: ${projectContext.project_summary || ''}`;
-            stats.project_context_tokens = countTokens(projectStr);
+            stats.project_context_tokens = countTokens(projectStr, "heuristic");
         }
 
         // 3. Attachments Estimate
         if (state.attachedFiles.length > 0) {
             const attachmentsStr = state.attachedFiles.map(a => `${a.name} (${a.content_type})`).join('\n');
-            stats.attachments_tokens = countTokens(attachmentsStr);
+            stats.attachments_tokens = countTokens(attachmentsStr, "heuristic");
         }
 
         stats.total_tokens = stats.space_canvas_tokens + stats.project_context_tokens + stats.attachments_tokens;
@@ -75,19 +76,29 @@ export const useMetaAgent = (spaceId: string, canvasState?: any, projectContext?
     const setQuery = (query: string) => setSpaceData(spaceId, { query });
     const setIsFocused = (isFocused: boolean) => setSpaceData(spaceId, { isFocused });
     const setIsMaximized = (isMaximized: boolean) => setSpaceData(spaceId, { isMaximized });
+    const setIsPaused = (isPaused: boolean) => setSpaceData(spaceId, { isPaused });
 
     const proposeMutation = useMutation({
         mutationFn: async (query: string) => {
-            setSpaceData(spaceId, { activeStep: 'planner' });
+            // Reset state for new proposal
+            setSpaceData(spaceId, { activeStep: 'planner', isPaused: false });
             
-            // Step progression without useEffect
             const progression: MetaAgentStep[] = ['retriever', 'drafter', 'validator'];
-            let currentIdx = 0;
+            let currentStepIdx = 0;
             
             const stepInterval = setInterval(() => {
-                if (currentIdx < progression.length) {
-                    setSpaceData(spaceId, { activeStep: progression[currentIdx] });
-                    currentIdx++;
+                // IMPORTANT: Fetch the absolute latest state from Zustand store inside the interval
+                const latestState = useMetaAgentStore.getState().spaces[spaceId];
+                
+                // If paused, just skip this tick but keep the interval running
+                if (latestState?.isPaused) return;
+
+                if (currentStepIdx < progression.length) {
+                    setSpaceData(spaceId, { activeStep: progression[currentStepIdx] });
+                    currentStepIdx++;
+                } else {
+                    // All steps completed, interval can be cleared early if mutation is still running
+                    // but usually the finally block handles it.
                 }
             }, 2500);
 
@@ -160,6 +171,8 @@ export const useMetaAgent = (spaceId: string, canvasState?: any, projectContext?
         setIsFocused,
         isMaximized: state.isMaximized,
         setIsMaximized,
+        isPaused: state.isPaused,
+        setIsPaused,
         propose: proposeMutation.mutate,
         isProposing: proposeMutation.isPending,
         error: proposeMutation.error

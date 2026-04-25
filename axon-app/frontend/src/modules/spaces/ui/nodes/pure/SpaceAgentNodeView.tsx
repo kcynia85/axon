@@ -20,10 +20,12 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
     <div 
         className={cn(
             viewModel.visual.containerClassName,
-            viewModel.isWorking && "ai-working-node"
+            viewModel.isWorking && "ai-working-node",
+            viewModel.isSelected && viewModel.visual.borderSelectedClassName
         )}
         style={{ '--ai-zone-color': COLOR_MAP[viewModel.zoneColor || "default"] || COLOR_MAP.default } as React.CSSProperties}
     >
+
         {/* AI Working Shimmer Effect - Background Layer */}
         {viewModel.isWorking && <div className="ai-shimmer-layer" />}
 
@@ -31,13 +33,14 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
         <div className="relative z-10 w-full h-full">
             <div className={cn(viewModel.visual.headerClassName, "!gap-1.5")}>
                 {viewModel.visualUrl ? (
-                    <div className="w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative border-zinc-700 shrink-0 mr-3">
+                    <div className="w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden  relative border-zinc-700 shrink-0 mr-3">
                         <Image 
                             src={viewModel.visualUrl} 
                             alt={viewModel.displayName}
                             fill
                             sizes="40px"
                             className="object-cover object-top scale-110 transition-all duration-500 bg-black"
+                            priority={true}
                         />
                     </div>
                 ) : (
@@ -49,7 +52,7 @@ export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAge
                     <div className="flex items-center gap-2">
                         <span className={cn(viewModel.visual.titleClassName, "truncate")}>{viewModel.displayName}</span>
                         {viewModel.knowledgeHubIds && viewModel.knowledgeHubIds.length > 0 && (
-                            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-blue-500 border border-blue-500 text-blue-400">
                                 <Sparkles size={10} className="shrink-0" />
                                 <span className="text-[8px] font-black">{viewModel.knowledgeHubIds.length}</span>
                             </div>

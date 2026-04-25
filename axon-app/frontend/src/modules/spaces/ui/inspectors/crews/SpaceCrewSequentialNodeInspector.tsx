@@ -69,11 +69,11 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                             initial={{ opacity: 0, x: -10 }}
                                                             animate={{ opacity: 1, x: 0 }}
                                                             transition={{ delay: i * 0.1 }}
-                                                            className="p-4 rounded-xl space-y-1 transition-all border border-zinc-800 bg-zinc-900/30"
+                                                            className="p-4 rounded-xl space-y-1 transition-all border border-zinc-800 bg-zinc-900"
                                                         >
                                                             <div className="flex items-center justify-between">
                                                                 <div className="flex items-center gap-2">
-                                                                    <div className="w-8 h-8 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden shadow-sm relative shrink-0">
+                                                                    <div className="w-8 h-8 rounded-full border-2 border-zinc-700 bg-black flex items-center justify-center overflow-hidden  relative shrink-0">
                                                                         {task.visualUrl ? (
                                                                             <Image 
                                                                                 src={task.visualUrl} 
@@ -101,7 +101,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                                     input: "!text-zinc-400 text-[14px] font-normal", 
                                                                     inputWrapper: cn(
                                                                         "h-10 border-b-2 transition-all px-0",
-                                                                        isFilled ? "border-white" : "border-zinc-800/50"
+                                                                        isFilled ? "border-white" : "border-zinc-800"
                                                                     )
                                                                 }} 
                                                             />
@@ -120,14 +120,14 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                             <motion.div 
                                                                 key={task.id} 
                                                                 layout
-                                                                className={cn("space-y-1.5 transition-all duration-500", isAgentWorking ? "opacity-100" : "opacity-40")}
+                                                                className={cn("space-y-1.5 transition-all duration-500", isAgentWorking ? "0" : "")}
                                                             >
                                                                 <div className="flex items-center justify-between">
                                                                     <div className="flex items-center gap-2">
                                                                         <div className="relative">
                                                                             <div className={cn(
-                                                                                "w-6 h-6 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative shrink-0 transition-all",
-                                                                                isAgentWorking ? "border-white shadow-[0_0_15px_rgba(255,255,255,0.4)]" : "border-zinc-700"
+                                                                                "w-6 h-6 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden  relative shrink-0 transition-all",
+                                                                                isAgentWorking ? "border-white [0_0_15px_rgb(0,0,0)]" : "border-zinc-700"
                                                                             )}>
                                                                                 {task.visualUrl ? (
                                                                                     <Image 
@@ -146,7 +146,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                                             {isAgentWorking && (
                                                                                 <motion.div 
                                                                                     layoutId="active-glow"
-                                                                                    className="absolute -inset-1 rounded-full border border-blue-400/30"
+                                                                                    className="absolute -inset-1 rounded-full border border-blue-400"
                                                                                     animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
                                                                                     transition={{ duration: 2, repeat: Infinity }}
                                                                                 />
@@ -195,7 +195,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                                             <motion.div 
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
-                                                className="space-y-5 p-4 bg-orange-500/5 border border-orange-500/10 rounded-2xl"
+                                                className="space-y-5 p-4 bg-orange-500 border border-orange-500 rounded-2xl"
                                             >
                                                 {state.consultationQuestions.map((question: any) => {
                                                     const isAnswered = (state.consultationAnswers[question.id] || question.answer || "").trim().length > 0;
@@ -212,7 +212,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                                 classNames={{ 
                                                                     input: "text-xs font-mono text-zinc-300", 
                                                                     inputWrapper: cn(
-                                                                        "h-11 bg-black rounded-lg transition-all shadow-none border",
+                                                                        "h-11 bg-black rounded-lg transition-all  border",
                                                                         isAnswered ? "border-white border-2" : "border-zinc-800 hover:border-zinc-700"
                                                                     )
                                                                 }} 
@@ -304,7 +304,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                 </Tab>
             </Tabs>
             <SpaceInspectorFooter>
-                <button className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 shadow-xl" onClick={() => actions.transitionTo('working')}>Uruchom proces</button>
+                <button className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 " onClick={() => actions.transitionTo('working')}>Uruchom proces</button>
             </SpaceInspectorFooter>
         </SpaceInspectorPanel>
     );

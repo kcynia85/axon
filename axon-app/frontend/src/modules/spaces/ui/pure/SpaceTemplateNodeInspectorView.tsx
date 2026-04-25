@@ -98,7 +98,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                 <div key={sectionName} className="space-y-5">
                                     <div className="flex flex-col gap-1.5">
                                         <h4 className="text-sm font-black text-white">{sectionName}</h4>
-                                        <Divider className="bg-zinc-800/50" />
+                                        <Divider className="bg-zinc-800" />
                                     </div>
                                     <div className="flex flex-col gap-3.5 pl-1">
                                         {actionsList.map((actionItem) => (
@@ -176,7 +176,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                         startContent={<LinkIcon size={12} className="text-zinc-500" />}
                                         classNames={{
                                             input: "text-[10px] font-bold text-zinc-200",
-                                            inputWrapper: "h-10 rounded-lg border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition-colors shadow-none",
+                                            inputWrapper: "h-10 rounded-lg border-zinc-800 bg-zinc-900 hover:border-zinc-700 transition-colors ",
                                         }}
                                     />
                                 </div>
@@ -195,7 +195,7 @@ export const SpaceTemplateNodeInspectorView = ({
                             <Archive size={12} />
                             Artefacts
                             {templateData.artefacts?.some(artefact => artefact.status === 'in_review') ? (
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse [0_0_8px_rgb(0,0,0)]" />
                             ) : templateData.artefacts && templateData.artefacts.length > 0 ? (
                                 <CheckCircle2 size={10} className="text-green-500" />
                             ) : null}
@@ -210,7 +210,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                         <div className="flex items-center gap-2">
                                             <h4 className="text-xs font-black text-white tracking-tight">{artefactItem.label}</h4>
                                             {artefactItem.isOutput && (
-                                                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[8px] font-black text-orange-500 uppercase tracking-widest">
+                                                <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-orange-500 border border-orange-500 text-[8px] font-black text-orange-500 uppercase tracking-widest">
                                                     Output <ArrowUpRight size={8} />
                                                 </div>
                                             )}
@@ -240,7 +240,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                             classNames={{
                                                 base: "w-full",
                                                 input: "text-[10px] font-bold text-zinc-200",
-                                                inputWrapper: "h-10 rounded-lg border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition-colors shadow-none",
+                                                inputWrapper: "h-10 rounded-lg border-zinc-800 bg-zinc-900 hover:border-zinc-700 transition-colors ",
                                             }}
                                         />
 
@@ -250,7 +250,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                                     <Button
                                                         size="sm"
                                                         variant="bordered"
-                                                        className="h-10 border-zinc-800 bg-zinc-900/30 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between"
+                                                        className="h-10 border-zinc-800 bg-zinc-900 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between"
                                                         endContent={<ChevronDown size={12} />}
                                                     >
                                                         <div className="flex items-center gap-1.5">
@@ -284,7 +284,7 @@ export const SpaceTemplateNodeInspectorView = ({
                                                 variant="bordered"
                                                 className={cn(
                                                     "h-10 w-10 border-zinc-800 transition-all",
-                                                    artefactItem.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
+                                                    artefactItem.isOutput ? "bg-orange-500 border-orange-500 text-orange-500" : "bg-zinc-900 text-zinc-600 hover:text-zinc-400"
                                                 )}
                                                 onPress={() => onArtefactOutputToggle(artefactItem.id)}
                                                 title="Mark as Workflow Output"

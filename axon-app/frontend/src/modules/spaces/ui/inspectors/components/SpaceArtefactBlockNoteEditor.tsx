@@ -36,7 +36,7 @@ export const SpaceArtefactBlockNoteEditor = ({
     };
 
     return (
-        <div className="min-h-[300px] border border-zinc-800 rounded-xl bg-zinc-900/20 overflow-hidden">
+        <div className="min-h-[300px] border border-zinc-800 rounded-xl bg-zinc-900 overflow-hidden">
             <BlockNoteView 
                 editor={editor} 
                 theme="dark"

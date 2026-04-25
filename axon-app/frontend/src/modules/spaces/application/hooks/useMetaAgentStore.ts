@@ -16,6 +16,7 @@ interface SpaceDraftState {
     query: string;
     isFocused: boolean;
     isMaximized: boolean;
+    isPaused: boolean;
 }
 
 interface MetaAgentStore {
@@ -35,7 +36,8 @@ const initialSpaceState: SpaceDraftState = {
     knowledgeEnabled: false,
     query: '',
     isFocused: false,
-    isMaximized: false
+    isMaximized: false,
+    isPaused: false
 };
 
 export const useMetaAgentStore = create<MetaAgentStore>()(

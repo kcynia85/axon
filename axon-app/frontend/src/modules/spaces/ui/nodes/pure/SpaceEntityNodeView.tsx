@@ -36,7 +36,7 @@ export const SpaceEntityNodeView = ({ viewModel }: { readonly viewModel: SpaceEn
                  <div className="flex items-center gap-2 mt-1">
                      <div className={cn(
                          "px-2 py-0.5 rounded-full text-[10px] font-bold",
-                         viewModel.isStatusActive ? "bg-green-500/10 text-green-500" : "bg-zinc-800 text-zinc-400"
+                         viewModel.isStatusActive ? "bg-green-500 text-green-500" : "bg-zinc-800 text-zinc-400"
                      )}>
                         {viewModel.statusLabel}
                      </div>

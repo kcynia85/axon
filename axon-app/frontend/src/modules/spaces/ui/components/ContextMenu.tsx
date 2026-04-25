@@ -60,7 +60,7 @@ export const ContextMenu = ({ x, y, type, onAction, onClose }: ContextMenuProps)
 
     return (
         <div 
-            className="fixed z-[1000] bg-zinc-900 border border-zinc-800 shadow-2xl rounded-xl py-1.5 min-w-[200px] font-mono"
+            className="fixed z-[1000] bg-zinc-900 border border-zinc-800  rounded-xl py-1.5 min-w-[200px] font-mono"
             style={{ left: x, top: y }}
             onClick={(e) => e.stopPropagation()}
         >
@@ -72,7 +72,7 @@ export const ContextMenu = ({ x, y, type, onAction, onClose }: ContextMenuProps)
                         key={opt.id}
                         className={cn(
                             "w-full flex items-center justify-between px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors",
-                            opt.danger ? "text-red-400 hover:bg-red-500/10" : "text-zinc-300 hover:bg-white/5 hover:text-white"
+                            opt.danger ? "text-red-400 hover:bg-red-500" : "text-zinc-300 hover:bg-white hover:text-white"
                         )}
                         onClick={() => {
                             onAction(opt.id);
@@ -83,7 +83,7 @@ export const ContextMenu = ({ x, y, type, onAction, onClose }: ContextMenuProps)
                             {opt.icon && <span>{opt.icon}</span>}
                             {opt.label}
                         </div>
-                        {opt.shortcut && <span className="opacity-30 ml-4">{opt.shortcut}</span>}
+                        {opt.shortcut && <span className=" ml-4">{opt.shortcut}</span>}
                     </button>
                 )
             ))}

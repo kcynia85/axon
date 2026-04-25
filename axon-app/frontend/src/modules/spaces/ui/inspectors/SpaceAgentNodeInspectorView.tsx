@@ -49,7 +49,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                             {/* HEADER / VISUAL SECTION */}
                             <div className="mb-10 flex flex-col items-center text-center space-y-4">
                                 <div className="relative">
-                                    <div className="w-16 h-16 rounded-full border-4 border-zinc-700 bg-black flex items-center justify-center overflow-hidden shadow-2xl relative shrink-0">
+                                    <div className="w-16 h-16 rounded-full border-4 border-zinc-700 bg-black flex items-center justify-center overflow-hidden  relative shrink-0">
                                         {agentData.agent_visual_url ? (
                                             <Image 
                                                 src={agentData.agent_visual_url} 
@@ -77,7 +77,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
 
                             {(state.isMissingContext || state.isBriefing) && (
                                 <div className="space-y-6">
-                                    <div className="p-4 bg-zinc-900/30 border border-zinc-800 rounded-xl space-y-2">
+                                    <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl space-y-2">
                                         <div className="flex items-center gap-2 text-zinc-500">
                                             <AlertCircle size={12} />
                                             <h3 className="text-[9px] font-black uppercase tracking-widest">Agent Goal</h3>
@@ -113,7 +113,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                                         classNames={{ 
                                                             input: "text-xs font-mono text-zinc-300", 
                                                             inputWrapper: cn(
-                                                                "h-11 bg-zinc-900/50 rounded-lg transition-all shadow-none border",
+                                                                "h-11 bg-zinc-900 rounded-lg transition-all  border",
                                                                 isAnswered ? "border-white border-2" : "border-zinc-800 hover:border-zinc-700 focus-within:!border-zinc-200"
                                                             )
                                                         }} 
@@ -132,7 +132,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                         <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Alignment / Understanding Check</h3>
                                     </div>
 
-                                    <div className="p-5 bg-zinc-900/50 border border-zinc-200/10 rounded-xl space-y-3">
+                                    <div className="p-5 bg-zinc-900 border border-zinc-200 rounded-xl space-y-3">
                                         <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Agent understanding:</span>
                                         <p className="text-xs text-zinc-300 font-mono leading-relaxed italic">
                                             &quot;{agentData.alignment_summary}&quot;
@@ -186,7 +186,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                         </div>
                                         <div className="relative h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
                                             <motion.div 
-                                                className="absolute inset-y-0 left-0 bg-white shadow-[0_0_10px_white]"
+                                                className="absolute inset-y-0 left-0 bg-white [0_0_10px_white]"
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${agentData.progress}%` }}
                                                 transition={{ type: "spring", stiffness: 50, damping: 20 }}
@@ -218,7 +218,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                                             return (
                                                                 <div key={index} className={cn(
                                                                     "text-[10px] font-mono flex gap-2",
-                                                                    isLogDone ? "text-zinc-500" : isLogCurrent ? "text-white" : "text-zinc-700 opacity-50"
+                                                                    isLogDone ? "text-zinc-500" : isLogCurrent ? "text-white" : "text-zinc-700 "
                                                                 )}>
                                                                     <span className={cn("font-bold", isLogDone ? "text-zinc-600" : isLogCurrent ? "text-white" : "text-zinc-800")}>
                                                                         {isLogDone ? "[Done]" : isLogCurrent ? "[Processing]" : "[Pending]"}
@@ -228,7 +228,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                                             );
                                                         })}
                                                     </div>
-                                                    <div className="space-y-1 pt-3 border-t border-zinc-900/50">
+                                                    <div className="space-y-1 pt-3 border-t border-zinc-900">
                                                         <div className="flex justify-between text-[10px] font-mono">
                                                             <span className="text-zinc-600 uppercase font-black text-[9px] tracking-tighter">Zużyto:</span>
                                                             <span className="text-zinc-300 tabular-nums" suppressHydrationWarning>{state.simulatedTokens.toLocaleString()} tokenów</span>
@@ -263,7 +263,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                                 "Weryfikacja faktów i danych...",
                                                 "Optymalizacja stylu i tonu...",
                                             ].map((noteText, noteIndex) => (
-                                                <div key={noteIndex} className="flex items-center gap-2 px-3 py-2 bg-zinc-900/30 border border-zinc-800 rounded-lg">
+                                                <div key={noteIndex} className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg">
                                                     <div className="w-1 h-1 rounded-full bg-white animate-ping" />
                                                     <span className="text-[10px] font-mono text-zinc-300">{noteText}</span>
                                                 </div>
@@ -354,7 +354,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                             <FileText size={12} /> 
                             Artefacts
                             {state.hasInReview ? (
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse [0_0_8px_rgb(0,0,0)]" />
                             ) : state.artefactsList.length > 0 ? (
                                 <CheckCircle2 size={10} className="text-white" />
                             ) : null}
@@ -387,8 +387,8 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                             <Button 
                                 size="sm" 
                                 isDisabled={!state.isContextComplete}
-                                className={cn("w-full font-black uppercase text-[10px] tracking-widest rounded-md h-12 transition-all border shadow-xl",
-                                    state.isContextComplete ? "bg-white text-black border-white hover:bg-zinc-100 shadow-white/5" : "bg-zinc-900 text-zinc-600 border-zinc-800 shadow-none"
+                                className={cn("w-full font-black uppercase text-[10px] tracking-widest rounded-md h-12 transition-all border ",
+                                    state.isContextComplete ? "bg-white text-black border-white hover:bg-zinc-100 " : "bg-zinc-900 text-zinc-600 border-zinc-800 "
                                 )}
                                 onPress={() => {
                                     if (agentData.requires_consultation) {
@@ -406,7 +406,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                 <Button 
                                     size="sm" 
                                     variant="light" 
-                                    className="w-full text-zinc-500 font-black uppercase text-[10px] tracking-widest rounded-md h-10 hover:bg-zinc-900/50"
+                                    className="w-full text-zinc-500 font-black uppercase text-[10px] tracking-widest rounded-md h-10 hover:bg-zinc-900"
                                     onPress={() => actions.transitionTo('conversation', { progress: 0 })}
                                 >
                                     Zakończ pracę
@@ -415,7 +415,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                         </div>
                     )}
                     {state.isConsultation && (
-                        <Button size="sm" isDisabled={!state.allQuestionsAnswered} className="w-full font-black uppercase text-[10px] rounded-md h-10 bg-white text-black hover:bg-zinc-100 shadow-xl" onPress={actions.submitConsultation}>
+                        <Button size="sm" isDisabled={!state.allQuestionsAnswered} className="w-full font-black uppercase text-[10px] rounded-md h-10 bg-white text-black hover:bg-zinc-100 " onPress={actions.submitConsultation}>
                             Send responses
                         </Button>
                     )}
@@ -423,7 +423,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                         <div className="flex flex-col gap-3">
                             <Button 
                                 size="sm" 
-                                className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-zinc-100 shadow-xl"
+                                className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-zinc-100 "
                                 onPress={() => actions.transitionTo('briefing')}
                             >
                                 Looks correct, proceed to plan
@@ -440,15 +440,15 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                     )}
                     {state.isBriefing && (
                         <div className="flex gap-3">
-                            <Button size="sm" className="flex-1 bg-white text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-zinc-100 shadow-xl" onPress={() => actions.transitionTo('working', { progress: 5 })}>Tak, Zaczynaj</Button>
+                            <Button size="sm" className="flex-1 bg-white text-black font-black uppercase text-[10px] rounded-md h-10 hover:bg-zinc-100 " onPress={() => actions.transitionTo('working', { progress: 5 })}>Tak, Zaczynaj</Button>
                             <Button size="sm" variant="flat" className="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] rounded-md h-10" onPress={() => actions.transitionTo('missing_context')}>Zmień Plan</Button>
                         </div>
                     )}
                     {state.isWorking && (
-                        <Button size="sm" variant="flat" className="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] rounded-md h-10 hover:bg-red-950/20 hover:text-red-500 hover:border-red-900 transition-all" onPress={() => actions.transitionTo('conversation')}>Zatrzymaj pracę</Button>
+                        <Button size="sm" variant="flat" className="w-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-black uppercase text-[10px] rounded-md h-10 hover:bg-red-950 hover:text-red-500 hover:border-red-900 transition-all" onPress={() => actions.transitionTo('conversation')}>Zatrzymaj pracę</Button>
                     )}
                     {state.isCritique && (
-                        <Button size="sm" className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 shadow-xl" onPress={() => actions.transitionTo('done', { progress: 100 })}>Finalize output</Button>
+                        <Button size="sm" className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 " onPress={() => actions.transitionTo('done', { progress: 100 })}>Finalize output</Button>
                     )}
                     {(state.isDone || state.isAborted) && (
                         <div className="flex gap-3">

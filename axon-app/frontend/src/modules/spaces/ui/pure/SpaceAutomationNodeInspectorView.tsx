@@ -145,7 +145,7 @@ export const SpaceAutomationNodeInspectorView = ({
                                         <div key={art.id} className="p-5 bg-zinc-950 border border-zinc-800 rounded-2xl space-y-5 group relative transition-all hover:border-zinc-600">
                                             <button 
                                                 onClick={() => onDeleteArtefact(art.id)}
-                                                className="absolute top-4 right-4 p-1.5 text-zinc-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                                className="absolute top-4 right-4 p-1.5 text-zinc-700 hover:text-red-500  group-hover:0 transition-all"
                                             >
                                                 <Trash2 size={12} />
                                             </button>
@@ -165,8 +165,8 @@ export const SpaceAutomationNodeInspectorView = ({
                                                             classNames={{ 
                                                                 input: "text-[10px] font-bold text-zinc-200", 
                                                                 inputWrapper: cn(
-                                                                    "h-11 rounded-xl transition-all shadow-none border",
-                                                                    isFilled ? "bg-zinc-950/50 border-white border-2" : "bg-zinc-900/30 border-zinc-800 hover:border-zinc-700"
+                                                                    "h-11 rounded-xl transition-all  border",
+                                                                    isFilled ? "bg-zinc-950 border-white border-2" : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
                                                                 )
                                                             }} 
                                                         />
@@ -177,7 +177,7 @@ export const SpaceAutomationNodeInspectorView = ({
                                                             target="_blank" 
                                                             size="sm" 
                                                             isDisabled={!art.link}
-                                                            className="w-11 h-11 min-w-11 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white shrink-0 disabled:opacity-30 rounded-xl"
+                                                            className="w-11 h-11 min-w-11 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white shrink-0 disabled: rounded-xl"
                                                         >
                                                             <ExternalLink size={14} />
                                                         </Button>
@@ -192,7 +192,7 @@ export const SpaceAutomationNodeInspectorView = ({
                                                             <Button 
                                                                 size="sm" 
                                                                 variant="bordered" 
-                                                                className="h-10 border-zinc-800 bg-zinc-900/80 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between rounded-lg"
+                                                                className="h-10 border-zinc-800 bg-zinc-900 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between rounded-lg"
                                                                 endContent={<ChevronDown size={12} />}
                                                             >
                                                                 <div className="flex items-center gap-1.5">
@@ -224,7 +224,7 @@ export const SpaceAutomationNodeInspectorView = ({
                                                         content={art.isOutput ? "Unmark as Workflow Output" : "Mark as Workflow Output"}
                                                         placement="top"
                                                         classNames={{
-                                                            content: "py-1 px-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-950 border border-zinc-800 shadow-md"
+                                                            content: "py-1 px-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-950 border border-zinc-800 "
                                                         }}
                                                         closeDelay={0}
                                                     >
@@ -235,7 +235,7 @@ export const SpaceAutomationNodeInspectorView = ({
                                                                 variant="bordered" 
                                                                 className={cn(
                                                                     "h-10 w-10 border-zinc-800 transition-all rounded-lg",
-                                                                    art.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
+                                                                    art.isOutput ? "bg-orange-500 border-orange-500 text-orange-500" : "bg-zinc-900 text-zinc-600 hover:text-zinc-400"
                                                                 )}
                                                                 onPress={() => onArtefactOutputToggle(art.id)}
                                                             >
@@ -247,7 +247,7 @@ export const SpaceAutomationNodeInspectorView = ({
 
                                                 {art.isOutput && (
                                                     <div className="shrink-0 flex items-center">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-orange-500 px-2 py-1 rounded bg-orange-500/10 border border-orange-500/20">
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-orange-500 px-2 py-1 rounded bg-orange-500 border border-orange-500">
                                                             Active Output
                                                         </span>
                                                     </div>
@@ -258,7 +258,7 @@ export const SpaceAutomationNodeInspectorView = ({
                                 })}
 
                                 {(!artefacts || artefacts.length === 0) && !isTriggering && (
-                                    <div className="flex flex-col items-center justify-center py-20 opacity-30">
+                                    <div className="flex flex-col items-center justify-center py-20 ">
                                         <Archive size={40} className="text-zinc-700 mb-4" />
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">No artefacts generated</p>
                                     </div>
@@ -280,7 +280,7 @@ export const SpaceAutomationNodeInspectorView = ({
                 <div className="flex flex-col gap-2">
                     <Button
                         className={cn(
-                            "w-full font-black uppercase tracking-widest text-[10px] rounded-md transition-all h-10 shadow-lg",
+                            "w-full font-black uppercase tracking-widest text-[10px] rounded-md transition-all h-10 ",
                             isTriggering ? "bg-zinc-800 text-zinc-500" : (hasTimeoutError ? "bg-orange-500 text-white hover:bg-orange-400" : "bg-white text-black hover:bg-zinc-100")
                         )}
                         startContent={isTriggering ? <Spinner size="sm" color="current" /> : (hasTimeoutError ? <AlertTriangle size={14} /> : <Webhook size={14} />)}
@@ -311,7 +311,7 @@ export const SpaceAutomationNodeInspectorView = ({
                     </div>
 
                     {validationError && (
-                        <div className="p-2.5 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="p-2.5 bg-red-500 border border-red-500 rounded-lg flex items-start gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
                             <AlertCircle size={12} className="text-red-500 mt-0.5 shrink-0" />
                             <p className="text-[10px] font-black text-red-400 leading-tight uppercase tracking-wider">
                                 {validationError}
@@ -320,7 +320,7 @@ export const SpaceAutomationNodeInspectorView = ({
                     )}
 
                     {hasTimeoutError && (
-                        <div className="p-2.5 bg-orange-500/10 border border-orange-500/20 rounded-lg flex items-start gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="p-2.5 bg-orange-500 border border-orange-500 rounded-lg flex items-start gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
                             <AlertTriangle size={12} className="text-orange-500 mt-0.5 shrink-0" />
                             <p className="text-[10px] font-black text-orange-400 leading-tight uppercase tracking-wider">
                                 {`⚠️ Connection timed out (${automationData.platform || 'n8n'}) -> Retry or add artifact manually`}

@@ -30,7 +30,7 @@ export const CreateSpaceDialog = () => {
       <DialogTrigger asChild>
         <ActionButton label="New Space" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[95vh] p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black shadow-2xl rounded-2xl flex flex-col">
+      <DialogContent className="sm:max-w-[600px] max-h-[95vh] p-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black  rounded-2xl flex flex-col">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col flex-1 overflow-hidden">
             <CreateProjectFormScrollArea>
@@ -58,7 +58,7 @@ export const CreateSpaceDialog = () => {
               />
             </CreateProjectFormScrollArea>
 
-            <DialogFooter className="p-10 pt-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/80 dark:bg-black/80 backdrop-blur-xl shrink-0 z-20 flex flex-row justify-end items-center gap-6">
+            <DialogFooter className="p-10 pt-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-black  shrink-0 z-20 flex flex-row justify-end items-center gap-6">
               <Button 
                 type="button" 
                 variant="ghost" 
@@ -71,7 +71,7 @@ export const CreateSpaceDialog = () => {
               <Button 
                 type="submit" 
                 size="sm" 
-                className="bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-black rounded-md shadow-xl transition-all active:scale-[0.98] tracking-normal text-base px-10 h-12"
+                className="bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 font-black rounded-md  transition-all active:scale-[0.98] tracking-normal text-base px-10 h-12"
                 disabled={isPending}
               >
                 {isPending ? "Tworzenie..." : "Utwórz space"}

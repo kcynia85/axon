@@ -46,7 +46,7 @@ export const SpaceZoneCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) =
                                 id={`${portItem.id}-int`}
                                 type="source"
                                 position={Position.Left}
-                                className={`${zoneViewModel.handleClassName} left-0 opacity-50 border-dashed scale-75`}
+                                className={`${zoneViewModel.handleClassName} left-0  border-dashed scale-75`}
                                 style={{ top: verticalPositionInPercentage }}
                             />
                         </Tooltip>
@@ -71,7 +71,7 @@ export const SpaceZoneCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) =
                                 id={`${portItem.id}-int`}
                                 type="target"
                                 position={Position.Right}
-                                className={`${zoneViewModel.handleClassName} right-0 opacity-50 border-dashed scale-75`}
+                                className={`${zoneViewModel.handleClassName} right-0  border-dashed scale-75`}
                                 style={{ top: verticalPositionInPercentage }}
                             />
                         </Tooltip>

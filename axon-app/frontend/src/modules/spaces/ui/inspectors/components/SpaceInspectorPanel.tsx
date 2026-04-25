@@ -12,7 +12,7 @@ export type SpaceInspectorPanelProperties = {
  */
 export const SpaceInspectorPanel = ({ children, className: containerClassName }: SpaceInspectorPanelProperties) => {
     return (
-        <div className={cn("w-full h-full flex flex-col bg-zinc-950/50 backdrop-blur-xl border-l border-zinc-800", containerClassName)}>
+        <div className={cn("w-full h-full flex flex-col bg-zinc-950  border-l border-zinc-800", containerClassName)}>
             {children}
         </div>
     );

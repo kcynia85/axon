@@ -78,16 +78,19 @@ async def create_agent_use_case(
     session: AsyncSession = Depends(get_db)
 ) -> AgentConfig:
     created = await agent_repo.create_agent_config(session, agent)
-    await inngest_client.send(
-        inngest.Event(
-            name="system.entity.upserted",
-            data={
-                "entity_id": str(created.id),
-                "entity_type": "agent",
-                "payload": created.model_dump(mode="json")
-            }
+    try:
+        await inngest_client.send(
+            inngest.Event(
+                name="system.entity.upserted",
+                data={
+                    "entity_id": str(created.id),
+                    "entity_type": "agent",
+                    "payload": created.model_dump(mode="json")
+                }
+            )
         )
-    )
+    except Exception as e:
+        print(f"Failed to send Inngest event for agent creation: {e}")
     return created
 
 async def get_agent_use_case(
@@ -103,16 +106,19 @@ async def update_agent_use_case(
 ) -> Optional[AgentConfig]:
     updated = await agent_repo.update_agent_config(session, id, agent.model_dump(exclude_unset=True))
     if updated:
-        await inngest_client.send(
-            inngest.Event(
-                name="system.entity.upserted",
-                data={
-                    "entity_id": str(updated.id),
-                    "entity_type": "agent",
-                    "payload": updated.model_dump(mode="json")
-                }
+        try:
+            await inngest_client.send(
+                inngest.Event(
+                    name="system.entity.upserted",
+                    data={
+                        "entity_id": str(updated.id),
+                        "entity_type": "agent",
+                        "payload": updated.model_dump(mode="json")
+                    }
+                )
             )
-        )
+        except Exception as e:
+            print(f"Failed to send Inngest event for agent update: {e}")
     return updated
 
 async def delete_agent_use_case(
@@ -121,15 +127,18 @@ async def delete_agent_use_case(
 ) -> bool:
     success = await agent_repo.delete_agent_config(session, id)
     if success:
-        await inngest_client.send(
-            inngest.Event(
-                name="system.entity.deleted",
-                data={
-                    "entity_id": str(id),
-                    "entity_type": "agent"
-                }
+        try:
+            await inngest_client.send(
+                inngest.Event(
+                    name="system.entity.deleted",
+                    data={
+                        "entity_id": str(id),
+                        "entity_type": "agent"
+                    }
+                )
             )
-        )
+        except Exception as e:
+            print(f"Failed to send Inngest event for agent deletion: {e}")
     return success
 
 async def inspect_agent_deletion_use_case(

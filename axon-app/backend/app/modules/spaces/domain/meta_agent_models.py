@@ -25,9 +25,25 @@ class MetaAgentDraftEntity(BaseModel):
         "ws-discovery", 
         description="The target workspace zone on the canvas where this entity should be placed."
     )
+    agent_member_ids: Optional[List[str]] = Field(
+        default_factory=list, 
+        description="For CREW entities ONLY: An array of names of the Agent entities that belong to this Crew."
+    )
+    crew_process_type: Optional[str] = Field(
+        None, 
+        description="For CREW entities ONLY: The process type, e.g. 'Sequential', 'Hierarchical'."
+    )
+    agent_role_text: Optional[str] = Field(
+        None, 
+        description="For AGENT entities ONLY: The role of the agent."
+    )
+    system_instruction: Optional[str] = Field(
+        None, 
+        description="For AGENT entities ONLY: The system instructions or prompt for the agent."
+    )
     payload: Dict[str, Any] = Field(
         default_factory=dict, 
-        description="Specific fields required to instantiate the entity (e.g., prompt, tools for an agent)."
+        description="Any other specific fields required to instantiate the entity."
     )
 
 class MetaAgentProposalConnection(BaseModel):

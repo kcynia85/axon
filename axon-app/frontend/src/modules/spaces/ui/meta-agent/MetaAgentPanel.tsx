@@ -5,7 +5,7 @@ import {
     SquarePen, Maximize2, Minus, Plus, SlidersHorizontal, 
     ArrowUp, Sparkles, Check, XCircle, HelpCircle, X, File, 
     Image as ImageIcon, Mic, Database, Layout, Briefcase, ExternalLink,
-    Bot, Users, FileText
+    Bot, Users, FileText, Pause, Play
 } from 'lucide-react';
 import { MetaAgentDraftEntity, MetaAgentProposalConnection } from '../../infrastructure/metaAgentApi';
 import { cn } from "@/shared/lib/utils";
@@ -47,6 +47,8 @@ interface MetaAgentPanelProps {
     setIsFocused: (f: boolean) => void;
     isMaximized: boolean;
     setIsMaximized: (m: boolean) => void;
+    isPaused: boolean;
+    setIsPaused: (p: boolean) => void;
     
     hasProjectContext?: boolean;
     hasNotionContext?: boolean;
@@ -87,6 +89,8 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
     setIsFocused,
     isMaximized,
     setIsMaximized,
+    isPaused,
+    setIsPaused,
     hasProjectContext = false,
     hasNotionContext = false,
     systemAwarenessEnabled = true,
@@ -157,12 +161,15 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                     exit={{ y: 20, opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className={cn(
-                        "fixed right-6 bottom-6 bg-zinc-950/80 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl flex flex-col overflow-hidden z-[1000] transition-all duration-300 transform-gpu translate-z-0",
+                        "fixed right-6 bottom-6 bg-zinc-950  rounded-3xl border border-zinc-800  flex flex-col overflow-hidden z-[1000] transition-all duration-300 transform-gpu translate-z-0",
                         isMaximized 
                             ? "w-[400px] h-[80vh] max-h-[800px]" 
                             : "w-[400px] h-[calc(100vh-120px)] max-h-[600px]"
                     )}
-                    style={{ willChange: "transform, opacity, width, height" }}
+                    style={{ 
+                        willChange: "transform, opacity",
+                        contain: "layout paint"
+                    }}
                 >
                     {/* Hidden File Input */}
                     <input type="file" ref={fileInputRef} className="hidden" accept={SUPPORTED_FORMATS} multiple onChange={handleFileChange} />
@@ -170,9 +177,9 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                     {/* Header Controls (Floating) */}
                     <div className="absolute top-4 right-5 z-20">
                         <div className="flex items-center gap-1 text-zinc-400">
-                            <button onClick={onNewChat} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="New Draft"><SquarePen size={16} /></button>
-                            <button onClick={() => setIsMaximized(!isMaximized)} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title={isMaximized ? "Restore" : "Maximize"}><Maximize2 size={16} /></button>
-                            <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="Close"><Minus size={16} /></button>
+                            <button onClick={onNewChat} className="p-1.5 hover:bg-zinc-900 rounded-md transition-colors" title="New Draft"><SquarePen size={16} /></button>
+                            <button onClick={() => setIsMaximized(!isMaximized)} className="p-1.5 hover:bg-zinc-900 rounded-md transition-colors" title={isMaximized ? "Restore" : "Maximize"}><Maximize2 size={16} /></button>
+                            <button onClick={onClose} className="p-1.5 hover:bg-zinc-900 rounded-md transition-colors" title="Close"><Minus size={16} /></button>
                         </div>
                     </div>
 
@@ -200,7 +207,7 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                             )}
 
                             {error && (
-                                <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                                <div className="mt-4 p-3 rounded-lg bg-red-500 border border-red-500 text-red-400 text-sm">
                                     An error occurred: {error.message || "Failed to generate proposal."}
                                 </div>
                             )}
@@ -257,7 +264,7 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                     animate={{ opacity: 1, y: 0 }}
                                     className="mt-6 flex flex-col gap-4"
                                 >
-                                    <div className="p-4 rounded-xl bg-zinc-800/60 border border-zinc-700/50 shadow-inner">
+                                    <div className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 ">
                                         <div className="flex flex-col gap-5 max-h-[400px] overflow-y-auto pr-2">
                                             {/* Grouping by target_workspace */}
                                             {Object.entries(
@@ -276,10 +283,10 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                                     </div>
                                                     <div className="flex flex-col gap-2">
                                                         {wsDrafts.map((draft, idx) => (
-                                                            <div key={idx} className="p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-white/10 transition-all flex gap-2.5">
+                                                            <div key={idx} className="p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 hover:border-white transition-all flex gap-2.5">
                                                                 <div className="shrink-0 mt-0.5">
                                                                     {draft.visual_url ? (
-                                                                        <div className="w-[14px] h-[14px] rounded-sm overflow-hidden border border-white/10">
+                                                                        <div className="w-[14px] h-[14px] rounded-sm overflow-hidden border border-zinc-800">
                                                                             <img src={draft.visual_url} alt={draft.name} className="w-full h-full object-cover" />
                                                                         </div>
                                                                     ) : (
@@ -304,11 +311,11 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                         </div>
 
                                         {reasoning && (
-                                            <div className="text-base text-zinc-300 mt-6 pt-6 border-t border-white/5 leading-relaxed">
+                                            <div className="text-base text-white mt-6 pt-6 border-t border-zinc-800 leading-relaxed">
                                                 <div className="prose prose-invert prose-zinc prose-sm max-w-none 
                                                     prose-headings:text-white prose-headings:font-bold prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0
-                                                    prose-p:text-zinc-400 prose-p:mb-3
-                                                    prose-li:text-zinc-400 prose-li:mb-1
+                                                    prose-p:text-white prose-p:mb-3
+                                                    prose-li:text-white prose-li:mb-1
                                                     prose-strong:text-white
                                                 ">
                                                     <ReactMarkdown>{reasoning}</ReactMarkdown>
@@ -316,16 +323,17 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                             </div>
                                         )}
 
-                                        <div className="flex items-center justify-end gap-2 mt-6 pt-3 border-t border-white/5">
+                                        <div className="flex items-center justify-end gap-2 mt-6 pt-3 border-t border-zinc-800">
                                             <button 
                                                 onClick={onRejectDraft}
-                                                className="flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-zinc-100 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-white/5"
+                                                className="flex items-center justify-center gap-1.5 bg-transparent hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-zinc-700"
                                             >
                                                 <XCircle size={16} /> Discard
                                             </button>
+
                                             <button 
                                                 onClick={() => onApproveDrafts(drafts, connections)}
-                                                className="flex items-center justify-center gap-1.5 bg-white text-black hover:bg-zinc-200 text-sm font-bold px-4 py-2 rounded-lg transition-colors shadow-lg shadow-white/10"
+                                                className="flex items-center justify-center gap-1.5 bg-white text-black hover:bg-zinc-200 text-sm font-bold px-4 py-2 rounded-lg transition-colors"
                                             >
                                                 <Check size={16} /> Apply Flow
                                             </button>
@@ -347,12 +355,11 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                     {/* Input Area */}
                     <div className={cn(
                         "p-4 shrink-0 bg-transparent transition-all duration-300", 
-                        drafts.length > 0 && !isProposing && !isFocused ? "pt-0 pb-6 opacity-40" : "p-4 opacity-100"
+                        drafts.length > 0 && !isProposing && !isFocused ? "pt-0 pb-6 " : "p-4 0"
                     )}>
                         <div className={cn(
-                            "relative flex flex-col bg-white/5 backdrop-blur-md rounded-[20px] border transition-all shadow-sm",
-                            isFocused ? "border-white" : "border-white/10",
-                            isProposing && "opacity-60 pointer-events-none"
+                            "relative flex flex-col bg-zinc-900  rounded-[20px] transition-all ",
+                            isProposing && ""
                         )}>
                             <AnimatePresence>
                                 {(!drafts.length || isProposing || isFocused) && (
@@ -439,12 +446,25 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                                 exit={{ opacity: 0, x: -10 }}
                                                 className="flex items-center gap-1"
                                             >
-                                                <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" title="Attach context" onClick={(e) => { e.preventDefault(); triggerFileUpload(); }}><Plus size={16} /></button>
+                                                <button 
+                                                    disabled={isProposing}
+                                                    className="p-1.5 hover:bg-zinc-900 rounded-lg transition-colors disabled: disabled:cursor-not-allowed" 
+                                                    title="Attach context" 
+                                                    onClick={(e) => { e.preventDefault(); triggerFileUpload(); }}
+                                                >
+                                                    <Plus size={16} />
+                                                </button>
                                                 <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors outline-none" title="Meta-Agent Settings"><SlidersHorizontal size={16} /></button>
+                                                    <DropdownMenuTrigger asChild disabled={isProposing}>
+                                                        <button 
+                                                            disabled={isProposing}
+                                                            className="p-1.5 hover:bg-zinc-900 rounded-lg transition-colors outline-none disabled: disabled:cursor-not-allowed" 
+                                                            title="Meta-Agent Settings"
+                                                        >
+                                                            <SlidersHorizontal size={16} />
+                                                        </button>
                                                     </DropdownMenuTrigger>
-                                                    <DropdownMenuContent side="top" align="start" sideOffset={8} className="w-64 bg-zinc-950/90 backdrop-blur-xl border-white/10 text-white p-3 rounded-2xl shadow-2xl z-[1100]">
+                                                    <DropdownMenuContent side="top" align="start" sideOffset={8} className="w-64 bg-zinc-950  border-zinc-800 text-white p-3 rounded-2xl  z-[1100]">
                                                         <DropdownMenuLabel className="px-1 pb-2 pt-0 text-zinc-400 font-bold text-[10px] uppercase tracking-wider">Agent Capabilities</DropdownMenuLabel>
                                                         <div className="flex flex-col gap-3 mt-1">
                                                             <div className="flex items-center justify-between">
@@ -478,16 +498,37 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                         className={cn(
                                             "w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-95 border",
                                             isRecording
-                                                ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
-                                                : "bg-white/5 border-white/10 text-zinc-500 hover:bg-white/10 hover:text-zinc-300",
-                                            isProcessing && "opacity-50 cursor-wait pointer-events-none"
+                                                ? "bg-white text-black border-zinc-800" 
+                                                : "bg-transparent border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700",
+                                            isProcessing && " cursor-wait pointer-events-none"
                                         )}
                                         title={isRecording ? "Stop Recording" : "Voice Input"}
                                     >
                                         <Mic size={16} strokeWidth={2.5} />
                                     </button>
-                                        <button onClick={() => handleSubmit()} disabled={(!(query || '').trim() && attachedFiles.length === 0) || isProposing} className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all border", ((query || '').trim() || attachedFiles.length > 0) ? "bg-white text-black border-white hover:scale-105 active:scale-95" : "bg-white/5 border-white/10 text-zinc-600 cursor-not-allowed")}>
-                                            <ArrowUp size={16} strokeWidth={2.5} />
+                                        <button 
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                if (isProposing) {
+                                                    setIsPaused(!isPaused);
+                                                } else {
+                                                    handleSubmit();
+                                                }
+                                            }} 
+                                            disabled={!isProposing && (!(query || '').trim() && attachedFiles.length === 0)} 
+                                            className={cn(
+                                                "w-8 h-8 rounded-full flex items-center justify-center transition-all border", 
+                                                (isProposing || (query || '').trim() || attachedFiles.length > 0) 
+                                                    ? "bg-white text-black border-zinc-800 hover:scale-105 active:scale-95" 
+                                                    : "bg-transparent border-zinc-800 text-zinc-600 cursor-not-allowed"
+                                            )}
+                                            title={isProposing ? (isPaused ? "Resume Generation" : "Pause Generation") : "Send Request"}
+                                        >
+                                            {isProposing ? (
+                                                isPaused ? <Play size={16} fill="currentColor" strokeWidth={2.5} /> : <Pause size={16} fill="currentColor" strokeWidth={2.5} />
+                                            ) : (
+                                                <ArrowUp size={16} strokeWidth={2.5} />
+                                            )}
                                         </button>
                                 </div>
                             </div>
@@ -500,7 +541,7 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
 };
 
 const SuggestionItem = ({ icon, text, onClick }: { icon: React.ReactNode, text: string, onClick: () => void }) => (
-    <button onClick={onClick} className="flex items-center gap-3 w-full p-2.5 rounded-xl hover:bg-white/5 transition-colors text-zinc-300 hover:text-zinc-100 text-left border border-transparent hover:border-white/5">
+    <button onClick={onClick} className="flex items-center gap-3 w-full p-2.5 rounded-xl hover:bg-zinc-900 transition-colors text-zinc-300 hover:text-zinc-100 text-left border border-transparent hover:border-zinc-800">
         <div className="text-zinc-500 flex shrink-0">{icon}</div>
         <span className="text-[15px] font-medium">{text}</span>
     </button>
@@ -508,19 +549,19 @@ const SuggestionItem = ({ icon, text, onClick }: { icon: React.ReactNode, text: 
 
 const ContextPill = ({ icon, label, active, onRemove }: { icon: React.ReactNode, label: string, active?: boolean, onRemove?: () => void }) => (
     <div className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-tight border transition-all cursor-default",
+        "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-tight transition-all cursor-default",
         active 
             ? (onRemove 
-                ? "bg-white/20 border-white/30 text-white shadow-sm" 
-                : "bg-white/10 border-white/20 text-zinc-300") 
-            : "bg-transparent border-white/5 text-zinc-500 opacity-40"
+                ? "bg-zinc-700 text-white" 
+                : "bg-zinc-800 text-zinc-300") 
+            : "bg-transparent text-zinc-500"
     )}>
-        <div className={cn("shrink-0", active ? "opacity-100" : "opacity-80")}>{icon}</div>
+        <div className={cn("shrink-0", active ? "0" : "")}>{icon}</div>
         <span className="truncate max-w-[100px]">{label}</span>
         {onRemove && (
             <button 
                 onClick={(e) => { e.stopPropagation(); onRemove(); }} 
-                className="ml-1 -mr-1 p-0.5 hover:bg-black/10 rounded-md transition-colors text-black/40 hover:text-black"
+                className="ml-1 -mr-1 p-0.5 hover:bg-white rounded-md transition-colors text-zinc-500 hover:text-white"
             >
                 <X size={10} strokeWidth={3} />
             </button>

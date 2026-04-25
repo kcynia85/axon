@@ -16,7 +16,7 @@ export const MetaAgentOrb: React.FC<MetaAgentOrbProps> = ({ onClick, isOpen }) =
             onClick={onClick}
             className={cn(
                 "fixed bottom-8 right-8 z-[900] w-16 h-16 rounded-full flex items-center justify-center transition-opacity",
-                isOpen ? "opacity-0 pointer-events-none" : "opacity-100 hover:opacity-80"
+                isOpen ? " pointer-events-none" : "0 hover:"
             )}
         >
             <div className="absolute inset-0 flex items-center justify-center scale-[0.5] origin-center pointer-events-none">

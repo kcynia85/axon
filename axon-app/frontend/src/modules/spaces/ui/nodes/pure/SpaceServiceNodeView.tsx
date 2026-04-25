@@ -34,7 +34,7 @@ export const SpaceServiceNodeView = ({ viewModel }: { readonly viewModel: SpaceS
                 {viewModel.artefacts && viewModel.artefacts.length > 0 ? (
                     <div className="flex flex-col gap-2">
                         {viewModel.artefacts.map(art => (
-                            <div key={art.id} className="flex items-center gap-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                            <div key={art.id} className="flex items-center gap-3 p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
                                 <FileCode size={16} className="text-zinc-500" />
                                 <div className="flex flex-col">
                                     <span className="text-[10px] font-black text-zinc-300 font-mono truncate max-w-[180px]">{art.label}</span>

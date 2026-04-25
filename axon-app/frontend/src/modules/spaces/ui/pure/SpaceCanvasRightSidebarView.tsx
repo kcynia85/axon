@@ -49,7 +49,7 @@ export const SpaceCanvasRightSidebarView = ({
 
     return (
         <div className="h-[calc(100vh-160px)] mt-24 mr-8 pointer-events-auto flex flex-col items-end select-none">
-            <Card className="bg-black border border-zinc-200 shadow-[0_0_40px_rgba(0,0,0,0.7)] w-[380px] h-full rounded-2xl overflow-hidden">
+            <Card className="bg-black border border-zinc-200 [0_0_40px_rgb(0,0,0)] w-[380px] h-full rounded-2xl overflow-hidden">
                 {isNodeSelectedRepresentingAZone ? (
                     <SpaceZoneNodeInspector
                         zoneData={currentlySelectedNodeInformation.data as SpaceZoneDomainData}

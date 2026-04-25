@@ -19,7 +19,7 @@ export const SpacePatternNodeInspector = ({ patternData, onPropertyChange }: Spa
 
                 <Divider className="bg-zinc-800" />
 
-                <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/20 text-xs text-purple-300 font-medium leading-relaxed italic">
+                <div className="p-4 bg-purple-500 rounded-xl border border-purple-500 text-xs text-purple-300 font-medium leading-relaxed italic">
                     Use this pattern to standardize how qualitative interviews are analyzed across projects.
                 </div>
 

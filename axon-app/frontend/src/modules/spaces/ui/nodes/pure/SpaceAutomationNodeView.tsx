@@ -33,7 +33,7 @@ export const SpaceAutomationNodeView = ({ viewModel }: { readonly viewModel: Spa
         
             <div className="px-4 pb-5 pt-0 node-body">
                 {viewModel.hasArtifact && (
-                    <div className="flex items-center gap-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                    <div className="flex items-center gap-3 p-3 bg-zinc-900 border border-zinc-800 rounded-xl">
                         <FileCode size={16} className="text-zinc-500" />
                         <div className="flex flex-col">
                             <span className="text-[10px] font-black text-zinc-300 font-mono truncate max-w-[180px]">{viewModel.artifactLabel}</span>

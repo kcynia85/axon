@@ -40,7 +40,7 @@ export const SpaceCognitionTab = ({ knowledgeHubIds, onHubsChange }: SpaceCognit
                 {/* Header */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                        <div className="p-2.5 rounded-xl bg-blue-500 border border-blue-500 text-blue-400">
                             <Sparkles size={20} />
                         </div>
                         <div>
@@ -48,7 +48,7 @@ export const SpaceCognitionTab = ({ knowledgeHubIds, onHubsChange }: SpaceCognit
                             <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Connect your private knowledge base</p>
                         </div>
                     </div>
-                    <div className="p-4 bg-zinc-950/30 border border-zinc-900 rounded-2xl">
+                    <div className="p-4 bg-zinc-950 border border-zinc-900 rounded-2xl">
                         <p className="text-[11px] text-zinc-400 leading-relaxed italic">
                             Select Knowledge Hubs to ground this entity's responses. The AI will prioritize information from these sources.
                         </p>
@@ -83,8 +83,8 @@ export const SpaceCognitionTab = ({ knowledgeHubIds, onHubsChange }: SpaceCognit
                     <div className="grid grid-cols-1 gap-2">
                         {selectedHubs.length > 0 ? (
                             selectedHubs.map(hub => (
-                                <div key={hub.id} className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex items-center gap-3 group hover:border-zinc-700 transition-colors">
-                                    <div className="p-2.5 rounded-xl bg-blue-500/5 border border-blue-500/10 text-blue-400">
+                                <div key={hub.id} className="p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center gap-3 group hover:border-zinc-700 transition-colors">
+                                    <div className="p-2.5 rounded-xl bg-blue-500 border border-blue-500 text-blue-400">
                                         <Database size={16} />
                                     </div>
                                     <div className="flex flex-col flex-1 min-w-0">
@@ -95,7 +95,7 @@ export const SpaceCognitionTab = ({ knowledgeHubIds, onHubsChange }: SpaceCognit
                                         isIconOnly
                                         size="sm"
                                         variant="light"
-                                        className="h-8 w-8 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                        className="h-8 w-8 text-zinc-600 hover:text-red-400  group-hover:0 transition-all"
                                         onPress={() => handleRemoveHub(hub.id)}
                                     >
                                         <X size={14} />
@@ -103,7 +103,7 @@ export const SpaceCognitionTab = ({ knowledgeHubIds, onHubsChange }: SpaceCognit
                                 </div>
                             ))
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-12 border border-dashed border-zinc-900 rounded-2xl opacity-40">
+                            <div className="flex flex-col items-center justify-center py-12 border border-dashed border-zinc-900 rounded-2xl ">
                                 <Database size={24} className="text-zinc-800 mb-3" />
                                 <p className="text-[9px] font-black uppercase tracking-widest text-zinc-700 italic">No hubs connected</p>
                             </div>

@@ -10,7 +10,7 @@ import type { SpaceListItemProperties } from "./types";
  */
 export const SpaceListItem = ({ space: spaceItem }: SpaceListItemProperties) => {
   return (
-    <TableRow className="group hover:bg-zinc-50/80 dark:hover:bg-white/[0.02] border-zinc-100 dark:border-zinc-900 transition-colors">
+    <TableRow className="group hover:bg-zinc-50 dark:hover:bg-white/[0.02] border-zinc-100 dark:border-zinc-900 transition-colors">
       <TableCell className="py-5 px-6">
         <Link href={`/spaces/${spaceItem.id}`} className="flex items-center gap-4">
           <div className="p-2.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-zinc-500 group-hover:text-black dark:group-hover:text-white transition-colors">

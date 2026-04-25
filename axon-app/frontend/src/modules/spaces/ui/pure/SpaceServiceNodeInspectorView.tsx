@@ -141,7 +141,7 @@ export const SpaceServiceNodeInspectorView = ({
                             <Archive size={12} />
                             Artefacts
                             {hasInReview ? (
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse [0_0_8px_rgb(0,0,0)]" />
                             ) : allApproved ? (
                                 <CheckCircle2 size={10} className="text-white" />
                             ) : null}
@@ -154,7 +154,7 @@ export const SpaceServiceNodeInspectorView = ({
                                 {artefacts.map((artefactItem) => {
                                     const isFilled = (artefactItem.link || "").trim().length > 0;
                                     return (
-                                        <div key={artefactItem.id} className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-3">
+                                        <div key={artefactItem.id} className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 space-y-3">
                                             <div className="flex flex-col gap-2.5">
                                                 <div className="flex justify-between items-center text-xs gap-3">
                                                     <div className="flex-1">
@@ -166,7 +166,7 @@ export const SpaceServiceNodeInspectorView = ({
                                                             onChange={(event) => onAttachedLabelChange(artefactItem.id, event.target.value)}
                                                             classNames={{
                                                                 input: "text-white font-black text-left text-sm",
-                                                                inputWrapper: "h-8 min-h-8 p-0 border-transparent hover:border-zinc-800 transition-colors shadow-none after:hidden"
+                                                                inputWrapper: "h-8 min-h-8 p-0 border-transparent hover:border-zinc-800 transition-colors  after:hidden"
                                                             }}
                                                         />
                                                     </div>
@@ -182,7 +182,7 @@ export const SpaceServiceNodeInspectorView = ({
                                                         onOpenChange={(isDropdownOpen) => !isDropdownOpen && onCapabilitySearchChange("")}
                                                         classNames={{
                                                             base: "w-full",
-                                                            trigger: "h-6 min-h-6 p-0 border-zinc-800 shadow-none bg-transparent hover:bg-transparent after:hidden",
+                                                            trigger: "h-6 min-h-6 p-0 border-zinc-800  bg-transparent hover:bg-transparent after:hidden",
                                                             value: "text-zinc-500 font-bold text-left text-xs group-data-[has-value=true]:text-zinc-500",
                                                             popoverContent: "bg-zinc-950 border border-zinc-800 rounded-lg p-0",
                                                         }}
@@ -257,8 +257,8 @@ export const SpaceServiceNodeInspectorView = ({
                                                             classNames={{
                                                                 input: "text-[10px] font-bold text-zinc-200",
                                                                 inputWrapper: cn(
-                                                                    "h-11 rounded-xl transition-all shadow-none border",
-                                                                    isFilled ? "bg-zinc-950/50 border-white border-2" : "bg-zinc-900/30 border-zinc-800 hover:border-zinc-700"
+                                                                    "h-11 rounded-xl transition-all  border",
+                                                                    isFilled ? "bg-zinc-950 border-white border-2" : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
                                                                 ),
                                                             }}
                                                         />
@@ -269,7 +269,7 @@ export const SpaceServiceNodeInspectorView = ({
                                                             target="_blank"
                                                             size="sm"
                                                             isDisabled={!artefactItem.link}
-                                                            className="w-11 h-11 min-w-11 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white shrink-0 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl"
+                                                            className="w-11 h-11 min-w-11 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white shrink-0 disabled: disabled:cursor-not-allowed rounded-xl"
                                                             title="Open link"
                                                         >
                                                             <ExternalLink size={14} />
@@ -285,7 +285,7 @@ export const SpaceServiceNodeInspectorView = ({
                                                             <Button
                                                                 size="sm"
                                                                 variant="bordered"
-                                                                className="h-10 border-zinc-800 bg-zinc-900/80 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between rounded-lg"
+                                                                className="h-10 border-zinc-800 bg-zinc-900 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between rounded-lg"
                                                                 endContent={<ChevronDown size={12} />}
                                                             >
                                                                 <div className="flex items-center gap-1.5">
@@ -317,7 +317,7 @@ export const SpaceServiceNodeInspectorView = ({
                                                         content={artefactItem.isOutput ? "Unmark as Workflow Output" : "Mark as Workflow Output"}
                                                         placement="top"
                                                         classNames={{
-                                                            content: "py-1 px-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-950 border border-zinc-800 shadow-md",
+                                                            content: "py-1 px-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-950 border border-zinc-800 ",
                                                         }}
                                                         closeDelay={0}
                                                     >
@@ -328,7 +328,7 @@ export const SpaceServiceNodeInspectorView = ({
                                                                 variant="bordered"
                                                                 className={cn(
                                                                     "h-10 w-10 border-zinc-800 transition-all rounded-lg",
-                                                                    artefactItem.isOutput ? "bg-orange-500/20 border-orange-500/50 text-orange-500" : "bg-zinc-900/30 text-zinc-600 hover:text-zinc-400"
+                                                                    artefactItem.isOutput ? "bg-orange-500 border-orange-500 text-orange-500" : "bg-zinc-900 text-zinc-600 hover:text-zinc-400"
                                                                 )}
                                                                 onPress={() => onArtefactOutputToggle(artefactItem.id)}
                                                             >
@@ -340,7 +340,7 @@ export const SpaceServiceNodeInspectorView = ({
 
                                                 {artefactItem.isOutput && (
                                                     <div className="shrink-0 flex items-center">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-orange-500 px-2 py-1 rounded bg-orange-500/10 border border-orange-500/20">
+                                                        <span className="text-[9px] font-black uppercase tracking-widest text-orange-500 px-2 py-1 rounded bg-orange-500 border border-orange-500">
                                                             Active Output
                                                         </span>
                                                     </div>
@@ -351,7 +351,7 @@ export const SpaceServiceNodeInspectorView = ({
                                 })}
 
                                 {(!artefacts || artefacts.length === 0) && (
-                                    <div className="flex flex-col items-center justify-center py-20 opacity-30">
+                                    <div className="flex flex-col items-center justify-center py-20 ">
                                         <Archive size={40} className="text-zinc-700 mb-4" />
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600">No artefacts generated</p>
                                     </div>
@@ -373,7 +373,7 @@ export const SpaceServiceNodeInspectorView = ({
                         Dodaj Artefakt
                     </Button>
                     <Button
-                        className="w-full font-black uppercase tracking-widest text-[10px] bg-zinc-200 text-black rounded-md hover:bg-white transition-all h-10 shadow-lg"
+                        className="w-full font-black uppercase tracking-widest text-[10px] bg-zinc-200 text-black rounded-md hover:bg-white transition-all h-10 "
                         startContent={<ExternalLink size={14} />}
                     >
                         Open {serviceData.label}

@@ -51,7 +51,7 @@ export const SpaceCreatePatternModal = ({
             onClose={onClose}
             size="2xl"
             classNames={{
-                base: "bg-zinc-900 border border-zinc-800 shadow-2xl rounded-3xl max-h-[90vh] overflow-y-auto",
+                base: "bg-zinc-900 border border-zinc-800  rounded-3xl max-h-[90vh] overflow-y-auto",
                 header: "border-b border-zinc-800 p-6",
                 body: "p-8 space-y-8",
                 footer: "border-t border-zinc-800 p-6"
@@ -95,7 +95,7 @@ export const SpaceCreatePatternModal = ({
                                     </h4>
                                     <div className="space-y-2">
                                         {blueprint.interface.ports.length > 0 ? blueprint.interface.ports.map(port => (
-                                            <div key={port.id} className="flex items-center justify-between p-2 bg-zinc-900/50 border border-zinc-800/50 rounded-xl">
+                                            <div key={port.id} className="flex items-center justify-between p-2 bg-zinc-900 border border-zinc-800 rounded-xl">
                                                 <span className="text-[10px] font-bold text-zinc-300">{port.label}</span>
                                                 <Chip size="sm" variant="dot" color={port.type === 'input' ? "primary" : "success"} className="text-[8px] uppercase font-black">
                                                     {port.type}
@@ -113,7 +113,7 @@ export const SpaceCreatePatternModal = ({
                                     </h4>
                                     <div className="space-y-2">
                                         {blueprint.dependencies.length > 0 ? blueprint.dependencies.map(dep => (
-                                            <div key={dep.zoneId} className="flex items-center justify-between p-2 bg-zinc-900/50 border border-zinc-800/50 rounded-xl">
+                                            <div key={dep.zoneId} className="flex items-center justify-between p-2 bg-zinc-900 border border-zinc-800 rounded-xl">
                                                 <span className="text-[10px] font-bold text-zinc-300">{dep.zoneLabel}</span>
                                                 <span className="text-[9px] font-black text-zinc-600 uppercase">EXT-REF</span>
                                             </div>
@@ -164,7 +164,7 @@ export const SpaceCreatePatternModal = ({
                                 Cancel
                             </Button>
                             <Button 
-                                className="bg-white text-black font-black uppercase text-[10px] tracking-widest px-10 h-12 rounded-2xl shadow-[0_0_40px_rgba(255,255,255,0.15)] hover:bg-zinc-100"
+                                className="bg-white text-black font-black uppercase text-[10px] tracking-widest px-10 h-12 rounded-2xl [0_0_40px_rgb(0,0,0)] hover:bg-zinc-100"
                                 onPress={handleSave}
                                 isDisabled={!name.trim()}
                                 startContent={<Save size={16} />}

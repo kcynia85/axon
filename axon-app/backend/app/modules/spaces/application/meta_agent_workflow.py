@@ -277,11 +277,12 @@ Your Goal:
 Propose a COMPLETE FLOW of entities (agents, crews). Each proposed entity must be "Studio-Ready".
 
 ENTITY SCHEMAS & GUIDELINES:
-- AGENT: A standalone intelligent unit. Requires 'agent_name', 'agent_role_text', 'agent_goal', 'agent_backstory', 'system_instruction'.
-- CREW: An AGGREGATOR that collects multiple agents to perform a complex task. Requires 'crew_name', 'crew_description', 'crew_process_type'.
+- AGENT: A standalone intelligent unit. It requires you to set the 'agent_role_text' and 'system_instruction' fields.
+- CREW: An AGGREGATOR that collects multiple agents to perform a complex task. It requires you to set 'crew_process_type', and 'agent_member_ids' (an array of agent names).
     * IMPORTANT: A Crew node MUST NOT contain the full definition of its member agents in its payload.
-    * CORRECT MODELING: To create a Crew with 2 Agents, you must propose 3 SEPARATE entities (1 Crew and 2 Agents) in the 'drafts' list.
-    * CONNECTIONS: You MUST then define 'connections' from each Agent TO the Crew (Agent as source, Crew as target).
+    * CORRECT MODELING: To create a Crew with 2 Agents, you must propose 3 SEPARATE entities (1 Crew and 2 Agents) in the 'drafts' list. The Crew entity must include the exact names of these 2 Agents in its 'agent_member_ids' root array.
+    * CRITICAL: You MUST emit a SEPARATE draft entity of type 'agent' for EVERY member listed in 'agent_member_ids'. If you omit the 'agent' drafts, the system will fail.
+    * NO EDGES FOR CREW MEMBERS: Do NOT create any 'connections' between the member Agents and their Crew. The relationship is defined solely by the 'agent_member_ids' aggregation.
 
 WORKSPACE ZONES (Mandatory field 'target_workspace'):
 - 'ws-discovery': For research, data gathering, discovery agents and resources.
@@ -297,8 +298,8 @@ CROSS-ZONE COMMUNICATION:
 
 Instructions:
 1. Follow the Execution Plan.
-2. For any Crew requested, generate the Crew node AND its member Agent nodes as SEPARATE entries in the 'drafts' array.
-3. Link each Agent TO the Crew using the 'connections' array (Agent as source, Crew as target).
+2. For any Crew requested, generate the Crew node AND its member Agent nodes as SEPARATE entries in the 'drafts' array, and add the exact agent names to the Crew's 'agent_member_ids' array.
+3. Do NOT link member Agents to their Crew using the 'connections' array. Connections are only for sequential task execution between different standalone nodes or crews.
 4. Categorize each entity into the most appropriate 'target_workspace'.
 5. If the user wants to add a new entity for an existing entity on the canvas, output the new draft and add a connection where 'source_draft_name' is the existing entity's name.
 6. Do not recreate agents or tools that are already listed in the CURRENT CANVAS STATE. Reuse them or reference them.

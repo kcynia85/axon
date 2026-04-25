@@ -1,0 +1,146 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - main [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - link "Spaces" [ref=e8] [cursor=pointer]:
+              - /url: /spaces
+            - generic [ref=e9]: /
+            - generic [ref=e10]: Complete Demo Space
+          - generic [ref=e13]:
+            - heading "Complete Demo Space" [level=1] [ref=e15]
+            - generic [ref=e17]:
+              - text: "Linked:"
+              - link "E2E Ultimate CRUD 1776539370438 Hanek" [ref=e18] [cursor=pointer]:
+                - /url: /projects/13678d2a-9187-44b3-8ccd-37bba9ad770d
+        - generic [ref=e19]:
+          - generic [ref=e21]:
+            - img [ref=e22]
+            - generic [ref=e24]: Saved
+          - button [ref=e262]:
+            - generic [ref=e263]:
+              - img
+        - application [ref=e27]:
+          - generic [ref=e29]:
+            - generic:
+              - generic:
+                - group [ref=e30]:
+                  - generic [ref=e35]: DISCOVERY
+                - group [ref=e38]:
+                  - generic [ref=e42]:
+                    - generic [ref=e43]:
+                      - img [ref=e45]
+                      - generic [ref=e48]:
+                        - generic [ref=e50]: Content Researcher
+                        - generic [ref=e51]: MISSING CONTEXT
+                    - generic [ref=e53]:
+                      - img [ref=e54]
+                      - generic [ref=e56]: Fill in context to start...
+                - group [ref=e58]:
+                  - generic [ref=e71]: DELIVERY
+                - group [ref=e74]:
+                  - generic [ref=e78]:
+                    - generic [ref=e79]:
+                      - img [ref=e81]
+                      - generic [ref=e84]:
+                        - generic [ref=e86]: Content Reviewer
+                        - generic [ref=e87]: MISSING CONTEXT
+                    - generic [ref=e89]:
+                      - img [ref=e90]
+                      - generic [ref=e92]: Fill in context to start...
+          - img
+          - generic "Control Panel" [ref=e401]:
+            - button "Zoom In" [ref=e402] [cursor=pointer]:
+              - img [ref=e403]
+            - button "Zoom Out" [ref=e405] [cursor=pointer]:
+              - img [ref=e406]
+            - button "Fit View" [ref=e408] [cursor=pointer]:
+              - img [ref=e409]
+            - button "Toggle Interactivity" [ref=e411] [cursor=pointer]:
+              - img [ref=e412]
+          - generic [ref=e416]:
+            - heading "Workspaces" [level=2] [ref=e418]
+            - generic [ref=e420]:
+              - button "Discovery" [ref=e421] [cursor=pointer]
+              - button "Design" [ref=e422] [cursor=pointer]
+              - button "Delivery" [ref=e423] [cursor=pointer]
+              - button "Product Management" [ref=e424] [cursor=pointer]
+              - button "Growth & Market" [ref=e425] [cursor=pointer]
+          - link "React Flow attribution" [ref=e150] [cursor=pointer]:
+            - /url: https://reactflow.dev
+            - text: React Flow
+        - generic:
+          - generic: "N"
+        - button
+        - generic [ref=e426]:
+          - generic [ref=e428]:
+            - button "New Draft" [ref=e429]:
+              - img [ref=e430]
+            - button "Maximize" [ref=e433]:
+              - img [ref=e434]
+            - button "Close" [ref=e439]:
+              - img [ref=e440]
+          - generic [ref=e442]:
+            - heading "What kind of flow should I draft?" [level=2] [ref=e450]
+            - generic [ref=e451]:
+              - button "Draft a Data Analyst Agent" [ref=e452]:
+                - img [ref=e454]
+                - generic [ref=e457]: Draft a Data Analyst Agent
+              - button "Draft a Web Research Crew" [ref=e458]:
+                - img [ref=e460]
+                - generic [ref=e463]: Draft a Web Research Crew
+              - button "Draft a Content Writing Process" [ref=e464]:
+                - img [ref=e466]
+                - generic [ref=e469]: Draft a Content Writing Process
+          - generic [ref=e471]:
+            - generic [ref=e473]:
+              - generic [ref=e474]:
+                - img [ref=e476]
+                - generic [ref=e478]: Space Canvas
+              - generic [ref=e479]:
+                - img [ref=e481]
+                - generic [ref=e485]: System
+              - generic [ref=e486]:
+                - img [ref=e488]
+                - generic [ref=e491]: Project
+              - generic [ref=e492]:
+                - img [ref=e494]
+                - generic [ref=e498]: Notion
+            - textbox "Describe the flow, agent, or crew..." [ref=e499]
+            - generic [ref=e500]:
+              - generic [ref=e502]:
+                - button "Attach context" [ref=e503]:
+                  - img [ref=e504]
+                - button "Meta-Agent Settings" [ref=e505]:
+                  - img [ref=e506]
+              - generic [ref=e507]:
+                - generic [ref=e508]:
+                  - generic [ref=e509]: ~
+                  - generic [ref=e510]: "80"
+                  - generic [ref=e511]: tk
+                - button "Voice Input" [ref=e512]:
+                  - img [ref=e513]
+                - button "Send Request" [disabled] [ref=e516]:
+                  - img [ref=e517]
+    - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e524] [cursor=pointer]:
+    - img [ref=e525]
+  - generic [ref=e247]:
+    - generic [ref=e249]:
+      - generic:
+        - button "Select element" [ref=e250] [cursor=pointer]:
+          - img [ref=e251]
+        - generic:
+          - generic:
+            - button "Open comments":
+              - generic:
+                - img
+        - generic:
+          - generic:
+            - button "Copy all comments":
+              - img
+      - button "Enable React Grab" [ref=e255] [cursor=pointer]
+    - button "Collapse toolbar" [ref=e258] [cursor=pointer]:
+      - img [ref=e259]
+  - alert [ref=e261]

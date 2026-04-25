@@ -22,7 +22,7 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
             viewModel.visual.containerClassName, 
             "overflow-hidden",
             viewModel.isWorking && "ai-working-node",
-            viewModel.isConsultation && "border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.15)]"
+            viewModel.isConsultation && "border-orange-500 [0_0_20px_rgb(0,0,0)]"
         )}
         style={{ '--ai-zone-color': COLOR_MAP[viewModel.zoneColor || "default"] || COLOR_MAP.default } as React.CSSProperties}
     >
@@ -33,21 +33,21 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
         <div className="relative z-10 w-full h-full">
             {/* Process Type Badge - Top Right */}
             <div className="absolute top-3 right-3 z-20">
-                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-500 backdrop-blur-md">
+                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-800 text-zinc-500 ">
                     {viewModel.processType || 'Sequential'}
                 </div>
             </div>
 
             <div className={cn(
                 viewModel.visual.headerClassName,
-                "bg-gradient-to-b from-zinc-900/50 to-transparent pb-6 !gap-1.5"
+                "bg-gradient-to-b from-zinc-900 to-transparent pb-6 !gap-1.5"
             )}>
                 <div className="flex items-center transition-transform duration-500 ease-out origin-left -ml-1">
                     {viewModel.agents && viewModel.agents.length > 0 ? (
                         <div className="flex -space-x-3 mr-3">
                             {viewModel.agents.slice(0, 3).map((agent, index) => (
                                 <div key={agent.id} className={cn(
-                                    "w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden shadow-sm relative",
+                                    "w-10 h-10 rounded-full border-2 bg-black flex items-center justify-center overflow-hidden  relative",
                                     "border-zinc-700",
                                     index === 0 ? "z-30" : index === 1 ? "z-20" : "z-10"
                                 )}>
@@ -74,7 +74,7 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
                         <div className={cn(
                             viewModel.visual.iconClassName,
                             viewModel.isConsultation 
-                                ? "text-orange-500 border-orange-500/30 bg-orange-500/10" 
+                                ? "text-orange-500 border-orange-500 bg-orange-500" 
                                 : "text-zinc-400 border-zinc-800 bg-zinc-900"
                         )}>
                             {viewModel.isConsultation ? <AlertCircle size={18} /> : <Users size={18} />}
@@ -85,7 +85,7 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
                     <div className="flex items-center gap-2">
                         <span className={viewModel.visual.titleClassName}>{viewModel.displayName}</span>
                         {viewModel.knowledgeHubIds && viewModel.knowledgeHubIds.length > 0 && (
-                            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-blue-500 border border-blue-500 text-blue-400">
                                 <Sparkles size={10} className="shrink-0" />
                                 <span className="text-[8px] font-black">{viewModel.knowledgeHubIds.length}</span>
                             </div>
@@ -93,7 +93,7 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
                     </div>
                     <span className={cn(
                         viewModel.visual.subtitleClassName,
-                        viewModel.isConsultation && "text-orange-500/80 font-black animate-pulse"
+                        viewModel.isConsultation && "text-orange-500 font-black animate-pulse"
                     )}>
                         {viewModel.isConsultation ? 'Human Loop Required' : viewModel.statusText}
                     </span>
@@ -110,7 +110,7 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
                             return (
                                 <div key={i} className={cn(
                                     "flex items-center justify-between gap-2 px-2 rounded-md transition-all",
-                                    isActive ? "bg-zinc-200/5 border border-zinc-200/10" : "hover:bg-zinc-200/5"
+                                    isActive ? "bg-zinc-200 border border-zinc-200" : "hover:bg-zinc-200"
                                 )}>
                                     <div className="flex items-center gap-2 truncate">
                                         <div className={cn(
@@ -133,7 +133,7 @@ export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrew
                 {/* Consultation Alert */}
                 {viewModel.isConsultation && (
                     <button 
-                        className="w-full h-9 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-orange-400 transition-all shadow-[0_0_15px_rgba(249,115,22,0.3)] border-none cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full h-9 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-orange-400 transition-all [0_0_15px_rgb(0,0,0)] border-none cursor-pointer flex items-center justify-center gap-2"
                     >
                         <Play size={14} fill="white" /> Enter Conversation
                     </button>

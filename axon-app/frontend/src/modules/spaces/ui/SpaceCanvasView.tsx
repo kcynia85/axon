@@ -59,6 +59,29 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
   const handleApproveDrafts = async (drafts: any[], connections: any[]) => {
       try {
           console.log("[MetaAgent] Starting approval of drafts:", drafts);
+
+          // 0. Auto-generate drafts for missing members referenced in crews
+          const memberNamesInCrews = new Set<string>();
+          drafts.filter(d => d.entity === 'crew').forEach(crew => {
+              const members = crew.agent_member_ids || crew.payload?.agent_member_ids || crew.payload?.members || [];
+              members.forEach((m: string) => memberNamesInCrews.add(m));
+          });
+          
+          const existingDraftNames = new Set(drafts.map(d => d.name));
+          memberNamesInCrews.forEach(missingName => {
+              if (!existingDraftNames.has(missingName)) {
+                  console.log(`[MetaAgent] Auto-generating missing draft for member: ${missingName}`);
+                  drafts.unshift({
+                      entity: 'agent',
+                      status: 'draft',
+                      name: missingName,
+                      description: `${missingName} (Auto-generated from Crew membership)`,
+                      target_workspace: drafts.find(d => d.entity === 'crew')?.target_workspace || 'ws-discovery',
+                      payload: {}
+                  });
+              }
+          });
+
           const draftNameToNodeIdMap = new Map<string, string>();
           const draftNameToPersistedIdMap = new Map<string, string>();
           const persistedEntities: any[] = [];
@@ -78,10 +101,10 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
                   case 'agent':
                       persistedEntity = await createAgent({
                           agent_name: p.agent_name || draft.name,
-                          agent_role_text: p.agent_role_text || draft.description,
+                          agent_role_text: draft.agent_role_text || p.agent_role_text || draft.description,
                           agent_goal: p.agent_goal || draft.description,
                           agent_backstory: p.agent_backstory || "",
-                          system_instruction: p.system_instruction || "",
+                          system_instruction: draft.system_instruction || p.system_instruction || "",
                           model_tier: p.model_tier || "TIER_2_EXPERT",
                           temperature: p.temperature ?? 0.7,
                           native_skills: Array.from(new Set(p.native_skills || [])),
@@ -150,7 +173,7 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
               const targetWorkspace = draft.target_workspace || "ws-discovery";
               
               // Meta-Agent sometimes uses 'members' instead of 'agent_member_ids' or just names in payload
-              const rawMembers = p.agent_member_ids || p.members || [];
+              const rawMembers = draft.agent_member_ids || p.agent_member_ids || p.members || [];
               console.log(`[MetaAgent] Resolving members for ${draft.name} from raw data:`, rawMembers);
 
               // Map names to persisted UUIDs with enhanced fuzzy matching
@@ -187,9 +210,9 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
                   ...cleanPayload,
                   crew_name: p.crew_name || draft.name,
                   crew_description: p.crew_description || draft.description,
-                  crew_process_type: p.crew_process_type || 'Sequential',
+                  crew_process_type: draft.crew_process_type || p.crew_process_type || 'Sequential',
                   agent_member_ids: resolvedMemberIds,
-                  data_interface: p.data_interface || { inputs: [], outputs: [], artifacts: [] },
+                  data_interface: p.data_interface || { context: [], artefacts: [] },
                   availability_workspace: [targetWorkspace]
               });
 
@@ -198,6 +221,16 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
                   
                   const finalName = persistedEntity.crew_name || draft.name;
                   const finalDescription = persistedEntity.crew_description || draft.description;
+
+                  // HYDRATION: Manually populate resolved_members for immediate UI feedback on canvas
+                  const hydratedMembers = resolvedMemberIds.map(id => {
+                      const agentPE = persistedEntities.find(pe => pe.data.id === id);
+                      return {
+                          id,
+                          role: agentPE?.data.agent_role_text || agentPE?.data.name || "Agent",
+                          visualUrl: agentPE?.data.agent_visual_url || agentPE?.data.visualUrl
+                      };
+                  });
 
                   persistedEntities.push({
                       draftName: draft.name,
@@ -209,6 +242,7 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
                           name: finalName,
                           description: finalDescription,
                           is_persisted: true,
+                          resolved_members: hydratedMembers, // Crucial for the Team list
                           artefacts: p.artefacts || persistedEntity.artefacts || [],
                           context_requirements: p.context_requirements || persistedEntity.context_requirements || []
                       }
@@ -216,21 +250,52 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
               }
           }
 
-          // 3. Add all nodes to canvas
+          // 3. Prepare entities for canvas
+          const aggregatedAgentIds = new Set<string>();
+          persistedEntities.forEach(pe => {
+              if (pe.type === 'crew') {
+                  const memberIds = pe.data.agent_member_ids || [];
+                  memberIds.forEach((id: string) => aggregatedAgentIds.add(id));
+              }
+          });
+
+          // Only add nodes that are NOT members of a crew
+          const entitiesToAddToCanvas = persistedEntities.filter(pe => {
+              if (pe.type === 'agent') {
+                  return !aggregatedAgentIds.has(pe.data.id);
+              }
+              return true;
+          });
+
+          // Add to canvas
           const createdIds = orchestrator.addMultipleNodesToCanvas(
-              persistedEntities.map(pe => ({ type: pe.type, data: pe.data, workspaceId: pe.workspaceId }))
+              entitiesToAddToCanvas.map(pe => ({ type: pe.type, data: pe.data, workspaceId: pe.workspaceId }))
           );
 
-          persistedEntities.forEach((pe, index) => {
+          entitiesToAddToCanvas.forEach((pe, index) => {
               draftNameToNodeIdMap.set(pe.draftName, createdIds[index]);
           });
 
-          // 4. Create connections
+          // 4. Create connections (Filtering Membership Edges)
           for (const conn of connections) {
               const sourceNodeId = draftNameToNodeIdMap.get(conn.source_draft_name);
               const targetNodeId = draftNameToNodeIdMap.get(conn.target_draft_name);
 
               if (sourceNodeId && targetNodeId) {
+                  // Check if this connection is between a member and its crew (redundant)
+                  const sourcePE = persistedEntities.find(pe => pe.draftName === conn.source_draft_name);
+                  const targetPE = persistedEntities.find(pe => pe.draftName === conn.target_draft_name);
+                  
+                  const isSourceMemberOfTarget = sourcePE?.type === 'agent' && targetPE?.type === 'crew' && 
+                                               (targetPE.data.agent_member_ids || []).includes(sourcePE.data.id);
+                  const isTargetMemberOfSource = targetPE?.type === 'agent' && sourcePE?.type === 'crew' && 
+                                               (sourcePE.data.agent_member_ids || []).includes(targetPE.data.id);
+
+                  if (isSourceMemberOfTarget || isTargetMemberOfSource) {
+                      console.log(`[MetaAgent] Skipping redundant edge between member and crew: ${conn.source_draft_name} <-> ${conn.target_draft_name}`);
+                      continue;
+                  }
+
                   orchestrator.handleNewConnectionCreated({
                       source: sourceNodeId,
                       target: targetNodeId,

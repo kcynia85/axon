@@ -1,0 +1,329 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]:
+      - complementary [ref=e4]:
+        - generic [ref=e5]:
+          - navigation [ref=e10]:
+            - generic [ref=e12]:
+              - link "Home" [ref=e13] [cursor=pointer]:
+                - /url: /home
+                - generic [ref=e14]:
+                  - img
+                - generic [ref=e15]: Home
+              - button "Collapse Sidebar" [ref=e17]:
+                - img
+            - link "Spaces" [ref=e19] [cursor=pointer]:
+              - /url: /spaces
+              - generic [ref=e20]:
+                - img
+              - generic [ref=e21]: Spaces
+            - link "Projects" [ref=e23] [cursor=pointer]:
+              - /url: /projects
+              - generic [ref=e24]:
+                - img
+              - generic [ref=e25]: Projects
+            - link "Workspaces" [ref=e27] [cursor=pointer]:
+              - /url: /workspaces
+              - generic [ref=e28]:
+                - img
+              - generic [ref=e29]: Workspaces
+          - navigation [ref=e33]:
+            - link "Analytics" [ref=e35] [cursor=pointer]:
+              - /url: /analytics
+              - generic [ref=e36]:
+                - img
+              - generic [ref=e37]: Analytics
+            - link "Resources" [ref=e39] [cursor=pointer]:
+              - /url: /resources
+              - generic [ref=e40]:
+                - img
+              - generic [ref=e41]: Resources
+            - link "Settings" [ref=e43] [cursor=pointer]:
+              - /url: /settings
+              - generic [ref=e44]:
+                - img
+              - generic [ref=e45]: Settings
+            - button "Trash" [ref=e47]:
+              - generic [ref=e48]:
+                - img
+              - generic [ref=e49]: Trash
+      - generic [ref=e50]:
+        - generic [ref=e51]:
+          - button [ref=e52]:
+            - img
+          - generic [ref=e53]:
+            - generic "Toggle theme" [ref=e108] [cursor=pointer]:
+              - switch "Toggle theme" [checked] [ref=e109]
+            - generic:
+              - generic:
+                - img
+              - generic:
+                - img
+          - button [ref=e112]:
+            - generic [ref=e113]:
+              - img
+        - main [ref=e55]:
+          - main [ref=e57]:
+            - generic [ref=e58]:
+              - navigation "Breadcrumb" [ref=e59]:
+                - link "Home" [ref=e114] [cursor=pointer]:
+                  - /url: /home
+                - img [ref=e61]
+                - link "Workspaces" [ref=e115] [cursor=pointer]:
+                  - /url: /workspaces
+                - img [ref=e116]
+                - generic [ref=e118]: Discovery
+              - generic [ref=e66]:
+                - heading "Discovery" [level=1] [ref=e119]
+                - paragraph [ref=e120]: User research, JTBD, and opportunity mapping.
+              - generic [ref=e121]:
+                - generic [ref=e123]:
+                  - img [ref=e124]
+                  - textbox "Search within Discovery..." [ref=e127]
+                - generic [ref=e129]:
+                  - generic [ref=e130]:
+                    - generic [ref=e131]:
+                      - heading "Agents [26]" [level=3] [ref=e132]:
+                        - text: Agents
+                        - generic [ref=e133]: "[26]"
+                      - button "View all" [ref=e134]:
+                        - link "View all" [ref=e135] [cursor=pointer]:
+                          - /url: /workspaces/ws-discovery/agents
+                          - text: View all
+                          - img [ref=e136]
+                    - generic [ref=e139]:
+                      - link "Jenice Austin Researcher Specialist Researcher Specialist test rara" [ref=e140] [cursor=pointer]:
+                        - /url: "#"
+                        - generic [ref=e141]:
+                          - generic [ref=e142]:
+                            - button [ref=e143]:
+                              - img
+                            - button [ref=e144]:
+                              - img
+                          - img "Jenice Austin" [ref=e148]
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading "Researcher Specialist" [level=4]
+                              - generic:
+                                - generic: Researcher Specialist
+                            - generic:
+                              - generic:
+                                - img
+                                - text: test
+                              - generic:
+                                - img
+                                - text: rara
+                      - link "Hendry Cane Research Specialist Research Specialist test44" [ref=e150] [cursor=pointer]:
+                        - /url: "#"
+                        - generic [ref=e151]:
+                          - generic [ref=e152]:
+                            - button [ref=e153]:
+                              - img
+                            - button [ref=e154]:
+                              - img
+                          - img "Hendry Cane" [ref=e158]
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading "Research Specialist" [level=4]
+                              - generic:
+                                - generic: Research Specialist
+                            - generic:
+                              - generic:
+                                - img
+                                - text: test44
+                      - link "WorkspaceCheckerBot Researcher agent responsible for verifying the correct placement of workspaces. Researcher agent responsible for verifying the correct placement of workspaces." [ref=e160] [cursor=pointer]:
+                        - /url: "#"
+                        - generic [ref=e161]:
+                          - generic [ref=e162]:
+                            - button [ref=e163]:
+                              - img
+                            - button [ref=e164]:
+                              - img
+                          - img "WorkspaceCheckerBot" [ref=e168]
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading "Researcher agent responsible for verifying the correct placement of workspaces." [level=4]
+                              - generic:
+                                - generic: Researcher agent responsible for verifying the correct placement of workspaces.
+                      - link "Researcher Bot Responsible for conducting research and drafting detailed reports. Responsible for conducting research and drafting detailed reports." [ref=e170] [cursor=pointer]:
+                        - /url: "#"
+                        - generic [ref=e171]:
+                          - generic [ref=e172]:
+                            - button [ref=e173]:
+                              - img
+                            - button [ref=e174]:
+                              - img
+                          - img "Researcher Bot" [ref=e178]
+                          - generic:
+                            - generic:
+                              - generic:
+                                - heading "Responsible for conducting research and drafting detailed reports." [level=4]
+                              - generic:
+                                - generic: Responsible for conducting research and drafting detailed reports.
+                  - generic [ref=e180]:
+                    - generic [ref=e181]:
+                      - heading "Crews [5]" [level=3] [ref=e182]:
+                        - text: Crews
+                        - generic [ref=e183]: "[5]"
+                      - button "View all" [ref=e184]:
+                        - link "View all" [ref=e185] [cursor=pointer]:
+                          - /url: /workspaces/ws-discovery/crews
+                          - text: View all
+                          - img [ref=e186]
+                    - generic [ref=e189]:
+                      - link "Web Research Crew A crew tasked with conducting web research to support the E2E Ultimate CRUD project, gathering and analyzing relevant data." [ref=e190] [cursor=pointer]:
+                        - /url: "#"
+                        - generic [ref=e191]:
+                          - generic [ref=e192]:
+                            - button [ref=e193]:
+                              - img
+                            - button [ref=e194]:
+                              - img
+                          - img [ref=e198]
+                          - generic [ref=e203]:
+                            - heading "Web Research Crew" [level=4] [ref=e204]
+                            - paragraph [ref=e205]: A crew tasked with conducting web research to support the E2E Ultimate CRUD project, gathering and analyzing relevant data.
+                      - link "Web Research Crew Handles web research and data entry tasks." [ref=e208] [cursor=pointer]:
+                        - /url: "#"
+                        - generic [ref=e209]:
+                          - generic [ref=e210]:
+                            - button [ref=e211]:
+                              - img
+                            - button [ref=e212]:
+                              - img
+                          - img [ref=e216]
+                          - generic [ref=e221]:
+                            - heading "Web Research Crew" [level=4] [ref=e222]
+                            - paragraph [ref=e223]: Handles web research and data entry tasks.
+                      - link "Agent Agent Test 5 Sequential Test" [ref=e226] [cursor=pointer]:
+                        - /url: "#"
+                        - generic [ref=e227]:
+                          - generic [ref=e228]:
+                            - button [ref=e229]:
+                              - img
+                            - button [ref=e230]:
+                              - img
+                          - generic [ref=e233]:
+                            - img "Agent" [ref=e235]
+                            - img "Agent" [ref=e237]
+                          - generic [ref=e238]:
+                            - heading "Test 5 Sequential" [level=4] [ref=e239]
+                            - paragraph [ref=e240]: Test
+                      - link "Agent Agent Test 4 Test" [ref=e243] [cursor=pointer]:
+                        - /url: "#"
+                        - generic [ref=e244]:
+                          - generic [ref=e245]:
+                            - button [ref=e246]:
+                              - img
+                            - button [ref=e247]:
+                              - img
+                          - generic [ref=e250]:
+                            - img "Agent" [ref=e252]
+                            - img "Agent" [ref=e254]
+                          - generic [ref=e255]:
+                            - heading "Test 4" [level=4] [ref=e256]
+                            - paragraph [ref=e257]: Test
+                  - generic [ref=e260]:
+                    - generic [ref=e261]:
+                      - heading "Patterns [0]" [level=3] [ref=e262]:
+                        - text: Patterns
+                        - generic [ref=e263]: "[0]"
+                      - button "View all" [ref=e264]:
+                        - link "View all" [ref=e265] [cursor=pointer]:
+                          - /url: /workspaces/ws-discovery/patterns
+                          - text: View all
+                          - img [ref=e266]
+                    - generic [ref=e270]: No workflow patterns found. Design some sequences.
+                  - generic [ref=e271]:
+                    - generic [ref=e272]:
+                      - heading "Templates [1]" [level=3] [ref=e273]:
+                        - text: Templates
+                        - generic [ref=e274]: "[1]"
+                      - button "View all" [ref=e275]:
+                        - link "View all" [ref=e276] [cursor=pointer]:
+                          - /url: /workspaces/ws-discovery/templates
+                          - text: View all
+                          - img [ref=e277]
+                    - link "Rag_Test Rag Test Rag Test Rag Test Rag Test" [ref=e281] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=e282]:
+                        - generic [ref=e283]:
+                          - button [ref=e284]:
+                            - img
+                          - button [ref=e285]:
+                            - img
+                        - img [ref=e288]
+                        - generic [ref=e291]:
+                          - heading "Rag_Test" [level=4] [ref=e293]
+                          - paragraph [ref=e295]: Rag Test Rag Test Rag Test
+                          - generic [ref=e298]:
+                            - img
+                            - text: Rag Test
+                  - generic [ref=e300]:
+                    - generic [ref=e301]:
+                      - heading "Services [1]" [level=3] [ref=e302]:
+                        - text: Services
+                        - generic [ref=e303]: "[1]"
+                      - button "View all" [ref=e304]:
+                        - link "View all" [ref=e305] [cursor=pointer]:
+                          - /url: /workspaces/ws-discovery/services
+                          - text: View all
+                          - img [ref=e306]
+                    - link "ElevenLabs Integration with GenAI platform." [ref=e310] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=e311]:
+                        - generic [ref=e312]:
+                          - button [ref=e313]:
+                            - img
+                          - button [ref=e314]:
+                            - img
+                        - img [ref=e317]
+                        - generic [ref=e319]:
+                          - heading "ElevenLabs" [level=4] [ref=e321]
+                          - paragraph [ref=e323]: Integration with GenAI platform.
+                  - generic [ref=e327]:
+                    - generic [ref=e328]:
+                      - heading "Automations [1]" [level=3] [ref=e329]:
+                        - text: Automations
+                        - generic [ref=e330]: "[1]"
+                      - button "View all" [ref=e331]:
+                        - link "View all" [ref=e332] [cursor=pointer]:
+                          - /url: /workspaces/ws-discovery/automations
+                          - text: View all
+                          - img [ref=e333]
+                    - link "Wysylka na maila test" [ref=e337] [cursor=pointer]:
+                      - /url: "#"
+                      - generic [ref=e338]:
+                        - generic [ref=e339]:
+                          - button [ref=e340]:
+                            - img
+                          - button [ref=e341]:
+                            - img
+                        - img [ref=e344]
+                        - generic [ref=e346]:
+                          - heading "Wysylka na maila" [level=4] [ref=e348]
+                          - paragraph [ref=e350]: test
+    - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e88] [cursor=pointer]:
+    - img [ref=e89]
+  - generic [ref=e93]:
+    - generic [ref=e95]:
+      - generic:
+        - button "Select element" [ref=e96] [cursor=pointer]:
+          - img [ref=e97]
+        - generic:
+          - generic:
+            - button "Open comments":
+              - generic:
+                - img
+        - generic:
+          - generic:
+            - button "Copy all comments":
+              - img
+      - button "Enable React Grab" [ref=e101] [cursor=pointer]
+    - button "Collapse toolbar" [ref=e104] [cursor=pointer]:
+      - img [ref=e105]
+  - alert [ref=e354]

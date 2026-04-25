@@ -11,7 +11,7 @@ import { SpaceCanvasNodeProperties } from '../types';
  * SpaceAgentCanvasNode - Container component for agent node on the canvas.
  * Orchestrates mapping domain data to view model and rendering the Pure View.
  */
-export const SpaceAgentCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) => {
+export const SpaceAgentCanvasNode = React.memo((nodeProperties: SpaceCanvasNodeProperties) => {
     const agentViewModel = mapAgentToViewModel(
         nodeProperties.data as unknown as SpaceAgentDomainData, 
         nodeProperties.selected ?? false
@@ -34,6 +34,13 @@ export const SpaceAgentCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) 
             />
         </div>
     );
-};
+}, (prevProps, nextProps) => {
+    // Deep equality check for data to prevent re-renders unless data actually changes
+    return (
+        prevProps.id === nextProps.id &&
+        prevProps.selected === nextProps.selected &&
+        JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data)
+    );
+});
 
 SpaceAgentCanvasNode.displayName = 'SpaceAgentCanvasNode';
