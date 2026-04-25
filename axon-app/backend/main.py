@@ -21,6 +21,7 @@ from app.modules.resources.interface.router import router as resources_router
 from app.modules.settings.interface.router import router as settings_router
 from app.modules.inbox.interface.router import router as inbox_router
 from app.modules.system.interface.router import router as system_router
+from app.modules.system.interface.analytics_router import router as analytics_router
 from app.modules.workspaces.interface.router import router as workspaces_router
 from app.shared.infrastructure.inngest_client import inngest_client
 from app.modules.agents.application.workflows import writer_workflow, generic_agent_workflow
@@ -109,6 +110,7 @@ app.include_router(resources_router)
 app.include_router(settings_router)
 app.include_router(inbox_router)
 app.include_router(system_router)
+app.include_router(analytics_router)
 app.include_router(workspaces_router)
 
 

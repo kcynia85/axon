@@ -10,6 +10,7 @@ from app.modules.system.application.retriever import SystemAwarenessRetrieverSer
 from app.modules.knowledge.application.rag import RAGService
 from app.shared.infrastructure.adapters.langchain_adapter import LangChainAdapter
 from app.shared.domain.ports.external_docs import ExternalDocumentationPort
+from app.shared.utils.tokens import count_tokens
 
 logger = logging.getLogger(__name__)
 
@@ -80,9 +81,22 @@ class MetaAgentGraphBuilder:
         canvas_state_str = self._format_canvas_state(state["canvas_state"])
         project_context_str = state.get("project_context", "No project context available.")
         
+        # Calculate tokens for these persistent contexts
+        stats = state["context_stats"]
+        stats.space_canvas_tokens = count_tokens(canvas_state_str, self.model_name)
+        stats.project_context_tokens = count_tokens(project_context_str, self.model_name)
+        
         prompt = f"""
 {self.system_instruction}
 You are the Planner phase of the Meta-Agent. Your task is to analyze the user's request and the current Canvas state, and output an execution plan.
+
+STRICT SCOPE GUARDRAILS:
+- You ONLY serve to design AI flows, agents, crews, and project architectures on the Axon Space Canvas.
+- You are allowed to search the Knowledge Base (RAG#1) and System Awareness (RAG#2) for relevant technical context.
+- You ARE NOT a general-purpose chat bot.
+- You ARE NOT allowed to answer general knowledge questions (e.g., "who is the president", "how to bake a cake").
+- You ARE NOT allowed to write general code unrelated to Axon agents.
+- If a request is out of scope, set 'is_out_of_scope' to True.
 
 User Requirement: "{request.query}"
 
@@ -92,9 +106,10 @@ PROJECT CONTEXT:
 {canvas_state_str}
 
 Goal:
-1. Explain what needs to be created or modified.
-2. Formulate 1 to 3 search queries to find existing tools, templates, or knowledge relevant to this request.
-3. Write a step-by-step execution plan for the Drafter to follow.
+1. Determine if the request is within scope.
+2. Explain what needs to be created or modified.
+3. Formulate 1 to 3 search queries to find existing tools, templates, or knowledge relevant to this request.
+4. Write a step-by-step execution plan for the Drafter to follow.
 
 Output strict JSON conforming to the requested schema.
 """
@@ -104,14 +119,18 @@ Output strict JSON conforming to the requested schema.
             planner_out = await model.ainvoke([HumanMessage(content=prompt)])
             return {
                 "plan": planner_out.execution_plan,
-                "search_queries": planner_out.search_queries
+                "search_queries": planner_out.search_queries,
+                "context_stats": stats,
+                "is_out_of_scope": planner_out.is_out_of_scope
             }
         except Exception as e:
             logger.error(f"Planner Node failed: {e}")
             # Fallback
             return {
                 "plan": "Fulfill the user requirement: " + request.query,
-                "search_queries": [request.query]
+                "search_queries": [request.query],
+                "context_stats": stats,
+                "is_out_of_scope": False
             }
 
     async def retriever_node(self, state: MetaAgentState) -> Dict[str, Any]:
@@ -119,6 +138,7 @@ Output strict JSON conforming to the requested schema.
         queries = state["search_queries"]
         request = state["request"]
         strategy_url = state.get("project_strategy_url")
+        stats = state["context_stats"]
         
         context_data = request.context or {}
         knowledge_enabled = context_data.get("knowledge_enabled", True)
@@ -143,12 +163,14 @@ Output strict JSON conforming to the requested schema.
                 
                 # Format system results
                 if all_system_results:
-                    system_context_str = "\nSYSTEM AWARENESS (Existing system entities):\n" + "\n".join([
+                    entities_str = "\n".join([
                         f"- [{r.entity_type.upper()}] {r.payload.get('name', 'Unknown')}\n"
                         f"  Description: {r.payload.get('description', '')}\n"
                         f"  Details: {json.dumps({k:v for k,v in r.payload.items() if k not in ('name', 'description')}, ensure_ascii=False)}"
                         for r in all_system_results[:5] # Limit total
                     ])
+                    system_context_str = "\nSYSTEM AWARENESS (Existing system entities):\n" + entities_str
+                    stats.system_awareness_tokens = count_tokens(entities_str, self.model_name)
             except Exception as e:
                 logger.warning(f"RAG#2 (System Awareness) failed: {e}")
 
@@ -161,10 +183,12 @@ Output strict JSON conforming to the requested schema.
                     all_knowledge_results.extend(res)
                     
                 if all_knowledge_results:
-                    knowledge_context_str = "\nKNOWLEDGE BASE (Information from documents):\n" + "\n".join([
+                    knowledge_str = "\n".join([
                         f"- Doc Fragment: {r.get('metadata', {}).get('text', '')[:300]}..."
                         for r in all_knowledge_results[:5]
                     ])
+                    knowledge_context_str = "\nKNOWLEDGE BASE (Information from documents):\n" + knowledge_str
+                    stats.knowledge_tokens = count_tokens(knowledge_str, self.model_name)
             except Exception as e:
                 logger.warning(f"RAG#1 (Knowledge) failed: {e}")
 
@@ -172,13 +196,25 @@ Output strict JSON conforming to the requested schema.
         if strategy_url and "notion.so" in strategy_url.lower():
             logger.info(f"[MetaAgentGraph] Fetching Notion content from {strategy_url}")
             notion_content = await self.external_docs_port.fetch_content(strategy_url)
+            stats.notion_tokens = count_tokens(notion_content, self.model_name)
             notion_context_str = f"\nPROJECT ASSUMPTIONS (Detailed content from Notion):\n{notion_content}\n"
 
         rag_context = f"{notion_context_str}\n{system_context_str}\n{knowledge_context_str}".strip()
         if not rag_context:
             rag_context = "No relevant context found."
             
-        return {"rag_context": rag_context}
+        return {
+            "rag_context": rag_context, 
+            "context_stats": stats,
+            "system_entities": [
+                {
+                    "entity_type": r.entity_type,
+                    "name": r.payload.get('name') or r.payload.get('agent_name'),
+                    "visual_url": r.payload.get('agent_visual_url') or r.payload.get('visual_url')
+                }
+                for r in all_system_results
+            ]
+        }
 
     async def drafter_node(self, state: MetaAgentState) -> Dict[str, Any]:
         logger.info("[MetaAgentGraph] Executing Drafter Node")
@@ -188,14 +224,29 @@ Output strict JSON conforming to the requested schema.
         canvas_state_str = self._format_canvas_state(state["canvas_state"])
         project_context_str = state.get("project_context", "No project context available.")
         errors = state.get("validation_errors", [])
-        
+        stats = state["context_stats"]
+        is_out_of_scope = state.get("is_out_of_scope", False)
+
+        if is_out_of_scope:
+            return {
+                "draft_response": MetaAgentProposalResponse(
+                    drafts=[],
+                    connections=[],
+                    reasoning="I'm sorry, but I can only help you with designing AI flows, agents, and project architectures on the Axon Space Canvas. Your request falls outside of this scope.",
+                    context_stats=stats
+                ),
+                "iteration_count": 3 # Stop here
+            }
+
         # Handle Attachments
         attachments_str = ""
         if request.attachments:
-            attachments_str = "\nUSER ATTACHMENTS:\n" + "\n".join([
+            files_str = "\n".join([
                 f"- User Attachment: {a.name} ({a.content_type})"
                 for a in request.attachments
             ])
+            attachments_str = "\nUSER ATTACHMENTS:\n" + files_str
+            stats.attachments_tokens = count_tokens(files_str, self.model_name)
             
         error_context = ""
         if errors:
@@ -226,8 +277,11 @@ Your Goal:
 Propose a COMPLETE FLOW of entities (agents, crews). Each proposed entity must be "Studio-Ready".
 
 ENTITY SCHEMAS & GUIDELINES:
-- AGENT: Requires 'agent_name', 'agent_role_text', 'agent_goal', 'agent_backstory', 'system_instruction'. Can include 'tools' (list of strings matching existing tool names like 'Web Scraper'), 'model_tier', 'temperature', 'native_skills'. Important: Do NOT create tool entities, assign tools directly to the agent's 'tools' array.
-- CREW: Requires 'crew_name', 'crew_description', 'crew_process_type'. Can include 'agent_member_ids' if referencing existing agents.
+- AGENT: A standalone intelligent unit. Requires 'agent_name', 'agent_role_text', 'agent_goal', 'agent_backstory', 'system_instruction'.
+- CREW: An AGGREGATOR that collects multiple agents to perform a complex task. Requires 'crew_name', 'crew_description', 'crew_process_type'.
+    * IMPORTANT: A Crew node MUST NOT contain the full definition of its member agents in its payload.
+    * CORRECT MODELING: To create a Crew with 2 Agents, you must propose 3 SEPARATE entities (1 Crew and 2 Agents) in the 'drafts' list.
+    * CONNECTIONS: You MUST then define 'connections' from each Agent TO the Crew (Agent as source, Crew as target).
 
 WORKSPACE ZONES (Mandatory field 'target_workspace'):
 - 'ws-discovery': For research, data gathering, discovery agents and resources.
@@ -243,18 +297,41 @@ CROSS-ZONE COMMUNICATION:
 
 Instructions:
 1. Follow the Execution Plan.
-2. Categorize each entity into the most appropriate 'target_workspace'.
-3. If the user wants to add a new entity for an existing entity on the canvas, output the new draft and add a connection where 'source_draft_name' is the existing entity's name.
-4. Do not recreate agents or tools that are already listed in the CURRENT CANVAS STATE. Reuse them or reference them.
-5. Each entity must have 'status' set to 'draft'.
-6. Do NOT wrap in Markdown. Output raw JSON only.
+2. For any Crew requested, generate the Crew node AND its member Agent nodes as SEPARATE entries in the 'drafts' array.
+3. Link each Agent TO the Crew using the 'connections' array (Agent as source, Crew as target).
+4. Categorize each entity into the most appropriate 'target_workspace'.
+5. If the user wants to add a new entity for an existing entity on the canvas, output the new draft and add a connection where 'source_draft_name' is the existing entity's name.
+6. Do not recreate agents or tools that are already listed in the CURRENT CANVAS STATE. Reuse them or reference them.
+7. Each entity must have 'status' set to 'draft'.
+8. Do NOT wrap in Markdown. Output raw JSON only.
 """
         model = self._get_chat_model(use_cheap_model=False).with_structured_output(MetaAgentProposalResponse, method="function_calling")
         
         try:
             draft_response = await model.ainvoke([HumanMessage(content=prompt)])
+            
+            # Post-process: Hydrate visual_url for existing entities
+            system_entities = state.get("system_entities", [])
+            for draft in draft_response.drafts:
+                # Find if this draft matches an existing system entity by name
+                match = next((e for e in system_entities if e["name"] == draft.name), None)
+                if match and match.get("visual_url"):
+                    draft.visual_url = match["visual_url"]
+
+            # Finalize total tokens
+            stats.total_tokens = (
+                stats.space_canvas_tokens + 
+                stats.system_awareness_tokens + 
+                stats.knowledge_tokens + 
+                stats.project_context_tokens + 
+                stats.notion_tokens + 
+                stats.attachments_tokens
+            )
+            draft_response.context_stats = stats
+            
             return {
                 "draft_response": draft_response,
+                "context_stats": stats,
                 "iteration_count": state["iteration_count"] + 1
             }
         except Exception as e:

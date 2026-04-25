@@ -17,11 +17,12 @@ export const MagicSphere = ({ className }: { className?: string }) => {
           scale: [1, 1.05, 1],
         }}
         transition={{
-          duration: 4,
+          duration: 6,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="relative w-24 h-24 rounded-full shadow-[inset_-10px_-10px_30px_rgba(0,0,0,0.05),inset_10px_10px_30px_rgba(255,255,255,0.8),0_20px_40px_rgba(255,255,255,0.1)] bg-gradient-to-br from-white via-zinc-50/80 to-zinc-200/50 backdrop-blur-xl border border-white/40"
+        style={{ willChange: "transform, opacity" }}
+        className="relative w-24 h-24 rounded-full shadow-[inset_-10px_-10px_30px_rgba(0,0,0,0.05),inset_10px_10px_30px_rgba(255,255,255,0.8),0_20px_40px_rgba(255,255,255,0.1)] bg-gradient-to-br from-white via-zinc-50/80 to-zinc-200/50 border border-white/40 transform-gpu"
       >
         {/* Shine/Reflection */}
         <div className="absolute top-[15%] left-[20%] w-6 h-6 bg-white/60 rounded-full blur-sm" />

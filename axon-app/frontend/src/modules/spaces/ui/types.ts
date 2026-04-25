@@ -159,6 +159,7 @@ export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogi
         drafts: any[];
         connections: any[];
         reasoning: string | null;
+        contextStats: any | null;
         isProposing: boolean;
         error: Error | null;
         onPropose: (query: string) => void;
@@ -172,6 +173,12 @@ export type SpaceCanvasPresentationViewProperties = SpaceCanvasOrchestrationLogi
         attachedFiles: any[];
         addFiles: (files: any[]) => void;
         removeFile: (name: string) => void;
+        query: string;
+        setQuery: (q: string) => void;
+        isFocused: boolean;
+        setIsFocused: (f: boolean) => void;
+        isMaximized: boolean;
+        setIsMaximized: (m: boolean) => void;
         hasProjectContext?: boolean;
         hasNotionContext?: boolean;
         activeStep: 'idle' | 'planner' | 'retriever' | 'drafter' | 'validator';

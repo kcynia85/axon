@@ -27,7 +27,16 @@ async def system_entity_upserted_workflow(ctx: inngest.Context):
     if not entity_id or not entity_type or not payload:
         return {"status": "error", "message": "Missing entity_id, entity_type, or payload"}
 
-    name = payload.get("name") or payload.get("title") or payload.get("display_name") or "New Entity"
+    # Improved name extraction based on entity type
+    name = (
+        payload.get("agent_name") or 
+        payload.get("crew_name") or 
+        payload.get("tool_technical_id") or
+        payload.get("name") or 
+        payload.get("title") or 
+        payload.get("display_name") or 
+        f"New {entity_type.capitalize()}"
+    )
 
     async def index_entity():
         try:

@@ -88,12 +88,15 @@ if LANGCHAIN_RAG_AVAILABLE:
             return docs
 
 from app.shared.domain.ports.vector_store import VectorStoreAdapter
+from app.modules.system.infrastructure.token_usage_repo import TokenUsageRepository
+from app.shared.utils.tokens import count_tokens
 
 class RAGService:
     def __init__(self, session: AsyncSession, vector_store: Optional[VectorStoreAdapter] = None):
         self.session = session
         self.asset_repo = AssetRepository(session)
         self.vector_store = vector_store
+        self.token_usage_repo = TokenUsageRepository(session)
 
     @observe(name="search_knowledge_base")
     async def search_knowledge(
@@ -108,7 +111,17 @@ class RAGService:
         """
         Semantic search over Knowledge Base using the active VectorStoreAdapter (Supabase Local).
         """
-        all_results = []
+        # 1. Log usage for query embedding
+        try:
+            t_count = count_tokens(query, embedding_model_name or "text-embedding-3-small")
+            await self.token_usage_repo.log_usage(
+                model_name=embedding_model_name or "text-embedding-3-small",
+                category="knowledge",
+                tokens_count=t_count,
+                metadata={"operation": "search_query_embedding"}
+            )
+        except Exception:
+            pass
 
         if not self.vector_store:
             logger.error("No active VectorStoreAdapter available for search.")

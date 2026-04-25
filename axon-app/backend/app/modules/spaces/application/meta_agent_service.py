@@ -1,11 +1,13 @@
 import logging
 from typing import Optional
+from uuid import UUID
 
-from app.modules.spaces.domain.meta_agent_models import MetaAgentProposalRequest, MetaAgentProposalResponse
+from app.modules.spaces.domain.meta_agent_models import MetaAgentProposalRequest, MetaAgentProposalResponse, MetaAgentContextStats
 from app.modules.spaces.infrastructure.repo import SpaceRepository
 from app.modules.projects.infrastructure.repo import ProjectRepository
 from app.modules.system.application.retriever import SystemAwarenessRetrieverService
 from app.modules.system.infrastructure.repo import SystemRepository
+from app.modules.system.infrastructure.token_usage_repo import TokenUsageRepository
 from app.modules.settings.infrastructure.repo import SettingsRepository
 from app.modules.knowledge.application.rag import RAGService
 from app.shared.infrastructure.adapters.langchain_adapter import get_llm_adapter
@@ -27,6 +29,7 @@ class MetaAgentService:
         settings_repo: SettingsRepository, 
         space_repo: SpaceRepository,
         project_repo: ProjectRepository,
+        token_usage_repo: TokenUsageRepository,
         external_docs_port: ExternalDocumentationPort = get_external_docs_adapter()
     ):
         self.system_retriever = system_retriever
@@ -35,6 +38,7 @@ class MetaAgentService:
         self.settings_repo = settings_repo
         self.space_repo = space_repo
         self.project_repo = project_repo
+        self.token_usage_repo = token_usage_repo
         self.external_docs_port = external_docs_port
         self.llm_adapter = get_llm_adapter()
 
@@ -109,9 +113,12 @@ class MetaAgentService:
             "plan": "",
             "search_queries": [],
             "rag_context": "",
+            "system_entities": [],
             "draft_response": None,
             "validation_errors": [],
-            "iteration_count": 0
+            "iteration_count": 0,
+            "context_stats": MetaAgentContextStats(),
+            "is_out_of_scope": False
         }
 
         # Execute Graph
@@ -122,10 +129,38 @@ class MetaAgentService:
             if final_state.get("validation_errors"):
                 logger.warning(f"Meta-Agent returned result with errors (reached limit): {final_state['validation_errors']}")
             
-            if not final_state.get("draft_response"):
+            draft_response = final_state.get("draft_response")
+            if not draft_response:
                 raise ValueError("Graph failed to generate a draft response.")
+
+            # Log Token Usage
+            stats = final_state.get("context_stats")
+            model_name = builder.model_name
+            if stats:
+                try:
+                    s_id = UUID(request.space_id) if request.space_id else None
+                    await self.token_usage_repo.log_usage(
+                        model_name=model_name,
+                        category="knowledge",
+                        tokens_count=stats.knowledge_tokens + stats.notion_tokens,
+                        space_id=s_id
+                    )
+                    await self.token_usage_repo.log_usage(
+                        model_name=model_name,
+                        category="awareness",
+                        tokens_count=stats.system_awareness_tokens,
+                        space_id=s_id
+                    )
+                    await self.token_usage_repo.log_usage(
+                        model_name=model_name,
+                        category="meta-agent",
+                        tokens_count=stats.space_canvas_tokens + stats.project_context_tokens + stats.attachments_tokens,
+                        space_id=s_id
+                    )
+                except Exception as log_err:
+                    logger.warning(f"Failed to log token usage: {log_err}")
                 
-            return final_state["draft_response"]
+            return draft_response
             
         except Exception as e:
             logger.error(f"Meta-Agent Graph execution failed: {e}")

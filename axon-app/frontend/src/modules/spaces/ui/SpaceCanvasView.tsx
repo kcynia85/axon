@@ -17,18 +17,17 @@ import { useSpaceQuery } from '../application/hooks';
 import { useMetaAgent } from '../application/hooks/useMetaAgent';
 import { useProjectDetailsQuery } from "@/modules/projects/application/hooks";
 import { toast } from "sonner";
-
 export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanvasViewProperties) => {
   const orchestrator = useSpaceCanvasOrchestrator(workspaceId, initialConfiguration);
   const canvasViewProperties = useSpaceCanvasView({ ...orchestrator, workspaceId });
   const { data: spaceData } = useSpaceQuery(workspaceId);
   const { data: projectData } = useProjectDetailsQuery(spaceData?.projectId || "");
+  const metaAgent = useMetaAgent(workspaceId, orchestrator.canvasNodes, projectData);
   const searchParams = useSearchParams();
   const { setCenter } = useReactFlow();
   
   const { data: agents = [] } = useAgents(workspaceId);
   const { data: crews = [] } = useCrews(workspaceId);
-  const metaAgent = useMetaAgent(workspaceId);
 
   // Mutations for real entity creation
   const { mutateAsync: createAgent } = useCreateAgent(workspaceId);
@@ -265,6 +264,7 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
             onRejectDraft: metaAgent.clearDraft,
             onApproveDrafts: handleApproveDrafts,
             onNewChat: metaAgent.clearDraft,
+            contextStats: metaAgent.contextStats,
             contextLabel: orchestrator.currentlySelectedNode 
                 ? `${orchestrator.currentlySelectedNode.type}: ${orchestrator.currentlySelectedNode.data?.name || orchestrator.currentlySelectedNode.id}`
                 : `Space Canvas`,

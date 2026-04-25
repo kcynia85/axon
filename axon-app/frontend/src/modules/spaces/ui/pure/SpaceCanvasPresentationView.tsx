@@ -146,6 +146,7 @@ export const SpaceCanvasPresentationView = ({
         panOnDrag={isSpacePressed ? [1, 2] : [2]}
         selectionMode={SelectionMode.Partial}
         selectionKeyCode="Shift"
+        multiSelectionKeyCode="Shift"
         defaultEdgeOptions={{
             type: 'CustomEdge',
             style: { stroke: '#666', strokeWidth: 2 }
@@ -341,12 +342,19 @@ export const SpaceCanvasPresentationView = ({
                 onApproveDrafts={metaAgent.onApproveDrafts}
                 onRejectDraft={metaAgent.onRejectDraft}
                 onNewChat={metaAgent.onNewChat}
+                contextStats={metaAgent.contextStats}
                 contextLabel={metaAgent.contextLabel}
                 knowledgeEnabled={metaAgent.knowledgeEnabled}
                 setKnowledgeEnabled={metaAgent.setKnowledgeEnabled}
                 attachedFiles={metaAgent.attachedFiles}
                 addFiles={metaAgent.addFiles}
                 removeFile={metaAgent.removeFile}
+                query={metaAgent.query}
+                setQuery={metaAgent.setQuery}
+                isFocused={metaAgent.isFocused}
+                setIsFocused={metaAgent.setIsFocused}
+                isMaximized={metaAgent.isMaximized}
+                setIsMaximized={metaAgent.setIsMaximized}
                 hasProjectContext={metaAgent.hasProjectContext}
                 hasNotionContext={metaAgent.hasNotionContext}
                 systemAwarenessEnabled={metaAgent.systemAwarenessEnabled}

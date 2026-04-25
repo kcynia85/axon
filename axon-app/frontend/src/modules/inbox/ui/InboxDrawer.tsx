@@ -15,7 +15,7 @@ import {
     SheetClose
 } from "@/shared/ui/ui/Sheet";
 import { InboxList } from "./InboxList";
-import { useInboxItems } from "../application/useInbox";
+import { useInboxItems, useBulkResolveInboxItems } from "../application/useInbox";
 import { Button } from "@/shared/ui/ui/Button";
 import { useUiStore } from "@/shared/lib/store/useUiStore";
 import { cn } from "@/shared/lib/utils";
@@ -38,6 +38,17 @@ export const InboxDrawer = () => {
     const isInboxOpen = useUiStore(state => state.isInboxOpen);
     const setIsInboxOpen = useUiStore(state => state.setIsInboxOpen);
     const { data: inboxItems = [], isLoading } = useInboxItems();
+    const { mutate: bulkResolve } = useBulkResolveInboxItems();
+
+    const handleMarkAllRead = () => {
+        const unreadIds = inboxItems
+            .filter(item => item.item_status === "NEW")
+            .map(item => item.id);
+            
+        if (unreadIds.length > 0) {
+            bulkResolve(unreadIds);
+        }
+    };
 
     const filterItemsFunction = (itemsToFilter: readonly InboxItem[], _searchQuery: string, filterIds: string[]) => {
         return itemsToFilter.filter(item => {
@@ -175,7 +186,10 @@ export const InboxDrawer = () => {
                             />
                         </div>
 
-                        <button className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none group">
+                        <button 
+                            onClick={handleMarkAllRead}
+                            className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors outline-none group cursor-pointer"
+                        >
                             <CheckCheck size={14} />
                             Mark all read
                         </button>

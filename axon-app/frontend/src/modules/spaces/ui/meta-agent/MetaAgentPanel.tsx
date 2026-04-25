@@ -1,10 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 import { 
-    ChevronDown, SquarePen, Maximize2, Minus, FileText, AlignLeft, 
-    Languages, Search, CheckCircle, Plus, SlidersHorizontal, 
+    SquarePen, Maximize2, Minus, Plus, SlidersHorizontal, 
     ArrowUp, Sparkles, Check, XCircle, HelpCircle, X, File, 
-    Image as ImageIcon, Mic, Database, Layout, Briefcase, ExternalLink 
+    Image as ImageIcon, Mic, Database, Layout, Briefcase, ExternalLink,
+    Bot, Users, FileText
 } from 'lucide-react';
 import { MetaAgentDraftEntity, MetaAgentProposalConnection } from '../../infrastructure/metaAgentApi';
 import { cn } from "@/shared/lib/utils";
@@ -25,6 +26,7 @@ interface MetaAgentPanelProps {
     drafts: MetaAgentDraftEntity[];
     connections: MetaAgentProposalConnection[];
     reasoning: string | null;
+    contextStats?: any | null;
     isProposing: boolean;
     error: Error | null;
     onPropose: (query: string) => void;
@@ -37,7 +39,15 @@ interface MetaAgentPanelProps {
     attachedFiles: any[];
     addFiles: (files: any[]) => void;
     removeFile: (name: string) => void;
-    // New context props
+    
+    // UI State from store
+    query: string;
+    setQuery: (q: string) => void;
+    isFocused: boolean;
+    setIsFocused: (f: boolean) => void;
+    isMaximized: boolean;
+    setIsMaximized: (m: boolean) => void;
+    
     hasProjectContext?: boolean;
     hasNotionContext?: boolean;
     systemAwarenessEnabled?: boolean;
@@ -46,6 +56,12 @@ interface MetaAgentPanelProps {
 
 const SUPPORTED_FORMATS = ".jpg,.jpeg,.png,.pdf,.md,.doc,.docx";
 
+/**
+ * MetaAgentPanel (Axon Standard: Zero useEffect, Zero useMemo)
+ * 
+ * Pure View component driven by props and global store.
+ * Logic is handled by useMetaAgent hook.
+ */
 export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
     isOpen,
     onClose,
@@ -58,27 +74,30 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
     onApproveDrafts,
     onRejectDraft,
     onNewChat,
+    contextStats,
     contextLabel,
     knowledgeEnabled,
     setKnowledgeEnabled,
     attachedFiles,
     addFiles,
     removeFile,
+    query,
+    setQuery,
+    isFocused,
+    setIsFocused,
+    isMaximized,
+    setIsMaximized,
     hasProjectContext = false,
     hasNotionContext = false,
     systemAwarenessEnabled = true,
     activeStep
 }) => {
-    const [query, setQuery] = useState('');
-    const [isFocused, setIsFocused] = useState(false);
-    const [isMaximized, setIsMaximized] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleSubmit = (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if ((query.trim() || attachedFiles.length > 0) && !isProposing) {
             onPropose(query);
-            setQuery('');
         }
     };
 
@@ -101,6 +120,7 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
             const promise = new Promise<any>((resolve) => {
                 reader.onload = () => {
                     resolve({
+                        id: `${file.name}-${file.size}-${Date.now()}-${i}`,
                         name: file.name,
                         content_type: file.type,
                         content_base64: reader.result as string,
@@ -125,7 +145,7 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
         isProcessing,
         toggleRecording
     } = useVoiceInteraction((transcribedText) => {
-        setQuery((prev) => prev ? `${prev} ${transcribedText}` : transcribedText);
+        setQuery(query ? `${query} ${transcribedText}` : transcribedText);
     });
 
     return (
@@ -137,46 +157,45 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                     exit={{ y: 20, opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className={cn(
-                        "fixed right-6 bottom-6 bg-zinc-950/80 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl flex flex-col overflow-hidden z-[1000] transition-all duration-300",
+                        "fixed right-6 bottom-6 bg-zinc-950/80 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl flex flex-col overflow-hidden z-[1000] transition-all duration-300 transform-gpu translate-z-0",
                         isMaximized 
-                            ? "w-[800px] h-[80vh] max-h-[800px]" 
-                            : "w-[440px] h-[calc(100vh-120px)] max-h-[600px]"
+                            ? "w-[400px] h-[80vh] max-h-[800px]" 
+                            : "w-[400px] h-[calc(100vh-120px)] max-h-[600px]"
                     )}
+                    style={{ willChange: "transform, opacity, width, height" }}
                 >
                     {/* Hidden File Input */}
                     <input type="file" ref={fileInputRef} className="hidden" accept={SUPPORTED_FORMATS} multiple onChange={handleFileChange} />
 
-                    {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-white/5 bg-white/5">
-                        <button className="flex items-center gap-1.5 text-zinc-200 hover:bg-white/10 px-2 py-1 rounded-md transition-colors text-sm font-medium">
-                            Meta-Agent <ChevronDown size={14} className="text-zinc-500" />
-                        </button>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-1 text-zinc-400">
-                                <button onClick={onNewChat} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="New Draft"><SquarePen size={16} /></button>
-                                <button onClick={() => setIsMaximized(!isMaximized)} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title={isMaximized ? "Restore" : "Maximize"}><Maximize2 size={16} /></button>
-                                <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="Close"><Minus size={16} /></button>
-                            </div>
+                    {/* Header Controls (Floating) */}
+                    <div className="absolute top-4 right-5 z-20">
+                        <div className="flex items-center gap-1 text-zinc-400">
+                            <button onClick={onNewChat} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="New Draft"><SquarePen size={16} /></button>
+                            <button onClick={() => setIsMaximized(!isMaximized)} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title={isMaximized ? "Restore" : "Maximize"}><Maximize2 size={16} /></button>
+                            <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-md transition-colors" title="Close"><Minus size={16} /></button>
                         </div>
                     </div>
 
                     {/* Content Area */}
-                    <div className="flex-1 overflow-y-auto p-5 flex flex-col">
-                        <div className="flex flex-col mb-8">
-                            <div className="w-12 h-12 flex items-center justify-center mb-4 shrink-0 relative">
-                                <div className="absolute inset-0 scale-[0.35] origin-center">
-                                    <MagicSphere />
-                                </div>
-                            </div>
-                            <h2 className="text-xl font-bold text-white mb-6">What kind of flow should I draft?</h2>
+                    <div className="flex-1 overflow-y-auto p-5 pt-4 flex flex-col">
+                        <div className="flex flex-col mb-6">
+                            {!isProposing && drafts.length === 0 && (
+                                <>
+                                    <div className="w-12 h-12 flex items-center justify-center mb-6 shrink-0 relative">
+                                        <div className="absolute inset-0 scale-[0.35] origin-center">
+                                            <MagicSphere />
+                                        </div>
+                                    </div>
+                                    <h2 className="text-xl font-bold text-white mb-4">What kind of flow should I draft?</h2>
+                                </>
+                            )}
 
                             {/* Suggestions List */}
                             {!isProposing && drafts.length === 0 && (
                                 <div className="flex flex-col gap-1">
-                                    <SuggestionItem icon={<AlignLeft size={16} />} text="Draft a Data Analyst Agent" onClick={() => onPropose("Draft a Data Analyst Agent")} />
-                                    <SuggestionItem icon={<Languages size={16} />} text="Draft a Web Research Crew" onClick={() => onPropose("Draft a Web Research Crew")} />
-                                    <SuggestionItem icon={<Search size={16} />} text="Draft a Python Code Executor Tool" onClick={() => onPropose("Draft a Python Code Executor Tool")} />
-                                    <SuggestionItem icon={<CheckCircle size={16} />} text="Draft a Content Writing Process" onClick={() => onPropose("Draft a Content Writing Process")} />
+                                    <SuggestionItem icon={<Sparkles size={16} />} text="Draft a Data Analyst Agent" onClick={() => onPropose("Draft a Data Analyst Agent")} />
+                                    <SuggestionItem icon={<Sparkles size={16} />} text="Draft a Web Research Crew" onClick={() => onPropose("Draft a Web Research Crew")} />
+                                    <SuggestionItem icon={<Sparkles size={16} />} text="Draft a Content Writing Process" onClick={() => onPropose("Draft a Content Writing Process")} />
                                 </div>
                             )}
 
@@ -187,38 +206,49 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                             )}
 
                             {isProposing && (
-                                <motion.div 
-                                    initial={{ opacity: 0 }} 
-                                    animate={{ opacity: 1 }} 
-                                    className="mt-12 mb-8 flex flex-col items-center justify-center gap-6"
-                                >
-                                    <div className="relative w-20 h-20 flex items-center justify-center">
-                                        <div className="absolute inset-0 bg-white/5 rounded-full animate-ping duration-1000" />
-                                        <div className="absolute inset-2 bg-white/10 rounded-full animate-pulse" />
-                                        <Sparkles className="text-white relative z-10" size={32} />
-                                    </div>
-                                    
-                                    <div className="flex flex-col items-center gap-2">
-                                        <div className="flex items-center gap-2 text-lg font-mono font-bold tracking-tight text-white">
-                                            <span className="text-zinc-500">$</span>
-                                            <TypewriterText text={
-                                                activeStep === 'planner' ? "analyzing_requirements..." :
-                                                activeStep === 'retriever' ? "fetching_system_context..." :
-                                                activeStep === 'drafter' ? "synthesizing_architecture..." :
-                                                activeStep === 'validator' ? "verifying_graph_topology..." :
-                                                "processing..."
-                                            } />
-                                            <motion.span 
-                                                animate={{ opacity: [1, 0] }}
-                                                transition={{ duration: 0.8, repeat: Infinity, ease: "steps(2)" }}
-                                                className="w-2 h-5 bg-white inline-block ml-1"
-                                            />
+                                <div className="mt-12 mb-8 flex flex-col items-center justify-center">
+                                    <div className="w-24 h-24 flex items-center justify-center mb-6 relative">
+                                        <div className="absolute inset-0 scale-[0.6] origin-center">
+                                            <MagicSphere />
                                         </div>
-                                        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black shimmer-text">
-                                            Agentic Workflow in progress
-                                        </p>
                                     </div>
-                                </motion.div>
+                                    <div className="h-20 flex flex-col items-center">
+                                        <AnimatePresence mode="wait">
+                                            <motion.div 
+                                                key={activeStep}
+                                                initial={{ y: 10, opacity: 0 }} 
+                                                animate={{ y: 0, opacity: 1 }} 
+                                                exit={{ y: -10, opacity: 0 }}
+                                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                                className="flex flex-col items-center gap-3"
+                                            >
+                                                <div className="text-lg font-mono font-bold tracking-tight text-white flex items-center">
+                                                    {
+                                                        activeStep === 'planner' ? "Thinking through it" :
+                                                        activeStep === 'retriever' ? "Gathering context" :
+                                                        activeStep === 'drafter' ? "Drafting the flow" :
+                                                        activeStep === 'validator' ? "Finalizing everything" :
+                                                        "Processing"
+                                                    }
+                                                    <span className="inline-flex w-8">
+                                                        <motion.span
+                                                            animate={{ opacity: [0, 1, 0] }}
+                                                            transition={{ duration: 1.5, repeat: Infinity, times: [0, 0.33, 1] }}
+                                                        >.</motion.span>
+                                                        <motion.span
+                                                            animate={{ opacity: [0, 1, 0] }}
+                                                            transition={{ duration: 1.5, repeat: Infinity, times: [0, 0.66, 1], delay: 0.2 }}
+                                                        >.</motion.span>
+                                                        <motion.span
+                                                            animate={{ opacity: [0, 1, 0] }}
+                                                            transition={{ duration: 1.5, repeat: Infinity, times: [0, 1, 1], delay: 0.4 }}
+                                                        >.</motion.span>
+                                                    </span>
+                                                </div>
+                                            </motion.div>
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
                             )}
 
                             {drafts.length > 0 && !isProposing && (
@@ -228,12 +258,6 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                     className="mt-6 flex flex-col gap-4"
                                 >
                                     <div className="p-4 rounded-xl bg-zinc-800/60 border border-zinc-700/50 shadow-inner">
-                                        <div className="flex items-center justify-between border-b border-zinc-700/50 pb-2 mb-3">
-                                            <span className="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-1.5">
-                                                <Sparkles size={12} /> Proposed Flow ({drafts.length} entities)
-                                            </span>
-                                        </div>
-                                        
                                         <div className="flex flex-col gap-5 max-h-[400px] overflow-y-auto pr-2">
                                             {/* Grouping by target_workspace */}
                                             {Object.entries(
@@ -245,28 +269,33 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                                 }, {} as Record<string, MetaAgentDraftEntity[]>)
                                             ).map(([workspaceId, wsDrafts]) => (
                                                 <div key={workspaceId} className="flex flex-col gap-2">
-                                                    <div className="flex items-center gap-2 px-1">
-                                                        <div className={cn(
-                                                            "w-1.5 h-3 rounded-full",
-                                                            workspaceId === 'ws-discovery' ? "bg-purple-500" :
-                                                            workspaceId === 'ws-design' ? "bg-pink-500" :
-                                                            workspaceId === 'ws-delivery' ? "bg-green-500" :
-                                                            workspaceId === 'ws-product' ? "bg-blue-500" : "bg-yellow-500"
-                                                        )} />
+                                                    <div className="flex items-center gap-2 px-1 mb-3">
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                                                            {workspaceId.replace('ws-', '')} Zone
+                                                            {workspaceId.replace('ws-', '')}
                                                         </span>
                                                     </div>
-                                                    <div className="flex flex-col gap-2 pl-3 border-l border-white/5 ml-1.5">
+                                                    <div className="flex flex-col gap-2">
                                                         {wsDrafts.map((draft, idx) => (
-                                                            <div key={idx} className="p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-white/10 transition-colors">
-                                                                <div className="text-sm font-bold text-white flex items-center gap-2">
-                                                                    {draft.entity === 'agent' ? <Search size={12} className="text-zinc-500" /> : 
-                                                                     draft.entity === 'crew' ? <Languages size={12} className="text-zinc-500" /> :
-                                                                     <FileText size={12} className="text-zinc-500" />}
-                                                                    {draft.name}
+                                                            <div key={idx} className="p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-white/10 transition-all flex gap-2.5">
+                                                                <div className="shrink-0 mt-0.5">
+                                                                    {draft.visual_url ? (
+                                                                        <div className="w-[14px] h-[14px] rounded-sm overflow-hidden border border-white/10">
+                                                                            <img src={draft.visual_url} alt={draft.name} className="w-full h-full object-cover" />
+                                                                        </div>
+                                                                    ) : (
+                                                                        draft.entity === 'agent' ? <Bot size={14} className="text-zinc-500" /> : 
+                                                                        draft.entity === 'crew' ? <Users size={14} className="text-zinc-500" /> :
+                                                                        <FileText size={14} className="text-zinc-500" />
+                                                                    )}
                                                                 </div>
-                                                                <div className="text-[11px] text-zinc-400 line-clamp-2 mt-1 leading-relaxed">{draft.description}</div>
+                                                                <div className="flex flex-col gap-0.5 min-w-0">
+                                                                    <div className="text-sm font-bold text-white truncate">
+                                                                        {draft.name}
+                                                                    </div>
+                                                                    <div className="text-xs text-zinc-400 leading-relaxed">
+                                                                        {draft.description}
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -275,25 +304,40 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                         </div>
 
                                         {reasoning && (
-                                            <div className="text-[11px] italic text-zinc-500 border-l-2 border-white/10 pl-3 mt-6 leading-relaxed">
-                                                {reasoning}
+                                            <div className="text-base text-zinc-300 mt-6 pt-6 border-t border-white/5 leading-relaxed">
+                                                <div className="prose prose-invert prose-zinc prose-sm max-w-none 
+                                                    prose-headings:text-white prose-headings:font-bold prose-headings:mb-2 prose-headings:mt-4 first:prose-headings:mt-0
+                                                    prose-p:text-zinc-400 prose-p:mb-3
+                                                    prose-li:text-zinc-400 prose-li:mb-1
+                                                    prose-strong:text-white
+                                                ">
+                                                    <ReactMarkdown>{reasoning}</ReactMarkdown>
+                                                </div>
                                             </div>
                                         )}
 
-                                        <div className="flex items-center gap-2 mt-6 pt-3 border-t border-white/5">
+                                        <div className="flex items-center justify-end gap-2 mt-6 pt-3 border-t border-white/5">
                                             <button 
                                                 onClick={onRejectDraft}
-                                                className="flex-1 flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-zinc-100 text-sm font-medium py-2 rounded-lg transition-colors border border-white/5"
+                                                className="flex items-center justify-center gap-1.5 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-zinc-100 text-sm font-medium px-4 py-2 rounded-lg transition-colors border border-white/5"
                                             >
                                                 <XCircle size={16} /> Discard
                                             </button>
                                             <button 
                                                 onClick={() => onApproveDrafts(drafts, connections)}
-                                                className="flex-1 flex items-center justify-center gap-1.5 bg-white text-black hover:bg-zinc-200 text-sm font-bold py-2 rounded-lg transition-colors shadow-lg shadow-white/10"
+                                                className="flex items-center justify-center gap-1.5 bg-white text-black hover:bg-zinc-200 text-sm font-bold px-4 py-2 rounded-lg transition-colors shadow-lg shadow-white/10"
                                             >
                                                 <Check size={16} /> Apply Flow
                                             </button>
                                         </div>
+
+                                        {contextStats?.total_tokens !== undefined && contextStats.total_tokens > 0 && (
+                                            <div className="mt-4 flex justify-end">
+                                                <div className="text-[12px] font-mono font-bold text-zinc-400 tracking-widest">
+                                                    {contextStats.total_tokens} tk used
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}
@@ -301,46 +345,74 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                     </div>
 
                     {/* Input Area */}
-                    <div className="p-4 shrink-0 bg-transparent">
+                    <div className={cn(
+                        "p-4 shrink-0 bg-transparent transition-all duration-300", 
+                        drafts.length > 0 && !isProposing && !isFocused ? "pt-0 pb-6 opacity-40" : "p-4 opacity-100"
+                    )}>
                         <div className={cn(
-                            "relative flex flex-col bg-white/5 backdrop-blur-md rounded-[20px] border transition-colors shadow-sm",
+                            "relative flex flex-col bg-white/5 backdrop-blur-md rounded-[20px] border transition-all shadow-sm",
                             isFocused ? "border-white" : "border-white/10",
                             isProposing && "opacity-60 pointer-events-none"
                         )}>
-                            <div className="flex flex-wrap items-center gap-1.5 px-3 pt-3 pb-1">
-                                {/* Context Pills - Monochromatic Style */}
-                                <ContextPill icon={<Layout size={10} />} label={contextLabel} active />
-                                {systemAwarenessEnabled && <ContextPill icon={<Database size={10} />} label="System" active />}
-                                {hasProjectContext && <ContextPill icon={<Briefcase size={10} />} label="Project" active />}
-                                {hasNotionContext && <ContextPill icon={<ExternalLink size={10} />} label="Notion" active />}
-                                
-                                {knowledgeEnabled && (
-                                    <ContextPill 
-                                        icon={<Sparkles size={10} />} 
-                                        label="Knowledge" 
-                                        active 
-                                        onRemove={() => setKnowledgeEnabled(false)}
-                                    />
-                                )}
-
-                                <AnimatePresence>
-                                    {attachedFiles.map((file) => (
-                                        <motion.div 
-                                            key={file.name} 
-                                            initial={{ scale: 0.8, opacity: 0 }} 
-                                            animate={{ scale: 1, opacity: 1 }} 
-                                            exit={{ scale: 0.8, opacity: 0 }}
-                                        >
+                            <AnimatePresence>
+                                {(!drafts.length || isProposing || isFocused) && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, height: 0, y: 10 }}
+                                        animate={{ opacity: 1, height: "auto", y: 0 }}
+                                        exit={{ opacity: 0, height: 0, y: 10 }}
+                                        transition={{ duration: 0.3, ease: "circOut" }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="flex flex-wrap items-center gap-1.5 px-3 pt-3 pb-1">
+                                            {/* Context Pills - Monochromatic Style */}
                                             <ContextPill 
-                                                icon={file.content_type.includes('image') ? <ImageIcon size={10} /> : <File size={10} />}
-                                                label={file.name}
-                                                active
-                                                onRemove={() => removeFile(file.name)}
+                                                icon={<Layout size={10} />} 
+                                                label={contextLabel}
+                                                active 
                                             />
-                                        </motion.div>
-                                    ))}
-                                </AnimatePresence>
-                            </div>
+                                            {systemAwarenessEnabled && <ContextPill icon={<Database size={10} />} label="System" active />}
+                                            {hasProjectContext && <ContextPill icon={<Briefcase size={10} />} label="Project" active />}
+                                            {hasNotionContext && <ContextPill icon={<ExternalLink size={10} />} label="Notion" active />}
+                                            
+                                            <AnimatePresence mode="popLayout">
+                                                {knowledgeEnabled && (
+                                                    <motion.div
+                                                        key="knowledge-pill"
+                                                        initial={{ scale: 0.8, opacity: 0 }}
+                                                        animate={{ scale: 1, opacity: 1 }}
+                                                        exit={{ scale: 0.8, opacity: 0 }}
+                                                        layout
+                                                    >
+                                                        <ContextPill 
+                                                            icon={<Sparkles size={10} />} 
+                                                            label="Knowledge"
+                                                            active 
+                                                            onRemove={() => setKnowledgeEnabled(false)}
+                                                        />
+                                                    </motion.div>
+                                                )}
+
+                                                {attachedFiles.map((file) => (
+                                                    <motion.div 
+                                                        key={file.id || file.name} 
+                                                        initial={{ scale: 0.8, opacity: 0 }} 
+                                                        animate={{ scale: 1, opacity: 1 }} 
+                                                        exit={{ scale: 0.8, opacity: 0 }}
+                                                        layout
+                                                    >
+                                                        <ContextPill 
+                                                            icon={file.content_type.includes('image') ? <ImageIcon size={10} /> : <File size={10} />}
+                                                            label={file.name}
+                                                            active
+                                                            onRemove={() => removeFile(file.name)}
+                                                        />
+                                                    </motion.div>
+                                                ))}
+                                            </AnimatePresence>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
 
                             <textarea
                                 value={query}
@@ -348,34 +420,55 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                 onFocus={() => setIsFocused(true)}
                                 onBlur={() => setIsFocused(false)}
                                 onKeyDown={handleKeyDown}
-                                placeholder="Describe the flow, agent, or crew..."
-                                className="w-full bg-transparent resize-none text-base text-white placeholder-zinc-500 px-4 py-2 min-h-[50px] max-h-[150px] focus:outline-none focus:ring-0 leading-relaxed"
+                                placeholder={drafts.length > 0 ? "Refine this flow..." : "Describe the flow, agent, or crew..."}
+                                className={cn(
+                                    "w-full bg-transparent resize-none text-base text-white placeholder-zinc-500 px-4 focus:outline-none focus:ring-0 leading-relaxed transition-all duration-300",
+                                    drafts.length > 0 && !isProposing && !isFocused ? "py-3 min-h-[44px]" : "py-2 min-h-[50px] max-h-[150px]"
+                                )}
                                 rows={1}
                                 disabled={isProposing}
                             />
 
                             <div className="flex items-center justify-between px-3 pb-3 pt-1">
                                 <div className="flex items-center gap-1 text-zinc-400">
-                                    <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" title="Attach context" onClick={(e) => { e.preventDefault(); triggerFileUpload(); }}><Plus size={16} /></button>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors outline-none" title="Meta-Agent Settings"><SlidersHorizontal size={16} /></button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent side="top" align="start" sideOffset={8} className="w-64 bg-zinc-950/90 backdrop-blur-xl border-white/10 text-white p-3 rounded-2xl shadow-2xl z-[1100]">
-                                            <DropdownMenuLabel className="px-1 pb-2 pt-0 text-zinc-400 font-bold text-[10px] uppercase tracking-wider">Agent Capabilities</DropdownMenuLabel>
-                                            <div className="flex flex-col gap-3 mt-1">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-sm font-medium">Knowledge</span>
-                                                        <Tooltip content="RAG#1: Optional. Access to your uploaded documents and resources."><div className="text-zinc-500 cursor-help hover:text-zinc-300 transition-colors"><HelpCircle size={14} /></div></Tooltip>
-                                                    </div>
-                                                    <Switch isSelected={knowledgeEnabled} onValueChange={setKnowledgeEnabled} size="sm" color="default" />
-                                                </div>
-                                            </div>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <AnimatePresence>
+                                        {(!drafts.length || isProposing || isFocused) && (
+                                            <motion.div 
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -10 }}
+                                                className="flex items-center gap-1"
+                                            >
+                                                <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" title="Attach context" onClick={(e) => { e.preventDefault(); triggerFileUpload(); }}><Plus size={16} /></button>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors outline-none" title="Meta-Agent Settings"><SlidersHorizontal size={16} /></button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent side="top" align="start" sideOffset={8} className="w-64 bg-zinc-950/90 backdrop-blur-xl border-white/10 text-white p-3 rounded-2xl shadow-2xl z-[1100]">
+                                                        <DropdownMenuLabel className="px-1 pb-2 pt-0 text-zinc-400 font-bold text-[10px] uppercase tracking-wider">Agent Capabilities</DropdownMenuLabel>
+                                                        <div className="flex flex-col gap-3 mt-1">
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-sm font-medium">Knowledge</span>
+                                                                    <Tooltip content="RAG#1: Optional. Access to your uploaded documents and resources."><div className="text-zinc-500 cursor-help hover:text-zinc-300 transition-colors"><HelpCircle size={14} /></div></Tooltip>
+                                                                </div>
+                                                                <Switch isSelected={knowledgeEnabled} onValueChange={setKnowledgeEnabled} size="sm" color="default" />
+                                                            </div>
+                                                        </div>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
+                                    {contextStats?.total_tokens !== undefined && contextStats.total_tokens > 0 && (
+                                        <div className="text-xs font-mono font-bold text-zinc-400 flex items-center gap-1">
+                                            {contextStats.is_estimated && <span>~</span>}
+                                            <span>{contextStats.total_tokens}</span>
+                                            <span className="text-zinc-500">tk</span>
+                                        </div>
+                                    )}
                                     <button 
                                         type="button"
                                         onClick={(e) => {
@@ -393,9 +486,9 @@ export const MetaAgentPanel: React.FC<MetaAgentPanelProps> = ({
                                     >
                                         <Mic size={16} strokeWidth={2.5} />
                                     </button>
-                                    <button onClick={() => handleSubmit()} disabled={(!query.trim() && attachedFiles.length === 0) || isProposing} className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all border", (query.trim() || attachedFiles.length > 0) ? "bg-white text-black border-white hover:scale-105 active:scale-95" : "bg-white/5 border-white/10 text-zinc-600 cursor-not-allowed")}>
-                                        <ArrowUp size={16} strokeWidth={2.5} />
-                                    </button>
+                                        <button onClick={() => handleSubmit()} disabled={(!(query || '').trim() && attachedFiles.length === 0) || isProposing} className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all border", ((query || '').trim() || attachedFiles.length > 0) ? "bg-white text-black border-white hover:scale-105 active:scale-95" : "bg-white/5 border-white/10 text-zinc-600 cursor-not-allowed")}>
+                                            <ArrowUp size={16} strokeWidth={2.5} />
+                                        </button>
                                 </div>
                             </div>
                         </div>
@@ -413,30 +506,13 @@ const SuggestionItem = ({ icon, text, onClick }: { icon: React.ReactNode, text: 
     </button>
 );
 
-const TypewriterText = ({ text }: { text: string }) => {
-    const [displayedText, setDisplayedText] = useState('');
-    
-    React.useEffect(() => {
-        setDisplayedText('');
-        let i = 0;
-        const timer = setInterval(() => {
-            setDisplayedText((prev) => text.slice(0, i + 1));
-            i++;
-            if (i >= text.length) clearInterval(timer);
-        }, 30, [text]);
-        return () => clearInterval(timer);
-    }, [text]);
-
-    return <span>{displayedText}</span>;
-};
-
 const ContextPill = ({ icon, label, active, onRemove }: { icon: React.ReactNode, label: string, active?: boolean, onRemove?: () => void }) => (
     <div className={cn(
         "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-tight border transition-all cursor-default",
         active 
             ? (onRemove 
-                ? "bg-white text-black border-white shadow-lg shadow-white/10" 
-                : "bg-white/10 border-white/20 text-white shadow-sm") 
+                ? "bg-white/20 border-white/30 text-white shadow-sm" 
+                : "bg-white/10 border-white/20 text-zinc-300") 
             : "bg-transparent border-white/5 text-zinc-500 opacity-40"
     )}>
         <div className={cn("shrink-0", active ? "opacity-100" : "opacity-80")}>{icon}</div>
@@ -451,5 +527,3 @@ const ContextPill = ({ icon, label, active, onRemove }: { icon: React.ReactNode,
         )}
     </div>
 );
-
-

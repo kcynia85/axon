@@ -3,11 +3,12 @@ from app.modules.spaces.domain.meta_agent_models import MetaAgentProposalRequest
 from app.modules.spaces.application.meta_agent_service import MetaAgentService
 from app.modules.spaces.application.service import get_space_repo
 from app.modules.spaces.infrastructure.repo import SpaceRepository
-from app.modules.system.dependencies import get_system_awareness_retriever, get_system_repo
+from app.modules.system.dependencies import get_system_awareness_retriever, get_system_repo, get_token_usage_repo
 from app.modules.settings.dependencies import get_settings_repo
 from app.modules.settings.infrastructure.repo import SettingsRepository
 from app.modules.system.application.retriever import SystemAwarenessRetrieverService
 from app.modules.system.infrastructure.repo import SystemRepository
+from app.modules.system.infrastructure.token_usage_repo import TokenUsageRepository
 from app.modules.knowledge.application.rag import RAGService
 from app.modules.knowledge.dependencies import get_rag_service
 from app.modules.projects.infrastructure.repo import ProjectRepository
@@ -21,9 +22,10 @@ async def get_meta_agent_service(
     system_repo: SystemRepository = Depends(get_system_repo),
     settings_repo: SettingsRepository = Depends(get_settings_repo),
     space_repo: SpaceRepository = Depends(get_space_repo),
-    project_repo: ProjectRepository = Depends(get_project_repo)
+    project_repo: ProjectRepository = Depends(get_project_repo),
+    token_usage_repo: TokenUsageRepository = Depends(get_token_usage_repo)
 ) -> MetaAgentService:
-    return MetaAgentService(system_retriever, rag_service, system_repo, settings_repo, space_repo, project_repo)
+    return MetaAgentService(system_retriever, rag_service, system_repo, settings_repo, space_repo, project_repo, token_usage_repo)
 
 @router.post("/propose", response_model=MetaAgentProposalResponse)
 async def propose_draft(

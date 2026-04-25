@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, Enum as SAEnum, Float
+from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean, Enum as SAEnum, Float, Integer
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from pgvector.sqlalchemy import Vector
 from app.shared.infrastructure.base import Base
@@ -60,3 +60,14 @@ class SystemEmbeddingTable(Base):
     metadata_ = Column(JSONB, nullable=True)
     created_at = Column(DateTime(timezone=True), default=now_utc)
     updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+
+class TokenUsageLogTable(Base):
+    __tablename__ = "token_usage_logs"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    timestamp = Column(DateTime(timezone=True), default=now_utc, index=True)
+    model_name = Column(String, nullable=False, index=True)
+    category = Column(String, nullable=False, index=True) # 'meta-agent', 'knowledge', 'awareness'
+    tokens_count = Column(Integer, nullable=False)
+    space_id = Column(UUID(as_uuid=True), nullable=True)
+    metadata_ = Column(JSONB, nullable=True)

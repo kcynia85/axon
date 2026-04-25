@@ -5,15 +5,18 @@ from typing import Dict, Any, Optional
 from sqlalchemy import select
 
 from app.modules.system.infrastructure.repo import SystemEmbeddingRepository, SystemRepository
+from app.modules.system.infrastructure.token_usage_repo import TokenUsageRepository
 from app.shared.infrastructure.adapters.langchain_adapter import get_llm_adapter
 from app.modules.settings.infrastructure.tables import LLMProviderTable, EmbeddingModelTable
 from app.modules.settings.infrastructure.repo import SettingsRepository
+from app.shared.utils.tokens import count_tokens
 
 class SystemIndexingService:
     def __init__(self, repo: SystemEmbeddingRepository):
         self.repo = repo
         self.system_repo = SystemRepository(repo.session)
         self.settings_repo = SettingsRepository(repo.session)
+        self.token_usage_repo = TokenUsageRepository(repo.session)
         self.adapter = get_llm_adapter()
 
     async def _ensure_api_key(self, provider_id: Optional[UUID] = None, tech_id: Optional[str] = None) -> Optional[str]:
@@ -69,6 +72,7 @@ class SystemIndexingService:
         await self._ensure_api_key(provider_id=provider_uuid, tech_id=provider_name)
         
         text_representation = self._generate_text_representation(entity_type, payload)
+        tokens_count = count_tokens(text_representation, model_id)
         
         try:
             # Generate embedding using agnostic parameters
@@ -87,7 +91,16 @@ class SystemIndexingService:
                 payload=payload,
                 metadata=metadata or {}
             )
-            print(f"[Awareness] !!! SUCCESS: Indexed {entity_type} {entity_id} using {model_id} !!!")
+
+            # Log usage
+            await self.token_usage_repo.log_usage(
+                model_name=model_id,
+                category="awareness",
+                tokens_count=tokens_count,
+                metadata={"entity_type": entity_type, "entity_id": str(entity_id)}
+            )
+
+            print(f"[Awareness] !!! SUCCESS: Indexed {entity_type} {entity_id} using {model_id} ({tokens_count} tk) !!!")
         except Exception as e:
             print(f"[Awareness] !!! FAILED: Indexing {entity_type} {entity_id}: {e} !!!")
             raise e

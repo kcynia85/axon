@@ -9,6 +9,8 @@ from app.modules.knowledge.infrastructure import repo as knowledge_repo
 from app.modules.settings.infrastructure.tables import VectorDatabaseTable, EmbeddingModelTable, ChunkingStrategyTable, LLMProviderTable
 from app.shared.infrastructure.vecs_client import get_vecs_client
 from app.shared.infrastructure.adapters.langchain_adapter import get_llm_adapter
+from app.modules.system.infrastructure.token_usage_repo import TokenUsageRepository
+from app.shared.utils.tokens import count_tokens
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -124,6 +126,9 @@ async def process_and_index_resource(
             combined_text = "\n\n".join([doc.page_content for doc in docs])
             cleaned_content = clean_text(combined_text)
 
+            token_usage_repo = TokenUsageRepository(session)
+            total_knowledge_tokens = 0
+
             # 4.1 Auto-Tagging
             auto_tags = []
             try:
@@ -131,9 +136,14 @@ async def process_and_index_resource(
                 # Używamy wybranego adaptera zamiast sztywnego GoogleADK
                 adapter = get_llm_adapter()
                 prompt = f"Analyze the following text and extract 3 to 5 relevant tags/keywords. Return ONLY a JSON list of strings. Text: {cleaned_content[:3000]}"
+                
+                # Count prompt tokens
+                total_knowledge_tokens += count_tokens(prompt, "gpt-4o-mini") # Heuristic for tagging
+                
                 tags_response = await adapter.generate_content(prompt)
                 
                 if isinstance(tags_response, str):
+                    total_knowledge_tokens += count_tokens(tags_response, "gpt-4o-mini")
                     clean_resp = tags_response.replace('```json', '').replace('```', '').strip()
                     if clean_resp:
                         auto_tags = json.loads(clean_resp)
@@ -269,6 +279,7 @@ async def process_and_index_resource(
 
                 for i, chunk in enumerate(texts):
                     # Use adapter for embeddings
+                    total_knowledge_tokens += count_tokens(chunk, embedding_model_ref)
                     embedding = await adapter.get_embeddings(
                         text=chunk, 
                         model_name=embedding_model_ref,
@@ -354,6 +365,7 @@ async def process_and_index_resource(
                 points = []
                 for i, chunk in enumerate(texts):
                     # Use adapter for embeddings
+                    total_knowledge_tokens += count_tokens(chunk, embedding_model_ref)
                     embedding = await adapter.get_embeddings(
                         text=chunk, 
                         model_name=embedding_model_ref,
@@ -408,6 +420,7 @@ async def process_and_index_resource(
 
                 for i, chunk in enumerate(texts):
                     # Use adapter for embeddings
+                    total_knowledge_tokens += count_tokens(chunk, embedding_model_ref)
                     embedding = await adapter.get_embeddings(
                         text=chunk, 
                         model_name=embedding_model_ref,
@@ -449,6 +462,14 @@ async def process_and_index_resource(
 
             # 7.2 Store relational chunks (Common for both)
             if records:
+                # Log total usage for this indexing operation
+                await token_usage_repo.log_usage(
+                    model_name=embedding_model_ref or "unknown",
+                    category="knowledge",
+                    tokens_count=total_knowledge_tokens,
+                    metadata={"resource_id": str(resource.id), "file_name": resource.resource_file_name}
+                )
+                
                 from app.modules.knowledge.infrastructure.tables import TextChunkTable
                 from uuid import uuid4
                 from sqlalchemy import delete as sql_delete

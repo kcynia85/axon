@@ -19,6 +19,7 @@ export interface MetaAgentDraftEntity {
     status: "draft";
     name: string;
     description: string;
+    visual_url?: string;
     payload: Record<string, any>;
 }
 
@@ -27,10 +28,22 @@ export interface MetaAgentProposalConnection {
     target_draft_name: string;
 }
 
+export interface MetaAgentContextStats {
+    space_canvas_tokens: number;
+    system_awareness_tokens: number;
+    knowledge_tokens: number;
+    project_context_tokens: number;
+    notion_tokens: number;
+    attachments_tokens: number;
+    total_tokens: number;
+    is_estimated?: boolean;
+}
+
 export interface MetaAgentProposalResponse {
     drafts: MetaAgentDraftEntity[];
     connections: MetaAgentProposalConnection[];
     reasoning: string;
+    context_stats?: MetaAgentContextStats;
 }
 
 export const metaAgentApi = {
