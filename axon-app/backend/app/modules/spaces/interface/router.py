@@ -64,15 +64,32 @@ async def update_space_canvas(
     service = SpaceService(repo)
     await service.update_canvas_data(space_id, updates)
 
-@router.patch("/{space_id}", response_model=Space)
-async def update_space_metadata(
+from pydantic import BaseModel
+import inngest
+from app.shared.infrastructure.inngest_client import inngest_client
+
+class RunNodeRequest(BaseModel):
+    user_input: str
+    entity_type: str # "agent" or "crew"
+
+@router.post("/{space_id}/nodes/{node_id}/run", status_code=status.HTTP_202_ACCEPTED)
+async def run_space_node(
     space_id: str,
-    updates: dict,
-    repo: SpaceRepository = Depends(get_space_repo)
+    node_id: str,
+    request: RunNodeRequest
 ):
     """
-    Updates general space metadata (name, description, etc.).
+    Triggers execution for an Agent or Crew node on the Space Canvas.
     """
-    service = SpaceService(repo)
-    return await service.update_space_metadata(space_id, updates)
+    await inngest_client.send(
+        inngest.Event(
+            name="crewai/execution.requested",
+            data={
+                "space_id": space_id,
+                "entity_id": node_id,
+                "entity_type": request.entity_type,
+                "user_input": request.user_input
+            }
+        )
+    )
 

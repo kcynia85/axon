@@ -10,6 +10,7 @@ import { useSpaceCanvasPersistence } from './useSpaceCanvasPersistence';
 import { SpacePatternBlueprint } from '../../domain/types';
 import { SpaceCanvasOrchestrationLogic } from '../../ui/types';
 import { BlueprintEngine } from '../../domain/BlueprintEngine';
+import { SpaceCanvasInfrastructureApi } from '../../infrastructure/api';
 import React from 'react';
 
 export const useSpaceCanvasOrchestrator = (spaceId: string, initialCanvasConfiguration?: unknown): SpaceCanvasOrchestrationLogic => {
@@ -118,6 +119,37 @@ export const useSpaceCanvasOrchestrator = (spaceId: string, initialCanvasConfigu
     updateCanvasEdgesWithPersistence((currentEdges: Edge[]) => [...currentEdges, ...newEdges]);
   };
 
+  const runNode = async (nodeId: string, userInput: string) => {
+    const node = canvasNodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // 1. Determine entity type
+    const entityType = node.type === 'agent' ? 'agent' : node.type === 'crew' ? 'crew' : null;
+    if (!entityType) return;
+
+    // 2. Set node to working state locally for immediate feedback
+    updateCanvasNodesWithPersistence((currentNodes: Node[]) => 
+        currentNodes.map(n => n.id === nodeId ? {
+            ...n,
+            data: { ...n.data, isWorking: true, statusText: 'Inngest: Initializing...', progressValue: 5 }
+        } : n)
+    );
+
+    try {
+        // 3. Trigger Backend Execution
+        await SpaceCanvasInfrastructureApi.runNode(spaceId, nodeId, entityType, userInput);
+    } catch (error) {
+        console.error("Failed to run node:", error);
+        // Reset state on error
+        updateCanvasNodesWithPersistence((currentNodes: Node[]) => 
+            currentNodes.map(n => n.id === nodeId ? {
+                ...n,
+                data: { ...n.data, isWorking: false, statusText: 'Execution Failed' }
+            } : n)
+        );
+    }
+  };
+
   const pasteNodes = (position?: { x: number; y: number }) => {
     if (!clipboard) return;
 
@@ -166,6 +198,7 @@ export const useSpaceCanvasOrchestrator = (spaceId: string, initialCanvasConfigu
     pasteNodes,
     createPatternFromSelection,
     instantiatePatternFromBlueprint,
+    runNode,
     handleKeyDown,
   };
 };

@@ -40,6 +40,7 @@ export const SpaceCanvasRightSidebarView = ({
     handleStatusChange,
     handleArtifactStatusChange,
     handlePropertyChange,
+    onRunNode,
     canvasNodes,
 }: SpaceCanvasRightSidebarViewProperties) => {
 
@@ -63,6 +64,7 @@ export const SpaceCanvasRightSidebarView = ({
                         nodeId={currentlySelectedNodeInformation.id}
                         onStatusChange={handleStatusChange}
                         onPropertyChange={handlePropertyChange}
+                        onRunNode={onRunNode}
                         canvasNodes={canvasNodes}
                     />
                 ) : effectiveNodeType === 'crew' ? (
@@ -71,6 +73,7 @@ export const SpaceCanvasRightSidebarView = ({
                         nodeId={currentlySelectedNodeInformation.id}
                         onStatusChange={handleStatusChange}
                         onPropertyChange={handlePropertyChange}
+                        onRunNode={onRunNode}
                         canvasNodes={canvasNodes}
                     />
                 ) : effectiveNodeType === 'pattern' ? (

@@ -11,7 +11,7 @@ import { SpaceCanvasNodeProperties } from '../types';
  * SpaceCrewCanvasNode - Container component for crew node on the canvas.
  * Orchestrates mapping domain data to view model and rendering the Pure View.
  */
-export const SpaceCrewCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) => {
+export const SpaceCrewCanvasNode = (nodeProperties: SpaceCanvasNodeProperties & { onRun?: (id: string, input: string) => Promise<void> }) => {
     const crewViewModel = mapCrewToViewModel(
         nodeProperties.data as unknown as SpaceCrewDomainData, 
         nodeProperties.selected ?? false
@@ -25,7 +25,10 @@ export const SpaceCrewCanvasNode = (nodeProperties: SpaceCanvasNodeProperties) =
                 className={crewViewModel.visual.handleClassName} 
             />
             
-            <SpaceCrewNodeView viewModel={crewViewModel} />
+            <SpaceCrewNodeView 
+                viewModel={crewViewModel} 
+                onRun={userInput => nodeProperties.onRun?.(nodeProperties.id, userInput)}
+            />
 
             <Handle 
                 type="source" 

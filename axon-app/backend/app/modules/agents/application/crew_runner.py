@@ -1,173 +1,111 @@
-"""
-T4: crew_runner facade + Inngest handler
-Delegates to current flow for migration without Big-Bang.
-"""
-
 import inngest
 from uuid import UUID
-from typing import Any
+from typing import Dict, Any, List
+
+from app.modules.agents.domain.ports.crew_engine import ICrewEngine
+from app.modules.agents.infrastructure.repo import AgentConfigRepository
+from app.modules.workspaces.infrastructure.repo import WorkspaceRepository
 from app.shared.infrastructure.inngest_client import inngest_client
-from app.modules.agents.application.orchestrator import create_session, run_turn_stream
-from app.modules.agents.domain.enums import AgentRole
 
-
-class CrewRunnerFacade:
+class CrewRunnerUseCase:
     """
-    T4: crew_runner facade - provides a unified interface for running crew operations.
-    Currently delegates to the existing orchestrator flow.
+    Application use case for executing CrewAI processes via Hexagonal Ports & Adapters.
     """
+    def __init__(
+        self, 
+        crew_engine: ICrewEngine, 
+        agent_repo: AgentConfigRepository, 
+        workspace_repo: WorkspaceRepository
+    ):
+        self.crew_engine = crew_engine
+        self.agent_repo = agent_repo
+        self.workspace_repo = workspace_repo
 
-    @staticmethod
-    async def run_crew_turn(
-        project_id: UUID,
-        agent_role: AgentRole,
-        user_input: str,
-        crew_config: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def execute_crew(self, crew_id: UUID, user_input: str) -> Dict[str, Any]:
         """
-        Run a single turn with a crew agent.
-        Delegates to current orchestrator flow.
+        Fetches the crew and its members from repos, hydrates them, and runs kickoff via CrewEngine adapter.
         """
-        # Create session
-        session = await create_session(project_id, agent_role)
-        
-        # Collect streaming response
-        chunks = []
-        async for chunk in run_turn_stream(session, user_input, inngest_client):
-            chunks.append(chunk)
-        
-        return {
-            "status": "success",
-            "response": "".join(chunks),
-            "session_id": str(session.id),
-            "agent_role": str(agent_role)
-        }
+        # 1. Fetch Crew
+        crew = await self.workspace_repo.get_crew(crew_id)
+        if not crew:
+            raise ValueError(f"Crew {crew_id} not found")
 
-    @staticmethod
-    async def run_sequential_crew(
-        project_id: UUID,
-        agent_sequence: list[AgentRole],
-        user_input: str
-    ) -> dict[str, Any]:
-        """
-        Run agents in sequence (Sequential Process).
-        Each agent's output becomes the next agent's input.
-        """
-        current_input = user_input
-        results = []
-        
-        for agent_role in agent_sequence:
-            result = await CrewRunnerFacade.run_crew_turn(
-                project_id=project_id,
-                agent_role=agent_role,
-                user_input=current_input
-            )
-            results.append(result)
-            # Output of this agent becomes input for next
-            current_input = result.get("response", current_input)
-        
-        return {
-            "status": "success",
-            "process_type": "sequential",
-            "results": results,
-            "final_output": current_input
-        }
+        # 2. Fetch and Hydrate Agents
+        hydrated_agents = []
+        for agent_id in crew.agent_member_ids:
+            agent = await self.agent_repo.get(agent_id)
+            if agent:
+                hydrated_agents.append(agent)
+                
+        if not hydrated_agents and crew.manager_agent_id:
+             manager = await self.agent_repo.get(crew.manager_agent_id)
+             if manager:
+                 hydrated_agents.append(manager)
 
-    @staticmethod
-    async def run_hierarchical_crew(
-        project_id: UUID,
-        manager_agent: AgentRole,
-        worker_agents: list[AgentRole],
-        user_input: str
-    ) -> dict[str, Any]:
+        # 3. Delegate to Engine
+        result = await self.crew_engine.kickoff_crew(crew, hydrated_agents, user_input)
+        
+        return result
+
+    async def execute_single_agent(self, agent_id: UUID, user_input: str) -> Dict[str, Any]:
         """
-        Run hierarchical crew process.
-        Manager delegates to workers and synthesizes results.
-        Currently a stub - delegates to manager agent only.
+        Fetches a single agent and executes it via CrewEngine adapter.
         """
-        # For now, just run the manager agent
-        # Future: implement delegation and synthesis logic
-        result = await CrewRunnerFacade.run_crew_turn(
-            project_id=project_id,
-            agent_role=manager_agent,
-            user_input=user_input
+        agent = await self.agent_repo.get(agent_id)
+        if not agent:
+            raise ValueError(f"Agent {agent_id} not found")
+            
+        result = await self.crew_engine.run_single_agent(agent, user_input)
+        return result
+
+
+# --- Inngest Handlers ---
+
+@inngest_client.create_function(
+    fn_id="crewai-execution-requested",
+    trigger=inngest.TriggerEvent(event="crewai/execution.requested"),
+)
+async def crewai_execution_handler(ctx: inngest.Context, step: inngest.Step):
+    """
+    Inngest handler for CrewAI execution (both single agent and full crews).
+    """
+    from app.modules.agents.infrastructure.crewai.adapter import CrewAIAdapter
+    from app.shared.infrastructure.database import async_session_maker
+    
+    data = ctx.event.data
+    entity_type = data.get("entity_type") # "crew" or "agent"
+    entity_id = UUID(data["entity_id"])
+    user_input = data.get("user_input", "Execute the assigned process.")
+    
+    # Since Inngest handlers are out of FastAPI's request lifecycle, we manually inject dependencies
+    async with async_session_maker() as session:
+        agent_repo = AgentConfigRepository(session)
+        workspace_repo = WorkspaceRepository(session)
+        crew_engine = CrewAIAdapter()
+        
+        use_case = CrewRunnerUseCase(
+            crew_engine=crew_engine,
+            agent_repo=agent_repo,
+            workspace_repo=workspace_repo
         )
         
-        return {
-            "status": "success",
-            "process_type": "hierarchical",
-            "manager_result": result,
-            "delegated_workers": [str(a) for a in worker_agents]
-        }
-
-
-# Inngest handler functions that use the facade
-@inngest_client.create_function(
-    fn_id="crew-sequential-run",
-    trigger=inngest.TriggerEvent(event="crew/sequential.requested"),
-)
-async def crew_sequential_handler(ctx: inngest.Context, step: inngest.Step):
-    """
-    Inngest handler for sequential crew execution.
-    """
-    data = ctx.event.data
-    
-    project_id = UUID(data["project_id"])
-    agent_roles = [AgentRole(role) for role in data["agent_sequence"]]
-    user_input = data["user_input"]
-    
-    result = await CrewRunnerFacade.run_sequential_crew(
-        project_id=project_id,
-        agent_sequence=agent_roles,
-        user_input=user_input
-    )
-    
-    return result
-
-
-@inngest_client.create_function(
-    fn_id="crew-hierarchical-run",
-    trigger=inngest.TriggerEvent(event="crew/hierarchical.requested"),
-)
-async def crew_hierarchical_handler(ctx: inngest.Context, step: inngest.Step):
-    """
-    Inngest handler for hierarchical crew execution.
-    """
-    data = ctx.event.data
-    
-    project_id = UUID(data["project_id"])
-    manager_agent = AgentRole(data["manager_agent"])
-    worker_agents = [AgentRole(role) for role in data["worker_agents"]]
-    user_input = data["user_input"]
-    
-    result = await CrewRunnerFacade.run_hierarchical_crew(
-        project_id=project_id,
-        manager_agent=manager_agent,
-        worker_agents=worker_agents,
-        user_input=user_input
-    )
-    
-    return result
-
-
-@inngest_client.create_function(
-    fn_id="crew-single-turn",
-    trigger=inngest.TriggerEvent(event="crew/single-turn.requested"),
-)
-async def crew_single_turn_handler(ctx: inngest.Context, step: inngest.Step):
-    """
-    Inngest handler for single agent turn.
-    """
-    data = ctx.event.data
-    
-    project_id = UUID(data["project_id"])
-    agent_role = AgentRole(data["agent_role"])
-    user_input = data["user_input"]
-    
-    result = await CrewRunnerFacade.run_crew_turn(
-        project_id=project_id,
-        agent_role=agent_role,
-        user_input=user_input
+        if entity_type == "crew":
+            result = await use_case.execute_crew(entity_id, user_input)
+        elif entity_type == "agent":
+            result = await use_case.execute_single_agent(entity_id, user_input)
+        else:
+            raise ValueError(f"Unsupported entity_type: {entity_type}")
+            
+    # Send completion event back
+    await inngest_client.send(
+        inngest.Event(
+            name="system.entity.progress_updated",
+            data={
+                "entity_id": str(entity_id),
+                "status": "done",
+                "result": result
+            }
+        )
     )
     
     return result

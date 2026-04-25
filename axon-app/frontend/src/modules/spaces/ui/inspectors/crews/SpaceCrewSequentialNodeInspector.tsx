@@ -24,9 +24,23 @@ export const SpaceCrewSequentialNodeInspector = ({
     crewData, 
     nodeId,
     onPropertyChange,
+    onRunNode,
     canvasNodes
 }: SpaceCrewInspectorProperties) => {
     const { state, actions } = useSpaceCrewSequentialInspector(crewData, nodeId, onPropertyChange);
+
+    const handleRun = async () => {
+        if (!onRunNode) return;
+        
+        // Gather all context from the requirements
+        const contextSummary = state.contextRequirements.map((r: any) => {
+            const value = r.link || r.sourceNodeLabel ? `${r.sourceNodeLabel}/${r.sourceArtifactLabel}` : "NOT_PROVIDED";
+            return `${r.label}: ${value}`;
+        }).join('\n');
+
+        const finalInput = contextSummary.trim() || "Execute assigned team mission.";
+        await onRunNode(nodeId, finalInput);
+    };
 
     return (
         <SpaceInspectorPanel>
@@ -246,7 +260,7 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                     onClick={() => actions.setIsDetailsOpen(!state.isDetailsOpen)}
                                                     className="flex items-center justify-between w-full group py-1"
                                                 >
-                                                    <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Szczegóły:</h4>
+                                                    <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Squad Output:</h4>
                                                     {state.isDetailsOpen ? <ChevronUp size={12} className="text-zinc-600" /> : <ChevronDown size={12} className="text-zinc-600" />}
                                                 </button>
                                                 
@@ -256,15 +270,33 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                             initial={{ opacity: 0, height: 0 }}
                                                             animate={{ opacity: 1, height: 'auto' }}
                                                             exit={{ opacity: 0, height: 0 }}
-                                                            className="space-y-3 mt-3 overflow-hidden"
+                                                            className="space-y-4 mt-3 overflow-hidden"
                                                         >
-                                                            <div className="text-[10px] text-zinc-400 space-y-1 font-mono">
-                                                                <p>• Zespół: {(crewData.roles || []).join(', ')}</p>
-                                                                <p>• Wykonano {state.tasks.length} zadań sekwencyjnie</p>
-                                                                <p>• Wszystkie artefakty zostały wygenerowane</p>
-                                                                <div className="pt-2 text-zinc-600 font-bold uppercase" suppressHydrationWarning>
-                                                                    Całkowity czas: {crewData.metrics?.duration || '2 min 15s'} | Zużycie: {crewData.metrics?.tokens?.toLocaleString() || '3,200'} tokenów
+                                                            <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+                                                                <p className="text-xs text-zinc-300 font-mono leading-relaxed whitespace-pre-wrap">
+                                                                    {crewData.final_output || "No output generated yet."}
+                                                                </p>
+                                                            </div>
+
+                                                            {crewData.execution_trace && crewData.execution_trace.length > 0 && (
+                                                                <div className="space-y-3">
+                                                                    <h5 className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Collaborative Execution Trace:</h5>
+                                                                    <div className="space-y-2">
+                                                                        {crewData.execution_trace.map((step: any, idx: number) => (
+                                                                            <div key={idx} className="p-3 bg-zinc-950 border border-zinc-900 rounded-lg space-y-2">
+                                                                                <div className="flex items-center justify-between gap-2">
+                                                                                    <span className="text-[9px] font-black text-white px-2 py-0.5 bg-zinc-800 rounded uppercase truncate max-w-[100px]">{step.agent}</span>
+                                                                                    <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-tighter shrink-0">{step.tool}</span>
+                                                                                </div>
+                                                                                <p className="text-[10px] text-zinc-400 italic">"{step.thought}"</p>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
                                                                 </div>
+                                                            )}
+
+                                                            <div className="pt-2 text-zinc-600 font-bold uppercase text-[9px]" suppressHydrationWarning>
+                                                                Całkowity czas: {crewData.metrics?.duration || '2 min 15s'} | Zużycie: {crewData.metrics?.tokens?.toLocaleString() || '3,200'} tokenów
                                                             </div>
                                                         </motion.div>
                                                     )}
@@ -304,7 +336,14 @@ export const SpaceCrewSequentialNodeInspector = ({
                 </Tab>
             </Tabs>
             <SpaceInspectorFooter>
-                <button className="w-full bg-white text-black font-black uppercase text-[10px] rounded-md h-10 " onClick={() => actions.transitionTo('working')}>Uruchom proces</button>
+                <Button 
+                    size="lg"
+                    className="text-base font-bold bg-white text-black hover:bg-zinc-200 border-none transition-all active:scale-95 px-8" 
+                    onPress={handleRun}
+                    isDisabled={state.isWorking}
+                >
+                    {state.isWorking ? 'Uruchamianie...' : 'Rozpocznij pracę'}
+                </Button>
             </SpaceInspectorFooter>
         </SpaceInspectorPanel>
     );

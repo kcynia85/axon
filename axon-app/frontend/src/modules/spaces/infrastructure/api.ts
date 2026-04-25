@@ -143,5 +143,23 @@ export const SpaceCanvasInfrastructureApi = {
       if (!apiResponse.ok) {
           throw new Error("Failed to delete space in the backend.");
       }
+  },
+
+  runNode: async (spaceId: string, nodeId: string, entityType: string, userInput: string): Promise<void> => {
+    const apiResponse = await fetch(`${SPACE_API_BASE_URL}/spaces/${spaceId}/nodes/${nodeId}/run`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            entity_type: entityType,
+            user_input: userInput
+        }),
+    });
+
+    if (!apiResponse.ok) {
+        const errorText = await apiResponse.text();
+        throw new Error(`Failed to trigger node execution: ${errorText}`);
+    }
   }
 };

@@ -55,6 +55,7 @@ export const SpaceCanvasPresentationView = ({
     handleDropEvent,
     addNewNodeToCanvas,
     updateNodeDataOnCanvas,
+    runNode,
     currentlySelectedNode,
     handleKeyDown,
     canvasViewProperties,
@@ -62,6 +63,17 @@ export const SpaceCanvasPresentationView = ({
     isSaving,
     metaAgent
 }: PureSpaceCanvasViewProperties): React.ReactNode => {
+  const nodeComponents = React.useMemo(() => ({
+    zone: SpaceZoneCanvasNode,
+    agent: (props: any) => <SpaceAgentCanvasNode {...props} onRun={runNode} />,
+    crew: (props: any) => <SpaceCrewCanvasNode {...props} onRun={runNode} />,
+    pattern: SpacePatternCanvasNode,
+    automation: SpaceAutomationCanvasNode,
+    template: SpaceTemplateCanvasNode,
+    service: SpaceServiceCanvasNode,
+    entity: SpaceEntityCanvasNode,
+  }), [runNode]);
+
   const {
     contextMenu,
     setContextMenu,
@@ -115,7 +127,7 @@ export const SpaceCanvasPresentationView = ({
         onEdgesChange={handleCanvasEdgesChange}
         onConnect={handleNewConnectionCreated}
         isValidConnection={validateConnectionBetweenNodes as any}
-        nodeTypes={canvasNodeComponents}
+        nodeTypes={nodeComponents}
         edgeTypes={canvasEdgeComponents}
         onDragOver={handleDragOverEvent}
         onDrop={handleDropEvent}
@@ -210,15 +222,17 @@ export const SpaceCanvasPresentationView = ({
         {!isFullscreen && (
           <Panel position="top-right" className="m-0 z-50">
             {selectedNodes.length === 1 && (
-              <SpaceCanvasRightSidebar 
+              <SpaceCanvasRightSidebar
                 currentlySelectedNodeInformation={currentlySelectedNode ? {
                   id: currentlySelectedNode.id,
                   type: currentlySelectedNode.type || 'unknown',
                   data: currentlySelectedNode.data
-                } : null} 
-                handleNodeDataPropertyChange={updateNodeDataOnCanvas} 
+                } : null}
+                handleNodeDataPropertyChange={updateNodeDataOnCanvas}
+                onRunNode={runNode}
                 canvasNodes={canvasNodes}
               />
+
             )}
           </Panel>
         )}
@@ -233,15 +247,17 @@ export const SpaceCanvasPresentationView = ({
                 >
                   <X size={16} />
                 </button>
-                <SpaceCanvasRightSidebar 
+                <SpaceCanvasRightSidebar
                   currentlySelectedNodeInformation={currentlySelectedNode ? {
                     id: currentlySelectedNode.id,
                     type: currentlySelectedNode.type || 'unknown',
                     data: currentlySelectedNode.data
-                  } : null} 
-                  handleNodeDataPropertyChange={updateNodeDataOnCanvas} 
+                  } : null}
+                  handleNodeDataPropertyChange={updateNodeDataOnCanvas}
+                  onRunNode={runNode}
                   canvasNodes={canvasNodes}
                 />
+
               </div>
             )}
           </Panel>

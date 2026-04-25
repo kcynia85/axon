@@ -20,13 +20,28 @@ export type SpaceAgentNodeInspectorViewProperties = {
     readonly actions: any;
     readonly agentData: any;
     readonly nodeId: string;
+    readonly onStatusChange?: (nodeId: string, status: string) => void;
+    readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
     readonly canvasNodes: Node[];
 };
 
 /**
  * SpaceAgentNodeInspectorView - Pure view component for agent node details.
  */
-export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId, canvasNodes }: SpaceAgentNodeInspectorViewProperties) => {
+export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId, onStatusChange, onRunNode, canvasNodes }: SpaceAgentNodeInspectorViewProperties) => {
+    const handleRun = async () => {
+        if (!onRunNode) return;
+        
+        // Gather all context from the requirements
+        const contextSummary = state.contextRequirements.map((r: any) => {
+            const value = r.link || r.sourceNodeLabel ? `${r.sourceNodeLabel}/${r.sourceArtifactLabel}` : "NOT_PROVIDED";
+            return `${r.label}: ${value}`;
+        }).join('\n');
+
+        const finalInput = contextSummary.trim() || "Execute assigned role instructions.";
+        await onRunNode(nodeId, finalInput);
+    };
+
     return (
         <SpaceInspectorPanel>
             <Tabs 
@@ -292,7 +307,7 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                             onClick={() => actions.setIsDetailsOpen(!state.isDetailsOpen)}
                                             className="flex items-center justify-between w-full group py-1"
                                         >
-                                            <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Szczegóły:</h4>
+                                            <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Execution Result:</h4>
                                             {state.isDetailsOpen ? <ChevronUp size={12} className="text-zinc-600" /> : <ChevronDown size={12} className="text-zinc-600" />}
                                         </button>
                                         
@@ -302,15 +317,37 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                                     initial={{ opacity: 0, height: 0 }}
                                                     animate={{ opacity: 1, height: 'auto' }}
                                                     exit={{ opacity: 0, height: 0 }}
-                                                    className="space-y-3 mt-3 overflow-hidden"
+                                                    className="space-y-4 mt-3 overflow-hidden"
                                                 >
-                                                    <div className="text-[10px] text-zinc-400 space-y-1 font-mono">
-                                                        <p>• Artykuł akademicki o AI w edukacji</p>
-                                                        <p>• Ponad 2 tysiące słów</p>
-                                                        <p>• Przejrzysta struktura z nagłówkami</p>
-                                                        <div className="pt-2 text-zinc-600 font-bold uppercase" suppressHydrationWarning>
-                                                            Całkowity czas: {agentData.metrics?.duration || '4 min'} | Zużycie: {state.simulatedTokens.toLocaleString()} tokenów
+                                                    <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+                                                        <p className="text-xs text-zinc-300 font-mono leading-relaxed whitespace-pre-wrap">
+                                                            {agentData.final_output || "No output generated yet."}
+                                                        </p>
+                                                    </div>
+
+                                                    {agentData.execution_trace && agentData.execution_trace.length > 0 && (
+                                                        <div className="space-y-3">
+                                                            <h5 className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Tool Usage & Thought Trace:</h5>
+                                                            <div className="space-y-2">
+                                                                {agentData.execution_trace.map((step: any, idx: number) => (
+                                                                    <div key={idx} className="p-3 bg-zinc-950 border border-zinc-900 rounded-lg space-y-2">
+                                                                        <div className="flex items-center justify-between">
+                                                                            <span className="text-[9px] font-black text-white px-2 py-0.5 bg-zinc-800 rounded uppercase">{step.tool}</span>
+                                                                        </div>
+                                                                        <p className="text-[10px] text-zinc-400 italic">"{step.thought}"</p>
+                                                                        {step.observation && (
+                                                                            <div className="text-[9px] font-mono text-zinc-500 bg-black/50 p-2 rounded">
+                                                                                Obs: {step.observation.substring(0, 100)}...
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
                                                         </div>
+                                                    )}
+
+                                                    <div className="pt-2 text-zinc-600 font-bold uppercase text-[9px]" suppressHydrationWarning>
+                                                        Całkowity czas: {agentData.metrics?.duration || '4 min'} | Zużycie: {state.simulatedTokens.toLocaleString()} tokenów
                                                     </div>
                                                 </motion.div>
                                             )}
@@ -385,33 +422,13 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                     {state.isMissingContext && (
                         <div className="space-y-3">
                             <Button 
-                                size="sm" 
-                                isDisabled={!state.isContextComplete}
-                                className={cn("w-full font-black uppercase text-[10px] tracking-widest rounded-md h-12 transition-all border ",
-                                    state.isContextComplete ? "bg-white text-black border-white hover:bg-zinc-100 " : "bg-zinc-900 text-zinc-600 border-zinc-800 "
-                                )}
-                                onPress={() => {
-                                    if (agentData.requires_consultation) {
-                                        actions.transitionTo('conversation');
-                                    } else if (agentData.requires_alignment) {
-                                        actions.transitionTo('alignment', { alignment_summary: "Zanalizowałem dostarczone dane. Moim celem jest przygotowanie raportu zorientowanego na wyniki, biorąc pod uwagę ograniczenia budżetowe oraz specyficę branży kreatywnej." });
-                                    } else {
-                                        actions.transitionTo('briefing');
-                                    }
-                                }}
+                                size="lg" 
+                                isDisabled={state.isWorking}
+                                className="text-base font-bold bg-white text-black hover:bg-zinc-200 border-none transition-all active:scale-95 px-8"
+                                onPress={handleRun}
                             >
-                                {agentData.progress > 0 ? "Wznów pracę" : (state.isContextComplete ? "Prepare Briefing" : `Missing context`)}
+                                {agentData.progress > 0 ? "Wznów pracę" : "Rozpocznij pracę"}
                             </Button>
-                            {agentData.progress > 0 && (
-                                <Button 
-                                    size="sm" 
-                                    variant="light" 
-                                    className="w-full text-zinc-500 font-black uppercase text-[10px] tracking-widest rounded-md h-10 hover:bg-zinc-900"
-                                    onPress={() => actions.transitionTo('conversation', { progress: 0 })}
-                                >
-                                    Zakończ pracę
-                                </Button>
-                            )}
                         </div>
                     )}
                     {state.isConsultation && (

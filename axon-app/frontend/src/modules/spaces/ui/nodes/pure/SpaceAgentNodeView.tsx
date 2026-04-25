@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Bot, AlertCircle, Sparkles } from "lucide-react";
+import { Bot, AlertCircle, Sparkles, Play, FileText } from "lucide-react";
 import { SpaceAgentViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
 
@@ -16,7 +16,7 @@ const COLOR_MAP: Record<string, string> = {
     default: "168, 85, 247" // Notion-like purple as default
 };
 
-export const SpaceAgentNodeView = ({ viewModel }: { readonly viewModel: SpaceAgentViewModel }) => (
+export const SpaceAgentNodeView = ({ viewModel, onRun }: { readonly viewModel: SpaceAgentViewModel, onRun?: (input: string) => void }) => (
     <div 
         className={cn(
             viewModel.visual.containerClassName,

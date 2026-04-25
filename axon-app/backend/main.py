@@ -28,6 +28,7 @@ from app.modules.agents.application.workflows import writer_workflow, generic_ag
 from app.modules.settings.application.inngest_handlers import sync_all_pricing, sync_provider_pricing_event
 from app.modules.knowledge.application.inngest_handlers import knowledge_indexing_workflow
 from app.modules.system.application.inngest_handlers import system_entity_upserted_workflow, system_entity_deleted_workflow
+from app.modules.agents.application.crew_runner import crewai_execution_handler
 
 app = FastAPI(title="RAGAS Axon API")
 
@@ -125,7 +126,8 @@ inngest_handler = serve(
         sync_provider_pricing_event, 
         knowledge_indexing_workflow,
         system_entity_upserted_workflow,
-        system_entity_deleted_workflow
+        system_entity_deleted_workflow,
+        crewai_execution_handler
     ],
 )
 

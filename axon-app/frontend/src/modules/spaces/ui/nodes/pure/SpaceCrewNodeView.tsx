@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { AlertCircle, Play, Users, Sparkles } from "lucide-react";
+import { AlertCircle, Play, Users, Sparkles, FileText } from "lucide-react";
 import { SpaceCrewViewModel } from '@/modules/spaces/domain/types';
 import { cn } from "@/shared/lib/utils";
 
@@ -16,7 +16,7 @@ const COLOR_MAP: Record<string, string> = {
     default: "59, 130, 246"
 };
 
-export const SpaceCrewNodeView = ({ viewModel }: { readonly viewModel: SpaceCrewViewModel }) => (
+export const SpaceCrewNodeView = ({ viewModel, onRun }: { readonly viewModel: SpaceCrewViewModel, onRun?: (input: string) => void }) => (
     <div 
         className={cn(
             viewModel.visual.containerClassName, 

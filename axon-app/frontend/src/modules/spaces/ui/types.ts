@@ -58,6 +58,7 @@ export type SpaceCanvasSidebarProperties = {
   readonly children?: React.ReactNode;
   readonly currentlySelectedNodeInformation: SpaceCanvasNodeInformation | null;
   readonly handleNodeDataPropertyChange: (nodeId: string, updatedInformation: any) => void;
+  readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
   readonly canvasNodes: Node[];
 };
 
@@ -68,6 +69,7 @@ export type SpaceCanvasRightSidebarViewProperties = {
     readonly handleStatusChange: (nodeId: string, status: string) => void;
     readonly handleArtifactStatusChange: (nodeId: string, artifactId: string, status: string) => void;
     readonly handlePropertyChange: (propertyName: string, value: any) => void;
+    readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
     readonly canvasNodes: Node[];
 };
 
@@ -76,6 +78,7 @@ export type SpaceAgentInspectorProperties = {
     readonly nodeId: string;
     readonly onStatusChange: (nodeId: string, status: string) => void;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
+    readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
     readonly canvasNodes: Node[];
 };
 
@@ -84,6 +87,7 @@ export type SpaceCrewInspectorProperties = {
     readonly nodeId: string;
     readonly onStatusChange: (nodeId: string, status: string) => void;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
+    readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
     readonly canvasNodes: Node[];
 };
 
@@ -142,6 +146,7 @@ export type SpaceCanvasOrchestrationLogic = {
     readonly pasteNodes: (position?: { x: number; y: number }) => void;
     readonly createPatternFromSelection: (name: string, description: string, type: 'pattern' | 'super-pattern') => SpacePatternBlueprint;
     readonly instantiatePatternFromBlueprint: (blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => void;
+    readonly runNode: (nodeId: string, userInput: string) => Promise<void>;
     readonly handleKeyDown: (event: React.KeyboardEvent) => void;
 };
 
