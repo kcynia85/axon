@@ -150,6 +150,12 @@ export const useSpaceCanvasOrchestrator = (spaceId: string, initialCanvasConfigu
     }
   };
 
+  const deselectNodes = () => {
+    updateCanvasNodesWithPersistence((currentNodes: Node[]) => 
+        currentNodes.map(n => ({ ...n, selected: false }))
+    );
+  };
+
   const pasteNodes = (position?: { x: number; y: number }) => {
     if (!clipboard) return;
 
@@ -198,6 +204,7 @@ export const useSpaceCanvasOrchestrator = (spaceId: string, initialCanvasConfigu
     pasteNodes,
     createPatternFromSelection,
     instantiatePatternFromBlueprint,
+    deselectNodes,
     runNode,
     handleKeyDown,
   };

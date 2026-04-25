@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Tabs, Tab, Input, ScrollShadow, Button } from "@heroui/react";
 import { 
-  Bot, Layers, FileText, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, ShieldCheck, Zap, CircleStop, Sparkles
+  Bot, Layers, FileText, CheckCircle2, ChevronDown, ChevronUp, AlertCircle, ShieldCheck, Zap, CircleStop, Sparkles, X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type Node } from "@xyflow/react";
@@ -23,12 +23,13 @@ export type SpaceAgentNodeInspectorViewProperties = {
     readonly onStatusChange?: (nodeId: string, status: string) => void;
     readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
     readonly canvasNodes: Node[];
+    readonly onClose?: () => void;
 };
 
 /**
  * SpaceAgentNodeInspectorView - Pure view component for agent node details.
  */
-export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId, onStatusChange, onRunNode, canvasNodes }: SpaceAgentNodeInspectorViewProperties) => {
+export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId, onStatusChange, onRunNode, canvasNodes, onClose }: SpaceAgentNodeInspectorViewProperties) => {
     const handleRun = async () => {
         if (!onRunNode) return;
         
@@ -44,6 +45,22 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
 
     return (
         <SpaceInspectorPanel>
+            <div className="p-8 pb-0 flex items-start justify-between">
+                <div className="flex-1">
+                    <h3 className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.3em]">Agent Inspector</h3>
+                </div>
+                {onClose && (
+                    <Button 
+                        isIconOnly 
+                        variant="light" 
+                        size="sm" 
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors -mr-2 -mt-2"
+                        onPress={onClose}
+                    >
+                        <X size={20} strokeWidth={3} />
+                    </Button>
+                )}
+            </div>
             <Tabs 
                 aria-label="Inspector" 
                 size="sm" 

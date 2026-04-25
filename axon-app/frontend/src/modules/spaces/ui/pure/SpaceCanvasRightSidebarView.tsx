@@ -42,6 +42,7 @@ export const SpaceCanvasRightSidebarView = ({
     handlePropertyChange,
     onRunNode,
     canvasNodes,
+    onClose,
 }: SpaceCanvasRightSidebarViewProperties) => {
 
     if (!currentlySelectedNodeInformation) {
@@ -57,6 +58,7 @@ export const SpaceCanvasRightSidebarView = ({
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={(name, value) => handlePropertyChange(name, value)}
                         canvasNodes={canvasNodes}
+                        onClose={onClose}
                     />
                 ) : effectiveNodeType === 'agent' ? (
                     <SpaceAgentNodeInspector
@@ -66,6 +68,7 @@ export const SpaceCanvasRightSidebarView = ({
                         onPropertyChange={handlePropertyChange}
                         onRunNode={onRunNode}
                         canvasNodes={canvasNodes}
+                        onClose={onClose}
                     />
                 ) : effectiveNodeType === 'crew' ? (
                     <SpaceCrewNodeInspector
@@ -75,11 +78,13 @@ export const SpaceCanvasRightSidebarView = ({
                         onPropertyChange={handlePropertyChange}
                         onRunNode={onRunNode}
                         canvasNodes={canvasNodes}
+                        onClose={onClose}
                     />
                 ) : effectiveNodeType === 'pattern' ? (
                     <SpacePatternNodeInspector
                         patternData={currentlySelectedNodeInformation}
                         onPropertyChange={handlePropertyChange}
+                        onClose={onClose}
                     />
                 ) : effectiveNodeType === 'automation' ? (
                     <SpaceAutomationNodeInspector
@@ -87,6 +92,7 @@ export const SpaceCanvasRightSidebarView = ({
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={handlePropertyChange}
                         canvasNodes={canvasNodes}
+                        onClose={onClose}
                     />
                 ) : effectiveNodeType === 'service' ? (
                     <SpaceServiceNodeInspector
@@ -95,6 +101,7 @@ export const SpaceCanvasRightSidebarView = ({
                         onArtifactStatusChange={handleArtifactStatusChange}
                         onPropertyChange={handlePropertyChange}
                         canvasNodes={canvasNodes}
+                        onClose={onClose}
                     />
                 ) : effectiveNodeType === 'template' ? (
                     <SpaceTemplateNodeInspector
@@ -102,6 +109,7 @@ export const SpaceCanvasRightSidebarView = ({
                         nodeId={currentlySelectedNodeInformation.id}
                         onPropertyChange={handlePropertyChange}
                         canvasNodes={canvasNodes}
+                        onClose={onClose}
                     />
                 ) : (
                     <GenericNodeInspector nodeInformation={currentlySelectedNodeInformation} />

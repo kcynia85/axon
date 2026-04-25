@@ -1,22 +1,37 @@
 "use client";
 
 import React from "react";
-import { Divider } from "@heroui/react";
+import { Divider, Button } from "@heroui/react";
+import { X } from "lucide-react";
 import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";
 import { useSpacePatternInspector } from "../../application/hooks/useSpacePatternInspector";
 import { SpacePatternInspectorProperties } from "../types";
 
-export const SpacePatternNodeInspector = ({ patternData, onPropertyChange }: SpacePatternInspectorProperties) => {
+export const SpacePatternNodeInspector = ({ patternData, onPropertyChange, onClose }: SpacePatternInspectorProperties) => {
     const { state } = useSpacePatternInspector(patternData as any);
 
     return (
         <SpaceInspectorPanel>
-            <div className="p-8 space-y-8">
-                <div className="space-y-2">
-                    <h3 className="font-black text-xl text-white">{state.label}</h3>
+            <div className="p-8 pb-4 flex items-start justify-between">
+                <div className="flex-1">
+                    <h3 className="font-black text-xl text-white mb-1">{state.label}</h3>
                     <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Intelligent Pattern</p>
                 </div>
+                
+                {onClose && (
+                    <Button 
+                        isIconOnly 
+                        variant="light" 
+                        size="sm" 
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors -mr-2 -mt-2"
+                        onPress={onClose}
+                    >
+                        <X size={20} strokeWidth={3} />
+                    </Button>
+                )}
+            </div>
 
+            <div className="p-8 pt-0 space-y-8">
                 <Divider className="bg-zinc-800" />
 
                 <div className="p-4 bg-purple-500 rounded-xl border border-purple-500 text-xs text-purple-300 font-medium leading-relaxed italic">

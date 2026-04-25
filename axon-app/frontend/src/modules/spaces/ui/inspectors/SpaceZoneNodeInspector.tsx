@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Textarea, Tabs, Tab, ScrollShadow } from "@heroui/react";
-import { Layers, Box, ExternalLink, CheckCircle, Target, CheckCircle2, Clock } from "lucide-react";
+import { Textarea, Tabs, Tab, ScrollShadow, Button } from "@heroui/react";
+import { Layers, Box, ExternalLink, CheckCircle, Target, CheckCircle2, Clock, X, ChevronRight } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { SpaceInspectorPanel } from "./components/SpaceInspectorPanel";
 import { useSpaceZoneInspector } from "../../application/hooks/useSpaceZoneInspector";
@@ -12,14 +12,30 @@ export const SpaceZoneNodeInspector = ({
     zoneData, 
     nodeId,
     onPropertyChange,
-    canvasNodes = []
+    canvasNodes = [],
+    onClose
 }: SpaceZoneInspectorProperties) => {
     const { state, actions } = useSpaceZoneInspector(zoneData, nodeId, onPropertyChange, canvasNodes);
 
     return (
         <SpaceInspectorPanel>
-            <div className="p-8 pb-4">
-                <h3 className="font-black text-2xl text-white mb-1 tracking-tight">{state.label}</h3>
+            <div className="p-8 pb-4 flex items-start justify-between">
+                <div className="flex-1">
+                    <h3 className="font-black text-2xl text-white mb-1 tracking-tight">{state.label}</h3>
+                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Zone Component</p>
+                </div>
+                
+                {onClose && (
+                    <Button 
+                        isIconOnly 
+                        variant="light" 
+                        size="sm" 
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors"
+                        onPress={onClose}
+                    >
+                        <X size={20} strokeWidth={3} />
+                    </Button>
+                )}
             </div>
 
             <Tabs 

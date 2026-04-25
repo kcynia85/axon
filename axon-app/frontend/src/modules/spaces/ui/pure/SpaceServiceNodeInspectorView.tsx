@@ -26,6 +26,7 @@ import {
     CheckCircle2,
     Search,
     Link as LinkIcon,
+    X,
 } from "lucide-react";
 import { SpaceServiceDomainData, TemplateArtefact } from "../../domain/types";
 import { cn } from "@/shared/lib/utils";
@@ -52,6 +53,7 @@ export type SpaceServiceNodeInspectorViewProps = {
     readonly onCapabilityChange: (value: string) => void;
     readonly onAttachedLabelChange: (artefactId: string, value: string) => void;
     readonly canvasNodes: any[];
+    readonly onClose?: () => void;
 };
 
 const ARTEFACT_STATUS_VISUAL_CONFIG = {
@@ -87,6 +89,7 @@ export const SpaceServiceNodeInspectorView = ({
     onCapabilityChange,
     onAttachedLabelChange,
     canvasNodes,
+    onClose,
 }: SpaceServiceNodeInspectorViewProps) => {
     const filteredCapabilities = MOCK_CAPABILITIES.filter((capability) =>
         capability.label.toLowerCase().includes(capabilitySearchQuery.toLowerCase())
@@ -98,7 +101,24 @@ export const SpaceServiceNodeInspectorView = ({
 
     return (
         <SpaceInspectorPanel>
-            <Tabs
+            <div className="p-8 pb-0 flex items-start justify-between">
+                <div className="flex-1">
+                    <h3 className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.3em]">Service Inspector</h3>
+                </div>
+                {onClose && (
+                    <Button 
+                        isIconOnly 
+                        variant="light" 
+                        size="sm" 
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors -mr-2 -mt-2"
+                        onPress={onClose}
+                    >
+                        <X size={20} strokeWidth={3} />
+                    </Button>
+                )}
+            </div>
+            <Tabs 
+
                 aria-label="Service Sections"
                 variant="underlined"
                 selectedKey={selectedTabIdentifier}

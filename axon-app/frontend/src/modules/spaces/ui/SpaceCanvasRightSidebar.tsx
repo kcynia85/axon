@@ -15,7 +15,8 @@ export const SpaceCanvasRightSidebar = ({
     currentlySelectedNodeInformation, 
     handleNodeDataPropertyChange,
     onRunNode,
-    canvasNodes
+    canvasNodes,
+    onClose
 }: SpaceCanvasSidebarProperties) => {
     const {
         effectiveNodeType,
@@ -35,6 +36,7 @@ export const SpaceCanvasRightSidebar = ({
             handlePropertyChange={handlePropertyChange}
             onRunNode={onRunNode}
             canvasNodes={canvasNodes}
+            onClose={onClose || (() => {})}
         />
     );
 };

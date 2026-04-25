@@ -29,7 +29,8 @@ import {
     Trash2,
     Link as LinkIcon,
     Archive,
-    AlertCircle
+    AlertCircle,
+    X,
 } from "lucide-react";
 import { SpaceAutomationDomainData, TemplateArtefact } from "../../domain/types";
 import { cn } from "@/shared/lib/utils";
@@ -57,6 +58,7 @@ export type SpaceAutomationNodeInspectorViewProps = {
     readonly onAddArtefact: () => void;
     readonly onTriggerWorkflow: () => void;
     readonly canvasNodes: Record<string, unknown>[];
+    readonly onClose?: () => void;
 };
 
 const ARTEFACT_STATUS_CONFIG = {
@@ -84,11 +86,28 @@ export const SpaceAutomationNodeInspectorView = ({
     onAddArtefact,
     onTriggerWorkflow,
     canvasNodes,
+    onClose,
 }: SpaceAutomationNodeInspectorViewProps) => {
     const artefacts = automationData.artefacts || [];
 
     return (
         <SpaceInspectorPanel>
+            <div className="p-8 pb-0 flex items-start justify-between">
+                <div className="flex-1">
+                    <h3 className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.3em]">Automation Inspector</h3>
+                </div>
+                {onClose && (
+                    <Button 
+                        isIconOnly 
+                        variant="light" 
+                        size="sm" 
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors -mr-2 -mt-2"
+                        onPress={onClose}
+                    >
+                        <X size={20} strokeWidth={3} />
+                    </Button>
+                )}
+            </div>
             <Tabs 
                 aria-label="Automation Inspector" 
                 size="sm" 

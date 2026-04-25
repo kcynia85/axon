@@ -14,7 +14,8 @@ export const SpaceServiceNodeInspector = ({
     nodeId,
     onArtifactStatusChange,
     onPropertyChange,
-    canvasNodes
+    canvasNodes,
+    onClose
 }: SpaceServiceInspectorProperties) => {
     const [selectedTabIdentifier, setSelectedTabIdentifier] = useState<string>("context");
     const [componentSearchQuery, setComponentSearchQuery] = useState("");
@@ -42,6 +43,7 @@ export const SpaceServiceNodeInspector = ({
             onCapabilityChange={logic.handleCapabilityChange}
             onAttachedLabelChange={logic.handleAttachedLabelChange}
             canvasNodes={canvasNodes}
+            onClose={onClose}
         />
     );
 };

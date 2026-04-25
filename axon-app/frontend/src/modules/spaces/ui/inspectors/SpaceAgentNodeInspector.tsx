@@ -9,7 +9,7 @@ import type { SpaceAgentInspectorProperties } from "../types";
  * SpaceAgentNodeInspector - Container component for agent node details.
  * Orchestrates logic and state management, rendering the Pure View.
  */
-export const SpaceAgentNodeInspector = ({ agentData, nodeId, onStatusChange, onPropertyChange, onRunNode, canvasNodes }: SpaceAgentInspectorProperties) => {
+export const SpaceAgentNodeInspector = ({ agentData, nodeId, onStatusChange, onPropertyChange, onRunNode, canvasNodes, onClose }: SpaceAgentInspectorProperties) => {
     const { state: inspectorState, actions: inspectorActions } = useSpaceAgentInspector(agentData, nodeId, onPropertyChange);
 
     return (
@@ -21,6 +21,7 @@ export const SpaceAgentNodeInspector = ({ agentData, nodeId, onStatusChange, onP
             onStatusChange={onStatusChange}
             onRunNode={onRunNode}
             canvasNodes={canvasNodes}
+            onClose={onClose}
         />
     );
 };

@@ -13,7 +13,8 @@ export const SpaceAutomationNodeInspector = ({
     automationData, 
     nodeId,
     onPropertyChange,
-    canvasNodes
+    canvasNodes,
+    onClose
 }: SpaceAutomationInspectorProperties) => {
     const [selectedTabIdentifier, setSelectedTabIdentifier] = useState<string>("workflow");
     const [componentSearchQuery, setComponentSearchQuery] = useState("");
@@ -55,6 +56,7 @@ export const SpaceAutomationNodeInspector = ({
             onAddArtefact={handleAddArtefact}
             onTriggerWorkflow={handleTriggerWorkflow}
             canvasNodes={canvasNodes}
+            onClose={onClose}
         />
     );
 };

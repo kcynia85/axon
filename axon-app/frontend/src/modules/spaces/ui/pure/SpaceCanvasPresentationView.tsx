@@ -56,6 +56,7 @@ export const SpaceCanvasPresentationView = ({
     addNewNodeToCanvas,
     updateNodeDataOnCanvas,
     runNode,
+    deselectNodes,
     currentlySelectedNode,
     handleKeyDown,
     canvasViewProperties,
@@ -231,6 +232,7 @@ export const SpaceCanvasPresentationView = ({
                 handleNodeDataPropertyChange={updateNodeDataOnCanvas}
                 onRunNode={runNode}
                 canvasNodes={canvasNodes}
+                onClose={deselectNodes}
               />
 
             )}

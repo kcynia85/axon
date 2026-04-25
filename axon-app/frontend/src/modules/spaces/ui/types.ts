@@ -60,6 +60,7 @@ export type SpaceCanvasSidebarProperties = {
   readonly handleNodeDataPropertyChange: (nodeId: string, updatedInformation: any) => void;
   readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
   readonly canvasNodes: Node[];
+  readonly onClose?: () => void;
 };
 
 export type SpaceCanvasRightSidebarViewProperties = {
@@ -71,6 +72,7 @@ export type SpaceCanvasRightSidebarViewProperties = {
     readonly handlePropertyChange: (propertyName: string, value: any) => void;
     readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
     readonly canvasNodes: Node[];
+    readonly onClose: () => void;
 };
 
 export type SpaceAgentInspectorProperties = {
@@ -80,6 +82,7 @@ export type SpaceAgentInspectorProperties = {
     readonly onPropertyChange: (propertyName: string, value: any) => void;
     readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
     readonly canvasNodes: Node[];
+    readonly onClose?: () => void;
 };
 
 export type SpaceCrewInspectorProperties = {
@@ -89,6 +92,7 @@ export type SpaceCrewInspectorProperties = {
     readonly onPropertyChange: (propertyName: string, value: any) => void;
     readonly onRunNode?: (nodeId: string, userInput: string) => Promise<void>;
     readonly canvasNodes: Node[];
+    readonly onClose?: () => void;
 };
 
 export type SpaceAutomationInspectorProperties = {
@@ -96,6 +100,7 @@ export type SpaceAutomationInspectorProperties = {
     readonly nodeId: string;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
     readonly canvasNodes: Node[];
+    readonly onClose?: () => void;
 };
 
 export type SpaceServiceInspectorProperties = {
@@ -104,6 +109,7 @@ export type SpaceServiceInspectorProperties = {
     readonly onArtifactStatusChange: (nodeId: string, artifactId: string, status: string) => void;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
     readonly canvasNodes: Node[];
+    readonly onClose?: () => void;
 };
 
 export type SpaceTemplateInspectorProperties = {
@@ -111,6 +117,7 @@ export type SpaceTemplateInspectorProperties = {
     readonly nodeId: string;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
     readonly canvasNodes: Node[];
+    readonly onClose?: () => void;
 };
 
 export type SpacePatternInspectorProperties = {
@@ -123,6 +130,7 @@ export type SpaceZoneInspectorProperties = {
     readonly nodeId: string;
     readonly onPropertyChange: (propertyName: string, value: any) => void;
     readonly canvasNodes: Node[];
+    readonly onClose?: () => void;
 };
 
 export type SpaceCanvasOrchestrationLogic = {
@@ -146,6 +154,7 @@ export type SpaceCanvasOrchestrationLogic = {
     readonly pasteNodes: (position?: { x: number; y: number }) => void;
     readonly createPatternFromSelection: (name: string, description: string, type: 'pattern' | 'super-pattern') => SpacePatternBlueprint;
     readonly instantiatePatternFromBlueprint: (blueprint: SpacePatternBlueprint, position: { x: number; y: number }) => void;
+    readonly deselectNodes: () => void;
     readonly runNode: (nodeId: string, userInput: string) => Promise<void>;
     readonly handleKeyDown: (event: React.KeyboardEvent) => void;
 };

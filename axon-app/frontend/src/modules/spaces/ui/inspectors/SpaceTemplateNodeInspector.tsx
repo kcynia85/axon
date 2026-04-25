@@ -13,7 +13,8 @@ export const SpaceTemplateNodeInspector = ({
     templateData, 
     nodeId,
     onPropertyChange,
-    canvasNodes
+    canvasNodes,
+    onClose
 }: SpaceTemplateInspectorProperties) => {
     const logic = useSpaceTemplateInspectorLogic(templateData, onPropertyChange as any);
 
@@ -31,6 +32,7 @@ export const SpaceTemplateNodeInspector = ({
             onArtefactStatusChange={logic.handleArtefactStatusChange}
             onArtefactOutputToggle={logic.handleArtefactOutputToggle}
             canvasNodes={canvasNodes}
+            onClose={onClose}
         />
     );
 };
