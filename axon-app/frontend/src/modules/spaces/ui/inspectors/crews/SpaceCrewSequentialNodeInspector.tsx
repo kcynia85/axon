@@ -13,6 +13,8 @@ import { SpaceCrewProgressBar } from "./shared/SpaceCrewProgressBar";
 import { SpaceCrewOrchestrationLayout } from "./shared/SpaceCrewOrchestrationLayout";
 import { SpaceInspectorFooter } from "../../inspectors/components/SpaceInspectorFooter";
 import { SpaceInspectorPanel } from "../../inspectors/components/SpaceInspectorPanel";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { getModelName } from "@/modules/workspaces/domain/constants";
 import { useSpaceCrewSequentialInspector } from "../../../application/hooks/useSpaceCrewSequentialInspector";
 import type { SpaceCrewInspectorProperties } from "../../types";
 
@@ -44,23 +46,20 @@ export const SpaceCrewSequentialNodeInspector = ({
     };
 
     return (
-        <SpaceInspectorPanel>
-            <div className="p-8 pb-0 flex items-start justify-between">
-                <div className="flex-1">
-                    <h3 className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.3em]">Sequential Crew</h3>
-                </div>
-                {onClose && (
+        <SpaceInspectorPanel className="relative">
+            {onClose && (
+                <div className="absolute top-2 right-6 z-30">
                     <Button 
                         isIconOnly 
                         variant="light" 
                         size="sm" 
-                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors -mr-2 -mt-2"
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors"
                         onPress={onClose}
                     >
                         <X size={20} strokeWidth={3} />
                     </Button>
-                )}
-            </div>
+                </div>
+            )}
             <Tabs 
                 aria-label="Sequential Crew" 
                 size="sm" 
@@ -119,7 +118,14 @@ export const SpaceCrewSequentialNodeInspector = ({
                                                                             </div>
                                                                         )}
                                                                     </div>
-                                                                    <span className="text-[14px] font-black text-zinc-200">{task.assignedAgentTitle}</span>
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-[14px] font-black text-zinc-200">{task.assignedAgentTitle}</span>
+                                                                        <div className="flex items-center gap-1.5 pt-0.5">
+                                                                            <Badge variant="outline" className="text-[10px] font-mono font-black text-zinc-600 bg-black/20 border-zinc-800/50 px-1.5 py-0 h-3.5 rounded-md">
+                                                                                {getModelName(task.llm_model_id || "123e4567-e89b-12d3-a456-426614175000")}
+                                                                            </Badge>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <Input 

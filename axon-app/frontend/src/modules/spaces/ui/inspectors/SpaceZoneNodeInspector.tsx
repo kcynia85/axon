@@ -18,14 +18,9 @@ export const SpaceZoneNodeInspector = ({
     const { state, actions } = useSpaceZoneInspector(zoneData, nodeId, onPropertyChange, canvasNodes);
 
     return (
-        <SpaceInspectorPanel>
-            <div className="p-8 pb-4 flex items-start justify-between">
-                <div className="flex-1">
-                    <h3 className="font-black text-2xl text-white mb-1 tracking-tight">{state.label}</h3>
-                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Zone Component</p>
-                </div>
-                
-                {onClose && (
+        <SpaceInspectorPanel className="relative">
+            {onClose && (
+                <div className="absolute top-2 right-6 z-30">
                     <Button 
                         isIconOnly 
                         variant="light" 
@@ -35,8 +30,9 @@ export const SpaceZoneNodeInspector = ({
                     >
                         <X size={20} strokeWidth={3} />
                     </Button>
-                )}
-            </div>
+                </div>
+            )}
+
 
             <Tabs 
                 aria-label="Zone Inspector Tabs" 

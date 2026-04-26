@@ -73,12 +73,15 @@ export type AgentMetrics = {
   readonly duration?: string;
 };
 
+export const GLOBAL_AVAILABILITY = "Global Availability";
+
 export type SpaceAgentDomainData = {
   readonly label: string;
   readonly state: string;
   readonly progress: number;
   readonly zoneColor: WorkspaceColor;
   readonly agent_visual_url?: string | null;
+  readonly llm_model_id?: string | null;
   readonly plan_steps?: readonly AgentPlanStep[];
   readonly metrics?: AgentMetrics;
   readonly pending_question?: string;
@@ -310,6 +313,7 @@ export type SpaceNodeViewModel = {
     readonly activeOutputClassName?: string;
     readonly progressText?: string;
     readonly isSelected?: boolean;
+    readonly llm_model_id?: string | null;
     readonly containerClassName?: string;
     readonly labelClassName?: string;
     readonly resizerLineClassName?: string;

@@ -13,6 +13,8 @@ import { SpaceCrewProgressBar } from "./shared/SpaceCrewProgressBar";
 import { SpaceCrewOrchestrationLayout } from "./shared/SpaceCrewOrchestrationLayout";
 import { SpaceInspectorFooter } from "../../inspectors/components/SpaceInspectorFooter";
 import { SpaceInspectorPanel } from "../../inspectors/components/SpaceInspectorPanel";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { getModelName } from "@/modules/workspaces/domain/constants";
 import { useSpaceCrewHierarchicalInspector } from "../../../application/hooks/useSpaceCrewHierarchicalInspector";
 import type { SpaceCrewInspectorProperties } from "../../types";
 
@@ -39,23 +41,20 @@ export const SpaceCrewHierarchicalNodeInspector = ({
     };
 
     return (
-        <SpaceInspectorPanel>
-            <div className="p-8 pb-0 flex items-start justify-between">
-                <div className="flex-1">
-                    <h3 className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.3em]">Hierarchical Crew</h3>
-                </div>
-                {onClose && (
+        <SpaceInspectorPanel className="relative">
+            {onClose && (
+                <div className="absolute top-2 right-6 z-30">
                     <Button 
                         isIconOnly 
                         variant="light" 
                         size="sm" 
-                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors -mr-2 -mt-2"
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors"
                         onPress={onClose}
                     >
                         <X size={20} strokeWidth={3} />
                     </Button>
-                )}
-            </div>
+                </div>
+            )}
             <Tabs 
                 aria-label="Hierarchical Crew" 
                 size="sm" 
@@ -139,7 +138,14 @@ export const SpaceCrewHierarchicalNodeInspector = ({
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="flex justify-between items-start">
-                                                                    <span className="text-[14px] font-black truncate text-zinc-200">{task.assignedAgentTitle}</span>
+                                                                    <div className="flex flex-col min-w-0">
+                                                                        <span className="text-[14px] font-black truncate text-zinc-200">{task.assignedAgentTitle}</span>
+                                                                        <div className="flex items-center gap-1.5 pt-0.5">
+                                                                            <Badge variant="outline" className="text-[8px] font-mono font-black text-zinc-600 uppercase tracking-widest bg-black/20 border-zinc-800/50 px-1.5 py-0 h-3.5 rounded-md">
+                                                                                {getModelName(task.llm_model_id || "123e4567-e89b-12d3-a456-426614175000")}
+                                                                            </Badge>
+                                                                        </div>
+                                                                    </div>
                                                                     {isAgentWorking && <Zap size={10} className="text-yellow-500 animate-pulse shrink-0" />}
                                                                 </div>
                                                                 {task.thought ? (

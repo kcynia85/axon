@@ -9,6 +9,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { type Node } from "@xyflow/react";
 import { cn } from "@/shared/lib/utils";
+import { Badge } from "@/shared/ui/ui/Badge";
+import { getModelName } from "@/modules/workspaces/domain/constants";
 import { SpaceCrewContextTab } from "./crews/shared/SpaceCrewContextTab";
 import { SpaceCognitionTab } from "./shared/SpaceCognitionTab";
 import { SpaceCrewArtefactsTab } from "./crews/shared/SpaceCrewArtefactsTab";
@@ -44,23 +46,20 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
     };
 
     return (
-        <SpaceInspectorPanel>
-            <div className="p-8 pb-0 flex items-start justify-between">
-                <div className="flex-1">
-                    <h3 className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.3em]">Agent Inspector</h3>
-                </div>
-                {onClose && (
+        <SpaceInspectorPanel className="relative">
+            {onClose && (
+                <div className="absolute top-2 right-6 z-30">
                     <Button 
                         isIconOnly 
                         variant="light" 
                         size="sm" 
-                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors -mr-2 -mt-2"
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors"
                         onPress={onClose}
                     >
                         <X size={20} strokeWidth={3} />
                     </Button>
-                )}
-            </div>
+                </div>
+            )}
             <Tabs 
                 aria-label="Inspector" 
                 size="sm" 
@@ -101,9 +100,15 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                                         <div className="w-1.5 h-1.5 rounded-full bg-white" />
                                     </div>
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-0.5 flex flex-col items-center">
                                     <h2 className="text-lg font-black text-white tracking-tighter">{agentData.label}</h2>
                                     <p className="text-[16px] font-black text-zinc-500">{agentData.agent_name || "Autonomous Agent"}</p>
+                                    
+                                    <div className="pt-1.5 flex items-center justify-center">
+                                        <Badge variant="outline" className="text-[10px] font-mono font-black text-zinc-600 bg-black/20 border-zinc-800/50 px-2 py-0 h-4 rounded-md">
+                                            {getModelName(agentData.llm_model_id || "123e4567-e89b-12d3-a456-426614175000")}
+                                        </Badge>
+                                    </div>
                                 </div>
                             </div>
 

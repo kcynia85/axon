@@ -15,8 +15,8 @@ export const MetaAgentOrb: React.FC<MetaAgentOrbProps> = ({ onClick, isOpen }) =
             whileTap={{ scale: 0.95 }}
             onClick={onClick}
             className={cn(
-                "fixed bottom-8 right-8 z-[900] w-16 h-16 rounded-full flex items-center justify-center transition-opacity",
-                isOpen ? " pointer-events-none" : "0 hover:"
+                "fixed bottom-8 right-8 z-[900] w-16 h-16 rounded-full flex items-center justify-center transition-all",
+                isOpen ? "pointer-events-none scale-0" : "bg-black border border-white/10 shadow-2xl"
             )}
         >
             <div className="absolute inset-0 flex items-center justify-center scale-[0.5] origin-center pointer-events-none">

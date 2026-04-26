@@ -114,6 +114,7 @@ class SpaceService:
                             "agent_visual_url": agent.agent_visual_url,
                             "agent_name": agent.agent_name,
                             "agent_role_text": agent.agent_role_text,
+                            "llm_model_id": str(agent.llm_model_id) if agent.llm_model_id else None,
                             "knowledge_hub_ids": [str(hid) for hid in agent.knowledge_hub_ids] if agent.knowledge_hub_ids else []
                         })
                 except Exception as e:

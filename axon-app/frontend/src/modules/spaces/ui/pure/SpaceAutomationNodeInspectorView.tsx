@@ -91,23 +91,20 @@ export const SpaceAutomationNodeInspectorView = ({
     const artefacts = automationData.artefacts || [];
 
     return (
-        <SpaceInspectorPanel>
-            <div className="p-8 pb-0 flex items-start justify-between">
-                <div className="flex-1">
-                    <h3 className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.3em]">Automation Inspector</h3>
-                </div>
-                {onClose && (
+        <SpaceInspectorPanel className="relative">
+            {onClose && (
+                <div className="absolute top-2 right-6 z-30">
                     <Button 
                         isIconOnly 
                         variant="light" 
                         size="sm" 
-                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors -mr-2 -mt-2"
+                        className="text-zinc-500 hover:text-white hover:bg-zinc-800 transition-colors"
                         onPress={onClose}
                     >
                         <X size={20} strokeWidth={3} />
                     </Button>
-                )}
-            </div>
+                </div>
+            )}
             <Tabs 
                 aria-label="Automation Inspector" 
                 size="sm" 

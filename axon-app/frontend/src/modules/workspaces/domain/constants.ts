@@ -67,3 +67,10 @@ export const getWorkspaceLabel = (id: string): string => {
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 };
+
+/**
+ * Returns the human-readable label for an LLM model ID.
+ */
+export const getModelName = (id: string): string => {
+  return LLM_MODEL_NAMES[id] || id;
+};

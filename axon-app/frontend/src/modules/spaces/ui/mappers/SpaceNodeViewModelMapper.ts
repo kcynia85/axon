@@ -68,6 +68,7 @@ export const mapAgentToViewModel = (agentDomainData: SpaceAgentDomainData, isSel
         hasOutputArtefacts,
         activeOutputClassName: visualStyles.activeOutputClassName,
         knowledgeHubIds: agentDomainData.knowledge_hub_ids,
+        llm_model_id: agentDomainData.llm_model_id,
     };
 };
 
