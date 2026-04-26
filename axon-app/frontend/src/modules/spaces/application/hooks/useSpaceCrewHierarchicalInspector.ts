@@ -54,6 +54,8 @@ export const useSpaceCrewHierarchicalInspector = (crewData: any, nodeId: string,
     return {
         state: {
             ...crewLogic,
+            manager_title: crewData.manager_title || crewData.manager_name || "Manager",
+            manager_visual_url: crewData.manager_visual_url || crewData.manager_avatar_url || (crewData.resolved_manager?.visualUrl || crewData.resolved_manager?.agent_visual_url),
             artefacts: crewData.artefacts || [],
             hasInReview: (crewData.artefacts || []).some((artefactItem: any) => artefactItem.status === 'in_review')
         },

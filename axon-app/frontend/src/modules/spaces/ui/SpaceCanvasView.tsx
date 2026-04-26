@@ -110,6 +110,7 @@ export const SpaceCanvasView = ({ initialConfiguration, workspaceId }: SpaceCanv
                           temperature: p.temperature ?? 0.7,
                           native_skills: Array.from(new Set(p.native_skills || [])),
                           tools: Array.from(new Set(p.tools || [])),
+                          agent_visual_url: draft.visual_url || p.agent_visual_url || null,
                           availability_workspace: [targetWorkspace],
                           ...p
                       });

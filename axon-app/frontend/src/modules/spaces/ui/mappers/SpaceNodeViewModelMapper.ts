@@ -64,7 +64,7 @@ export const mapAgentToViewModel = (agentDomainData: SpaceAgentDomainData, isSel
         isCritique: stateValue === 'critique',
         isMissingContext: stateValue === 'missing_context',
         VisualIcon: Bot,
-        visualUrl: agentDomainData.agent_visual_url,
+        visualUrl: agentDomainData.agent_visual_url || (agentDomainData as any).visualUrl,
         hasOutputArtefacts,
         activeOutputClassName: visualStyles.activeOutputClassName,
         knowledgeHubIds: agentDomainData.knowledge_hub_ids,

@@ -81,9 +81,9 @@ export const SpaceAgentNodeInspectorView = ({ state, actions, agentData, nodeId,
                             <div className="mb-10 flex flex-col items-center text-center space-y-4">
                                 <div className="relative">
                                     <div className="w-16 h-16 rounded-full border-4 border-zinc-700 bg-black flex items-center justify-center overflow-hidden  relative shrink-0">
-                                        {agentData.agent_visual_url ? (
+                                        {(agentData.agent_visual_url || agentData.visualUrl) ? (
                                             <Image 
-                                                src={agentData.agent_visual_url} 
+                                                src={agentData.agent_visual_url || agentData.visualUrl} 
                                                 alt={agentData.label}
                                                 fill
                                                 sizes="64px"

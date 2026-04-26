@@ -95,7 +95,7 @@ export const SpaceCanvasHeaderView = ({
             </div>
 
             <div className="absolute top-8 right-8 z-50 pointer-events-none select-none">
-                <div className="flex items-center gap-6 pointer-events-auto bg-black border border-white  rounded-2xl py-2 px-4 [0_0_30px_rgb(0,0,0)]">
+                <div className="flex items-center gap-6 pointer-events-auto bg-black  rounded-2xl py-2 px-4 [0_0_30px_rgb(0,0,0)]">
                     <div className="flex items-center gap-1.5">
                         <AnimatePresence mode="wait">
                             {isSaving ? (

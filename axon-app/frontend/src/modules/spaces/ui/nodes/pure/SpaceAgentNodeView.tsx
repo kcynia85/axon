@@ -49,15 +49,7 @@ export const SpaceAgentNodeView = ({ viewModel, onRun }: { readonly viewModel: S
                     </div>
                 )}
                 <div className="flex flex-col gap-0.5 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <span className={cn(viewModel.visual.titleClassName, "truncate")}>{viewModel.displayName}</span>
-                        {viewModel.knowledgeHubIds && viewModel.knowledgeHubIds.length > 0 && (
-                            <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-blue-500 border border-blue-500 text-blue-400">
-                                <Sparkles size={10} className="shrink-0" />
-                                <span className="text-[8px] font-black">{viewModel.knowledgeHubIds.length}</span>
-                            </div>
-                        )}
-                    </div>
+                    <span className={cn(viewModel.visual.titleClassName, "truncate")}>{viewModel.displayName}</span>
                     <span className={viewModel.visual.subtitleClassName}>{viewModel.statusText}</span>
                 </div>
             </div>

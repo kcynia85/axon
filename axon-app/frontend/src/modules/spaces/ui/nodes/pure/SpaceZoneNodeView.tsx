@@ -22,6 +22,10 @@ export const SpaceZoneNodeView = ({ viewModel }: { readonly viewModel: SpaceZone
                 style={{ 
                     borderColor: viewModel.labelBorderClassName?.includes('purple') ? 'rgb(88, 28, 135)' : 
                                  viewModel.labelBorderClassName?.includes('blue') ? 'rgb(30, 58, 138)' : 
+                                 viewModel.labelBorderClassName?.includes('pink') ? 'rgb(131, 24, 67)' : 
+                                 viewModel.labelBorderClassName?.includes('green') ? 'rgb(20, 83, 45)' : 
+                                 viewModel.labelBorderClassName?.includes('yellow') ? 'rgb(113, 63, 18)' : 
+                                 viewModel.labelBorderClassName?.includes('orange') ? 'rgb(124, 45, 18)' : 
                                  '#27272a' 
                 }}
             >
@@ -30,6 +34,10 @@ export const SpaceZoneNodeView = ({ viewModel }: { readonly viewModel: SpaceZone
                     style={{ 
                         color: viewModel.labelClassName?.includes('purple') ? 'rgb(192, 132, 252)' : 
                                viewModel.labelClassName?.includes('blue') ? 'rgb(96, 165, 250)' : 
+                               viewModel.labelClassName?.includes('pink') ? 'rgb(244, 114, 182)' : 
+                               viewModel.labelClassName?.includes('green') ? 'rgb(74, 222, 128)' : 
+                               viewModel.labelClassName?.includes('yellow') ? 'rgb(250, 204, 21)' : 
+                               viewModel.labelClassName?.includes('orange') ? 'rgb(251, 146, 60)' : 
                                '#a1a1aa' 
                     }}
                 >
