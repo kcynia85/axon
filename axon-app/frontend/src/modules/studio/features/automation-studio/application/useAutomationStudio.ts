@@ -37,7 +37,12 @@ export const useAutomationStudio = (automationId?: string | null) => {
 				platform: automation.automation_platform || "n8n",
 				method: automation.automation_http_method || "POST",
 				url: automation.automation_webhook_url || "",
-				auth: { type: "header" },
+				automationProviderId: automation.automation_provider_id || null,
+				auth: { 
+					type: automation.automation_auth_config?.type || "none",
+					headerName: automation.automation_auth_config?.headerName || "",
+					secret: automation.automation_auth_config?.secret || ""
+				},
 			},
 			dataInterface: {
 				context: Object.entries(automation.automation_input_schema || {}).map(([name, config]) => ({
@@ -59,24 +64,24 @@ export const useAutomationStudio = (automationId?: string | null) => {
 
 	const form = useForm<AutomationFormData>({
 		resolver: zodResolver(automationFormSchema) as any,
-		values: initialData || draft || {
+		values: (initialData || draft || {
 			definition: {
 				name: "",
 				semanticDescription: "",
 				keywords: [],
 			},
 			connection: {
-				platform: "n8n",
+				platform: "N8N",
 				method: "POST",
 				url: "",
-				auth: { type: "none" },
+				auth: { type: "NONE" },
 			},
 			dataInterface: {
 				context: [],
 				artefacts: [],
 			},
 			availability: [workspaceId],
-		},
+		}) as any,
 	});
 
 	const handleExit = () => {
@@ -92,6 +97,8 @@ export const useAutomationStudio = (automationId?: string | null) => {
 				automation_webhook_url: data.connection.url,
 				automation_platform: data.connection.platform,
 				automation_http_method: data.connection.method,
+				automation_provider_id: data.connection.automationProviderId || null,
+				automation_auth_config: data.connection.automationProviderId ? null : data.connection.auth,
 				availability_workspace: data.availability,
 				automation_input_schema: data.dataInterface.context.reduce((accumulator, currentField) => ({
 					...accumulator,

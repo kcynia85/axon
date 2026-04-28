@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { type AutomationFormData } from "../../types/automation-schema";
+import { type AutomationFormData } from "../types/automation-schema";
 
 /**
  * useAutomationDraft hook manages automation creation drafts using TanStack Query and localStorage.

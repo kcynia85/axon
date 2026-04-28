@@ -3,7 +3,8 @@ from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel, Field
 from app.modules.settings.domain.enums import (
-    ProviderType, ModelTier, RouterStrategy, ChunkingMethod, VectorDBType, IndexMethod, ConnectionStatus
+    ProviderType, ModelTier, RouterStrategy, ChunkingMethod, VectorDBType, IndexMethod, ConnectionStatus,
+    AutomationPlatform, AutomationAuthType
 )
 
 # LLM Provider
@@ -284,3 +285,35 @@ class ConnectionTestResponse(BaseModel):
 class LLMModelUsageResponse(BaseModel):
     is_used: bool
     used_by: List[str]
+
+# Automation
+class CreateAutomationProviderRequest(BaseModel):
+    name: str
+    platform: AutomationPlatform
+    base_url: Optional[str] = None
+    auth_type: AutomationAuthType = AutomationAuthType.HEADER
+    auth_header_name: Optional[str] = "Authorization"
+    auth_secret: Optional[str] = None
+
+class UpdateAutomationProviderRequest(BaseModel):
+    name: Optional[str] = None
+    platform: Optional[AutomationPlatform] = None
+    base_url: Optional[str] = None
+    auth_type: Optional[AutomationAuthType] = None
+    auth_header_name: Optional[str] = None
+    auth_secret: Optional[str] = None
+
+class AutomationProviderResponse(CreateAutomationProviderRequest):
+    id: UUID
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: Optional[datetime] = None
+
+class TestAutomationConnectionRequest(BaseModel):
+    platform: AutomationPlatform
+    base_url: Optional[str] = None
+    auth_type: AutomationAuthType = AutomationAuthType.HEADER
+    auth_header_name: Optional[str] = "Authorization"
+    auth_secret: Optional[str] = None
+
+

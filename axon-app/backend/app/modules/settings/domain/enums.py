@@ -45,3 +45,14 @@ class IndexMethod(str, Enum):
 class ConnectionStatus(str, Enum):
     CONNECTED = "Connected"
     DISCONNECTED = "Disconnected"
+
+class AutomationPlatform(str, Enum):
+    N8N = "N8N"
+    ZAPIER = "ZAPIER"
+    MAKE = "MAKE"
+    CUSTOM = "CUSTOM"
+
+class AutomationAuthType(str, Enum):
+    HEADER = "HEADER"
+    BEARER = "BEARER"
+    NONE = "NONE"

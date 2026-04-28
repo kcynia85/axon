@@ -5,10 +5,10 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 
 from app.modules.settings.domain.models import (
-    LLMProvider, LLMModel, LLMRouter, EmbeddingModel, ChunkingStrategy, VectorDatabase
+    LLMProvider, LLMModel, LLMRouter, EmbeddingModel, ChunkingStrategy, VectorDatabase, AutomationProvider
 )
 from app.modules.settings.infrastructure.tables import (
-    LLMProviderTable, LLMModelTable, LLMRouterTable, EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable
+    LLMProviderTable, LLMModelTable, LLMRouterTable, EmbeddingModelTable, ChunkingStrategyTable, VectorDatabaseTable, AutomationProviderTable
 )
 from app.shared.utils.time import now_utc
 
@@ -542,6 +542,74 @@ class SettingsRepository:
             updated_at=row.updated_at,
             deleted_at=row.deleted_at
         )
+
+    # --- Automation Provider ---
+
+    async def create_automation_provider(self, provider: AutomationProvider) -> AutomationProvider:
+        db_obj = AutomationProviderTable(
+            id=provider.id,
+            name=provider.name,
+            platform=provider.platform,
+            base_url=provider.base_url,
+            auth_type=provider.auth_type,
+            auth_header_name=provider.auth_header_name,
+            auth_secret=provider.auth_secret,
+            created_at=provider.created_at,
+            updated_at=provider.updated_at
+        )
+        self.session.add(db_obj)
+        await self.session.commit()
+        return provider
+
+    async def list_automation_providers(self) -> List[AutomationProvider]:
+        result = await self.session.execute(
+            select(AutomationProviderTable).where(AutomationProviderTable.deleted_at == None)
+        )
+        return [self._to_domain_automation_provider(row) for row in result.scalars().all()]
+
+    async def get_automation_provider(self, id: UUID) -> Optional[AutomationProvider]:
+        result = await self.session.execute(
+            select(AutomationProviderTable).where(
+                AutomationProviderTable.id == id,
+                AutomationProviderTable.deleted_at == None
+            )
+        )
+        row = result.scalar_one_or_none()
+        return self._to_domain_automation_provider(row) if row else None
+
+    async def update_automation_provider(self, id: UUID, data: dict) -> Optional[AutomationProvider]:
+        if not data:
+            return await self.get_automation_provider(id)
+            
+        await self.session.execute(
+            update(AutomationProviderTable).where(AutomationProviderTable.id == id).values(
+                **data, updated_at=now_utc()
+            )
+        )
+        await self.session.commit()
+        return await self.get_automation_provider(id)
+
+    async def delete_automation_provider(self, id: UUID) -> bool:
+        await self.session.execute(
+            update(AutomationProviderTable).where(AutomationProviderTable.id == id).values(deleted_at=now_utc())
+        )
+        await self.session.commit()
+        return True
+
+    def _to_domain_automation_provider(self, row: AutomationProviderTable) -> AutomationProvider:
+        return AutomationProvider(
+            id=row.id,
+            name=row.name,
+            platform=row.platform,
+            base_url=row.base_url,
+            auth_type=row.auth_type,
+            auth_header_name=row.auth_header_name,
+            auth_secret=row.auth_secret,
+            created_at=row.created_at,
+            updated_at=row.updated_at,
+            deleted_at=row.deleted_at
+        )
+
 
 # --- Functional-First Standalone Functions ---
 

@@ -4,13 +4,14 @@ import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormPropertyTable } from "@/shared/ui/form/FormPropertyTable";
 import { useFormContext } from "react-hook-form";
 import type { AutomationFormData } from "../../types/automation-schema";
+import type { FormPropertyFieldType } from "@/shared/types/form/FormPropertyTable.types";
 
-const PROPERTY_TYPE_OPTIONS = [
-	{ value: "text" as const, label: "Text" },
-	{ value: "link" as const, label: "Link/URL" },
-	{ value: "number" as const, label: "Number" },
-	{ value: "boolean" as const, label: "Boolean" },
-	{ value: "date" as const, label: "Date" },
+const PROPERTY_TYPE_OPTIONS: { readonly label: string; readonly value: FormPropertyFieldType }[] = [
+	{ value: "string", label: "Text/String" },
+	{ value: "number", label: "Number" },
+	{ value: "boolean", label: "Boolean" },
+	{ value: "json", label: "JSON" },
+	{ value: "file", label: "File/URL" },
 ];
 
 /**
@@ -22,11 +23,11 @@ export const AutomationArtefactsSection = () => {
 
 	return (
 		<FormSection
-		        id="artefacts"
-		        number={4}
-		        title="Artefacts"
-		        description="Define output artefacts and results"
-		        variant="island"
+				id="artefacts"
+				number={3}
+				title="Artefakty Wyjściowe"
+				description="Zdefiniuj dane wyjściowe i rezultaty"
+				variant="island"
 		>
 
 			<div className="space-y-12">

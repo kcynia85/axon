@@ -5,5 +5,5 @@ import { SharedAvailabilitySection } from "@/modules/studio/ui/shared/SharedAvai
  * Now using shared component for consistency across all studios.
  */
 export const AutomationAvailabilitySection = () => {
-	return <SharedAvailabilitySection name="availability" number={5} />;
+	return <SharedAvailabilitySection name="availability" number={4} />;
 };

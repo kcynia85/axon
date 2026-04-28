@@ -13,8 +13,12 @@ from app.modules.workspaces.application.service import (
 )
 from app.modules.workspaces.application.schemas import (
     PatternResponse, TemplateResponse, CrewResponse, WorkspaceResponse,
-    ExternalServiceResponse, AutomationResponse, TrashItemResponse
+    ExternalServiceResponse, AutomationResponse, TrashItemResponse,
+    TestAutomationExecutionRequest
 )
+from app.modules.settings.application.service import SettingsService
+from app.modules.settings.dependencies import get_settings_service
+
 
 router = APIRouter(
     prefix="/workspaces",
@@ -316,3 +320,68 @@ async def delete_automation(
     if not success:
         raise HTTPException(status_code=404, detail="Automation not found")
     return
+
+@router.post("/{workspace_id}/automations/test")
+async def test_automation_execution(
+    request: TestAutomationExecutionRequest,
+    settings_service: SettingsService = Depends(get_settings_service)
+):
+    """Test an automation by sending a request to the webhook URL."""
+    import httpx
+    
+    headers = {}
+    
+    # 1. Resolve Auth from Provider
+    if request.automation_provider_id:
+        from app.modules.settings.domain.enums import AutomationAuthType
+        provider = await settings_service.get_automation_provider(request.automation_provider_id)
+        if provider:
+            if provider.auth_type == AutomationAuthType.HEADER and provider.auth_header_name and provider.auth_secret:
+                headers[provider.auth_header_name] = provider.auth_secret
+            elif provider.auth_type == AutomationAuthType.BEARER and provider.auth_secret:
+                headers["Authorization"] = f"Bearer {provider.auth_secret}"
+    
+    # 2. Resolve Manual Auth
+    elif request.automation_auth_config:
+        auth = request.automation_auth_config
+        auth_type = auth.get("type")
+        if auth_type == "header" and auth.get("headerName") and auth.get("secret"):
+            headers[auth["headerName"]] = auth["secret"]
+        elif auth_type == "bearer" and auth.get("secret"):
+            headers["Authorization"] = f"Bearer {auth['secret']}"
+            
+    # 3. Execute Request
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            method = request.automation_http_method.upper()
+            
+            if method == "GET":
+                response = await client.get(request.automation_webhook_url, headers=headers, params=request.test_inputs)
+            else:
+                response = await client.request(
+                    method, 
+                    request.automation_webhook_url, 
+                    headers=headers, 
+                    json=request.test_inputs
+                )
+            
+            try:
+                response_data = response.json()
+            except:
+                response_data = response.text
+                
+            return {
+                "success": response.status_code < 400,
+                "statusCode": response.status_code,
+                "statusText": response.reason_phrase,
+                "data": response_data
+            }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Connection error: {str(e)}",
+            "statusCode": 0,
+            "statusText": "Error",
+            "data": None
+        }
+

@@ -185,3 +185,21 @@ export const VectorDatabaseSchema = z.object({
 });
 
 export type VectorDatabase = z.infer<typeof VectorDatabaseSchema>;
+
+// --- Automation Providers ---
+
+export const AutomationProviderSchema = z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    platform: z.enum(["N8N", "ZAPIER", "MAKE", "CUSTOM"]),
+    base_url: z.string().nullable().optional(),
+    auth_type: z.enum(["HEADER", "BEARER", "NONE"]).default("HEADER"),
+    auth_header_name: z.string().nullable().optional().default("Authorization"),
+    auth_secret: z.string().nullable().optional(),
+    created_at: z.string().datetime(),
+    updated_at: z.string().datetime(),
+    deleted_at: z.string().datetime().nullable().optional(),
+});
+
+export type AutomationProvider = z.infer<typeof AutomationProviderSchema>;
+

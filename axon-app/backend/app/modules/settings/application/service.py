@@ -4,7 +4,7 @@ from typing import List, Optional
 from app.modules.settings.infrastructure.repo import SettingsRepository
 from app.modules.settings.infrastructure.pricing_scraper import PricingScraper
 from app.modules.settings.domain.models import (
-    LLMProvider, LLMModel, LLMRouter, EmbeddingModel, ChunkingStrategy, VectorDatabase
+    LLMProvider, LLMModel, LLMRouter, EmbeddingModel, ChunkingStrategy, VectorDatabase, AutomationProvider
 )
 from app.modules.settings.application.schemas import (
     CreateLLMProviderRequest, UpdateLLMProviderRequest,
@@ -13,11 +13,13 @@ from app.modules.settings.application.schemas import (
     CreateEmbeddingModelRequest, UpdateEmbeddingModelRequest,
     CreateChunkingStrategyRequest, UpdateChunkingStrategyRequest,
     CreateVectorDatabaseRequest, UpdateVectorDatabaseRequest,
+    CreateAutomationProviderRequest, UpdateAutomationProviderRequest,
+    TestAutomationConnectionRequest,
     SimulateChunkingRequest, SimulateChunkingResponse,
     TestPromptRequest, SanityCheckResponse, ConnectionTestResponse,
     AvailableModelResponse
 )
-from app.modules.settings.domain.enums import ConnectionStatus
+from app.modules.settings.domain.enums import ConnectionStatus, AutomationAuthType
 from app.shared.utils.time import now_utc
 
 class SettingsService:
@@ -408,7 +410,7 @@ class SettingsService:
         import time
         import httpx
         from urllib.parse import quote_plus
-        from app.modules.settings.domain.enums import ConnectionStatus, VectorDBType
+        from app.modules.settings.domain.enums import ConnectionStatus, AutomationAuthType, VectorDBType
 
         db = await self.repo.get_vector_database(id)
         if not db:
@@ -808,4 +810,85 @@ class SettingsService:
                 print(f"LiteLLM Fallback discovery error: {fe}")
 
             return []
+
+    # --- Automation Provider ---
+
+    async def get_automation_provider(self, id: UUID) -> Optional[AutomationProvider]:
+        return await self.repo.get_automation_provider(id)
+
+    async def create_automation_provider(self, request: CreateAutomationProviderRequest) -> AutomationProvider:
+        provider = AutomationProvider(
+            id=uuid4(),
+            name=request.name,
+            platform=request.platform,
+            base_url=request.base_url,
+            auth_type=request.auth_type,
+            auth_header_name=request.auth_header_name,
+            auth_secret=request.auth_secret,
+            created_at=now_utc(),
+            updated_at=now_utc()
+        )
+        return await self.repo.create_automation_provider(provider)
+
+    async def list_automation_providers(self) -> List[AutomationProvider]:
+        return await self.repo.list_automation_providers()
+
+    async def update_automation_provider(self, id: UUID, request: UpdateAutomationProviderRequest) -> Optional[AutomationProvider]:
+        update_data = request.model_dump(exclude_unset=True)
+        if not update_data:
+            return await self.get_automation_provider(id)
+        return await self.repo.update_automation_provider(id, update_data)
+
+    async def delete_automation_provider(self, id: UUID) -> bool:
+        return await self.repo.delete_automation_provider(id)
+
+    async def test_automation_connection(self, request: TestAutomationConnectionRequest) -> ConnectionTestResponse:
+        if not request.base_url:
+            return ConnectionTestResponse(success=False, message="Brak adresu URL do przetestowania.", latency_ms=0.0)
+            
+        headers = {}
+        if request.auth_type == AutomationAuthType.HEADER and request.auth_header_name and request.auth_secret:
+            headers[request.auth_header_name] = request.auth_secret
+        elif request.auth_type == AutomationAuthType.BEARER and request.auth_secret:
+            headers["Authorization"] = f"Bearer {request.auth_secret}"
+            
+        startTime = now_utc()
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                # Basic health check attempt
+                # For n8n/make we often just try to hit the base URL or a known health endpoint if possible
+                # Defaulting to a simple GET
+                response = await client.get(request.base_url, headers=headers)
+                
+                endTime = now_utc()
+                latency = (endTime - startTime).total_seconds() * 1000
+                
+                if 200 <= response.status_code < 300:
+                    return ConnectionTestResponse(
+                        success=True, 
+                        message=f"Połączenie nawiązane. Klucz API poprawny (Status: {response.status_code})",
+                        latency_ms=latency,
+                        raw_json=response.json() if response.headers.get("content-type", "").startswith("application/json") else None
+                    )
+                elif response.status_code in (401, 403):
+                    return ConnectionTestResponse(
+                        success=False, 
+                        message=f"Błąd autoryzacji: Nieprawidłowy klucz API (Status: {response.status_code})",
+                        latency_ms=latency
+                    )
+                else:
+                    return ConnectionTestResponse(
+                        success=False, 
+                        message=f"Serwer odpowiedział błędem: {response.status_code} {response.reason_phrase}",
+                        latency_ms=latency
+                    )
+        except Exception as e:
+            return ConnectionTestResponse(
+                success=False, 
+                message=f"Błąd połączenia: {str(e)}",
+                latency_ms=0.0
+            )
+
+
+
 

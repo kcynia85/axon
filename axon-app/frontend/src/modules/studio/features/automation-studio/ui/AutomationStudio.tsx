@@ -8,17 +8,18 @@ import { AutomationStudioView } from "./AutomationStudioView";
 
 import { toast } from "sonner";
 
+import { FieldErrors } from "react-hook-form";
+import { AutomationFormData } from "../types/automation-schema";
+
 const AUTOMATION_STUDIO_SECTION_IDENTIFIERS: readonly AutomationStudioSectionId[] = [
     "definition",
-    "connection",
-    "authorization",
     "context",
     "artefacts",
     "availability"
 ];
 
 export type AutomationStudioProps = {
-    readonly onSave: (data: any) => void;
+    readonly onSave: (data: AutomationFormData) => void;
     readonly onCancel: () => void;
     readonly form: any;
     readonly isEditing?: boolean;
@@ -42,27 +43,34 @@ export const AutomationStudio = ({ onSave, onCancel, form, isEditing, syncDraft 
     );
 
     const handleSave = form.handleSubmit(
-        (data) => {
+        (data: AutomationFormData) => {
             console.log("Form data valid, submitting:", data);
             onSave(data);
         },
-        (errors) => {
-            console.error("Form validation errors:", errors);
+        (errors: FieldErrors<AutomationFormData>) => {
+            console.error("FULL Form validation errors:", JSON.stringify(errors, null, 2));
             
-            // Extract messages even from nested objects (definition.name, connection.url etc)
+            // Extract messages even from nested objects
             const getErrors = (validationErrorsObject: any): string[] => {
                 let messages: string[] = [];
-                for (const key in validationErrorsObject) {
-                    if (validationErrorsObject[key]?.message) {
-                        messages.push(validationErrorsObject[key].message);
-                    } else if (typeof validationErrorsObject[key] === 'object' && validationErrorsObject[key] !== null) {
-                        messages = [...messages, ...getErrors(validationErrorsObject[key])];
+                if (!validationErrorsObject) return messages;
+
+                if (validationErrorsObject.message) {
+                    messages.push(validationErrorsObject.message);
+                }
+
+                if (typeof validationErrorsObject === 'object') {
+                    for (const key in validationErrorsObject) {
+                        const nested = validationErrorsObject[key];
+                        if (nested) {
+                            messages = [...messages, ...getErrors(nested)];
+                        }
                     }
                 }
                 return messages;
             };
 
-            const errorMessages = getErrors(errors);
+            const errorMessages = Array.from(new Set(getErrors(errors))); // Unique messages
             
             const message = errorMessages.length > 0 
                 ? `Błędy: ${errorMessages.join(", ")}` 

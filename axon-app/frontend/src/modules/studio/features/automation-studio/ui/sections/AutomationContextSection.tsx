@@ -4,13 +4,14 @@ import { FormItemField } from "@/shared/ui/form/FormItemField";
 import { FormPropertyTable } from "@/shared/ui/form/FormPropertyTable";
 import { useFormContext } from "react-hook-form";
 import type { AutomationFormData } from "../../types/automation-schema";
+import type { FormPropertyFieldType } from "@/shared/types/form/FormPropertyTable.types";
 
-const PROPERTY_TYPE_OPTIONS = [
-	{ value: "text" as const, label: "Text" },
-	{ value: "link" as const, label: "Link/URL" },
-	{ value: "number" as const, label: "Number" },
-	{ value: "boolean" as const, label: "Boolean" },
-	{ value: "date" as const, label: "Date" },
+const PROPERTY_TYPE_OPTIONS: { readonly label: string; readonly value: FormPropertyFieldType }[] = [
+	{ value: "string", label: "Text/String" },
+	{ value: "number", label: "Number" },
+	{ value: "boolean", label: "Boolean" },
+	{ value: "json", label: "JSON" },
+	{ value: "file", label: "File/URL" },
 ];
 
 /**
@@ -22,11 +23,11 @@ export const AutomationContextSection = () => {
 
 	return (
 		<FormSection
-		        id="context"
-		        number={3}
-		        title="Context"
-		        description="Define input context parameters for this automation"
-		        variant="island"
+				id="context"
+				number={2}
+				title="Kontekst Wejściowy"
+				description="Zdefiniuj parametry wejściowe dla tej automatyzacji"
+				variant="island"
 		>
 
 			<div className="space-y-12">

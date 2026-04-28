@@ -214,6 +214,11 @@ export const mapAutomationWorkspaceConfigToNodeData = (transferData: Record<stri
     state: 'idle',
     description: (transferData.automation_description || transferData.description) as string,
     platform: (transferData.automation_platform || transferData.platform) as string || 'n8n',
+    webhook_url: (transferData.automation_webhook_url || transferData.webhook_url) as string,
+    http_method: (transferData.automation_http_method || transferData.http_method) as string || 'POST',
+    automation_provider_id: transferData.automation_provider_id as string | null,
+    auth_config: transferData.automation_auth_config as Record<string, unknown> | null,
+    workspaceId: transferData.workspaceId as string || (transferData.availability_workspace?.[0] as string),
     contexts,
     artefacts,
     actions: [] as TemplateAction[]

@@ -94,7 +94,9 @@ class Automation(BaseModel):
     automation_platform: str
     automation_webhook_url: str
     automation_http_method: str = "POST"
+    automation_provider_id: Optional[UUID] = None
     automation_auth_config: Optional[Dict[str, Any]] = None
+
     automation_input_schema: Optional[Dict[str, Any]] = None
     automation_output_schema: Optional[Dict[str, Any]] = None
     automation_keywords: List[str] = Field(default_factory=list)

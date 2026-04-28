@@ -1,15 +1,48 @@
-// frontend/src/modules/spaces/application/hooks/useSpaceAutomationInspectorLogic.ts
-
 import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useTestAutomation, useAutomations } from "@/modules/workspaces/application/useAutomations";
+import { toast } from "sonner";
 import { SpaceAutomationDomainData, TemplateAction, TemplateArtefact } from "../../domain/types";
 
 export const useSpaceAutomationInspectorLogic = (
     data: SpaceAutomationDomainData,
     onPropertyChange: (propertyNameOrObject: string | Record<string, unknown>, propertyValue?: unknown) => void
 ) => {
+    const params = useParams<{ id: string, workspace: string }>();
+
+    // Priority: 1. data.workspaceId, 2. data.availability_workspace[0], 3. params.workspace, 4. fallback to global
+    const contextWorkspaceId = data.workspaceId || 
+                             (Array.isArray((data as any).availability_workspace) ? (data as any).availability_workspace[0] : null) || 
+                             params.workspace || 
+                             "global";
+
+    console.log("Automation Context Workspace ID:", contextWorkspaceId);
+
+    // Fallback: Fetch all automations in this context to hydrate potentially stale canvas nodes
+    const { data: automations = [] } = useAutomations(contextWorkspaceId);
+
+    console.log("Inspector: automations found:", automations.length, "in", contextWorkspaceId);
+    if (automations.length > 0) {
+        console.log("Inspector: looking for", { id: data.id, label: data.label });
+        console.log("Inspector: sample from list:", automations[0]);
+    }
+
+    // Find the live data for this automation
+    const liveAutomation = automations.find(a => 
+        a.id === data.id || 
+        a.automation_name.trim().toLowerCase() === (data.label || "").trim().toLowerCase()
+    );
+
+    if (liveAutomation) {
+        console.log("Inspector: MATCH FOUND!", liveAutomation.automation_webhook_url);
+    }
+
     const [isTriggering, setIsTriggering] = useState(false);
     const [validationError, setValidationError] = useState<string | null>(null);
     const [hasTimeoutError, setHasTimeoutError] = useState(false);
+
+    // We use the same context workspace for the test execution
+    const { mutateAsync: executeTest } = useTestAutomation(contextWorkspaceId);
 
     const handleActionToggle = (actionId: string) => {
         const updatedActions = (data.actions || []).map((action) =>
@@ -89,48 +122,91 @@ export const useSpaceAutomationInspectorLogic = (
     };
 
     // Logic for tab completion indicators
-    // Derived state - React Compiler handles optimization
     const isContextDone = (!data.contexts || data.contexts.length === 0) 
         ? true 
         : data.contexts.every(ctx => (!!ctx.link && ctx.link.trim() !== "") || (!!ctx.sourceNodeLabel));
 
-    const handleTriggerWorkflow = () => {
+    const handleTriggerWorkflow = async () => {
+        console.log("Inspector: handleTriggerWorkflow CALLED");
         if (!isContextDone) {
+            console.log("Inspector: Context not done, returning");
             setValidationError("Proszę uzupełnić wszystkie linki w zakładce Context przed uruchomieniem.");
+            return;
+        }
+
+        // Use live data if canvas node data is stale (e.g. from history)
+        const targetUrl = data.webhook_url || liveAutomation?.automation_webhook_url;
+        const targetMethod = data.http_method || liveAutomation?.automation_http_method || "POST";
+        const targetProviderId = data.automation_provider_id || liveAutomation?.automation_provider_id || null;
+        const targetAuth = data.auth_config || liveAutomation?.automation_auth_config || null;
+
+        console.log("Inspector: Target config identified:", { targetUrl, targetMethod, targetProviderId });
+
+        if (!targetUrl) {
+            console.log("Inspector: No targetUrl, returning");
+            setValidationError("Automatyzacja nie ma skonfigurowanego adresu URL (Webhook). Edytuj węzeł w Automation Studio.");
             return;
         }
 
         setValidationError(null);
         setHasTimeoutError(false);
         setIsTriggering(true);
+        console.log("Inspector: isTriggering set to true");
 
-        // Simulating n8n response delay
-        setTimeout(() => {
-            const isTimeout = Math.random() > 0.5;
+        try {
+            console.log("Inspector: Preparing inputs...");
+            const inputs = (data.contexts || []).reduce((acc, ctx) => ({
+                ...acc,
+                [ctx.id]: ctx.link || ctx.sourceNodeLabel || "Empty"
+            }), {});
 
-            if (isTimeout) {
-                setHasTimeoutError(true);
-                setIsTriggering(false);
-                return;
-            }
-
-            const newArtefact: TemplateArtefact = {
-                id: crypto.randomUUID(),
-                label: `automation_output_${new Date().getTime()}.json`,
-                link: "https://n8n.io/workflows/demo",
-                status: 'in_review',
-                isOutput: false
-            };
-
-            const updatedArtefacts = [...(data.artefacts || []), newArtefact];
-
-            onPropertyChange({
-                artefacts: updatedArtefacts,
-                state: 'completed'
+            console.log("Inspector: Inputs prepared:", inputs);
+            console.log("Inspector: Sending test request to backend...");
+            
+            const result = await executeTest({
+                automation_webhook_url: targetUrl,
+                automation_http_method: targetMethod,
+                automation_provider_id: targetProviderId,
+                automation_auth_config: targetProviderId ? null : targetAuth,
+                test_inputs: inputs
             });
 
+            console.log("Inspector: Test result received:", result);
+
+            if (result.success) {
+                const responseData = result.data;
+                const formattedContent = typeof responseData === 'object' 
+                    ? JSON.stringify(responseData, null, 2) 
+                    : String(responseData || "Empty response body");
+
+                const newArtefact: TemplateArtefact = {
+                    id: crypto.randomUUID(),
+                    label: `automation_output_${new Date().getTime()}.json`,
+                    link: "Result available in Data Preview",
+                    content: formattedContent,
+                    status: 'in_review',
+                    isOutput: true
+                };
+
+                const updatedArtefacts = [...(data.artefacts || []), newArtefact];
+
+                onPropertyChange({
+                    artefacts: updatedArtefacts,
+                    state: 'completed'
+                });
+                
+                toast.success("Automatyzacja wykonana pomyślnie.");
+            } else {
+                setHasTimeoutError(true);
+                toast.error(`Błąd wykonania: ${result.message || result.statusText}`);
+            }
+        } catch (error: any) {
+            console.error("Inspector: Test execution FAILED", error);
+            setHasTimeoutError(true);
+            toast.error("Błąd sieci podczas łączenia z automatyzacją.");
+        } finally {
             setIsTriggering(false);
-        }, 2000);
+        }
     };
 
     const groupedActions = (data.actions || []).reduce<Record<string, TemplateAction[]>>((accumulator, action) => {
@@ -142,11 +218,8 @@ export const useSpaceAutomationInspectorLogic = (
         return accumulator;
     }, {});
 
-    const isAllDone = data.state === 'done';
-
-    const isArtefactsDone = (!data.artefacts || data.artefacts.length === 0) 
-        ? false 
-        : data.artefacts.every(art => !!art.link && art.link.trim() !== "" && art.status === 'approved');
+    const isAllDone = data.state === 'completed' || data.state === 'done';
+    const isArtefactsDone = (data.artefacts || []).some(art => art.isOutput);
 
     return {
         handleActionToggle,

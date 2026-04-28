@@ -11,7 +11,9 @@ import {
     LLMRouterSchema,
     EmbeddingModelSchema,
     ChunkingStrategySchema,
-    VectorDatabaseSchema
+    VectorDatabaseSchema,
+    AutomationProvider,
+    AutomationProviderSchema
 } from "@/shared/domain/settings";
 import { 
     SystemEmbeddingSchema, 
@@ -295,5 +297,39 @@ export const settingsApi = {
     getVoiceProviderModels: async (provider: string): Promise<{ id: string, name: string, description: string }[]> => {
         const res = await apiClient.get(`/system/voice/providers/${provider}/models`);
         return await res.json() as { id: string, name: string, description: string }[];
+    },
+
+    // --- Automation Providers ---
+    getAutomationProviders: async (): Promise<AutomationProvider[]> => {
+        const res = await apiClient.get("/settings/automation-providers");
+        const data = await res.json() as unknown[];
+        return data.map((providerRaw) => AutomationProviderSchema.parse(providerRaw));
+    },
+
+    getAutomationProvider: async (id: string): Promise<AutomationProvider> => {
+        const res = await apiClient.get(`/settings/automation-providers/${id}`);
+        const data = await res.json() as unknown;
+        return AutomationProviderSchema.parse(data);
+    },
+
+    createAutomationProvider: async (provider: Omit<AutomationProvider, "id" | "created_at" | "updated_at">): Promise<AutomationProvider> => {
+        const res = await apiClient.post("/settings/automation-providers", provider);
+        const data = await res.json() as unknown;
+        return AutomationProviderSchema.parse(data);
+    },
+
+    updateAutomationProvider: async (id: string, provider: Partial<AutomationProvider>): Promise<AutomationProvider> => {
+        const res = await apiClient.patch(`/settings/automation-providers/${id}`, provider);
+        const data = await res.json() as unknown;
+        return AutomationProviderSchema.parse(data);
+    },
+
+    deleteAutomationProvider: async (id: string): Promise<void> => {
+        await apiClient.delete(`/settings/automation-providers/${id}`);
+    },
+
+    testAutomationConnection: async (request: any): Promise<{ success: boolean, message: string }> => {
+        const res = await apiClient.post("/settings/automation-providers/test", request);
+        return await res.json() as { success: boolean, message: string };
     }
 };

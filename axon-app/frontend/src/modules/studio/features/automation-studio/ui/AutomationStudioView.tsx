@@ -8,12 +8,11 @@ import { Button } from "@/shared/ui/ui/Button";
 import { AutomationSimulatorPanel } from "./components/AutomationSimulatorPanel";
 import { AutomationSectionNav } from "./components/AutomationSectionNav";
 import { AutomationAvailabilitySection } from "./sections/AutomationAvailabilitySection";
-import { AutomationConnectionSection } from "./sections/AutomationConnectionSection";
-import { AutomationAuthorizationSection } from "./sections/AutomationAuthorizationSection";
 import { AutomationDefinitionSection } from "./sections/AutomationDefinitionSection";
 import { AutomationContextSection } from "./sections/AutomationContextSection";
 import { AutomationArtefactsSection } from "./sections/AutomationArtefactsSection";
 import { AutomationStudioViewProps } from "../types/automation-studio.types";
+
 
 /**
  * AutomationStudioView: Pure presentation layer for the automation studio.
@@ -63,8 +62,6 @@ export const AutomationStudioView = ({
                                 onBlur={onBlur}
                             >
                                 <AutomationDefinitionSection />
-                                <AutomationConnectionSection />
-                                <AutomationAuthorizationSection />
                                 <AutomationContextSection />
                                 <AutomationArtefactsSection />
                                 <AutomationAvailabilitySection />

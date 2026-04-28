@@ -83,3 +83,13 @@ export const useDeleteAutomation = (workspaceId: string): UseMutationResult<void
         },
     });
 };
+
+/**
+ * useTestAutomation: Mutation hook to test an automation webhook.
+ */
+export const useTestAutomation = (workspaceId: string) => {
+    return useMutation({
+        mutationFn: async (request: any) => await workspacesApi.testAutomation(workspaceId, request),
+    });
+};
+

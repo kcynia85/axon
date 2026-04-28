@@ -1,6 +1,27 @@
 version: '3.8'
 
 services:
+  # n8n for workflow automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: axon-n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_RUNNERS_ENABLED=true
+      - DB_SQLITE_POOL_SIZE=1
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - GENERIC_TIMEZONE=Europe/Warsaw
+    volumes:
+      - ./data/n8n:/home/node/.n8n
+    networks:
+      - axon-network
+    restart: unless-stopped
+
+  # MinIO for object storage (S3 compatible)
   minio:
     image: minio/minio:latest
     container_name: axon-minio
@@ -31,6 +52,211 @@ services:
     networks:
       - axon-network
 
+  # Vector Databases
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: axon-chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./data/chroma:/index_data
+    networks:
+      - axon-network
+    restart: unless-stopped
+
+  chromadb-admin:
+    image: fengzhichao/chromadb-admin:latest
+    container_name: axon-chromadb-admin
+    ports:
+      - "8002:80"
+    environment:
+      - CHROMA_SERVER_URL=http://chroma:8000
+    depends_on:
+      - chroma
+    networks:
+      - axon-network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: axon-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+    networks:
+      - axon-network
+    restart: unless-stopped
+
+  # Supabase Local Stack
+  supabase-db:
+    image: public.ecr.aws/supabase/postgres:17.6.1.106
+    container_name: axon-supabase-db
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - supabase_db_axon:/var/lib/postgresql/data
+    networks:
+      - axon-network
+    restart: unless-stopped
+
+  supabase-auth:
+    image: public.ecr.aws/supabase/gotrue:v2.188.1
+    container_name: axon-supabase-auth
+    depends_on:
+      - supabase-db
+    environment:
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:postgres@supabase-db:5432/postgres?sslmode=disable
+      GOTRUE_SITE_URL: http://localhost:3000
+      GOTRUE_JWT_SECRET: ${SUPABASE_JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters-long}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "false"
+    networks:
+      - axon-network
+
+  supabase-rest:
+    image: public.ecr.aws/supabase/postgrest:v14.8
+    container_name: axon-supabase-rest
+    depends_on:
+      - supabase-db
+    environment:
+      PGRST_DB_URI: postgres://postgres:postgres@supabase-db:5432/postgres
+      PGRST_DB_SCHEMAS: public,storage,graphql_public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${SUPABASE_JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters-long}
+    networks:
+      - axon-network
+
+  supabase-realtime:
+    image: public.ecr.aws/supabase/realtime:v2.82.0
+    container_name: axon-supabase-realtime
+    depends_on:
+      - supabase-db
+    environment:
+      DB_HOST: supabase-db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: postgres
+      JWT_SECRET: ${SUPABASE_JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters-long}
+      REPLICATION_MODE: "false"
+    networks:
+      - axon-network
+
+  supabase-storage:
+    image: public.ecr.aws/supabase/storage-api:v1.48.28
+    container_name: axon-supabase-storage
+    depends_on:
+      - supabase-db
+    environment:
+      ANON_KEY: ${SUPABASE_ANON_KEY}
+      SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      PGRST_JWT_SECRET: ${SUPABASE_JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters-long}
+      DATABASE_URL: postgres://postgres:postgres@supabase-db:5432/postgres
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+    volumes:
+      - supabase_storage_axon:/var/lib/storage
+    networks:
+      - axon-network
+
+  supabase-meta:
+    image: public.ecr.aws/supabase/postgres-meta:v0.96.4
+    container_name: axon-supabase-meta
+    depends_on:
+      - supabase-db
+    environment:
+      PG_META_DB_URL: postgres://postgres:postgres@supabase-db:5432/postgres
+    networks:
+      - axon-network
+
+  supabase-studio:
+    image: public.ecr.aws/supabase/studio:2026.04.08-sha-205cbe7
+    container_name: axon-supabase-studio
+    ports:
+      - "54323:3000"
+    environment:
+      SUPABASE_URL: http://supabase-kong:8000
+      STUDIO_PG_META_URL: http://supabase-meta:8080
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+    networks:
+      - axon-network
+
+  supabase-mailpit:
+    image: public.ecr.aws/supabase/mailpit:v1.22.3
+    container_name: axon-supabase-mailpit
+    ports:
+      - "54324:8025"
+    networks:
+      - axon-network
+
+  supabase-kong:
+    image: public.ecr.aws/supabase/kong:2.8.1
+    container_name: axon-supabase-kong
+    ports:
+      - "54321:8000"
+    networks:
+      - axon-network
+
+  # Tools
+  adminer:
+    image: adminer:latest
+    container_name: axon-adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - axon-network
+
+  # Backup Service
+  backup:
+    image: alpine:latest
+    container_name: axon-backup
+    depends_on:
+      - supabase-db
+      - n8n
+    volumes:
+      - ./backups:/backups
+      - ./data/n8n:/source/n8n:ro
+      - ./rclone.conf:/config/rclone/rclone.conf
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - PGPASSWORD=postgres
+      - CLOUD_REMOTE=gdrive:axon-backups
+    entrypoint: 
+      - sh
+      - -c
+      - |
+        apk add --no-cache postgresql-client docker-cli rclone
+        echo '🚀 Axon Backup Service started (15-minute interval)...'
+        while true; do
+          DATE=$$(date +%Y%m%d_%H%M)
+          echo "[$$DATE] Creating local snapshots..."
+          
+          # 1. Supabase Backup
+          docker exec axon-supabase-db pg_dump -U postgres postgres > /backups/supabase_latest.sql
+          
+          # 2. n8n Backup
+          docker exec axon-n8n n8n export:workflow --all --output=/home/node/.n8n/workflows_latest.json
+          docker exec axon-n8n n8n export:credentials --all --output=/home/node/.n8n/creds_latest.json
+          cp /source/n8n/workflows_latest.json /backups/n8n_workflows_latest.json
+          cp /source/n8n/creds_latest.json /backups/n8n_creds_latest.json
+          
+          # 3. Cloud Sync
+          echo "[$$DATE] Syncing to Google Drive..."
+          rclone sync /backups $$CLOUD_REMOTE --config /config/rclone/rclone.conf
+          
+          echo "[$$DATE] Done. Next backup in 15 minutes."
+          sleep 900
+        done
+    networks:
+      - axon-network
+    restart: unless-stopped
+
   backend-bun:
     build:
       context: ./backend-bun
@@ -46,3 +272,9 @@ services:
 networks:
   axon-network:
     driver: bridge
+
+volumes:
+  supabase_db_axon:
+    external: true
+  supabase_storage_axon:
+    external: true

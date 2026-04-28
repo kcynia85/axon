@@ -14,7 +14,9 @@ from app.modules.settings.application.schemas import (
     EmbeddingModelResponse, CreateEmbeddingModelRequest, UpdateEmbeddingModelRequest,
     ChunkingStrategyResponse, CreateChunkingStrategyRequest, UpdateChunkingStrategyRequest,
     SimulateChunkingRequest, SimulateChunkingResponse,
-    VectorDatabaseResponse, CreateVectorDatabaseRequest, UpdateVectorDatabaseRequest, ConnectionTestResponse
+    VectorDatabaseResponse, CreateVectorDatabaseRequest, UpdateVectorDatabaseRequest, ConnectionTestResponse,
+    AutomationProviderResponse, CreateAutomationProviderRequest, UpdateAutomationProviderRequest,
+    TestAutomationConnectionRequest
 )
 
 router = APIRouter(
@@ -367,10 +369,63 @@ async def test_vector_database(
 
 @router.get("/metadata/enums")
 async def get_settings_enums():
-    from app.modules.settings.domain.enums import VectorDBType, IndexMethod, ChunkingMethod, ProviderType
+    from app.modules.settings.domain.enums import VectorDBType, IndexMethod, ChunkingMethod, ProviderType, AutomationPlatform, AutomationAuthType
     return {
         "vector_db_types": [v.value for v in VectorDBType],
         "index_methods": [v.value for v in IndexMethod],
         "chunking_methods": [v.value for v in ChunkingMethod],
-        "provider_types": [v.value for v in ProviderType]
+        "provider_types": [v.value for v in ProviderType],
+        "automation_platforms": [v.value for v in AutomationPlatform],
+        "automation_auth_types": [v.value for v in AutomationAuthType]
     }
+
+# --- Automation Providers ---
+
+@router.get("/automation-providers", response_model=List[AutomationProviderResponse])
+async def list_automation_providers(
+    service: SettingsService = Depends(get_settings_service)
+):
+    return await service.list_automation_providers()
+
+@router.get("/automation-providers/{id}", response_model=AutomationProviderResponse)
+async def get_automation_provider(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    provider = await service.get_automation_provider(id)
+    if not provider:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Automation provider not found")
+    return provider
+
+@router.post("/automation-providers", response_model=AutomationProviderResponse, status_code=status.HTTP_201_CREATED)
+async def create_automation_provider(
+    request: CreateAutomationProviderRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    return await service.create_automation_provider(request)
+
+@router.patch("/automation-providers/{id}", response_model=AutomationProviderResponse)
+async def update_automation_provider(
+    id: UUID,
+    request: UpdateAutomationProviderRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    provider = await service.update_automation_provider(id, request)
+    if not provider:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Automation provider not found")
+    return provider
+
+@router.delete("/automation-providers/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_automation_provider(
+    id: UUID,
+    service: SettingsService = Depends(get_settings_service)
+):
+    await service.delete_automation_provider(id)
+
+@router.post("/automation-providers/test", response_model=ConnectionTestResponse)
+async def test_automation_connection(
+    request: TestAutomationConnectionRequest,
+    service: SettingsService = Depends(get_settings_service)
+):
+    return await service.test_automation_connection(request)
+

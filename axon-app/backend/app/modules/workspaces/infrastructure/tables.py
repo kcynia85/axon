@@ -96,7 +96,9 @@ class AutomationTable(Base):
     automation_platform = Column(String, nullable=False)
     automation_webhook_url = Column(String, nullable=False)
     automation_http_method = Column(String, default="POST", nullable=False)
+    automation_provider_id = Column(UUID(as_uuid=True), ForeignKey("automation_providers.id"), nullable=True)
     automation_auth_config = Column(JSONB, nullable=True)
+
     automation_input_schema = Column(JSONB, nullable=True)
     automation_output_schema = Column(JSONB, nullable=True)
     automation_keywords = Column(ARRAY(String), nullable=True)

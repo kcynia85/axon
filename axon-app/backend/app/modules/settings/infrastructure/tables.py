@@ -4,7 +4,8 @@ from sqlalchemy.orm import relationship
 from app.shared.infrastructure.base import Base
 from app.shared.utils.time import now_utc
 from app.modules.settings.domain.enums import (
-    ProviderType, ModelTier, RouterStrategy, ChunkingMethod, VectorDBType, IndexMethod, ConnectionStatus
+    ProviderType, ModelTier, RouterStrategy, ChunkingMethod, VectorDBType, IndexMethod, ConnectionStatus,
+    AutomationPlatform, AutomationAuthType
 )
 
 class LLMProviderTable(Base):
@@ -156,3 +157,19 @@ class VectorDatabaseTable(Base):
     deleted_at = Column(DateTime(timezone=True), nullable=True)
 
     embedding_model = relationship("EmbeddingModelTable")
+
+class AutomationProviderTable(Base):
+    __tablename__ = "automation_providers"
+
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    platform = Column(SAEnum(AutomationPlatform), nullable=False)
+    base_url = Column(String, nullable=True)
+    auth_type = Column(SAEnum(AutomationAuthType), nullable=False, default=AutomationAuthType.HEADER)
+    auth_header_name = Column(String, nullable=True, default="Authorization")
+    auth_secret = Column(String, nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), default=now_utc)
+    updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
+    deleted_at = Column(DateTime(timezone=True), nullable=True)
+

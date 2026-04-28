@@ -12,7 +12,6 @@ import {
     DropdownMenu,
     DropdownItem,
     ScrollShadow,
-    Tooltip,
 } from "@heroui/react";
 import { 
     ExternalLink, 
@@ -168,6 +167,21 @@ export const SpaceAutomationNodeInspectorView = ({
 
                                             <div className="space-y-3">
                                                 <h4 className="text-xs font-black text-white pr-6 tracking-tight">{art.label}</h4>
+                                                
+                                                {art.content && (
+                                                    <div className="space-y-1.5">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <div className="w-1 h-3 bg-white rounded-full" />
+                                                            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-400">Data Preview</span>
+                                                        </div>
+                                                        <div className="p-3 bg-black border border-zinc-800 rounded-xl max-h-40 overflow-auto">
+                                                            <pre className="text-[10px] font-medium text-zinc-300 whitespace-pre-wrap break-all leading-relaxed font-mono">
+                                                                {String(art.content)}
+                                                            </pre>
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-full flex gap-2 items-center">
                                                         <Input 
@@ -201,19 +215,19 @@ export const SpaceAutomationNodeInspectorView = ({
                                                 </div>
                                             </div>
 
-                                            <div className="flex justify-between items-center pt-2 border-t border-zinc-900">
+                                            <div className="flex justify-between items-center pt-3 border-t border-zinc-900/50">
                                                 <div className="flex items-center gap-2">
                                                     <Dropdown>
                                                         <DropdownTrigger>
                                                             <Button 
                                                                 size="sm" 
                                                                 variant="bordered" 
-                                                                className="h-10 border-zinc-800 bg-zinc-900 text-[9px] font-black uppercase tracking-widest min-w-32 justify-between rounded-lg"
+                                                                className="h-9 border-zinc-800 bg-zinc-900 text-[10px] font-bold uppercase tracking-wider min-w-[120px] justify-between rounded-lg"
                                                                 endContent={<ChevronDown size={12} />}
                                                             >
-                                                                <div className="flex items-center gap-1.5">
-                                                                    <div className={cn("w-1.5 h-1.5 rounded-full", ARTEFACT_STATUS_CONFIG[art.status]?.dot || "bg-blue-400")} />
-                                                                    {ARTEFACT_STATUS_CONFIG[art.status]?.label || "In Review"}
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className={cn("w-1.5 h-1.5 rounded-full", ARTEFACT_STATUS_CONFIG[art.status as keyof typeof ARTEFACT_STATUS_CONFIG]?.dot || "bg-blue-400")} />
+                                                                    {ARTEFACT_STATUS_CONFIG[art.status as keyof typeof ARTEFACT_STATUS_CONFIG]?.label || "In Review"}
                                                                 </div>
                                                             </Button>
                                                         </DropdownTrigger>
@@ -224,46 +238,41 @@ export const SpaceAutomationNodeInspectorView = ({
                                                                 base: "bg-zinc-950 border border-zinc-800 p-1"
                                                             }}
                                                         >
-                                                            {(['in_review', 'approved'] as const).map((key) => (
-                                                                <DropdownItem 
-                                                                    key={key} 
-                                                                    startContent={React.createElement(ARTEFACT_STATUS_CONFIG[key].icon, { size: 12, className: ARTEFACT_STATUS_CONFIG[key].color })}
-                                                                    className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white"
-                                                                >
-                                                                    {ARTEFACT_STATUS_CONFIG[key].label}
-                                                                </DropdownItem>
-                                                            ))}
+                                                            <DropdownItem 
+                                                                key="in_review" 
+                                                                startContent={<Clock size={12} className="text-blue-400" />}
+                                                                className="text-[10px] font-bold uppercase tracking-widest text-zinc-400"
+                                                            >
+                                                                In Review
+                                                            </DropdownItem>
+                                                            <DropdownItem 
+                                                                key="approved" 
+                                                                startContent={<CheckCircle size={12} className="text-green-500" />}
+                                                                className="text-[10px] font-bold uppercase tracking-widest text-zinc-400"
+                                                            >
+                                                                Approved
+                                                            </DropdownItem>
                                                         </DropdownMenu>
                                                     </Dropdown>
 
-                                                    <Tooltip 
-                                                        content={art.isOutput ? "Unmark as Workflow Output" : "Mark as Workflow Output"}
-                                                        placement="top"
-                                                        classNames={{
-                                                            content: "py-1 px-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 bg-zinc-950 border border-zinc-800 "
-                                                        }}
-                                                        closeDelay={0}
+                                                    <Button 
+                                                        isIconOnly 
+                                                        size="sm" 
+                                                        variant="bordered" 
+                                                        className={cn(
+                                                            "h-9 w-9 border-zinc-800 transition-all rounded-lg",
+                                                            art.isOutput ? "bg-orange-500 border-orange-500 text-zinc-950" : "bg-zinc-900 text-zinc-600 hover:text-zinc-400"
+                                                        )}
+                                                        onPress={() => onArtefactOutputToggle(art.id)}
+                                                        title={art.isOutput ? "Unmark as Workflow Output" : "Mark as Workflow Output"}
                                                     >
-                                                        <div className="inline-block relative">
-                                                            <Button 
-                                                                isIconOnly 
-                                                                size="sm" 
-                                                                variant="bordered" 
-                                                                className={cn(
-                                                                    "h-10 w-10 border-zinc-800 transition-all rounded-lg",
-                                                                    art.isOutput ? "bg-orange-500 border-orange-500 text-orange-500" : "bg-zinc-900 text-zinc-600 hover:text-zinc-400"
-                                                                )}
-                                                                onPress={() => onArtefactOutputToggle(art.id)}
-                                                            >
-                                                                <ArrowUpRight size={14} />
-                                                            </Button>
-                                                        </div>
-                                                    </Tooltip>
+                                                        <ArrowUpRight size={14} />
+                                                    </Button>
                                                 </div>
 
                                                 {art.isOutput && (
-                                                    <div className="shrink-0 flex items-center">
-                                                        <span className="text-[9px] font-black uppercase tracking-widest text-orange-500 px-2 py-1 rounded bg-orange-500 border border-orange-500">
+                                                    <div className="flex items-center bg-orange-500 rounded px-2 py-0.5 border border-orange-500">
+                                                        <span className="text-[8px] font-black uppercase tracking-[0.1em] text-zinc-950">
                                                             Active Output
                                                         </span>
                                                     </div>
@@ -293,17 +302,18 @@ export const SpaceAutomationNodeInspectorView = ({
             </Tabs>
 
             <SpaceInspectorFooter>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3 w-full">
                     <Button
+                        size="lg"
                         className={cn(
-                            "w-full font-black uppercase tracking-widest text-[10px] rounded-md transition-all h-10 ",
-                            isTriggering ? "bg-zinc-800 text-zinc-500" : (hasTimeoutError ? "bg-orange-500 text-white hover:bg-orange-400" : "bg-white text-black hover:bg-zinc-100")
+                            "w-full text-base font-bold transition-all active:scale-95 border-none",
+                            isTriggering ? "bg-zinc-800 text-zinc-500" : (hasTimeoutError ? "bg-orange-500 text-zinc-950 hover:bg-orange-400" : "bg-white text-black hover:bg-zinc-200")
                         )}
-                        startContent={isTriggering ? <Spinner size="sm" color="current" /> : (hasTimeoutError ? <AlertTriangle size={14} /> : <Webhook size={14} />)}
+                        startContent={isTriggering ? <Spinner size="sm" color="current" /> : (hasTimeoutError ? <AlertTriangle size={18} className="text-zinc-950" /> : <Webhook size={18} />)}
                         onPress={onTriggerWorkflow}
                         isDisabled={isTriggering}
                     >
-                        {isTriggering ? "Executing Workflow..." : (hasTimeoutError ? "Retry Workflow" : "Trigger (Webhook)")}
+                        {isTriggering ? "Uruchamianie..." : (hasTimeoutError ? "Retry Workflow" : "Trigger (Webhook)")}
                     </Button>
                     
                     <div className="flex gap-2">

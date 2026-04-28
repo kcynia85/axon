@@ -19,40 +19,26 @@ import {
   ExternalService,
   ExternalServiceSchema
 } from "@/shared/domain/resources";
-import { mockApi } from "./mockApi";
-
-// Set to true to use real backend
-const USE_MOCK = false;
 
 export const workspacesApi = {
   // --- Workspaces ---
   getWorkspaces: async (limit: number = 100, offset: number = 0): Promise<Workspace[]> => {
-    if (USE_MOCK) return mockApi.getWorkspaces(limit, offset);
     const data = await authenticatedClient.get<unknown[]>(`/workspaces/?limit=${limit}&offset=${offset}`);
     return data.map((workspaceRaw) => WorkspaceSchema.parse(workspaceRaw));
   },
 
   getWorkspace: async (id: string): Promise<Workspace> => {
-    if (USE_MOCK) {
-      const workspace = await mockApi.getWorkspace(id);
-      return workspace!;
-    }
     const data = await authenticatedClient.get<unknown>(`/workspaces/${id}`);
     return WorkspaceSchema.parse(data);
   },
 
   // --- Agents ---
   getAgents: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Agent[]> => {
-    if (USE_MOCK) return mockApi.getAgents(workspaceId, limit, offset);
     const data = await authenticatedClient.get<unknown[]>(`/agents/?workspace=${workspaceId}&limit=${limit}&offset=${offset}`);
     return data.map((agentRaw) => AgentSchema.parse(agentRaw));
   },
 
   getAgent: async (id: string): Promise<Agent> => {
-    if (USE_MOCK) {
-      const agent = await mockApi.getAgent(id);
-      return agent!;
-    }
     const data = await authenticatedClient.get<unknown>(`/agents/${id}`);
     return AgentSchema.parse(data);
   },
@@ -73,16 +59,11 @@ export const workspacesApi = {
 
   // --- Crews ---
   getCrews: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Crew[]> => {
-    if (USE_MOCK) return mockApi.getCrews(workspaceId, limit, offset);
     const data = await authenticatedClient.get<unknown[]>(`/workspaces/${workspaceId}/crews?limit=${limit}&offset=${offset}`);
     return data.map((crewRaw) => CrewSchema.parse(crewRaw));
   },
 
   getCrew: async (workspaceId: string, crewId: string): Promise<Crew> => {
-    if (USE_MOCK) {
-      const crew = await mockApi.getCrew(crewId);
-      return crew!;
-    }
     const data = await authenticatedClient.get<unknown>(`/workspaces/${workspaceId}/crews/${crewId}`);
     return CrewSchema.parse(data);
   },
@@ -103,7 +84,6 @@ export const workspacesApi = {
 
   // --- Patterns ---
   getPatterns: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Pattern[]> => {
-    if (USE_MOCK) return mockApi.getPatterns(workspaceId, limit, offset);
     const data = await authenticatedClient.get<unknown[]>(`/workspaces/${workspaceId}/patterns?limit=${limit}&offset=${offset}`);
     return data.map((patternRaw) => PatternSchema.parse(patternRaw));
   },
@@ -115,16 +95,11 @@ export const workspacesApi = {
 
   // --- Templates ---
   getTemplates: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Template[]> => {
-    if (USE_MOCK) return mockApi.getTemplates(workspaceId, limit, offset);
     const data = await authenticatedClient.get<unknown[]>(`/workspaces/${workspaceId}/templates?limit=${limit}&offset=${offset}`);
     return data.map((templateRaw) => TemplateSchema.parse(templateRaw));
   },
 
   getTemplate: async (workspaceId: string, templateId: string): Promise<Template> => {
-    if (USE_MOCK) {
-      const template = await mockApi.getTemplate(templateId);
-      return template!;
-    }
     const data = await authenticatedClient.get<unknown>(`/workspaces/${workspaceId}/templates/${templateId}`);
     return TemplateSchema.parse(data);
   },
@@ -145,16 +120,11 @@ export const workspacesApi = {
 
   // --- Automations ---
   getAutomations: async (workspaceId: string, limit: number = 100, offset: number = 0): Promise<Automation[]> => {
-    if (USE_MOCK) return mockApi.getAutomations(workspaceId, limit, offset);
     const data = await authenticatedClient.get<unknown[]>(`/workspaces/${workspaceId}/automations?limit=${limit}&offset=${offset}`);
     return data.map((automationRaw) => AutomationSchema.parse(automationRaw));
   },
 
   getAutomation: async (workspaceId: string, automationId: string): Promise<Automation> => {
-    if (USE_MOCK) {
-      const automation = await mockApi.getAutomation(automationId);
-      return automation!;
-    }
     const data = await authenticatedClient.get<unknown>(`/workspaces/${workspaceId}/automations/${automationId}`);
     return AutomationSchema.parse(data);
   },
@@ -171,6 +141,10 @@ export const workspacesApi = {
 
   deleteAutomation: async (workspaceId: string, automationId: string): Promise<void> => {
     await authenticatedClient.delete(`/workspaces/${workspaceId}/automations/${automationId}`);
+  },
+
+  testAutomation: async (workspaceId: string, request: any): Promise<any> => {
+    return await authenticatedClient.post(`/workspaces/${workspaceId}/automations/test`, request);
   },
 
   // --- Services ---

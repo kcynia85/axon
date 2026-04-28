@@ -120,7 +120,10 @@ export const useSpaceCanvasSidebarManagement = () => {
                           categoryKey === 'templates' ? 'template' :
                           categoryKey === 'automations' ? 'automation' :
                           categoryKey === 'patterns' ? 'pattern' : 'unknown',
-                    rawData: item
+                    rawData: {
+                        ...item.rawData,
+                        workspaceId: currentlySelectedWorkspaceIdentifier
+                    }
                 }))
                 .filter((item) => item.name.toLowerCase().includes(query))
                 .map((item) => ({

@@ -4,7 +4,8 @@ from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
 from app.shared.utils.time import now_utc
 from app.modules.settings.domain.enums import (
-    ProviderType, ModelTier, RouterStrategy, ChunkingMethod, VectorDBType, IndexMethod, ConnectionStatus
+    ProviderType, ModelTier, RouterStrategy, ChunkingMethod, VectorDBType, IndexMethod, ConnectionStatus,
+    AutomationPlatform, AutomationAuthType
 )
 
 class SettingsBase(BaseModel):
@@ -122,3 +123,13 @@ class VectorDatabase(SettingsBase):
     vector_database_total_vectors: int = 0
     vector_database_size: int = 0
     vector_database_expected_dimensions: int
+
+# Automation
+class AutomationProvider(SettingsBase):
+    name: str
+    platform: AutomationPlatform
+    base_url: Optional[str] = None
+    auth_type: AutomationAuthType = AutomationAuthType.HEADER
+    auth_header_name: Optional[str] = "Authorization"
+    auth_secret: Optional[str] = None
+

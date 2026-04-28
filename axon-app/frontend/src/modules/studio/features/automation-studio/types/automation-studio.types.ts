@@ -14,6 +14,7 @@ export type AutomationStudioViewProps = {
     readonly onSectionClick: (sectionIdentifier: AutomationStudioSectionId) => void;
     readonly onCancel: () => void;
     readonly onSave: () => void;
+    readonly onBlur?: () => void;
     readonly setCanvasContainerReference: (scrollContainerNode: HTMLDivElement | null) => void;
     readonly isEditing?: boolean;
 };

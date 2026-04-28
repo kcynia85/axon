@@ -31,6 +31,14 @@ const settingsNavGroups = [
         ],
     },
     {
+        id: "automation",
+        title: "Automation",
+        href: "/settings/automation",
+        items: [
+            { name: "Providers", href: "/settings/automation/providers", queryKey: ["automation-providers"], queryFn: settingsApi.getAutomationProviders },
+        ],
+    },
+    {
         id: "system",
         title: "System",
         href: "/settings/system",

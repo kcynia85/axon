@@ -13,7 +13,7 @@ export async function createCrewAction(workspaceId: string, data: CrewStudioForm
 	const { data: { session } } = await supabase.auth.getSession();
 	const token = session?.access_token;
 
-	if (!token && process.env.NEXT_PUBLIC_USE_MOCK !== 'true' && process.env.NODE_ENV === 'production') {
+	if (!token && process.env.NODE_ENV === 'production') {
 		throw new Error("Unauthorized - Session not found");
 	}
 
@@ -79,7 +79,7 @@ export async function updateCrewAction(workspaceId: string, crewId: string, data
 	const { data: { session } } = await supabase.auth.getSession();
 	const token = session?.access_token;
 
-	if (!token && process.env.NEXT_PUBLIC_USE_MOCK !== 'true' && process.env.NODE_ENV === 'production') {
+	if (!token && process.env.NODE_ENV === 'production') {
 		throw new Error("Unauthorized - Session not found");
 	}
 

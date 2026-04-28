@@ -115,6 +115,7 @@ class CreateAutomationRequest(BaseModel):
     automation_platform: str
     automation_webhook_url: str
     automation_http_method: str = "POST"
+    automation_provider_id: Optional[UUID] = None
     automation_auth_config: Optional[Dict[str, Any]] = None
     automation_input_schema: Optional[Dict[str, Any]] = None
     automation_output_schema: Optional[Dict[str, Any]] = None
@@ -127,14 +128,23 @@ class UpdateAutomationRequest(BaseModel):
     automation_platform: Optional[str] = None
     automation_webhook_url: Optional[str] = None
     automation_http_method: Optional[str] = None
+    automation_provider_id: Optional[UUID] = None
     automation_auth_config: Optional[Dict[str, Any]] = None
     automation_input_schema: Optional[Dict[str, Any]] = None
     automation_output_schema: Optional[Dict[str, Any]] = None
     automation_keywords: Optional[List[str]] = None
     availability_workspace: Optional[List[str]] = None
 
+
 class AutomationResponse(Automation):
     pass
+
+class TestAutomationExecutionRequest(BaseModel):
+    automation_webhook_url: str
+    automation_http_method: str = "POST"
+    automation_provider_id: Optional[UUID] = None
+    automation_auth_config: Optional[Dict[str, Any]] = None
+    test_inputs: Dict[str, Any] = {}
 
 class TrashItemResponse(BaseModel):
     id: UUID
@@ -142,3 +152,4 @@ class TrashItemResponse(BaseModel):
     type: str
     deleted_at: datetime
     workspace_id: Optional[str] = None
+

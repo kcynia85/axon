@@ -12,7 +12,7 @@ import type { PageLayoutProps } from "@/shared/lib/types/page-layout";
 export const PageLayout = ({
   title,
   description,
-  breadcrumbs,
+  breadcrumbs = [],
   actions,
   children,
   pagination,

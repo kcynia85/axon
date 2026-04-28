@@ -106,6 +106,12 @@ export type SpaceAutomationDomainData = {
   readonly state: string;
   readonly description?: string | null;
   readonly platform?: string;
+  readonly webhook_url?: string;
+  readonly http_method?: string;
+  readonly automation_provider_id?: string | null;
+  readonly auth_config?: Record<string, unknown> | null;
+  readonly workspaceId?: string;
+  readonly availability_workspace?: readonly string[];
   readonly artifactName?: string;
   readonly artifactStatus?: string;
   readonly artifactLabel?: string;

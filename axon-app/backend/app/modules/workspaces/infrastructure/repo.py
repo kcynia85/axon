@@ -469,10 +469,18 @@ class WorkspaceRepository:
 
     def _automation_to_domain(self, row: AutomationTable) -> Automation:
         return Automation(
-            id=row.id, automation_name=row.automation_name, automation_description=row.automation_description,
-            automation_platform=row.automation_platform, automation_webhook_url=row.automation_webhook_url,
-            automation_http_method=row.automation_http_method, automation_auth_config=row.automation_auth_config,
-            automation_input_schema=row.automation_input_schema, automation_output_schema=row.automation_output_schema,
-            automation_keywords=row.automation_keywords or [], availability_workspace=row.availability_workspace,
-            created_at=row.created_at, updated_at=row.updated_at
+            id=row.id, 
+            automation_name=row.automation_name, 
+            automation_description=row.automation_description,
+            automation_platform=row.automation_platform, 
+            automation_webhook_url=row.automation_webhook_url,
+            automation_http_method=row.automation_http_method, 
+            automation_provider_id=row.automation_provider_id,
+            automation_auth_config=row.automation_auth_config,
+            automation_input_schema=row.automation_input_schema, 
+            automation_output_schema=row.automation_output_schema,
+            automation_keywords=row.automation_keywords or [], 
+            availability_workspace=row.availability_workspace or [],
+            created_at=row.created_at, 
+            updated_at=row.updated_at
         )
